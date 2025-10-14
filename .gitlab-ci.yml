@@ -1,2 +1,27 @@
 include:
   - local: .gitlab/ci/default.yml
+  - component: gitlab.com/components/opentofu/validate-plan-apply@3.11.0
+    inputs:
+      root_dir: infra/gitlab/
+      state_name: gitlab-configuration
+      auto_define_backend: true
+      trigger_in_child_pipeline: true
+      child_pipeline_name: gitlab_configuration
+      child_pipeline_stage: infra
+      child_pipeline_rules:
+        - if: $ON_MR
+          changes:
+            paths:
+              - &gitlab_changes infra/gitlab/**/*
+        - if: $ON_DEFAULT_BRANCH
+          changes:
+            paths:
+              - *gitlab_changes
+            compare_to: "$CI_COMMIT_BEFORE_SHA"
+      apply_rules:
+        - if: $ON_DEFAULT_BRANCH
+        - if: $ON_MR
+          when: manual
+          allow_failure: true
+
+stages: [infra]
