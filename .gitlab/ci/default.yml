@@ -1,0 +1,22 @@
+variables:
+  GIT_STRATEGY: fetch
+  GIT_DEPTH: "1"
+  GET_SOURCES_ATTEMPTS: 3
+  ARTIFACT_DOWNLOAD_ATTEMPTS: 3
+  RESTORE_CACHE_ATTEMPTS: 3
+  CI_TOOLS_REPO: ci/tools
+  CLICOLOR_FORCE: 1
+  FORCE_COLOR: 1
+
+default:
+  interruptible: true
+  retry:
+    max: 2
+    when:
+      - unknown_failure
+      - api_failure
+      - runner_system_failure
+      - runner_unsupported
+      - unmet_prerequisites
+      - scheduler_failure
+      - data_integrity_failure
