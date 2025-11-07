@@ -1,0 +1,221 @@
+spec:
+  inputs:
+    job:
+      type: string
+      default: e2e_ocudu
+      description: "Job name to use."
+    stage:
+      type: string
+      default: e2e
+      description: "Job stage to use."
+    rules:
+      type: array
+      default: []
+      description: "Defines the `rules` of the job."
+    timeout:
+      type: string
+      default: 3 hours
+      description: "Timeout for the job."
+    tag: # TODO Convert to array when in-cluster is ready
+      type: string
+      default: new-retina-e2e-amd64
+      description: "Tags to use for the job."
+      options:
+        - new-retina-e2e-amd64
+        - retina-e2e-amd64
+    group:
+      type: string
+      default: zmq
+      description: "Retina group to use."
+      options:
+        - rf
+        - viavi
+        - zmq
+    testbed:
+      type: string
+      default: zmq
+      description: "Retina Testbed configuration to use."
+      options:
+        - android_b200
+        - android_callbox
+        - android_x300
+        - rf_b200
+        - s72
+        - test_mode_acc100
+        - test_mode
+        - viavi
+        - zmq_1cu2du
+        - zmq_2gnb
+        - zmq_cudu
+        - zmq_ntn
+        - zmq_ric
+        - zmq_srsue
+        - zmq
+        - none
+    markers:
+      type: string
+      default: ""
+      description: "Selected pytest marker (label / tag). Tests with that mark will run. Do not use quotes."
+    file_or_dir:
+      type: string
+      default: ""
+      description: "Test file or folder to select. Use relative path from e2e folder. Do not use quotes. Empty for all tests in the folder."
+    keywords:
+      type: string
+      default: ""
+      description: "Select tests by keyword expressions. Do not use quotes. This will run tests which contain names that match the given string expression (case-insensitive), which can include Python operators that use filenames, class names and function names as variables"
+    retina_args:
+      type: string
+      default: ""
+      description: "Extra retina args for the e2e suite to run"
+    launcher_args:
+      type: string
+      default: ""
+      description: "Extra launcher args"
+    needs:
+      type: array
+      default: []
+      description: "Needs configuration for the job."
+---
+load retina variables:
+  stage: static
+  image: ubuntu:24.04
+  rules: $[[ inputs.rules ]]
+  retry: 2
+  script:
+    - cat e2e/retina_requests/.env
+  artifacts:
+    reports:
+      dotenv: e2e/retina_requests/.env
+
+"$[[ inputs.job ]]":
+  stage: $[[ inputs.stage ]]
+  rules: $[[ inputs.rules ]]
+  timeout: $[[ inputs.timeout ]]
+  tags:
+    - ${E2E_TAG}
+  image:
+    name: ${RETINA_REGISTRY_PREFIX}/launcher:${RETINA_VERSION}
+    entrypoint: ["/bin/sh", "-c"]
+  variables:
+    # CI variables
+    OCUDU_DIR: ${CI_PROJECT_DIR}/ocudu
+    GROUP: $[[ inputs.group ]]
+    E2E_TAG: $[[ inputs.tag ]]
+    # Retina E2E variables
+    TESTBED: $[[ inputs.testbed ]]
+    MARKERS: $[[ inputs.markers ]]
+    FILE_OR_DIR: $[[ inputs.file_or_dir ]]
+    KEYWORDS: $[[ inputs.keywords ]]
+    RETINA_ARGS: $[[ inputs.retina_args ]]
+    LAUNCHER_ARGS: $[[ inputs.launcher_args ]]
+    # Configured for big artifacts
+    TRANSFER_METER_FREQUENCY: 5s
+    ARTIFACT_COMPRESSION_LEVEL: slowest
+    RUNNER_AFTER_SCRIPT_TIMEOUT: 20m
+  resource_group: e2e-${GROUP}
+  needs:
+    - job: load retina variables
+      artifacts: true
+    - $[[ inputs.needs ]]
+  artifacts:
+    paths:
+      - e2e/log
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: e2e/out.xml
+  before_script:
+    # TODO: Remove this and use in-cluster
+    - &setup_kube_config |
+      if [ "$E2E_TAG" = "new-retina-e2e-amd64" ]; then
+        export KUBECONFIG_VAR_NAME="RETINA_NAMESPACE_KUBECONFIG_LAB_BCN"
+        export KUBECONFIG_VAR_NAME_EXTRA=""
+      else
+        export KUBECONFIG_VAR_NAME="RETINA_NAMESPACE_KUBECONFIG"
+        export KUBECONFIG_VAR_NAME_EXTRA="RETINA_NAMESPACE_KUBECONFIG_EXTRA"
+      fi
+      eval K_PATH="\$$KUBECONFIG_VAR_NAME"
+      export KUBECONFIG=$K_PATH
+      eval K_PATH_EXTRA="\$$KUBECONFIG_VAR_NAME_EXTRA"
+      export KUBECONFIG_EXTRA=$K_PATH_EXTRA
+    - |
+      export OCUDU_COMMIT=$(cat ${OCUDU_DIR}/.gitlab/ci/version.txt)_$(cat ${OCUDU_DIR}/.gitlab/ci/plugin_version.txt)
+    # Print E2E parameters
+    - |
+      echo "E2E_TAG=${E2E_TAG}"
+      echo "GROUP=${GROUP}"
+      echo "TESTBED=${TESTBED}"
+      echo "MARKERS=${MARKERS}"
+      echo "FILE_OR_DIR=${FILE_OR_DIR}"
+      echo "KEYWORDS=${KEYWORDS}"
+      echo "RETINA_ARGS=${RETINA_ARGS}"
+      echo "LAUNCHER_ARGS=${LAUNCHER_ARGS}"
+    # Modify request to shared the complete folder with ocudu containers
+    - |
+      yq -i '(.[] | select(.name == "ocudu*") | .shared_files) = [{"local_path": "../ocudu", "remote_path": env(OCUDU_DIR), "is_executable": false}]' ${CI_PROJECT_DIR}/e2e/retina_requests/${TESTBED}.yml
+    # Remove any existing retina resource for this group
+    - retina release --username ci_${GROUP}
+    - |
+      run_retina() {
+        cd ${CI_PROJECT_DIR}/e2e
+        export LOGNAME=ci_${GROUP}
+        set -x
+        retina-launcher "${FILE_OR_DIR}" ${LAUNCHER_ARGS} --retina-request=retina_requests/${TESTBED}.yml -m "${MARKERS}" -k "${KEYWORDS}" --register-parameter ${RETINA_ARGS}
+        { set +x; } 2>/dev/null
+      }
+  script:
+    # Set username for retina
+    - |
+      cd e2e
+      export LOGNAME=ci_${GROUP}
+    # Run Retina
+    - run_retina
+  after_script:
+    # Remove any existing retina resource for this group
+    - *setup_kube_config
+    - retina release --username ci_${GROUP}
+    # Artifact size
+    - echo -e "\e[0Ksection_start:`date +%s`:e2e_folder_section[collapsed=true]\r\e[0KLog folder's tree"
+    - |
+      print_tree() {
+        local dir="$1"
+        local prefix="$2"
+
+        # List directories first
+        find "$dir" -mindepth 1 -maxdepth 1 -type d | while read -r subdir; do
+          local size=$(du -sh "$subdir" | awk '{print $1}')
+          echo "${prefix}├── $(basename "$subdir") [$size]"
+          print_tree "$subdir" "$prefix│   "
+        done
+
+        # List files afterwards
+        find "$dir" -mindepth 1 -maxdepth 1 -type f | while read -r file; do
+          local size=$(du -sh "$file" | awk '{print $1}')
+          echo "${prefix}├── $(basename "$file") [$size]"
+        done
+      }
+      print_tree "e2e/log/" ""
+    - echo -e "\e[0Ksection_end:`date +%s`:e2e_folder_section\r\e[0K"
+    # Report link
+    - |
+      echo "*******************************************************************************************************************************"
+      echo "Test report ---> https://${CI_PROJECT_NAMESPACE_SLUG}.${CI_PAGES_DOMAIN}/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/e2e/log/report.html"
+      echo "*******************************************************************************************************************************"
+    # Artifact transfer to an alternative ftp server
+    - |
+      if [ -n "$FTP_SERVER_IP" ]; then
+        # Saving artifacts to the FTP server
+        # Verify if SSH connection is active
+        if ! nc -z -v "$FTP_SERVER_IP" "$FTP_SERVER_PORT" >/dev/null 2>&1; then
+            echo "Error: SSH server is not active or is not reachable."
+            exit 1
+        fi
+        artifacts_dir="${CI_PROJECT_DIR}/e2e/log"
+        compressed_artifact="artifacts_${CI_JOB_NAME_SLUG}_${CI_JOB_ID}.zip"
+        # Compress the artifacts
+        zip -q -r "${compressed_artifact}" "${artifacts_dir}"
+        # Send the artifacts to the server
+        sshpass -p "${FTP_SERVER_PASS}" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -P "${FTP_SERVER_PORT}" "${compressed_artifact}" "${FTP_SERVER_USER}@${FTP_SERVER_IP}:${FTP_REMOTE_PATH}" >/dev/null 2>&1
+        echo "Artifacts saved at ${FTP_SERVER_IP}:${FTP_REMOTE_PATH}/${compressed_artifact}"
+      fi
