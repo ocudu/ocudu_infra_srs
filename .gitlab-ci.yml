@@ -1,27 +1,51 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+    - if: $CI_PIPELINE_SOURCE == "web"
+      variables:
+        ON_WEB: "true"
+    - if: $CI_PIPELINE_SOURCE == "api"
+      variables:
+        ON_API: "true"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      variables:
+        ON_SCHEDULE: "true"
+    - if: $CI_COMMIT_TAG
+      variables:
+        ON_TAG: "true"
+    - if: $CI_MERGE_REQUEST_IID
+      variables:
+        ON_MR: "true"
+      # Why $CI_MERGE_REQUEST_IID instead of $CI_PIPELINE_SOURCE == "merge_request_event" ?
+      # Child pipelines in a MR have CI_PIPELINE_SOURCE = parent_pipeline
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        ON_DEFAULT_BRANCH: "true"
+    - when: never
+
+variables:
+  GIT_STRATEGY: fetch
+  GIT_DEPTH: "1"
+  GET_SOURCES_ATTEMPTS: 3
+  ARTIFACT_DOWNLOAD_ATTEMPTS: 3
+  RESTORE_CACHE_ATTEMPTS: 3
+  CLICOLOR_FORCE: 1
+  FORCE_COLOR: 1
+
+default:
+  retry:
+    max: 2
+    when:
+      - unknown_failure
+      - api_failure
+      - runner_system_failure
+      - runner_unsupported
+      - unmet_prerequisites
+      - scheduler_failure
+      - data_integrity_failure
+
 include:
-  - local: .gitlab/ci/default.yml
-  - component: gitlab.com/components/opentofu/validate-plan-apply@3.11.0
-    inputs:
-      root_dir: infra/gitlab/
-      state_name: gitlab-configuration
-      auto_define_backend: true
-      trigger_in_child_pipeline: true
-      child_pipeline_name: gitlab_configuration
-      child_pipeline_stage: infra
-      child_pipeline_rules:
-        - if: $ON_MR
-          changes:
-            paths:
-              - &gitlab_changes infra/gitlab/**/*
-        - if: $ON_DEFAULT_BRANCH
-          changes:
-            paths:
-              - *gitlab_changes
-            compare_to: "$CI_COMMIT_BEFORE_SHA"
-      apply_rules:
-        - if: $ON_DEFAULT_BRANCH
-        - if: $ON_MR
-          when: manual
-          allow_failure: true
+  - local: infra/gitlab/.gitlab-ci.yml
 
 stages: [infra]
