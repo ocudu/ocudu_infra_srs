@@ -48,4 +48,4 @@ default:
 include:
   - local: infra/gitlab/.gitlab-ci.yml
 
-stages: [infra]
+stages: [infra, build]

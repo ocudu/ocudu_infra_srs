@@ -15,3 +15,4 @@ This repository have dependencies on third-party hardware and software, such as 
 ## Index
 
 - [GitLab Project Configuration](infra/gitlab/README.md)
+- [Gitlab CI Components](templates/README.md)

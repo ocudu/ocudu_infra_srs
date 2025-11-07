@@ -1,0 +1,194 @@
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: softwareradiosystems/srsgnb
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+    job:
+      type: string
+      default: build_ocudu
+      description: "Job name to use."
+    stage:
+      type: string
+      default: build
+      description: "Job stage to use."
+    rules:
+      type: array
+      default: []
+      description: "Defines the `rules` of the job."
+    tag: # TODO Convert to array when runner tag refactor is done
+      type: string
+      default: amd64-avx2
+      description: "Tag to use for the job."
+      options:
+        - amd64
+        - amd64-avx2
+        - amd64-avx2-avx512
+        - arm64
+    image_version:
+      type: string
+      default: ${DOCKER_BUILDER_VERSION}
+      description: "Docker image version to use for the job."
+    image_prefix:
+      type: string
+      default: registry.gitlab.com/softwareradiosystems/srsgnb/builder-
+      description: "Prefix of the docker image to use for the job."
+    os:
+      type: string
+      default: ubuntu-24.04
+      description: "Operating system. It is included in the docker image name after the prefix. Set it empty if you are setting a full image name in `image_prefix` input."
+    download_urls_pre_build:
+      type: string
+      default: ""
+      description: "Space-separated URLs of packages to download before building."
+    target:
+      type: string
+      default: ""
+      description: "Build target. Keep it empty to use the default target."
+    compiler:
+      type: string
+      default: gcc
+      description: "Compiler."
+    uhd_version:
+      type: string
+      default: ""
+      description: "UHD version. Must be a version included in the specified OS builder image."
+    dpdk_version:
+      type: string
+      default: ""
+      description: "DPDK version. Must be a version included in the specified OS builder image."
+    build_args:
+      type: string
+      default: ""
+      description: "Build arguments for the job. It will be passed to cmake"
+    test_mode:
+      type: string
+      default: none
+      description: "Run ctest selecting tests with labels matching regular expression. `none` wont run any test at all."
+    cache:
+      type: array
+      default: []
+      description: "Caching configuration for the job."
+    needs:
+      type: array
+      default: []
+      description: "Jobs that this job depends on."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/build.yml
+
+"$[[ inputs.job ]]":
+  extends: .build_and_unit_template
+  image: "$[[ inputs.image_prefix ]]$[[ inputs.os ]]:$[[ inputs.image_version ]]"
+  stage: $[[ inputs.stage ]]
+  rules: $[[ inputs.rules ]]
+  variables:
+    OCUDU_DIR: ${CI_PROJECT_DIR}/ocudu
+    SRSRANDIR: ${CI_PROJECT_DIR}/ocudu # TODO: Remove when ocudu ci-shared/build.yml is updated
+    # Setup variables
+    OCUDU_PATH: $[[ inputs.ocudu_path ]]
+    OCUDU_REF: $[[ inputs.ocudu_ref ]]
+    DOWNLOAD_URLS_PRE_BUILD: $[[ inputs.download_urls_pre_build ]]
+    # Build variables
+    INFRASTRUCTURE_TAG: $[[ inputs.tag ]]
+    OS: $[[ inputs.os ]]
+    SRS_TARGET: $[[ inputs.target ]]
+    COMPILER: $[[ inputs.compiler ]]
+    UHD_VERSION: $[[ inputs.uhd_version ]]
+    DPDK_VERSION: $[[ inputs.dpdk_version ]]
+    BUILD_ARGS: $[[ inputs.build_args ]]
+    # CTest variables
+    TEST_MODE: $[[ inputs.test_mode ]]
+  script:
+    # Download pre-build packages
+    - |
+      for url in ${DOWNLOAD_URLS_PRE_BUILD}; do
+
+        echo "Downloading: $url"
+        # Download file
+        filename=$(basename "$url")
+        wget --header "JOB-TOKEN: $CI_JOB_TOKEN" "$url" -O "$filename"
+        if [[ $? -ne 0 ]]; then
+          echo "Error downloading $url"
+          exit 1
+        fi
+
+        # Extract main tar.gz file
+        extract_dir="${filename%.tar.gz}"
+        mkdir -p "$extract_dir"
+        tar -zxf "$filename" -C "$extract_dir"
+
+        # Extract nested tar.gz files if any exist
+        for nested_file in "$extract_dir"/*/*.tar.gz; do
+          if [[ -f "$nested_file" ]]; then
+            tar -zxf "$nested_file" -C "$extract_dir/"
+          fi
+        done
+      done
+    # Setup OCUDU repository
+    - |
+      mkdir -p ${OCUDU_DIR}
+      cd ${OCUDU_DIR}
+    - |
+      git init > /dev/null 2>&1
+      git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_SHELL_SSH_HOST}/${OCUDU_PATH}.git > /dev/null
+      git fetch --depth=1 origin ${OCUDU_REF} > /dev/null
+      git reset --hard FETCH_HEAD
+      git config --global --add safe.directory ${OCUDU_DIR}
+      git rev-parse HEAD > .gitlab/ci/version.txt
+    - |
+      PLUGIN_REF=$(cat .gitlab/ci/plugin_version.txt)
+      git submodule add https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_SHELL_SSH_HOST}/softwareradiosystems/srsran_5g_enterprise.git plugins/enterprise
+      cd plugins/enterprise
+      git fetch --depth=1 origin ${PLUGIN_REF} > /dev/null
+      git config advice.detachedHead false
+      git checkout ${PLUGIN_REF}
+    - cd ${CI_PROJECT_DIR}
+    # Build
+    - build_srsran
+    # Run unit and integration tests
+    - |
+      if [[ $TEST_MODE != "none" ]]; then
+        launch_tests_srsran
+      fi
+  after_script: # Save sources, ctest output and built apps
+    # Clean LFS files, git and cache
+    - |
+      cd ${OCUDU_DIR}
+      while read -r line; do
+        git rm "$line" >/dev/null
+      done < <(git lfs ls-files | sed -r 's/^.{13}//')
+      rm -Rf ${OCUDU_DIR}/.git
+      rm -Rf ${OCUDU_DIR}/plugins/enterprise/.git
+      rm -Rf ${OCUDU_DIR}/ccache
+    # Save Testing output (ctest)
+    - |
+      cd ${OCUDU_DIR}
+      mkdir -p ${CI_PROJECT_DIR}/build/Testing
+      mv ${OCUDU_DIR}/build/Testing ${CI_PROJECT_DIR}/build/Testing || true
+    # Save .so
+    - |
+      cd ${OCUDU_DIR}/build/
+      find . -name "*.so" -exec sh -c 'mkdir -p "${CI_PROJECT_DIR}/build/$(dirname "$1")" && cp "$1" "${CI_PROJECT_DIR}/build/$1"' _ {} \;
+    # Save built apps
+    - |
+      cd ${OCUDU_DIR}/build/apps
+      find . -type f -executable -exec sh -c 'mkdir -p "${CI_PROJECT_DIR}/build/apps/$(dirname "$1")" && cp "$1" "${CI_PROJECT_DIR}/build/apps/$1"' _ {} \;
+    # Copy build folder back to OCUDU directory
+    - |
+      cd ${OCUDU_DIR}
+      rm -Rf ${OCUDU_DIR}/build
+      cp -r ${CI_PROJECT_DIR}/build ${OCUDU_DIR}/build
+      echo "OCUDU sources+build size is" $(du -hs .)
+  cache: $[[ inputs.cache ]]
+  artifacts:
+    paths:
+      - ocudu
+    expire_in: 3 days
+  needs: $[[ inputs.needs ]]
