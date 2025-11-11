@@ -1,0 +1,82 @@
+- name: amarisoft-ue
+  type: ue
+  image: ${RETINA_REGISTRY_PREFIX}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  labels:
+    - ${ZMQ_HOSTLABEL}
+  nof_ports: 64
+  requirements:
+    cpu:
+      requests: 4
+      limits: 4
+    memory:
+      requests: "16G"
+      limits: "16G"
+    ephemeral-storage:
+      requests: "8G"
+      limits: "8G"
+  resources:
+    - type: zmq
+    - type: license
+      model: amarisoft-ue-ntn
+  shared_files:
+    - local_path: ${OCUDU_REL_BUILD_PATH}/utils/trx_srsran/libtrx_srsran.so
+      remote_path: /opt/lteue/trx_srsran.so
+      is_executable: true
+
+- name: ocudu-gnb
+  type: gnb
+  image: ${RETINA_REGISTRY_PREFIX}/srsgnb:${RETINA_VERSION}
+  labels:
+    - ${ZMQ_HOSTLABEL}
+  requirements:
+    cpu:
+      requests: 4
+      limits: 4
+    memory:
+      requests: "16G"
+      limits: "16G"
+    ephemeral-storage:
+      requests: "8G"
+      limits: "8G"
+  resources:
+    - type: zmq
+  environment:
+    - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/gnb
+  shared_files:
+    - local_path: ${OCUDU_REL_BUILD_PATH}/apps/gnb/gnb
+      remote_path: /usr/local/bin/gnb
+      is_executable: true
+
+- name: ntn-channel-emulator
+  type: channel-emulator
+  image: ${RETINA_REGISTRY_PREFIX}/ntn-channel-emulator:${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
+  labels:
+    - ${ZMQ_HOSTLABEL}
+  requirements:
+    cpu:
+      requests: 2
+      limits: 2
+    memory:
+      requests: "4G"
+      limits: "4G"
+    ephemeral-storage:
+      requests: "4G"
+      limits: "4G"
+  resources:
+    - type: zmq
+
+- name: open5gs
+  type: 5gc
+  requirements:
+    cpu:
+      requests: 2
+      limits: 2
+    memory:
+      requests: "4G"
+      limits: "4G"
+    ephemeral-storage:
+      requests: "4G"
+      limits: "4G"
+  image: ${RETINA_REGISTRY_PREFIX}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  labels:
+    - ${ZMQ_HOSTLABEL}

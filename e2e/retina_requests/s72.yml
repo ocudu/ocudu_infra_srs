@@ -1,0 +1,68 @@
+- name: amarisoft-ue
+  type: ue
+  image: ${RETINA_REGISTRY_PREFIX}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  labels:
+    - kubernetes.io/hostname=ci-buildmaster
+  nof_ports: 16
+  requirements:
+    cpu:
+      requests: 12
+      limits: 12
+    memory:
+      requests: "8G"
+      limits: "8G"
+    ephemeral-storage:
+      requests: "8G"
+      limits: "8G"
+  resources:
+    - type: license
+      model: amarisoft-ue.*
+    - type: ru
+      model: amariue-s72
+
+- name: ocudu-gnb
+  type: gnb
+  image: ${RETINA_REGISTRY_PREFIX}/srsgnb:${RETINA_VERSION}
+  labels:
+    - kubernetes.io/hostname=sdr6
+  requirements:
+    cpu:
+      requests: 12
+      limits: 12
+    memory:
+      requests: "20G"
+      limits: "20G"
+    hugepages-1Gi:
+      requests: 2Gi
+      limits: 2Gi
+    ephemeral-storage:
+      requests: "6G"
+      limits: "6G"
+  resources:
+    - type: ru
+      model: s72-ru
+  environment:
+    - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/gnb_split_7_2
+    - LD_LIBRARY_PATH: /opt/dpdk/${E2E_DPDK_VERSION}/lib/x86_64-linux-gnu/
+  shared_files:
+    - local_path: ${OCUDU_REL_BUILD_PATH}/apps/gnb_split_7_2/gnb
+      remote_path: /usr/local/bin/gnb
+      is_executable: true
+
+- name: amarisoft-mme
+  type: 5gc
+  image: ${RETINA_REGISTRY_PREFIX}/amarisoft5gc-remote:${RETINA_VERSION}
+  taints: ["purpose=retina"]
+  requirements:
+    cpu:
+      requests: 4
+      limits: 4
+    memory:
+      requests: "4G"
+      limits: "4G"
+    ephemeral-storage:
+      requests: "6G"
+      limits: "6G"
+  resources:
+    - type: emulator
+      model: callbox
