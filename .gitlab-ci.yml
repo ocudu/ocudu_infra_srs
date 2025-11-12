@@ -1,3 +1,48 @@
+spec:
+  inputs:
+    # Build job configuration for web and api triggered pipelines
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+    infrastructure_tag:
+      type: string
+      default: amd64-avx2
+      description: "Tag to use for the build job."
+      options:
+        - amd64
+        - amd64-avx2
+        - amd64-avx2-avx512
+        - arm64
+    os:
+      type: string
+      default: ubuntu-24.04
+      description: "Operating system."
+    srs_target: # TODO Rename when ocudu ci-shared/build.yml is updated
+      type: string
+      default: ""
+      description: "Build target. Keep it empty to use the default target."
+    compiler:
+      type: string
+      default: gcc
+      description: "Compiler."
+    build_args:
+      type: string
+      default: ""
+      description: "Build arguments for the job. It will be passed to cmake"
+    uhd_version:
+      type: string
+      default: ""
+      description: "UHD version. Must be a version included in the specified OS builder image."
+    dpdk_version:
+      type: string
+      default: ""
+      description: "DPDK version. Must be a version included in the specified OS builder image."
+    test_mode:
+      type: string
+      default: none
+      description: "Run ctest selecting tests with labels matching regular expression. `none` wont run any test at all."
+---
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
@@ -46,6 +91,21 @@ default:
       - data_integrity_failure
 
 include:
+  - local: templates/build.yml
+    inputs:
+      ocudu_ref: $[[ inputs.ocudu_ref ]]
+      job: build
+      rules:
+        - if: $ON_WEB
+        - if: $ON_API
+      tag: $[[ inputs.infrastructure_tag ]]
+      os: $[[ inputs.os ]]
+      compiler: $[[ inputs.compiler ]]
+      target: $[[ inputs.srs_target ]]
+      build_args: $[[ inputs.build_args ]]
+      uhd_version: $[[ inputs.uhd_version ]]
+      dpdk_version: $[[ inputs.dpdk_version ]]
+      test_mode: $[[ inputs.test_mode ]]
   - local: infra/gitlab/.gitlab-ci.yml
 
 stages: [infra, build]
