@@ -42,6 +42,63 @@ spec:
       type: string
       default: none
       description: "Run ctest selecting tests with labels matching regular expression. `none` wont run any test at all."
+    # E2E job configuration for web and api triggered pipelines
+    e2e_tag:
+      type: string
+      default: new-retina-e2e-amd64
+      description: "Tag to use for the e2e job."
+      options:
+        - new-retina-e2e-amd64
+        - retina-e2e-amd64
+    group:
+      type: string
+      default: zmq
+      description: "Retina group to use."
+      options:
+        - rf
+        - viavi
+        - zmq
+    testbed:
+      type: string
+      default: none
+      description: "Retina Testbed configuration to use. Use `none`` to skip e2e tests."
+      options:
+        - android_b200
+        - android_callbox
+        - android_x300
+        - rf_b200
+        - s72
+        - test_mode_acc100
+        - test_mode
+        - viavi
+        - zmq_1cu2du
+        - zmq_2gnb
+        - zmq_cudu
+        - zmq_ntn
+        - zmq_ric
+        - zmq_srsue
+        - zmq
+        - none
+    markers:
+      type: string
+      default: ""
+      description: "Selected pytest marker (label / tag). Tests with that mark will run."
+    file_or_dir:
+      type: string
+      default: ""
+      description: "Test file or folder to select. Use relative path from e2e folder. Do not use quotes. Empty for all tests in the folder."
+    keywords:
+      type: string
+      default: ""
+      description: "Select tests by keyword expressions. Do not use quotes. This will run tests which contain names that match the given string expression (case-insensitive), which can include Python operators that use filenames, class names and function names as variables"
+    retina_args:
+      type: string
+      default: ""
+      description: "Extra retina args for the e2e suite to run"
+    launcher_args:
+      type: string
+      default: ""
+      description: "Extra launcher args"
 ---
 workflow:
   rules:
@@ -91,6 +148,7 @@ default:
       - data_integrity_failure
 
 include:
+  # Custom build and e2e jobs triggered from web and api
   - local: templates/build.yml
     inputs:
       ocudu_ref: $[[ inputs.ocudu_ref ]]
@@ -106,9 +164,52 @@ include:
       uhd_version: $[[ inputs.uhd_version ]]
       dpdk_version: $[[ inputs.dpdk_version ]]
       test_mode: $[[ inputs.test_mode ]]
+  - local: templates/build.yml
+    inputs:
+      ocudu_ref: $[[ inputs.ocudu_ref ]]
+      job: build trx driver
+      rules:
+        - if: '"$[[ inputs.testbed ]]" !~ /^zmq/'
+          when: never
+        - if: $ON_WEB
+        - if: $ON_API
+      tag: $[[ inputs.infrastructure_tag ]]
+      os: $[[ inputs.os ]]
+      compiler: gcc
+      target: trx_srsran_test
+      download_urls_pre_build: >
+        ${AMARISOFT_PACKAGE_REGISTRY}/${AMARISOFT_VERSION}/amarisoft.${AMARISOFT_VERSION}.tar.gz
+      build_args: >
+        -DENABLE_TRX_DRIVER=True -DTRX_DRIVER_DIR=${CI_PROJECT_DIR}/amarisoft.${AMARISOFT_VERSION}/trx_uhd-${AMARISOFT_VERSION}/
+        -DENABLE_EXPORT=True -DENABLE_UHD=False -DENABLE_ZEROMQ=True -DMARCH=x86-64-v3
+      test_mode: none
+      needs:
+        - job: load retina variables
+  - local: templates/e2e.yml
+    inputs:
+      job: e2e
+      stage: e2e
+      needs:
+        - job: build
+        - job: build trx driver
+          optional: true
+      rules:
+        - if: '"$[[ inputs.testbed ]]" == "none"'
+          when: never
+        - if: $ON_WEB
+        - if: $ON_API
+      tag: $[[ inputs.e2e_tag ]]
+      group: $[[ inputs.group ]]
+      testbed: $[[ inputs.testbed ]]
+      markers: $[[ inputs.markers ]]
+      file_or_dir: $[[ inputs.file_or_dir ]]
+      keywords: $[[ inputs.keywords ]]
+      retina_args: $[[ inputs.retina_args ]]
+      launcher_args: $[[ inputs.launcher_args ]]
+  # CI/CD for each item in the repository
   - local: infra/gitlab/.gitlab-ci.yml
 
-stages: [static, infra, build]
+stages: [static, infra, build, e2e]
 
 yaml lint:
   stage: static

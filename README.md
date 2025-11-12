@@ -16,3 +16,5 @@ This repository have dependencies on third-party hardware and software, such as 
 
 - [GitLab Project Configuration](infra/gitlab/README.md)
 - [Gitlab CI Components](templates/README.md)
+- [OCUDU E2E Testing](e2e/README.md)
+  - [Setup manual pipelines in your repository](e2e/README.md#manual-pipeline)
