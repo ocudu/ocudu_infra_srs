@@ -1,6 +1,10 @@
 spec:
   inputs:
     # Build job configuration for web and api triggered pipelines
+    ocudu_path:
+      type: string
+      default: softwareradiosystems/srsgnb
+      description: "OCUDU repository path."
     ocudu_ref:
       type: string
       default: dev
@@ -151,6 +155,7 @@ include:
   # Custom build and e2e jobs triggered from web and api
   - local: templates/build.yml
     inputs:
+      ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
       job: build
       rules:
@@ -166,6 +171,7 @@ include:
       test_mode: $[[ inputs.test_mode ]]
   - local: templates/build.yml
     inputs:
+      ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
       job: build trx driver
       rules:
