@@ -45,7 +45,7 @@ lfs_enabled                 = false
 # Feature Access Levels
 # =============================================================================
 builds_access_level                  = "enabled"
-container_registry_access_level      = "enabled"
+container_registry_access_level      = "private"
 forking_access_level                 = "enabled"
 merge_requests_access_level          = "enabled"
 packages_enabled                     = true
