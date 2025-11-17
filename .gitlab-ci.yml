@@ -108,4 +108,18 @@ include:
       test_mode: $[[ inputs.test_mode ]]
   - local: infra/gitlab/.gitlab-ci.yml
 
-stages: [infra, build]
+stages: [static, infra, build]
+
+yaml lint:
+  stage: static
+  image: python:3.12-alpine
+  before_script:
+    - pip install "yamllint<2"
+  script:
+    - yamllint -f colored -c .yamllint .
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - "**/*.yml"
+          - "**/*.yaml"
