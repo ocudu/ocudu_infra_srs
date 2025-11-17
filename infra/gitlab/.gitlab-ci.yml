@@ -21,8 +21,6 @@ include:
         - if: $ON_MR
       validate_rules:
         - if: $ON_MR
-      plan_rules:
-        - if: $ON_MR
       apply_rules:
         - if: $ON_DEFAULT_BRANCH
         - if: $ON_MR
