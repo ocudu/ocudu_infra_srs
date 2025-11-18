@@ -208,6 +208,7 @@ include:
       launcher_args: $[[ inputs.launcher_args ]]
   # CI/CD for each item in the repository
   - local: infra/gitlab/.gitlab-ci.yml
+  - local: e2e/.gitlab-ci.yml
 
 stages: [static, infra, build, e2e]
 

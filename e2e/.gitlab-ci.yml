@@ -1,0 +1,46 @@
+# E2E CI/CD Pipeline
+
+## MR
+load retina env:
+  extends: load retina variables
+  rules:
+    - &mr
+      if: $ON_MR
+      changes:
+        - e2e/**/*
+
+e2e tests tox:
+  image: python:${PYTHON_VERSION}-alpine
+  stage: static
+  rules:
+    - *mr
+  variables:
+    PY_DIR: e2e
+  before_script:
+    - apk add build-base
+  script:
+    - pip install 'tox<5'
+    - cd $PY_DIR
+    - tox -r
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+e2e request and config validation:
+  stage: static
+  image:
+    name: ${RETINA_REGISTRY_PREFIX}/launcher:${RETINA_VERSION}
+    entrypoint: ["/bin/sh", "-c"]
+  rules:
+    - *mr
+  script:
+    - |
+      cd ${CI_PROJECT_DIR}/e2e/retina_requests
+      file_list=$(ls *.yml)
+      for f in $file_list; do
+          retina-request-checker --input $f
+      done
+      python3 ${CI_PROJECT_DIR}/e2e/tests/viavi/validate_test_declaration.py
+  needs:
+    - job: load retina env
+      artifacts: true
