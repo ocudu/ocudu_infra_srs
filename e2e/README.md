@@ -6,6 +6,11 @@ To run them, you need to install and configure [Retina framework](../retina/READ
 
 ## Gitlab Pipelines
 
+### Scheduled pipelines
+
+- Nightlies: Scheduled pipelines that run every night.
+  - Emulated: Run E2E Tests using emulators like srsue (ZMQ), Amarisoft UE (over ZMQ and s72 emulation) or Viavi (RU Emulation).
+
 ### Manual Pipeline
 
 We have a pipeline designed for triggered executions from the GitLab API or web interface. This pipeline orchestrates two main jobs:

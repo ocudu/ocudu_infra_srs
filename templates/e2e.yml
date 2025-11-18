@@ -41,8 +41,8 @@ spec:
         - android_x300
         - rf_b200
         - s72
-        - test_mode_acc100
-        - test_mode
+        - test_mode_ru
+        - test_mode_ue
         - viavi
         - zmq_1cu2du
         - zmq_2gnb

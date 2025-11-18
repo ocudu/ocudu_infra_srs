@@ -72,8 +72,8 @@ spec:
         - android_x300
         - rf_b200
         - s72
-        - test_mode_acc100
-        - test_mode
+        - test_mode_ru
+        - test_mode_ue
         - viavi
         - zmq_1cu2du
         - zmq_2gnb
@@ -216,7 +216,16 @@ include:
   - local: infra/gitlab/.gitlab-ci.yml
   - local: e2e/.gitlab-ci.yml
 
-stages: [static, infra, build, e2e]
+stages:
+  - static
+  - infra
+  - build
+  - e2e
+  - test mode
+  - srsue
+  - amarisoft zmq
+  - amarisoft s72
+  - viavi
 
 yaml lint:
   stage: static

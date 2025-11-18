@@ -44,3 +44,486 @@ e2e request and config validation:
   needs:
     - job: load retina env
       artifacts: true
+
+## Build jobs for Scheduled Pipelines
+load retina scheduled:
+  extends: load retina variables
+  stage: build # To simplify number of stages in scheduled pipelines
+  rules:
+    - &emulated_nightly
+      if: $CI_DESCRIPTION =~ /Emulated Nightly/
+  retry: 2
+
+zmq driver:
+  extends: build trx driver
+  rules:
+    - *emulated_nightly
+  needs:
+    - load retina scheduled
+  retry: 2
+
+release with deb info:
+  extends: build
+  rules:
+    - *emulated_nightly
+  variables:
+    OS: ubuntu-24.04
+    SRS_TARGET: srscu srsdu gnb
+    COMPILER: gcc
+    BUILD_ARGS: >
+      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMARCH=x86-64-v3
+      -DASSERT_LEVEL=PARANOID
+    TEST_MODE: none
+    INFRASTRUCTURE_TAG: amd64-avx2
+  retry: 2
+
+debug:
+  extends: build
+  rules:
+    - *emulated_nightly
+  variables:
+    OS: ubuntu-24.04
+    SRS_TARGET: gnb
+    COMPILER: gcc
+    BUILD_ARGS: >
+      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
+      -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
+    TEST_MODE: none
+    INFRASTRUCTURE_TAG: amd64-avx2
+  retry: 2
+
+asan:
+  extends: build
+  rules:
+    - *emulated_nightly
+  variables:
+    OS: ubuntu-24.04
+    SRS_TARGET: gnb
+    COMPILER: clang
+    BUILD_ARGS: >
+      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
+      -DENABLE_ASAN=True -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
+    TEST_MODE: none
+    INFRASTRUCTURE_TAG: amd64-avx2
+  retry: 2
+
+tsan:
+  extends: build
+  rules:
+    - *emulated_nightly
+  variables:
+    OS: ubuntu-24.04
+    SRS_TARGET: gnb
+    COMPILER: clang
+    BUILD_ARGS: >
+      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
+      -DENABLE_TSAN=True -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
+    TEST_MODE: none
+    INFRASTRUCTURE_TAG: amd64-avx2
+  retry: 2
+
+dpdk rtsan avx2:
+  extends: build
+  rules:
+    - *emulated_nightly
+  variables:
+    OS: ubuntu-24.04-rtsan
+    SRS_TARGET: gnb_split_7_2
+    COMPILER: clang
+    DPDK_VERSION: 24.11.2_avx2
+    BUILD_ARGS: >
+      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=True -DMARCH=x86-64-v3
+      -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
+      -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
+    TEST_MODE: none
+    INFRASTRUCTURE_TAG: amd64-avx2
+  retry: 2
+
+dpdk rtsan avx512:
+  extends: build
+  rules:
+    - *emulated_nightly
+  variables:
+    OS: ubuntu-24.04-rtsan
+    SRS_TARGET: gnb_split_7_2 gnb
+    COMPILER: clang
+    DPDK_VERSION: 24.11.2_avx512
+    BUILD_ARGS: >
+      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=True -DMARCH=x86-64-v4
+      -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
+      -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
+    TEST_MODE: none
+    INFRASTRUCTURE_TAG: amd64-avx2-avx512
+  retry: 2
+
+## Emulated Nightly
+### Test mode
+.test mode ue:
+  extends: e2e
+  stage: test mode
+  rules:
+    - *emulated_nightly
+  variables:
+    GROUP: zmq
+    E2E_TAG: new-retina-e2e-amd64
+    TESTBED: test_mode_ue
+    MARKERS: test_mode
+    KEYWORDS: test_ue
+    RETINA_ARGS: ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
+
+test ue:
+  extends: .test mode ue
+  needs:
+    - load retina scheduled
+    - release with deb info
+
+test ue asan:
+  extends: .test mode ue
+  needs:
+    - load retina scheduled
+    - asan
+
+test ue tsan:
+  extends: .test mode ue
+  needs:
+    - load retina scheduled
+    - tsan
+
+.test mode ru:
+  extends: e2e
+  stage: test mode
+  rules:
+    - *emulated_nightly
+  variables:
+    GROUP: viavi
+    E2E_TAG: new-retina-e2e-amd64
+    TESTBED: test_mode_ru
+    RETINA_ARGS: ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
+
+ru dummy:
+  extends: .test mode ru
+  variables:
+    MARKERS: test_mode
+    KEYWORDS: test_ru
+  needs:
+    - load retina scheduled
+    - dpdk rtsan avx512
+
+ru dummy asan:
+  extends: .test mode ru
+  variables:
+    MARKERS: test_mode_not_crash
+    KEYWORDS: "test_ru"
+  needs:
+    - load retina scheduled
+    - asan
+
+ru dummy tsan:
+  extends: .test mode ru
+  variables:
+    MARKERS: test_mode_not_crash
+    KEYWORDS: "test_ru"
+  needs:
+    - load retina scheduled
+    - tsan
+
+ru dummy test many ues:
+  extends: .test mode ru
+  variables:
+    MARKERS: test_mode_many_ues
+    KEYWORDS: test_mode_many_ues
+  needs:
+    - load retina scheduled
+    - dpdk rtsan avx512
+
+### SRSUE
+.srsue:
+  extends: e2e
+  stage: srsue
+  rules:
+    - *emulated_nightly
+  variables:
+    GROUP: zmq
+    E2E_TAG: new-retina-e2e-amd64
+    RETINA_ARGS: ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
+    LAUNCHER_ARGS: -n 2
+  needs:
+    - load retina scheduled
+    - release with deb info
+
+srsue basic:
+  extends: .srsue
+  variables:
+    TESTBED: zmq_srsue
+    MARKERS: zmq_srsue
+
+ric:
+  extends: .srsue
+  variables:
+    TESTBED: zmq_ric
+    MARKERS: zmq_ric
+
+### Amarisoft ZMQ
+.amarisoft_zmq:
+  extends: e2e
+  stage: amarisoft zmq
+  rules:
+    - *emulated_nightly
+  variables:
+    GROUP: zmq
+    E2E_TAG: new-retina-e2e-amd64
+    TESTBED: zmq
+    LAUNCHER_ARGS: -n 2
+    RETINA_ARGS: >
+      gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.enable_integrity_protection=True
+      ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
+  needs:
+    - load retina scheduled
+    - zmq driver
+    - release with deb info
+
+smoke zmq:
+  extends: .amarisoft_zmq
+  variables:
+    MARKERS: smoke
+    LAUNCHER_ARGS: -x
+    RETINA_ARGS: >
+      ue.all.pdcch_decode_opt_threshold=0.1
+      gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.enable_integrity_protection=True
+      ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
+
+gnb 1UE:
+  extends: .amarisoft_zmq
+  variables:
+    MARKERS: zmq_single_ue
+
+gnb 4UE:
+  extends: .amarisoft_zmq
+  variables:
+    FILE_OR_DIR: tests/slicing.py
+
+gnb 4UE asan:
+  extends: .amarisoft_zmq
+  variables:
+    MARKERS: smoke
+    KEYWORDS: iperf
+  needs:
+    - load retina scheduled
+    - zmq driver
+    - asan
+
+gnb 4UE tsan:
+  extends: .amarisoft_zmq
+  variables:
+    MARKERS: smoke
+    KEYWORDS: iperf
+  needs:
+    - load retina scheduled
+    - zmq driver
+    - tsan
+
+gnb 4UE memcheck:
+  extends: .amarisoft_zmq
+  variables:
+    MARKERS: zmq_valgrind
+    RETINA_ARGS: >
+      gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.rlc_enable=True gnb.all.enable_integrity_protection=True
+      ue.all.log_level=info gnb.all.log_level=warning 5gc.all.log_level=info
+  needs:
+    - load retina scheduled
+    - zmq driver
+    - debug
+
+gnb 8UE:
+  extends: .amarisoft_zmq
+  variables:
+    MARKERS: zmq and not smoke
+  timeout: 4h
+  parallel:
+    matrix:
+      - FILE_OR_DIR: tests/attach_detach.py
+      - FILE_OR_DIR: tests/reestablishment.py
+        KEYWORDS: sequentially
+      - FILE_OR_DIR: tests/reestablishment.py
+        KEYWORDS: "not sequentially"
+      - FILE_OR_DIR: tests/handover.py
+        KEYWORDS: sequentially
+
+gnb 32UE:
+  extends: .amarisoft_zmq
+  variables:
+    MARKERS: "zmq and not smoke"
+  parallel:
+    matrix:
+      - FILE_OR_DIR: tests/iperf.py
+        KEYWORDS:
+          [
+            "udp and band:3",
+            "udp and not band:3",
+            "tcp and band:3",
+            "tcp and not band:3 and not precoding",
+            "tcp and not band:3 and precoding",
+          ]
+      - FILE_OR_DIR: tests/ping.py
+        KEYWORDS: "32"
+      - FILE_OR_DIR: tests/handover.py
+        KEYWORDS: "not sequentially"
+      - MARKERS: zmq_2x2_mimo
+
+amari 32UE [tests/pucch.py]:
+  extends: .amarisoft_zmq
+  variables:
+    MARKERS: "zmq and not smoke"
+    FILE_OR_DIR: tests/pucch.py
+    RETINA_ARGS: >
+      ue.all.pdcch_decode_opt_threshold=0.1
+      gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.enable_integrity_protection=True
+      ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
+
+gnb 64UE:
+  extends: .amarisoft_zmq
+  variables:
+    FILE_OR_DIR: tests/iperf.py
+    KEYWORDS: "64"
+
+cudu 8UE:
+  extends: .amarisoft_zmq
+  timeout: 2h
+  variables:
+    TESTBED: zmq_cudu
+    MARKERS: "zmq and not smoke"
+    FILE_OR_DIR: tests/reestablishment.py
+    KEYWORDS: sequentially
+
+cudu 32UE:
+  extends: .amarisoft_zmq
+  timeout: 2h
+  variables:
+    TESTBED: zmq_cudu
+    FILE_OR_DIR: tests/iperf.py
+    KEYWORDS: "tcp and not band:3 and bandwidth:50 and not precoding"
+    MARKERS: "zmq and not smoke"
+
+cudu 64UE:
+  extends: .amarisoft_zmq
+  timeout: 3h
+  variables:
+    TESTBED: zmq_cudu
+    FILE_OR_DIR: tests/ping.py
+    KEYWORDS: "64"
+    MARKERS: "zmq and not smoke"
+
+1cu2du 8UE:
+  extends: .amarisoft_zmq
+  timeout: 2h
+  variables:
+    TESTBED: zmq_1cu2du
+    MARKERS: "zmq and not smoke"
+    FILE_OR_DIR: tests/inter_du_handover.py
+    KEYWORDS: sequentially
+
+2gnb:
+  extends: .amarisoft_zmq
+  timeout: 2h
+  variables:
+    TESTBED: zmq_2gnb
+    MARKERS: "zmq and not smoke"
+    FILE_OR_DIR: tests/inter_cu_handover.py
+
+### Amarisoft s72
+.amarisoft s72:
+  extends: e2e
+  stage: amarisoft s72
+  rules:
+    - *emulated_nightly
+  variables:
+    GROUP: rf
+    E2E_TAG: retina-e2e-amd64
+    TESTBED: s72
+    MARKERS: s72
+    RETINA_ARGS: >
+      gnb.all.pcap=True gnb.all.rlc_enable=False gnb.all.enable_integrity_protection
+      ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
+  needs:
+    - load retina scheduled
+    - dpdk rtsan avx2
+
+gnb 1UE s72:
+  extends: .amarisoft s72
+  variables:
+    FILE_OR_DIR: tests/iperf.py
+
+gnb 2UE s72:
+  extends: .amarisoft s72
+  variables:
+    MARKERS: s72
+    KEYWORDS: sequentially
+
+### Viavi
+.viavi:
+  extends: e2e
+  stage: viavi
+  rules:
+    - *emulated_nightly
+  timeout: 8h
+  variables:
+    E2E_TAG: new-retina-e2e-amd64
+    GROUP: viavi
+    TESTBED: viavi
+    MARKERS: viavi
+    RETINA_ARGS: >
+      gnb.all.pcap=True gnb.all.rlc_enable=True gnb.all.rlc_rb_type=srb
+      ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
+  needs:
+    - load retina scheduled
+    - dpdk rtsan avx512
+
+1UE:
+  extends: .viavi
+  variables:
+    KEYWORDS: "1UE and ideal and not MIMO"
+
+1UE MIMO:
+  extends: .viavi
+  variables:
+    KEYWORDS: "1UE and ideal and MIMO"
+
+1UE birth-death:
+  extends: .viavi
+  variables:
+    KEYWORDS: "1UE and birth-death"
+
+1UE fading:
+  extends: .viavi
+  variables:
+    KEYWORDS: "1UE and fading and not MIMO"
+
+1UE fading MIMO:
+  extends: .viavi
+  variables:
+    KEYWORDS: "1UE and fading and MIMO"
+
+32UE ping:
+  extends: .viavi
+  variables:
+    KEYWORDS: "32UE and ping"
+
+32UE UDP:
+  extends: .viavi
+  variables:
+    KEYWORDS: "32UE and ideal and not long and not tdd and not UM and udp"
+
+32UE TCP:
+  extends: .viavi
+  variables:
+    KEYWORDS: "32UE and ideal and not long and not tdd and not UM and tcp"
+
+32UE fading:
+  extends: .viavi
+  variables:
+    KEYWORDS: "32UE and fading"
+
+32UE tdd:
+  extends: .viavi
+  variables:
+    KEYWORDS: "32UE and tdd"
