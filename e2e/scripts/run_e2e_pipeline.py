@@ -6,14 +6,14 @@ It allows the user to specify all the parameters.
 
 
 import argparse
-from dataclasses import dataclass
 import json
 import os
-from pathlib import Path
 import re
 import sys
 import time
-from typing import Any, Dict, Optional, Sequence, Tuple
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Callable, Dict, Optional, Sequence
 
 # Setup those environment variables to override default ocudu_infra repository
 GITLAB_URL = os.getenv("GITLAB_URL", "https://gitlab.com")
@@ -43,7 +43,7 @@ VARIABLE_REGEX = re.compile(
 @dataclass
 class _GitlabInput:
     description: str = ""
-    type: callable = str
+    type: Callable = str
     default: Any = None
     options: Optional[list] = None
 
@@ -78,14 +78,16 @@ def _parse_args(gitlab_input_dict: Dict[str, _GitlabInput]) -> argparse.Namespac
         "--token",
         required=True,
         type=str,
-        help="Gitlab private token. See https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#create-a-personal-access-token",
+        help="Gitlab private token. "
+        "See https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#create-a-personal-access-token",
     )
     parser.add_argument(
         "--replicate",
         required=False,
         type=str,
         default="",
-        help="E2E or Build Job to replicate. It can be a job name or id. Empty for no replicate (default: `%(default)s`)'",
+        help="E2E or Build Job to replicate. "
+        "It can be a job name or id. Empty for no replicate (default: `%(default)s`)'",
     )
     parser.add_argument(
         "--timeout", required=False, type=int, default=300, help="Search for job timeout (default: %(default)s)"
@@ -104,7 +106,7 @@ def _parse_args(gitlab_input_dict: Dict[str, _GitlabInput]) -> argparse.Namespac
             arg_kwargs["type"] = str
         if input_item.options:
             arg_kwargs["choices"] = input_item.options
-        parser.add_argument(arg_name, **arg_kwargs)
+        parser.add_argument(arg_name, **arg_kwargs)  # type: ignore
 
     parser.add_argument("--yes", action="store_true", help="Disable interactivity (default: false)")
     parser.add_argument("--dryrun", action="store_true", help="Skip pipeline creation (default: false)")
@@ -127,7 +129,8 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
             except gitlab.exceptions.GitlabGetError:
                 continue
         print(
-            f"⛔ Could not found job with id {job_id} in projects {' and '.join([project.web_url for project in project_array])} ⛔"
+            f"⛔ Could not found job with id {job_id} in projects "
+            f"{' and '.join([project.web_url for project in project_array])} ⛔"
         )
         sys.exit(1)
     except ValueError:
@@ -143,7 +146,8 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
                         return variable_dict
                     if time.time() >= time_to_reach:
                         print(
-                            "⛔ Timeout reached looking for the job. Please review job's name or increase this timeout by setting --timeout ⛔"
+                            "⛔ Timeout reached looking for the job. "
+                            "Please review job's name or increase this timeout by setting --timeout ⛔"
                         )
                         sys.exit(1)
 
@@ -172,7 +176,8 @@ def _extract_variables_from_job(project: Project, job_id: int) -> Dict[str, str]
 
 def _require_user_input(gitlab_input_dict: Dict[str, _GitlabInput]):
     print(
-        "📝 Fill the inputs. Press enter to keep the value between brackets. You can skip this confirmation adding --yes flag to the call."
+        "📝 Fill the inputs. Press enter to keep the value between brackets. "
+        "You can skip this confirmation adding --yes flag to the call."
     )
     for input_item_name, input_item in gitlab_input_dict.items():
         while True:

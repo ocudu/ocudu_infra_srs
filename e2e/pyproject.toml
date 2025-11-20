@@ -86,8 +86,8 @@ deps =
   black
   isort
 commands =
-  black --check --diff --color tests
-  isort --check tests
+  black --check --diff --color tests scripts
+  isort --check tests scripts
 
 [testenv:format_apply]
 skip_install = true
@@ -95,20 +95,20 @@ deps =
   black
   isort
 commands =
-  black tests
-  isort tests
+  black tests scripts
+  isort tests scripts
 
 [testenv:lint]
 skip_install = true
 deps =
   pylint
 commands =
-  pylint tests
+  pylint tests scripts
 
 [testenv:type]
 skip_install = true
 deps =
   mypy
 commands =
-  mypy tests
+  mypy tests scripts
 """
