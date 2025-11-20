@@ -217,7 +217,7 @@ def _create_pipeline(project: Project, branch: str, gitlab_input_dict: Dict[str,
 
 
 def _main():
-    gitlab_input_dict = _parse_inputs_from_gitlab_ci(Path(__file__).parent.parent / ".gitlab-ci.yml")
+    gitlab_input_dict = _parse_inputs_from_gitlab_ci(Path(__file__).parent.parent.parent / ".gitlab-ci.yml")
     args = _parse_args(gitlab_input_dict)
     print("")
 
