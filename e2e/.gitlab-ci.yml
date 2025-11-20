@@ -56,14 +56,16 @@ load retina scheduled:
 
 zmq driver:
   extends: build trx driver
+  retry: 2
   rules:
     - *emulated_nightly
   needs:
     - load retina scheduled
-  retry: 2
 
 release with deb info:
   extends: build
+  retry: 2
+  cache: []
   rules:
     - *emulated_nightly
   variables:
@@ -75,10 +77,11 @@ release with deb info:
       -DASSERT_LEVEL=PARANOID
     TEST_MODE: none
     INFRASTRUCTURE_TAG: amd64-avx2
-  retry: 2
 
 debug:
   extends: build
+  retry: 2
+  cache: []
   rules:
     - *emulated_nightly
   variables:
@@ -90,10 +93,11 @@ debug:
       -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
     TEST_MODE: none
     INFRASTRUCTURE_TAG: amd64-avx2
-  retry: 2
 
 asan:
   extends: build
+  retry: 2
+  cache: []
   rules:
     - *emulated_nightly
   variables:
@@ -105,10 +109,11 @@ asan:
       -DENABLE_ASAN=True -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
     TEST_MODE: none
     INFRASTRUCTURE_TAG: amd64-avx2
-  retry: 2
 
 tsan:
   extends: build
+  retry: 2
+  cache: []
   rules:
     - *emulated_nightly
   variables:
@@ -120,10 +125,11 @@ tsan:
       -DENABLE_TSAN=True -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
     TEST_MODE: none
     INFRASTRUCTURE_TAG: amd64-avx2
-  retry: 2
 
 dpdk rtsan avx2:
   extends: build
+  retry: 2
+  cache: []
   rules:
     - *emulated_nightly
   variables:
@@ -137,10 +143,11 @@ dpdk rtsan avx2:
       -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
     TEST_MODE: none
     INFRASTRUCTURE_TAG: amd64-avx2
-  retry: 2
 
 dpdk rtsan avx512:
   extends: build
+  retry: 2
+  cache: []
   rules:
     - *emulated_nightly
   variables:
@@ -154,7 +161,6 @@ dpdk rtsan avx512:
       -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
     TEST_MODE: none
     INFRASTRUCTURE_TAG: amd64-avx2-avx512
-  retry: 2
 
 ## Emulated Nightly
 ### Test mode
