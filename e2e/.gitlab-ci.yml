@@ -51,11 +51,11 @@ load retina scheduled:
   stage: build # To simplify number of stages in scheduled pipelines
   rules:
     - &emulated_nightly
-      if: $CI_DESCRIPTION =~ /Emulated Nightly/
+      if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - &rf_nightly
-      if: $CI_DESCRIPTION =~ /RF Nightly/
+      if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
     - &emulated_weekly
-      if: $CI_DESCRIPTION =~ /Emulated Weekly/
+      if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
   retry: 2
 
 zmq driver:

@@ -130,7 +130,7 @@ schedules = {
     timezone    = "Europe/Madrid"
     ref         = "refs/heads/main"
     active      = false
-    variables   = { CI_DESCRIPTION = "Emulated Nightly" }
+    variables   = {}
   }
   rf_nightly = {
     description = "RF Nightly"
@@ -138,7 +138,7 @@ schedules = {
     timezone    = "Europe/Madrid"
     ref         = "refs/heads/main"
     active      = false
-    variables   = { CI_DESCRIPTION = "RF Nightly" }
+    variables   = {}
   }
   weekly = {
     description = "Emulated Weekly"
@@ -146,6 +146,6 @@ schedules = {
     timezone    = "Europe/Madrid"
     ref         = "refs/heads/main"
     active      = false
-    variables   = { CI_DESCRIPTION = "Emulated Weekly" }
+    variables   = {}
   }
 }
