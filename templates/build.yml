@@ -158,20 +158,17 @@ include:
         launch_tests_srsran
       fi
   after_script: # Save sources, ctest output and built apps
-    # Clean LFS files, git and cache
+    # Clean LFS files
     - |
       cd ${OCUDU_DIR}
       while read -r line; do
         git rm "$line" >/dev/null
       done < <(git lfs ls-files | sed -r 's/^.{13}//')
-      rm -Rf ${OCUDU_DIR}/.git
-      rm -Rf ${OCUDU_DIR}/plugins/enterprise/.git
-      rm -Rf ${OCUDU_DIR}/ccache
     # Save Testing output (ctest)
     - |
       cd ${OCUDU_DIR}
       mkdir -p ${CI_PROJECT_DIR}/build/Testing
-      mv ${OCUDU_DIR}/build/Testing ${CI_PROJECT_DIR}/build/Testing || true
+      mv ${OCUDU_DIR}/build/Testing ${CI_PROJECT_DIR}/build/Testing || true >/dev/null 2>&1
     # Save .so
     - |
       cd ${OCUDU_DIR}/build/
@@ -185,10 +182,14 @@ include:
       cd ${OCUDU_DIR}
       rm -Rf ${OCUDU_DIR}/build
       cp -r ${CI_PROJECT_DIR}/build ${OCUDU_DIR}/build
-      echo "OCUDU sources+build size is" $(du -hs .)
+      echo "OCUDU build size is" $(du -hs build | cut -f1)
   cache: $[[ inputs.cache ]]
   artifacts:
     paths:
       - ocudu
+    exclude:
+      - ocudu/.git/**/*
+      - ocudu/plugins/enterprise/.git/**/*
+      - ocudu/ccache/**/*
     expire_in: 3 days
   needs: $[[ inputs.needs ]]
