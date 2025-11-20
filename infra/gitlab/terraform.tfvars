@@ -141,11 +141,11 @@ schedules = {
     variables   = { CI_DESCRIPTION = "RF Nightly" }
   }
   weekly = {
-    description = "Weekly"
+    description = "Emulated Weekly"
     cron        = "00 10 * * 6"
     timezone    = "Europe/Madrid"
     ref         = "refs/heads/main"
     active      = false
-    variables   = { CI_DESCRIPTION = "Weekly" }
+    variables   = { CI_DESCRIPTION = "Emulated Weekly" }
   }
 }

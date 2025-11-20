@@ -54,6 +54,8 @@ load retina scheduled:
       if: $CI_DESCRIPTION =~ /Emulated Nightly/
     - &rf_nightly
       if: $CI_DESCRIPTION =~ /RF Nightly/
+    - &emulated_weekly
+      if: $CI_DESCRIPTION =~ /Emulated Weekly/
   retry: 2
 
 zmq driver:
@@ -154,6 +156,7 @@ dpdk rtsan avx512:
   cache: []
   rules:
     - *emulated_nightly
+    - *emulated_weekly
   variables:
     OS: ubuntu-24.04-rtsan
     SRS_TARGET: gnb_split_7_2 gnb
@@ -606,3 +609,26 @@ xiaomi x300 ims:
     TESTBED: android_callbox
     MARKERS: android
     KEYWORDS: ims
+
+## Emulated Weekly
+### Viavi
+.viavi_weekly:
+  extends: .viavi
+  rules:
+    - *emulated_weekly
+
+32UE um:
+  extends: .viavi_weekly
+  variables:
+    KEYWORDS: "ideal and UM"
+
+32UE 3h:
+  extends: .viavi_weekly
+  variables:
+    KEYWORDS: 3h
+
+32UE 24h:
+  extends: .viavi_weekly
+  timeout: 26 hours
+  variables:
+    KEYWORDS: 24h
