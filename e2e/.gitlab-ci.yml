@@ -444,7 +444,7 @@ cudu 64UE:
     - *emulated_nightly
   variables:
     GROUP: rf
-    E2E_TAG: retina-e2e-amd64
+    E2E_TAG: new-retina-e2e-amd64
     TESTBED: s72
     MARKERS: s72
     RETINA_ARGS: >
@@ -457,13 +457,12 @@ cudu 64UE:
 gnb 1UE s72:
   extends: .amarisoft s72
   variables:
-    FILE_OR_DIR: tests/iperf.py
+    KEYWORDS: not handover
 
 gnb 2UE s72:
   extends: .amarisoft s72
   variables:
-    MARKERS: s72
-    KEYWORDS: sequentially
+    KEYWORDS: handover
 
 ### Viavi
 .viavi:
