@@ -10,6 +10,7 @@ To run them, you need to install and configure [Retina framework](../retina/READ
 
 - Nightlies: Scheduled pipelines that run every night.
   - Emulated: Run E2E Tests using emulators like srsue (ZMQ), Amarisoft UE (over ZMQ and s72 emulation) or Viavi (RU Emulation).
+  - RF: Run E2E Tests using SDRs, COTS Phones, etc.
 
 ### Manual Pipeline
 

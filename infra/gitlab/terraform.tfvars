@@ -126,11 +126,19 @@ protected_tags = {
 schedules = {
   nightly = {
     description = "Emulated Nightly"
-    cron        = "00 21 * * 1-5"
+    cron        = "00 21 * * 0-5"
     timezone    = "Europe/Madrid"
     ref         = "refs/heads/main"
     active      = false
     variables   = { CI_DESCRIPTION = "Emulated Nightly" }
+  }
+  rf_nightly = {
+    description = "RF Nightly"
+    cron        = "00 22 * * 0-5"
+    timezone    = "Europe/Madrid"
+    ref         = "refs/heads/main"
+    active      = false
+    variables   = { CI_DESCRIPTION = "RF Nightly" }
   }
   weekly = {
     description = "Weekly"

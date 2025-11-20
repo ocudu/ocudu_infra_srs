@@ -242,6 +242,8 @@ stages:
   - amarisoft zmq
   - amarisoft s72
   - viavi
+  - amarisoft sdr
+  - android
 
 yaml lint:
   stage: static

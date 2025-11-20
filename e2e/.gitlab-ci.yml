@@ -52,6 +52,8 @@ load retina scheduled:
   rules:
     - &emulated_nightly
       if: $CI_DESCRIPTION =~ /Emulated Nightly/
+    - &rf_nightly
+      if: $CI_DESCRIPTION =~ /RF Nightly/
   retry: 2
 
 zmq driver:
@@ -68,6 +70,7 @@ release with deb info:
   cache: []
   rules:
     - *emulated_nightly
+    - *rf_nightly
   variables:
     OS: ubuntu-24.04
     SRS_TARGET: srscu srsdu gnb
@@ -100,6 +103,7 @@ asan:
   cache: []
   rules:
     - *emulated_nightly
+    - *rf_nightly
   variables:
     OS: ubuntu-24.04
     SRS_TARGET: gnb
@@ -532,3 +536,73 @@ gnb 2UE s72:
   extends: .viavi
   variables:
     KEYWORDS: "32UE and tdd"
+
+## RF Nightly
+### SDR
+.amarisoft sdr:
+  extends: e2e
+  stage: amarisoft sdr
+  rules:
+    - *rf_nightly
+  variables:
+    E2E_TAG: retina-e2e-amd64
+    GROUP: rf
+    TESTBED: rf_b200
+    RETINA_ARGS: >
+      ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
+  needs:
+    - load retina scheduled
+    - asan
+
+b200 asan:
+  extends: .amarisoft sdr
+  variables:
+    MARKERS: rf_not_crash
+
+validate b200 config:
+  extends: .amarisoft sdr
+  variables:
+    MARKERS: rf_b200
+  needs:
+    - load retina scheduled
+
+### Android
+.android:
+  extends: e2e
+  stage: android
+  rules:
+    - *rf_nightly
+  variables:
+    E2E_TAG: retina-e2e-amd64
+    GROUP: rf
+    MARKERS: android
+    RETINA_ARGS: >
+      ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
+  needs:
+    - load retina scheduled
+    - release with deb info
+
+xiaomi b200:
+  extends: .android
+  variables:
+    TESTBED: android_b200
+    KEYWORDS: "not ims"
+
+xiaomi b200 drx:
+  extends: .android
+  variables:
+    TESTBED: android_b200
+    MARKERS: android_drx
+
+xiaomi x300:
+  extends: .android
+  variables:
+    TESTBED: android_x300
+    MARKERS: android_hp
+
+xiaomi x300 ims:
+  extends: .android
+  variables:
+    TESTBED: android_callbox
+    MARKERS: android
+    KEYWORDS: ims
