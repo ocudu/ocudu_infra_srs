@@ -232,7 +232,7 @@ def main():
         '    $ run_viavi_pipeline.py --testid "1UE ideal UDP bidirectional" ... \n'
         " B) Use --campaign and --test to select any test defined in Viavi.\n"
         '    $ run_viavi_pipeline.py --test "32UE ideal UDP attach-detach with traffic conservative"'
-        ' [--campaign "C:\\ci\\CI 4x4 ORAN-FH-complete.xml"] ...',
+        ' [--campaign "C:/ci/CI 4x4 ORAN-FH-complete.xml"] ...',
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
