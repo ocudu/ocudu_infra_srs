@@ -33,6 +33,7 @@
       model: b200
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/gnb
+    - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
     - local_path: ${OCUDU_REL_BUILD_PATH}/apps/gnb/gnb
       remote_path: /usr/local/bin/gnb

@@ -43,6 +43,7 @@
   environment:
     - RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
     - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/gnb
+    - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
     - local_path: ${OCUDU_REL_BUILD_PATH}/apps/gnb/gnb
       remote_path: /usr/local/bin/gnb
@@ -68,6 +69,7 @@
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/gnb
     - RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
+    - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
     - local_path: ${OCUDU_REL_BUILD_PATH}/apps/gnb/gnb
       remote_path: /usr/local/bin/gnb

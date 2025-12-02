@@ -42,6 +42,7 @@
     - type: zmq
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/cu:${OCUDU_ABS_BUILD_PATH}/apps/du
+    - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
     - local_path: ${OCUDU_REL_BUILD_PATH}/apps/cu/srscu
       remote_path: /usr/local/bin/srscu
