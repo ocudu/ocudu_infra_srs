@@ -50,6 +50,8 @@ load retina scheduled:
   extends: load retina variables
   stage: build # To simplify number of stages in scheduled pipelines
   rules:
+    - &watchdog
+      if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
     - &emulated_nightly
       if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - &rf_nightly
@@ -62,6 +64,7 @@ zmq driver:
   extends: build trx driver
   retry: 2
   rules:
+    - *watchdog
     - *emulated_nightly
   needs:
     - load retina scheduled
@@ -71,6 +74,7 @@ release with deb info:
   retry: 2
   cache: []
   rules:
+    - *watchdog
     - *emulated_nightly
     - *rf_nightly
   variables:
@@ -297,6 +301,8 @@ ric:
 
 smoke zmq:
   extends: .amarisoft_zmq
+  rules:
+    - *watchdog
   variables:
     MARKERS: smoke
     LAUNCHER_ARGS: -x

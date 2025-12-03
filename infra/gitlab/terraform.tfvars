@@ -124,6 +124,14 @@ protected_tags = {
 # Pipeline Schedules Configuration
 # =============================================================================
 schedules = {
+  watchdog = {
+    description = "Watchdog"
+    cron        = "00 10-18/2 * * 1-5"
+    timezone    = "Europe/Madrid"
+    ref         = "refs/heads/main"
+    active      = false
+    variables   = {}
+  }
   nightly = {
     description = "Emulated Nightly"
     cron        = "00 21 * * 0-5"
