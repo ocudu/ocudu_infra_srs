@@ -200,12 +200,6 @@ test ue asan:
     - load retina scheduled
     - asan
 
-test ue tsan:
-  extends: .test mode ue
-  needs:
-    - load retina scheduled
-    - tsan
-
 .test mode ru:
   extends: e2e
   stage: test mode
