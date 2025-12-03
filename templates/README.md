@@ -16,7 +16,7 @@ This component can be included in GitLab CI pipelines:
 
 ```yml
 include:
-  - component: $CI_SERVER_FQDN/softwareradiosystems/ocudu-infra-srs/build@<VERSION>
+  - component: $CI_SERVER_FQDN/ocudu/ocudu-infra-srs/build@<VERSION>
     inputs:
       ...
 
@@ -45,12 +45,12 @@ This component can be included in GitLab CI pipelines:
 
 ```yml
 include:
-  - component: $CI_SERVER_FQDN/softwareradiosystems/ocudu-infra-srs/build@<VERSION>
+  - component: $CI_SERVER_FQDN/ocudu/ocudu-infra-srs/build@<VERSION>
     inputs:
       job: build_ocudu
       ...
 include:
-  - component: $CI_SERVER_FQDN/softwareradiosystems/ocudu-infra-srs/e2e@<VERSION>
+  - component: $CI_SERVER_FQDN/ocudu/ocudu-infra-srs/e2e@<VERSION>
     inputs:
       build_job: build_ocudu
       job: e2e_test

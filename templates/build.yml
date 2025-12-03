@@ -2,7 +2,7 @@ spec:
   inputs:
     ocudu_path:
       type: string
-      default: softwareradiosystems/srsgnb
+      default: ocudu/ocudu
       description: "OCUDU repository path."
     ocudu_ref:
       type: string
@@ -35,7 +35,7 @@ spec:
       description: "Docker image version to use for the job."
     image_prefix:
       type: string
-      default: registry.gitlab.com/softwareradiosystems/srsgnb/builder-
+      default: registry.gitlab.com/ocudu/ocudu/builder-
       description: "Prefix of the docker image to use for the job."
     os:
       type: string
@@ -142,13 +142,6 @@ include:
       git reset --hard FETCH_HEAD
       git config --global --add safe.directory ${OCUDU_DIR}
       git rev-parse HEAD > .gitlab/ci/version.txt
-    - |
-      PLUGIN_REF=$(cat .gitlab/ci/plugin_version.txt)
-      git submodule add https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_SHELL_SSH_HOST}/softwareradiosystems/srsran_5g_enterprise.git plugins/enterprise
-      cd plugins/enterprise
-      git fetch --depth=1 origin ${PLUGIN_REF} > /dev/null
-      git config advice.detachedHead false
-      git checkout ${PLUGIN_REF}
     - cd ${CI_PROJECT_DIR}
     # Build
     - build_srsran

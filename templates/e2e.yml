@@ -140,7 +140,7 @@ load retina variables:
       eval K_PATH_EXTRA="\$$KUBECONFIG_VAR_NAME_EXTRA"
       export KUBECONFIG_EXTRA=$K_PATH_EXTRA
     - |
-      export OCUDU_COMMIT=$(cat ${OCUDU_DIR}/.gitlab/ci/version.txt)_$(cat ${OCUDU_DIR}/.gitlab/ci/plugin_version.txt)
+      export OCUDU_COMMIT=$(cat ${OCUDU_DIR}/.gitlab/ci/version.txt)
     # Print E2E parameters
     - |
       echo "E2E_TAG=${E2E_TAG}"

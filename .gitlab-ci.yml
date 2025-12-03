@@ -3,7 +3,7 @@ spec:
     # Build job configuration for web and api triggered pipelines
     ocudu_path:
       type: string
-      default: softwareradiosystems/srsgnb
+      default: ocudu/ocudu
       description: "OCUDU repository path."
     ocudu_ref:
       type: string

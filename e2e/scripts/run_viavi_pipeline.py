@@ -243,9 +243,7 @@ def main():
         "https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#create-a-personal-access-token",
         required=True,
     )
-    parser.add_argument(
-        "--ocudu-path", help="OCUDU repository path. (default: `%(default)s`)'", default="softwareradiosystems/srsgnb"
-    )
+    parser.add_argument("--ocudu-path", help="OCUDU repository path. (default: `%(default)s`)'", default="ocudu/ocudu")
     parser.add_argument("--ocudu-ref", help="OCUDU reference branch or tag. (default: `%(default)s`)", default="dev")
     parser.add_argument(
         "--build-mode",

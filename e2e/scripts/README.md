@@ -131,7 +131,7 @@ python3 run_viavi_pipeline.py \
 
 **Common options:**
 
-- `--ocudu-path`: OCUDU repository path (default: `softwareradiosystems/srsgnb`)
+- `--ocudu-path`: OCUDU repository path (default: `ocudu/ocudu`)
 - `--ocudu-ref`: Branch or tag to test (default: `dev`)
 - `--build-mode`: Build configuration - `standard` or `rtsan` (default: `rtsan`)
   - standard: Release build
