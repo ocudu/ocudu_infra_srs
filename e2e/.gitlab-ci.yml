@@ -456,7 +456,7 @@ cudu 64UE:
   rules:
     - *emulated_nightly
   variables:
-    GROUP: rf
+    GROUP: viavi
     E2E_TAG: new-retina-e2e-amd64
     TESTBED: s72
     MARKERS: s72
