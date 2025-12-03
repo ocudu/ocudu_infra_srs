@@ -129,7 +129,7 @@ schedules = {
     cron        = "00 10-18/2 * * 1-5"
     timezone    = "Europe/Madrid"
     ref         = "refs/heads/main"
-    active      = false
+    active      = true
     variables   = {}
   }
   nightly = {
@@ -137,7 +137,7 @@ schedules = {
     cron        = "00 21 * * 0-5"
     timezone    = "Europe/Madrid"
     ref         = "refs/heads/main"
-    active      = false
+    active      = true
     variables   = {}
   }
   rf_nightly = {
@@ -145,7 +145,7 @@ schedules = {
     cron        = "00 22 * * 0-5"
     timezone    = "Europe/Madrid"
     ref         = "refs/heads/main"
-    active      = false
+    active      = true
     variables   = {}
   }
   weekly = {
@@ -153,7 +153,7 @@ schedules = {
     cron        = "00 10 * * 6"
     timezone    = "Europe/Madrid"
     ref         = "refs/heads/main"
-    active      = false
+    active      = true
     variables   = {}
   }
 }
