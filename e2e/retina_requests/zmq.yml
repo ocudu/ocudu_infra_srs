@@ -19,7 +19,7 @@
     - type: license
       model: amarisoft-ue.*
   shared_files:
-    - local_path: ${OCUDU_REL_BUILD_PATH}/utils/trx_srsran/libtrx_srsran.so
+    - local_path: ${OCUDU_REL_BUILD_PATH}/utils/trx_ocudu/libtrx_ocudu.so
       remote_path: /opt/lteue/trx_srsran.so
       is_executable: true
 

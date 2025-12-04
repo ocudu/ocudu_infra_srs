@@ -154,6 +154,10 @@ load retina variables:
     # Modify request to shared the complete folder with ocudu containers
     - |
       yq -i '(.[] | select(.name == "ocudu*") | .shared_files) = [{"local_path": "../ocudu", "remote_path": env(OCUDU_DIR), "is_executable": false}]' ${CI_PROJECT_DIR}/e2e/retina_requests/${TESTBED}.yml
+    # Temporarily rename binaries for compatibility
+    - |
+      find ${OCUDU_DIR} -name "ocu" -type f -exec sh -c 'cp "$1" "$(dirname "$1")/srscu"' _ {} \;
+      find ${OCUDU_DIR} -name "odu" -type f -exec sh -c 'cp "$1" "$(dirname "$1")/srsdu"' _ {} \;
     # Remove any existing retina resource for this group
     - retina release --username ci_${GROUP}
     - |

@@ -45,7 +45,7 @@ spec:
       type: string
       default: ""
       description: "Space-separated URLs of packages to download before building."
-    target:
+    ocudu_target:
       type: string
       default: ""
       description: "Build target. Keep it empty to use the default target."
@@ -90,7 +90,6 @@ include:
   rules: $[[ inputs.rules ]]
   variables:
     OCUDU_DIR: ${CI_PROJECT_DIR}/ocudu
-    SRSRANDIR: ${CI_PROJECT_DIR}/ocudu # TODO: Remove when ocudu ci-shared/build.yml is updated
     # Setup variables
     OCUDU_PATH: $[[ inputs.ocudu_path ]]
     OCUDU_REF: $[[ inputs.ocudu_ref ]]
@@ -98,7 +97,7 @@ include:
     # Build variables
     INFRASTRUCTURE_TAG: $[[ inputs.tag ]]
     OS: $[[ inputs.os ]]
-    SRS_TARGET: $[[ inputs.target ]]
+    OCUDU_TARGET: $[[ inputs.ocudu_target ]]
     COMPILER: $[[ inputs.compiler ]]
     UHD_VERSION: $[[ inputs.uhd_version ]]
     DPDK_VERSION: $[[ inputs.dpdk_version ]]
@@ -150,19 +149,13 @@ include:
       git rev-parse HEAD > .gitlab/ci/version.txt
     - cd ${CI_PROJECT_DIR}
     # Build
-    - build_srsran
+    - build_ocudu
     # Run unit and integration tests
     - |
       if [[ $TEST_MODE != "none" ]]; then
-        launch_tests_srsran
+        launch_tests_ocudu
       fi
   after_script: # Save sources, ctest output and built apps
-    # Clean LFS files
-    - |
-      cd ${OCUDU_DIR}
-      while read -r line; do
-        git rm "$line" >/dev/null
-      done < <(git lfs ls-files | sed -r 's/^.{13}//')
     # Save Testing output (ctest)
     - |
       cd ${OCUDU_DIR}

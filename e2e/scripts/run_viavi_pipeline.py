@@ -185,7 +185,7 @@ def _run_test(args_definition: _ArgsDefinition, test_definition: _TestDefinition
         "ocudu_ref": args_definition.ocudu_ref,
         "infrastructure_tag": build_definition.tag,
         "os": build_definition.os,
-        "srs_target": build_definition.target,
+        "ocudu_target": build_definition.target,
         "compiler": build_definition.compiler,
         "build_args": build_definition.build_args,
         "dpdk_version": build_definition.dpdk_version,

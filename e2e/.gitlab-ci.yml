@@ -79,7 +79,7 @@ release with deb info:
     - *rf_nightly
   variables:
     OS: ubuntu-24.04
-    SRS_TARGET: srscu srsdu gnb
+    OCUDU_TARGET: ocu odu gnb
     COMPILER: gcc
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMARCH=x86-64-v3
@@ -95,7 +95,7 @@ debug:
     - *emulated_nightly
   variables:
     OS: ubuntu-24.04
-    SRS_TARGET: gnb
+    OCUDU_TARGET: gnb
     COMPILER: gcc
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
@@ -112,7 +112,7 @@ asan:
     - *rf_nightly
   variables:
     OS: ubuntu-24.04
-    SRS_TARGET: gnb
+    OCUDU_TARGET: gnb
     COMPILER: clang
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
@@ -128,7 +128,7 @@ tsan:
     - *emulated_nightly
   variables:
     OS: ubuntu-24.04
-    SRS_TARGET: gnb
+    OCUDU_TARGET: gnb
     COMPILER: clang
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
@@ -144,7 +144,7 @@ dpdk rtsan avx2:
     - *emulated_nightly
   variables:
     OS: ubuntu-24.04-rtsan
-    SRS_TARGET: gnb_split_7_2
+    OCUDU_TARGET: gnb_split_7_2
     COMPILER: clang
     DPDK_VERSION: 24.11.2_avx2
     BUILD_ARGS: >
@@ -163,7 +163,7 @@ dpdk rtsan avx512:
     - *emulated_weekly
   variables:
     OS: ubuntu-24.04-rtsan
-    SRS_TARGET: gnb_split_7_2 gnb
+    OCUDU_TARGET: gnb_split_7_2 gnb
     COMPILER: clang
     DPDK_VERSION: 24.11.2_avx512
     BUILD_ARGS: >
