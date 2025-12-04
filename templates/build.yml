@@ -113,11 +113,7 @@ include:
         echo "Downloading: $url"
         # Download file
         filename=$(basename "$url")
-        wget --header "JOB-TOKEN: $CI_JOB_TOKEN" "$url" -O "$filename"
-        if [[ $? -ne 0 ]]; then
-          echo "Error downloading $url"
-          exit 1
-        fi
+        wget --header "JOB-TOKEN: $CI_JOB_TOKEN" --retry-connrefused --waitretry=5 --read-timeout=20 --timeout=15 --tries=30 "$url" -O "$filename"
 
         # Extract main tar.gz file
         extract_dir="${filename%.tar.gz}"
