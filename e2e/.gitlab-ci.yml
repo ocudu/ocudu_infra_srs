@@ -455,7 +455,7 @@ cudu 64UE:
     TESTBED: s72
     MARKERS: s72
     RETINA_ARGS: >
-      gnb.all.pcap=True gnb.all.rlc_enable=False gnb.all.enable_integrity_protection
+      gnb.all.pcap=True gnb.all.rlc_enable=False gnb.all.enable_integrity_protection=True
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
     - load retina scheduled
