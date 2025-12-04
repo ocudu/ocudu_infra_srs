@@ -555,19 +555,20 @@ gnb 2UE s72:
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
     - load retina scheduled
-    - asan
+    - release with deb info
 
 b200 asan:
   extends: .amarisoft sdr
   variables:
     MARKERS: rf_not_crash
+  needs:
+    - load retina scheduled
+    - asan
 
 validate b200 config:
   extends: .amarisoft sdr
   variables:
     MARKERS: rf_b200
-  needs:
-    - load retina scheduled
 
 ### Android
 .android:
