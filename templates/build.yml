@@ -113,7 +113,17 @@ include:
         echo "Downloading: $url"
         # Download file
         filename=$(basename "$url")
-        wget --header "JOB-TOKEN: $CI_JOB_TOKEN" --retry-connrefused --waitretry=5 --read-timeout=20 --timeout=15 --tries=30 "$url" -O "$filename"
+        max_attempts=30
+        attempt=1
+        while [ $attempt -le $max_attempts ]; do
+          wget --header "JOB-TOKEN: $CI_JOB_TOKEN" "$url" -O "$filename" && break || true
+          sleep 5
+          attempt=$((attempt + 1))
+        done
+        if [ $attempt -gt $max_attempts ]; then
+          echo "Error: Failed to download $url after $max_attempts attempts"
+          exit 1
+        fi
 
         # Extract main tar.gz file
         extract_dir="${filename%.tar.gz}"
