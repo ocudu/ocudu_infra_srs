@@ -19,8 +19,10 @@ include:
             compare_to: "$CI_COMMIT_BEFORE_SHA"
       fmt_rules:
         - if: $ON_MR
+          allow_failure: false
       validate_rules:
         - if: $ON_MR
+          allow_failure: false
       apply_rules:
         - if: $ON_DEFAULT_BRANCH
         - if: $ON_MR
