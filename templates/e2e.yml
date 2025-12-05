@@ -126,19 +126,6 @@ load retina variables:
     reports:
       junit: e2e/out.xml
   before_script:
-    # TODO: Remove this and use in-cluster
-    - &setup_kube_config |
-      if [ "$E2E_TAG" = "new-retina-e2e-amd64" ]; then
-        export KUBECONFIG_VAR_NAME="RETINA_NAMESPACE_KUBECONFIG_LAB_BCN"
-        export KUBECONFIG_VAR_NAME_EXTRA=""
-      else
-        export KUBECONFIG_VAR_NAME="RETINA_NAMESPACE_KUBECONFIG"
-        export KUBECONFIG_VAR_NAME_EXTRA="RETINA_NAMESPACE_KUBECONFIG_EXTRA"
-      fi
-      eval K_PATH="\$$KUBECONFIG_VAR_NAME"
-      export KUBECONFIG=$K_PATH
-      eval K_PATH_EXTRA="\$$KUBECONFIG_VAR_NAME_EXTRA"
-      export KUBECONFIG_EXTRA=$K_PATH_EXTRA
     - |
       export OCUDU_COMMIT=$(cat ${OCUDU_DIR}/.gitlab/ci/version.txt)
     # Print E2E parameters
@@ -159,13 +146,13 @@ load retina variables:
       find ${OCUDU_DIR} -name "ocu" -type f -exec sh -c 'cp "$1" "$(dirname "$1")/srscu"' _ {} \;
       find ${OCUDU_DIR} -name "odu" -type f -exec sh -c 'cp "$1" "$(dirname "$1")/srsdu"' _ {} \;
     # Remove any existing retina resource for this group
-    - retina release --username ci_${GROUP}
+    - retina --in-cluster release --username ci_${GROUP}
     - |
       run_retina() {
         cd ${CI_PROJECT_DIR}/e2e
         export LOGNAME=ci_${GROUP}
         set -x
-        retina-launcher "${FILE_OR_DIR}" ${LAUNCHER_ARGS} --retina-request=retina_requests/${TESTBED}.yml -m "${MARKERS}" -k "${KEYWORDS}" --register-parameter ${RETINA_ARGS}
+        retina-launcher --retina-in-cluster "${FILE_OR_DIR}" ${LAUNCHER_ARGS} --retina-request=retina_requests/${TESTBED}.yml -m "${MARKERS}" -k "${KEYWORDS}" --register-parameter ${RETINA_ARGS}
         { set +x; } 2>/dev/null
       }
   script:
@@ -176,9 +163,7 @@ load retina variables:
     # Run Retina
     - run_retina
   after_script:
-    # Remove any existing retina resource for this group
-    - *setup_kube_config
-    - retina release --username ci_${GROUP}
+    - retina --in-cluster release --username ci_${GROUP}
     # Artifact size
     - echo -e "\e[0Ksection_start:`date +%s`:e2e_folder_section[collapsed=true]\r\e[0KLog folder's tree"
     - |
