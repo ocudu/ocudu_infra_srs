@@ -112,17 +112,19 @@ include:
         echo "Downloading: $url"
         # Download file
         filename=$(basename "$url")
-        max_attempts=30
+        max_attempts=100
         attempt=1
         while [ $attempt -le $max_attempts ]; do
-          wget --header "JOB-TOKEN: $CI_JOB_TOKEN" "$url" -O "$filename" && break || true
-          sleep 5
+          wget --header "JOB-TOKEN: $CI_JOB_TOKEN" "$url" -O "$filename" > /dev/null 2>&1 && break || true
+          sleep 10
+          echo "Retrying... (attempt $attempt/$max_attempts)"
           attempt=$((attempt + 1))
         done
         if [ $attempt -gt $max_attempts ]; then
           echo "Error: Failed to download $url after $max_attempts attempts"
           exit 1
         fi
+        echo "Downloaded to: $filename"
 
         # Extract main tar.gz file
         extract_dir="${filename%.tar.gz}"
@@ -135,6 +137,8 @@ include:
             tar -zxf "$nested_file" -C "$extract_dir/"
           fi
         done
+        echo "Extracted to: $extract_dir"
+
       done
     # Setup OCUDU repository
     - |
