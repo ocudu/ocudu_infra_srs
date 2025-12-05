@@ -106,7 +106,7 @@ def run_config(
         retina_data.test_config = {
             "gnb": {
                 "templates": {
-                    "main": str(Path(__file__).joinpath(f"../../../../{config_file}").resolve()),
+                    "main": str(Path(__file__).joinpath(f"../../../ocudu/{config_file}").resolve()),
                     "cu": tmp_file.name,
                     "du": tmp_file.name,
                     "ru": tmp_file.name,
