@@ -522,7 +522,7 @@ def test_zmq_handover_iperf(
         sample_rate=None,  # default from testbed
         global_timing_advance=0,
         time_alignment_calibration=0,
-        always_download_artifacts=True,
+        always_download_artifacts=False,
         noise_spd=noise_spd,
         sleep_between_movement_steps=1,
         warning_as_errors=True,
@@ -604,7 +604,7 @@ def test_zmq_handover_noise(
         sample_rate=None,  # default from testbed
         global_timing_advance=0,
         time_alignment_calibration=0,
-        always_download_artifacts=True,
+        always_download_artifacts=False,
         noise_spd=noise_spd,
         sleep_between_movement_steps=1,
         warning_as_errors=True,

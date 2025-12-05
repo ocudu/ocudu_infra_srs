@@ -588,7 +588,7 @@ def test_zmq_fr2(
         time_alignment_calibration=0,
         ue_stop_timeout=3,
         pdcch_log=True,
-        always_download_artifacts=True,
+        always_download_artifacts=False,
         post_command=("expert_phy --max_proc_delay=6", ""),
     )
 
