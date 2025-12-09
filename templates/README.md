@@ -25,13 +25,9 @@ stages: [build]
 
 ### Download URLs Configuration
 
-The `download_urls_pre_build` input accepts a list of URLs to download at the beginning of the build job. Authentication is handled via [job token](https://docs.gitlab.com/ci/jobs/ci_job_token/):
+The `download_urls_pre_build` input accepts a list of URLs to download at the beginning of the build job. It expects one URL per line.
 
-- URLs must be accessible using the CI job token
-- Refer to the [job token documentation](https://docs.gitlab.com/ci/jobs/ci_job_token/) for:
-  - Default access scope and limitations
-  - Granting access to external repositories
-  - Configuring access to other GitLab resources
+Authentication header should be included in the variable itself. If using Gitlab Package Registry, the recommended approach would be to use a valid [deploy token](https://docs.gitlab.com/user/project/deploy_tokens) in the project where the package registry lives. For that, wget should include `--user="$DEPLOY_TOKEN_USER" --password="$DEPLOY_TOKEN_PASS"`
 
 ## E2E Tests
 
