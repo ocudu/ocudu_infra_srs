@@ -18,7 +18,7 @@
     - type: license
       model: amarisoft-ue.*
     - type: ru
-      model: amariue-s72
+      model: fr2-ue-ru
 
 - name: ocudu-gnb
   type: gnb
@@ -40,7 +40,7 @@
       limits: "6G"
   resources:
     - type: ru
-      model: s72-ru
+      model: fr2-ru
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/gnb_split_7_2
     - LD_LIBRARY_PATH: /opt/rohc/lib/:/opt/dpdk/${E2E_DPDK_VERSION}/lib/x86_64-linux-gnu/
