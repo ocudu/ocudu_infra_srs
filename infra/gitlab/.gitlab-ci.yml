@@ -25,6 +25,8 @@ include:
           allow_failure: false
       apply_rules:
         - if: $ON_DEFAULT_BRANCH
+        - if: $ON_MR_TRAIN
+          when: never
         - if: $ON_MR
           when: manual
           allow_failure: true

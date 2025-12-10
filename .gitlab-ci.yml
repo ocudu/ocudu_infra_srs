@@ -130,6 +130,12 @@ workflow:
         ON_TAG: "true"
       auto_cancel:
         on_new_commit: none
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      variables:
+        ON_MR_TRAIN: "true"
+        ON_MR: "true"
+      auto_cancel:
+        on_new_commit: none
     - if: $CI_MERGE_REQUEST_IID
       # Why $CI_MERGE_REQUEST_IID instead of $CI_PIPELINE_SOURCE == "merge_request_event" ?
       # Child pipelines in a MR have CI_PIPELINE_SOURCE = parent_pipeline
