@@ -33,7 +33,7 @@ ci_default_git_depth          = 1
 ci_separated_caches           = false
 keep_latest_artifact          = true
 merge_pipelines_enabled       = true
-merge_trains_enabled          = false
+merge_trains_enabled          = true
 
 # =============================================================================
 # Repository Settings
