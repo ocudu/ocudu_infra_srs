@@ -23,8 +23,8 @@
       requests: 4
       limits: 4
     memory:
-      requests: "10G"
-      limits: "10G"
+      requests: "8G"
+      limits: "8G"
     ephemeral-storage:
       requests: "6G"
       limits: "6G"
