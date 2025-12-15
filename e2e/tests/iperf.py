@@ -278,10 +278,6 @@ def test_ntn(
     ),
 )
 @mark.android
-@mark.flaky(
-    reruns=2,
-    only_rerun=["failed to start", "Exception calling application", "Attach timeout reached", "Some packages got lost"],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_android(
     retina_manager: RetinaTestManager,
@@ -333,10 +329,6 @@ def test_android(
     (param(78, 30, 20, id="band:%s-scs:%s-bandwidth:%s"),),
 )
 @mark.android
-@mark.flaky(
-    reruns=2,
-    only_rerun=["failed to start", "Exception calling application", "Attach timeout reached", "Some packages got lost"],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_android_interleaving(
     retina_manager: RetinaTestManager,
@@ -399,16 +391,6 @@ def test_android_interleaving(
     ),
 )
 @mark.android_hp
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Exception calling application",
-        "Attach timeout reached",
-        "Some packages got lost",
-        "Failed to connect to remote host",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_android_hp(
     retina_manager: RetinaTestManager,
@@ -505,16 +487,6 @@ def test_zmq_2x2_mimo(
 
 
 @mark.zmq
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "5GC crashed",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_64_ues(
     retina_manager: RetinaTestManager,
@@ -574,16 +546,6 @@ def test_zmq_64_ues(
     (param(41, 30, 20, id="band:%s-scs:%s-bandwidth:%s"),),
 )
 @mark.zmq_single_ue
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "5GC crashed",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_4x4_mimo(
     retina_manager: RetinaTestManager,
@@ -634,7 +596,6 @@ def test_zmq_4x4_mimo(
 )
 @mark.zmq
 @mark.smoke
-@mark.flaky(reruns=2, only_rerun=["License unavailable", "Timeout reached while reserving"])
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_smoke(
     retina_manager: RetinaTestManager,
@@ -704,19 +665,6 @@ def test_smoke(
     ),
 )
 @mark.zmq
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "iperf did not achieve the expected data rate",
-        "socket is already closed",
-        "failed to connect to all addresses",
-        "5GC crashed",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq(
     retina_manager: RetinaTestManager,
@@ -839,10 +787,6 @@ def test_zmq_precoding(
     ),
 )
 @mark.s72
-@mark.flaky(
-    reruns=2,
-    only_rerun=["failed to start", "5GC crashed", "License unavailable", "Timeout reached while reserving"],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_s72(
     retina_manager: RetinaTestManager,

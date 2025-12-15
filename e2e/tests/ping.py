@@ -55,10 +55,6 @@ from .steps.stub import (
     ),
 )
 @mark.android
-@mark.flaky(
-    reruns=2,
-    only_rerun=["failed to start", "Exception calling application", "Attach timeout reached", "Some packages got lost"],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_android(
     retina_manager: RetinaTestManager,
@@ -106,10 +102,6 @@ def test_android(
     (param(78, 30, 20, id="band:%s-scs:%s-bandwidth:%s"),),
 )
 @mark.android
-@mark.flaky(
-    reruns=2,
-    only_rerun=["failed to start", "Exception calling application"],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_android_ims(
     retina_manager: RetinaTestManager,
@@ -160,16 +152,6 @@ def test_android_ims(
     ),
 )
 @mark.android_hp
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Exception calling application",
-        "Attach timeout reached",
-        "Some packages got lost",
-        "Failed to connect to remote host",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_android_hp(
     retina_manager: RetinaTestManager,
@@ -214,10 +196,6 @@ def test_android_hp(
     (param(3, 15, 10, id="band:%s-scs:%s-bandwidth:%s"),),
 )
 @mark.android_drx
-@mark.flaky(
-    reruns=2,
-    only_rerun=["failed to start", "Exception calling application", "Attach timeout reached", "Some packages got lost"],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_android_drx(
     retina_manager: RetinaTestManager,
@@ -263,10 +241,6 @@ def test_android_drx(
     (param(3, 15, 10, id="band:%s-scs:%s-bandwidth:%s"),),
 )
 @mark.android_drx
-@mark.flaky(
-    reruns=2,
-    only_rerun=["failed to start", "Exception calling application", "Attach timeout reached", "Some packages got lost"],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_android_no_drx(
     retina_manager: RetinaTestManager,
@@ -318,18 +292,6 @@ def test_android_no_drx(
     ),
 )
 @mark.zmq
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "Some packages got lost",
-        "socket is already closed",
-        "5GC crashed",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_32(
     retina_manager: RetinaTestManager,
@@ -441,18 +403,6 @@ def test_example_srsue(
     ),
 )
 @mark.zmq
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "Some packages got lost",
-        "socket is already closed",
-        "5GC crashed",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_64(
     retina_manager: RetinaTestManager,
@@ -545,18 +495,6 @@ def test_zmq_valgrind(
     (param(261, 120, 100, id="band:%s-scs:%s-bandwidth:%s"),),
 )
 @mark.zmq_single_ue
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "Some packages got lost",
-        "socket is already closed",
-        "5GC crashed",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_fr2(
     retina_manager: RetinaTestManager,
@@ -598,18 +536,6 @@ def test_zmq_fr2(
     (param(261, 120, 100, id="band:%s-scs:%s-bandwidth:%s"),),
 )
 @mark.s72
-@mark.flaky(
-    reruns=1,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "Some packages got lost",
-        "socket is already closed",
-        "5GC crashed",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_ping_s72_fr2(
     retina_manager: RetinaTestManager,
@@ -651,13 +577,6 @@ def test_ping_s72_fr2(
     (param(3, 15, 10, id="band:%s-scs:%s-bandwidth:%s"),),
 )
 @mark.rf_not_crash
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "socket is already closed",
-        "failed to connect to all addresses",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_rf_does_not_crash(
     retina_manager: RetinaTestManager,

@@ -26,10 +26,6 @@ from .steps.stub import ping, ping_from_5gc, start_network, stop, ue_start_and_a
     ),
 )
 @mark.android
-@mark.flaky(
-    reruns=2,
-    only_rerun=["failed to start", "Exception calling application", "Attach timeout reached", "Some packages got lost"],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_cots_paging(
     retina_manager: RetinaTestManager,

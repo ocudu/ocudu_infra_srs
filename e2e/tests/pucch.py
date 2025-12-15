@@ -32,10 +32,6 @@ from .steps.configuration import configure_test_parameters, get_minimum_sample_r
         param("f1_and_f4", 0, id="f1_f4"),
     ),
 )
-@mark.flaky(
-    reruns=2,
-    only_rerun=["License unavailable", "Timeout reached while reserving"],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
 def test_pucch(
     retina_manager: RetinaTestManager,

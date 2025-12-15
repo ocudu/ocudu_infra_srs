@@ -40,7 +40,6 @@ BITRATE_THRESHOLD: float = 0.1
 
 @mark.zmq
 @mark.smoke
-@mark.flaky(reruns=2, only_rerun=["License unavailable", "Timeout reached while reserving"])
 def test_smoke_sequentially(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
@@ -69,7 +68,6 @@ def test_smoke_sequentially(
 
 
 @mark.s72
-@mark.flaky(reruns=2, only_rerun=["License unavailable", "Timeout reached while reserving"])
 def test_s72_sequentially(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
@@ -109,16 +107,6 @@ def test_s72_sequentially(
     ),
 )
 @mark.zmq
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "StatusCode.ABORTED",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_handover_sequentially(
     retina_manager: RetinaTestManager,
@@ -252,16 +240,6 @@ def _handover_sequentially(
     ),
 )
 @mark.zmq
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "StatusCode.ABORTED",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
 def test_zmq_handover_parallel(
     retina_manager: RetinaTestManager,
@@ -478,16 +456,6 @@ def _handover_multi_ues(
     ),
 )
 @mark.zmq_single_ue
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "StatusCode.ABORTED",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_handover_iperf(
     retina_manager: RetinaTestManager,
@@ -560,16 +528,6 @@ def test_zmq_handover_iperf(
     ),
 )
 @mark.zmq_single_ue
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "StatusCode.ABORTED",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_handover_noise(
     retina_manager: RetinaTestManager,

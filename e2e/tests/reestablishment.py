@@ -39,19 +39,9 @@ from .steps.stub import (
     ue_validate_no_reattaches,
 )
 
-_ONLY_RERUN = [
-    "failed to start",
-    "Attach timeout reached",
-    "StatusCode.ABORTED",
-    "socket is already closed",
-    "License unavailable",
-    "Timeout reached while reserving",
-]
-
 
 @mark.zmq
 @mark.smoke
-@mark.flaky(reruns=2, only_rerun=["License unavailable", "Timeout reached while reserving"])
 def test_smoke_sequentially(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
@@ -88,7 +78,6 @@ def test_smoke_sequentially(
     ),
 )
 @mark.zmq
-@mark.flaky(reruns=2, only_rerun=_ONLY_RERUN)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_sequentially(
     retina_manager: RetinaTestManager,
@@ -192,7 +181,6 @@ def _reestablishment_sequentially_ping(
     (param(3, 15, 50, 0, id="band:%s-scs:%s-bandwidth:%s-noise:%s"),),
 )
 @mark.zmq
-@mark.flaky(reruns=2, only_rerun=_ONLY_RERUN)
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
 def test_zmq_sequentially_full_rate(
     retina_manager: RetinaTestManager,
@@ -262,7 +250,6 @@ def test_zmq_sequentially_full_rate(
 
 
 @mark.zmq
-@mark.flaky(reruns=2, only_rerun=_ONLY_RERUN)
 def test_zmq_sequentially_full_rate_verify_bitrate(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
@@ -360,7 +347,6 @@ def test_zmq_sequentially_full_rate_verify_bitrate(
     ),
 )
 @mark.zmq
-@mark.flaky(reruns=2, only_rerun=_ONLY_RERUN)
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
 def test_zmq_parallel(
     retina_manager: RetinaTestManager,
@@ -430,7 +416,6 @@ def test_zmq_parallel(
     (param(3, 15, 50, 0, id="band:%s-scs:%s-bandwidth:%s-noise:%s"),),
 )
 @mark.zmq
-@mark.flaky(reruns=2, only_rerun=_ONLY_RERUN)
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
 def test_zmq_parallel_full_rate(
     retina_manager: RetinaTestManager,
@@ -665,16 +650,6 @@ HIGH_BITRATE = int(15e6)
     ),
 )
 @mark.zmq_single_ue
-@mark.flaky(
-    reruns=2,
-    only_rerun=[
-        "failed to start",
-        "Attach timeout reached",
-        "StatusCode.ABORTED",
-        "License unavailable",
-        "Timeout reached while reserving",
-    ],
-)
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_mobility_noise_reestablishment(
     retina_manager: RetinaTestManager,

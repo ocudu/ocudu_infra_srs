@@ -28,7 +28,6 @@ HIGH_BITRATE = int(15e6)
     ),
 )
 @mark.zmq
-@mark.flaky(reruns=1, only_rerun=["failed to start", "Attach timeout reached", "StatusCode.ABORTED"])
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_zmq_sequentially(
     retina_manager: RetinaTestManager,
@@ -77,7 +76,6 @@ def test_zmq_sequentially(
     ),
 )
 @mark.zmq
-@mark.flaky(reruns=2, only_rerun=["failed to start", "Attach timeout reached", "StatusCode.ABORTED"])
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
 def test_zmq_handover_iperf(
     retina_manager: RetinaTestManager,

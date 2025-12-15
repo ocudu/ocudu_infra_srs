@@ -1,5 +1,25 @@
 [tool.pytest.ini_options]
-addopts = "--tb=short --random-order --random-order-bucket=class --log-folder=./log --html=./log/report.html --self-contained-html --junitxml=out.xml"
+addopts = [
+  "--tb=short",
+  "--random-order",
+  "--random-order-bucket=class",
+  "--log-folder=./log",
+  "--html=./log/report.html",
+  "--self-contained-html",
+  "--junitxml=out.xml",
+  "--reruns=3",
+  "--reruns-delay=10",
+  "--only-rerun=Timeout reached while reserving",
+  "--only-rerun=Error creating the pod",
+  "--only-rerun=Failed to connect to remote host",
+  "--only-rerun=Exception calling application",
+  "--only-rerun=socket is already closed",
+  "--only-rerun=failed to connect to all addresses",
+  "--only-rerun=License unavailable",
+  "--only-rerun=exit code 66",
+  "--only-rerun=Viavi API call timed out",
+  "--only-rerun=time-out in waiting for Cell Frame Boundary detection",
+]
 filterwarnings = [
   "ignore:HTTPResponse.getheaders:DeprecationWarning",
 ]
