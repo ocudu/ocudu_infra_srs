@@ -8,7 +8,7 @@ In this folder there are some scripts to help the user to trigger customized Bui
 
 ## Pipeline Trigger Script
 
-The `run_e2e_pipeline.py` script allows you to create a [GitLab pipeline with custom configurations](#manual-pipeline), helping the user to fill all the inputs that Gitlab CI expects.
+The `run_e2e_pipeline.py` script allows you to create a [GitLab pipeline with custom configurations](../README.md#manual-pipeline), helping the user to fill all the inputs that Gitlab CI expects.
 
 ### Installation
 

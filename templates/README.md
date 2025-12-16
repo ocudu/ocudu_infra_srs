@@ -31,7 +31,7 @@ Authentication header should be included in the variable itself. If using Gitlab
 
 ## E2E Tests
 
-Gitlab CI component to run a E2E Test for OCUDU using [Retina framework](../retina/README.md). It allows you to:
+Gitlab CI component to run a E2E Test for OCUDU using Retina framework. It allows you to:
 
 - Select existing tests to run using pytest options
 - Select testbed where it will run
