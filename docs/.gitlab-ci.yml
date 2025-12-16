@@ -36,8 +36,6 @@ pages:
         <<: *doc_changes
         compare_to: "$CI_COMMIT_BEFORE_SHA"
       when: always # Even if previous stages/required jobs fail
-      variables:
-        BASE_URL: /$CI_PROJECT_NAME/
   environment:
     name: pages
-    url: https://softwareradiosystems.gitlab.io/ocudu_infra_srs
+    url: $CI_PAGES_URL
