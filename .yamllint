@@ -21,3 +21,4 @@ rules:
 
 ignore: |
   e2e/tests/test_mode/
+  docs/node_modules/

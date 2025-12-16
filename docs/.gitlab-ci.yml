@@ -1,0 +1,43 @@
+build docs:
+  stage: static
+  image: node:20
+  rules:
+    - if: $ON_MR
+      changes: &doc_changes
+        paths:
+          - docs/**/*
+          - "**/*.md"
+      variables:
+        BASE_URL: /-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/
+  script:
+    # Build site
+    - cd docs
+    - npm install
+    - npm run build
+    - cd ${CI_PROJECT_DIR}
+    # Move built site to public folder
+    - mv docs/build public
+    # Report link
+    - |
+      echo "*******************************************************************************************************************************"
+      echo "https://${CI_PROJECT_NAMESPACE_SLUG}.${CI_PAGES_DOMAIN}/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html"
+      echo "*******************************************************************************************************************************"
+  needs: []
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 day
+
+pages:
+  extends: build docs
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        <<: *doc_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+      when: always # Even if previous stages/required jobs fail
+      variables:
+        BASE_URL: /$CI_PROJECT_NAME/
+  environment:
+    name: pages
+    url: https://softwareradiosystems.gitlab.io/ocudu_infra_srs

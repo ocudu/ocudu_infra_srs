@@ -176,6 +176,7 @@ include:
   # CI/CD for each item in the repository
   - local: infra/gitlab/.gitlab-ci.yml
   - local: e2e/.gitlab-ci.yml
+  - local: docs/.gitlab-ci.yml
 
 stages:
   - static
