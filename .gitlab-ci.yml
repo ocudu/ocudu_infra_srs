@@ -1,3 +1,11 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
 spec:
   inputs:
     # Build job configuration for web and api triggered pipelines
@@ -109,6 +117,9 @@ include:
   - project: $[[ inputs.ocudu_path ]]
     ref: $[[ inputs.ocudu_ref ]]
     file: .gitlab/ci-shared/workflow.yml
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/static.yml
   # Custom build and e2e jobs triggered from web and api
   - local: templates/build.yml
     inputs:
@@ -190,6 +201,12 @@ stages:
   - viavi
   - amarisoft sdr
   - android
+
+variables:
+  OCUDU_REGISTRY_URI: ${CI_TEMPLATE_REGISTRY_HOST}/$[[ inputs.ocudu_path ]]
+
+headers:
+  extends: .headers
 
 yaml lint:
   stage: static
