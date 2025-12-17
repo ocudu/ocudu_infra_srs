@@ -1,0 +1,120 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/docker.yml
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/python.yml
+
+stages:
+  - static
+  - publish docker
+  - publish wheels
+
+.path_changes:
+  - changes: &container_changes
+      paths:
+        - retina/agent/**/*.sh
+        - retina/agent/**/Dockerfile
+        - retina/images/**/*
+
+.agent-docker:
+  extends: .docker-builder
+  variables: &image_variables
+    AGENT_OS_NAME: ubuntu
+    AGENT_OS_VERSION: "24.04"
+    NAME: retina/agent-${AGENT_OS_NAME}-${AGENT_OS_VERSION}
+    VERSION: ${RETINA_VERSION}
+    CONTEXT: ${CI_PROJECT_DIR}/retina
+    DOCKERFILE: retina/agent
+    BUILD_ARGS: AGENT_OS_VERSION=${AGENT_OS_VERSION};RETINA_VERSION=${RETINA_VERSION}
+
+.agent_build_dependencies:
+  before_script:
+    - |
+      . /etc/os-release
+
+      echo "Setting up the OS"
+      case "$ID" in
+        debian | ubuntu) DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends build-essential libffi-dev ;;
+                 alpine) apk add build-base linux-headers libffi-dev ;;
+                      *) echo 'Unsupported OS' && exit 1 ;;
+      esac
+    - export PY_DIR=${CI_PROJECT_DIR}/retina/agent
+
+tox:
+  stage: static
+  extends:
+    - .agent_build_dependencies
+    - .tox
+
+build docker:
+  stage: static
+  extends: .agent-docker
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *container_changes
+  variables:
+    MODE: build
+
+publish deps:
+  stage: publish wheels
+  extends:
+    - .agent_build_dependencies
+    - .publish deps
+
+publish wheel:
+  stage: publish wheels
+  extends:
+    - .agent_build_dependencies
+    - .publish wheel
+
+publish docker:
+  stage: publish docker
+  extends: .agent-docker
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: false
+      changes:
+        <<: *container_changes
+  variables:
+    MODE: publish
+    MULTI_ARCH_BUILD: "true"
+  parallel:
+    matrix:
+      - PLATFORM: ["arm64", "amd64"]
+
+publish manifest:
+  stage: publish docker
+  extends: .docker manifest
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      changes:
+        <<: *container_changes
+  variables:
+    <<: *image_variables
+  needs:
+    - publish docker

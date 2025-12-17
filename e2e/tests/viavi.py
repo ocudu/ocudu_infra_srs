@@ -264,58 +264,6 @@ def test_viavi(
     )
 
 
-@pytest.mark.parametrize(
-    "test_declaration",
-    [
-        pytest.param(test_declaration, id=test_declaration.id)
-        for test_declaration in load_yaml_config("test_declaration_debug.yml")
-    ],
-)
-@mark.viavi_debug
-# pylint: disable=too-many-arguments,too-many-positional-arguments, too-many-locals
-def test_viavi_debug(
-    capsys: pytest.CaptureFixture[str],
-    # Retina
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    test_log_folder: str,
-    # Clients
-    gnb: GNBStub,
-    viavi: Viavi,
-    metrics_server: MetricServerInfo,
-    # Test info
-    metrics_summary: MetricsSummary,
-    test_declaration: _ViaviConfiguration,
-    # Test extra params
-    always_download_artifacts: bool = True,
-    gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
-    gnb_stop_timeout: int = _GNB_STOP_TIMEOUT,
-    log_search: bool = True,
-):
-    """
-    Runs a test using Viavi
-    """
-    _test_viavi(
-        capsys=capsys,
-        # Retina
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        test_log_folder=test_log_folder,
-        # Clients
-        gnb=gnb,
-        viavi=viavi,
-        metrics_server=metrics_server,
-        # Test info
-        metrics_summary=metrics_summary,
-        test_declaration=test_declaration,
-        # Test extra params
-        always_download_artifacts=always_download_artifacts,
-        gnb_startup_timeout=gnb_startup_timeout,
-        gnb_stop_timeout=gnb_stop_timeout,
-        log_search=log_search,
-    )
-
-
 # pylint: disable=too-many-arguments,too-many-positional-arguments, too-many-locals
 def _test_viavi(
     capsys: pytest.CaptureFixture[str],

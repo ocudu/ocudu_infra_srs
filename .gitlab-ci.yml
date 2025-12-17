@@ -163,8 +163,6 @@ include:
         -DENABLE_TRX_DRIVER=True -DTRX_DRIVER_DIR=${CI_PROJECT_DIR}/amarisoft.${AMARISOFT_VERSION}/trx_uhd-${AMARISOFT_VERSION}/
         -DENABLE_EXPORT=True -DENABLE_UHD=False -DENABLE_ZEROMQ=True -DMARCH=x86-64-v3
       test_mode: none
-      needs:
-        - job: load retina variables
   - local: templates/e2e.yml
     inputs:
       job: e2e
@@ -187,11 +185,19 @@ include:
       retina_args: $[[ inputs.retina_args ]]
       launcher_args: $[[ inputs.launcher_args ]]
   # CI/CD for each item in the repository
+  - local: retina/.gitlab-ci.yml
+    inputs:
+      ocudu_path: $[[ inputs.ocudu_path ]]
+      ocudu_ref: $[[ inputs.ocudu_ref ]]
   - local: infra/gitlab/.gitlab-ci.yml
   - local: e2e/.gitlab-ci.yml
+    inputs:
+      ocudu_path: $[[ inputs.ocudu_path ]]
+      ocudu_ref: $[[ inputs.ocudu_ref ]]
   - local: docs/.gitlab-ci.yml
 
 stages:
+  - ci
   - static
   - infra
   - build
@@ -206,6 +212,7 @@ stages:
 
 variables:
   OCUDU_REGISTRY_URI: ${CI_TEMPLATE_REGISTRY_HOST}/$[[ inputs.ocudu_path ]]
+  AMARISOFT_VERSION: "2025-09-19"
 
 headers:
   extends: .headers

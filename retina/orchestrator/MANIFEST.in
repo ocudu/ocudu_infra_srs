@@ -1,0 +1,2 @@
+include src/retina/orchestrator/request_schema.json
+include src/retina/orchestrator/cluster_schema.json

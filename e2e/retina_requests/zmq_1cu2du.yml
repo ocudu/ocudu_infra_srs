@@ -8,9 +8,9 @@
 
 - name: amarisoft-ue
   type: ue
-  image: ${RETINA_REGISTRY_PREFIX}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
   labels:
-    - ${ZMQ_HOSTLABEL}
+    - kubernetes.io/hostname=fpga-virt-master
   nof_ports: 64
   requirements:
     cpu:
@@ -27,15 +27,15 @@
     - type: license
       model: amarisoft-ue.*
   shared_files:
-    - local_path: ${OCUDU_REL_BUILD_PATH}/utils/trx_ocudu/libtrx_ocudu.so
+    - local_path: ${OCUDU_PATH}/build_retina/utils/trx_ocudu/libtrx_ocudu.so
       remote_path: /opt/lteue/trx_srsran.so
       is_executable: true
 
 - name: ocudu-cu
   type: cu
-  image: ${RETINA_REGISTRY_PREFIX}/srscu:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/srscu:${RETINA_VERSION}
   labels:
-    - ${ZMQ_HOSTLABEL}
+    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
       requests: 2
@@ -47,18 +47,18 @@
       requests: "15G"
       limits: "15G"
   environment:
-    - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/cu
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/cu
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
-    - local_path: ${OCUDU_REL_BUILD_PATH}/apps/cu/ocu
+    - local_path: ${OCUDU_PATH}/build_retina/apps/cu/ocu
       remote_path: /usr/local/bin/srscu
       is_executable: true
 
 - name: ocudu-du-1
   type: du
-  image: ${RETINA_REGISTRY_PREFIX}/srsdu:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/srsdu:${RETINA_VERSION}
   labels:
-    - ${ZMQ_HOSTLABEL}
+    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
       requests: 2
@@ -72,17 +72,17 @@
   resources:
     - type: zmq
   environment:
-    - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/du
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/du
   shared_files:
-    - local_path: ${OCUDU_REL_BUILD_PATH}/apps/du/odu
+    - local_path: ${OCUDU_PATH}/build_retina/apps/du/odu
       remote_path: /usr/local/bin/srsdu
       is_executable: true
 
 - name: ocudu-du-2
   type: du
-  image: ${RETINA_REGISTRY_PREFIX}/srsdu:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/srsdu:${RETINA_VERSION}
   labels:
-    - ${ZMQ_HOSTLABEL}
+    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
       requests: 2
@@ -96,9 +96,9 @@
   resources:
     - type: zmq
   environment:
-    - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/du
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/du
   shared_files:
-    - local_path: ${OCUDU_REL_BUILD_PATH}/apps/du/odu
+    - local_path: ${OCUDU_PATH}/build_retina/apps/du/odu
       remote_path: /usr/local/bin/srsdu
       is_executable: true
 
@@ -114,6 +114,6 @@
     ephemeral-storage:
       requests: "6G"
       limits: "6G"
-  image: ${RETINA_REGISTRY_PREFIX}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   labels:
-    - ${ZMQ_HOSTLABEL}
+    - kubernetes.io/hostname=fpga-virt-master

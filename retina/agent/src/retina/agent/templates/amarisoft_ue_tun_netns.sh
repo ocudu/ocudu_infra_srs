@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+ue_id="$1"           # UE ID
+pdn_id="$2"          # PDN unique id (start from 0)
+ifname="$3"          # Interface name
+ipv4_addr="$4"       # IPv4 address
+ipv4_dns="$5"        # IPv4 DNS
+ipv6_local_addr="$6" # IPv6 local address
+ipv6_dns="$7"        # IPv6 DNS
+param="$8"           # UE param
+old_link_local=""
+
+# Optional parameters
+shift; shift; shift; shift; shift; shift; shift; shift;
+while [ "$1" != "" ] ; do
+    case "$1" in
+    --mtu)
+        mtu="$2"
+        shift
+        ;;
+    *)
+        echo "Bad paramater: $1" >&2
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+if [ "$pdn_id" = "0" ] ; then
+    if [ -e /var/run/netns/$ue_id ] ; then
+        ip netns del $ue_id
+    fi
+    ip netns add $ue_id
+fi
+
+echo "Configure $ue_id($param) on pdn $pdn_id, tun=$ifname, ip=$ipv4_addr, dns=$ipv4_dns"
+
+# Set DNS ?
+if [ "$ipv4_dns" != "" ] || [ "$ipv6_dns" != "" ] ; then
+    mkdir -p /etc/netns/$ue_id
+    rm -f /etc/netns/$ue_id/resolv.conf
+    if [ "$ipv4_dns" != "" ] ; then
+        echo "nameserver $ipv4_dns" >> /etc/netns/$ue_id/resolv.conf
+    fi
+    if [ "$ipv6_dns" != "" ] ; then
+        echo "nameserver $ipv6_dns" >> /etc/netns/$ue_id/resolv.conf
+    fi
+else
+    rm -f /etc/netns/$ue_id/resolv.conf
+fi
+
+ifname1="pdn$pdn_id"
+ip link set dev $ifname name $ifname1 netns $ue_id
+ifname="$ifname1"
+
+if [ "$ipv6_local_addr" != "" ] ; then
+    ip netns exec $ue_id bash -c "echo '0' > /proc/sys/net/ipv6/conf/$ifname/disable_ipv6"
+    ip netns exec $ue_id bash -c "echo '1' > /proc/sys/net/ipv6/conf/$ifname/accept_ra"
+    ip netns exec $ue_id bash -c "echo '1' > /proc/sys/net/ipv6/conf/$ifname/router_solicitation_delay"
+    ip netns exec $ue_id bash -c "echo '1' > /proc/sys/net/ipv6/conf/$ifname/autoconf"
+else
+    ip netns exec $ue_id bash -c "echo '1' > /proc/sys/net/ipv6/conf/$ifname/disable_ipv6"
+fi
+
+if [ "$pdn_id" = "0" ] ; then
+    ip netns exec $ue_id ifconfig lo up
+fi
+
+ip netns exec $ue_id ifconfig $ifname up
+if [ "$ipv4_addr" != "" ] ; then
+    ip netns exec $ue_id ifconfig $ifname $ipv4_addr/24
+    if [ "$pdn_id" = "0" ] ; then
+        ip netns exec $ue_id ip route add default via $ipv4_addr
+    fi
+    if [ "$mtu" != "" ] ; then
+        ip netns exec $ue_id ifconfig $ifname mtu $mtu
+    fi
+fi
+if [ "$ipv6_local_addr" != "" ] ; then
+    old_link_local=`ip netns exec $ue_id ip addr show dev $ifname | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d'`
+    if [ "$old_link_local" != "" ] ; then
+        ip netns exec $ue_id ifconfig $ifname inet6 del $old_link_local/64
+    fi
+    ip netns exec $ue_id ifconfig $ifname inet6 add $ipv6_local_addr/64
+fi
+
+# Give mac address to lteue
+if [ "$ipv4_addr" != "" -a "$ipv6_local_addr" != "" ] ; then
+    echo "MAC_ADDR="$(ip netns exec $ue_id ip link show dev $ifname | grep -oP "ether \K[\d:a-f]+")
+fi
+
+#ip netns exec $ue_id iperf3 -c 10.45.0.1 -t3600 -l 1300 -R > /dev/null &
+#ip netns exec $ue_id ping 10.45.0.1 -i 0.2 -s 65000 > /dev/null &

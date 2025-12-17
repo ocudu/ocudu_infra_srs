@@ -1,0 +1,548 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/version_check.yml
+  - local: retina/version.yml
+
+.path_changes:
+  - &viavi_changes retina/viavi/**/*
+  - &protocol_changes retina/protocol/**/*
+  - &version_changes retina/version.yml
+  - &client_changes retina/client/**/*
+  - &agent_changes retina/agent/**/*
+  - changes: &agent_container_changes
+      paths:
+        - retina/agent/**/Dockerfile
+        - retina/agent/**/*.sh
+  - &images_changes retina/images/**/*
+  - &amarisoftue_changes retina/images/amarisoftue/**/*
+  - &amarisoftue_remote_changes retina/images/amarisoftue_remote/**/*
+  - &amarisoft5gc_remote_changes retina/images/amarisoft5gc_remote/**/*
+  - &android_changes retina/images/android/**/*
+  - &open5gs_changes retina/images/open5gs/**/*
+  - &srsgnb_changes retina/images/srsgnb/**/*
+  - &srsgnb_remote_changes retina/images/srsgnb_remote/**/*
+  - &srsue_changes retina/images/srsue/**/*
+  - &flexric_changes retina/images/flexric/**/*
+  - &orchestrator_changes retina/orchestrator/**/*
+  - &launcher_changes retina/launcher/**/*
+
+version changed:
+  stage: static
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - *version_changes
+          - *viavi_changes
+          - *protocol_changes
+          - *client_changes
+          - *agent_changes
+          - *orchestrator_changes
+          - *launcher_changes
+  extends: .version increased
+  variables:
+    FILE_PATH: retina/version.yml
+    VARIABLE_NAME: RETINA_VERSION
+
+################################################################################
+## Launch Downstream
+################################################################################
+viavi-client:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - *viavi_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *viavi_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/viavi/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  needs: []
+
+protocol:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - *protocol_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/protocol/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  needs: []
+
+client:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - *protocol_changes
+          - *client_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *client_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/client/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+
+agent:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - *protocol_changes
+          - *agent_changes
+          - *images_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/agent/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+
+amarisoftue image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *amarisoftue_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *amarisoftue_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/amarisoftue/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables: &images_variables
+    AGENT_OS_VERSION: "24.04"
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+amarisoftue remote image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *amarisoftue_remote_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *amarisoftue_remote_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/amarisoftue_remote/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+amarisoft5gc remote image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *amarisoft5gc_remote_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *amarisoft5gc_remote_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/amarisoft5gc_remote/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+android image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *android_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *android_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/android/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+open5gs image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *open5gs_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *android_changes
+          - *open5gs_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/open5gs/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+srsgnb image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *srsgnb_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *srsgnb_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/srsgnb/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+srsgnb remote image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *srsgnb_remote_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *srsgnb_remote_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/srsgnb_remote/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+srsue image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *srsue_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *srsue_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/srsue/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+flexric image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *flexric_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *flexric_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/flexric/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+orchestrator:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - *protocol_changes
+          - *orchestrator_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *orchestrator_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/orchestrator/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+
+launcher:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - *viavi_changes
+          - *protocol_changes
+          - *client_changes
+          - *orchestrator_changes
+          - *launcher_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *viavi_changes
+          - *version_changes
+          - *protocol_changes
+          - *client_changes
+          - *orchestrator_changes
+          - *launcher_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/launcher/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: client
+      optional: true
+      artifacts: false
+    - job: orchestrator
+      optional: true
+      artifacts: false

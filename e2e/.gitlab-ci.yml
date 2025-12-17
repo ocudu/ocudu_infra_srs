@@ -6,85 +6,94 @@
 # the distribution.
 #
 
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/python.yml
+
 # E2E CI/CD Pipeline
 
 ## MR
-load retina env:
-  extends: load retina variables
-  rules:
-    - &mr
-      if: $ON_MR
-      changes:
-        - e2e/**/*
-
 e2e tests tox:
-  image: python:${PYTHON_VERSION}-alpine
+  extends: .tox
   stage: static
   rules:
-    - *mr
+    - if: $ON_MR
+      changes:
+        - e2e/**/*
   variables:
     PY_DIR: e2e
   before_script:
     - apk add build-base
-  script:
-    - pip install 'tox<5'
-    - cd $PY_DIR
-    - tox -r
-  parallel:
-    matrix:
-      - PYTHON_VERSION: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
-e2e request and config validation:
+e2e dynamic tests validation:
   stage: static
   image:
-    name: ${RETINA_REGISTRY_PREFIX}/launcher:${RETINA_VERSION}
+    name: ${CI_REGISTRY_IMAGE}/retina/launcher:${RETINA_VERSION}
     entrypoint: ["/bin/sh", "-c"]
   rules:
-    - *mr
+    - if: $ON_MR
+      changes:
+        - e2e/**/*
+  script:
+    - |
+      cd ${CI_PROJECT_DIR}/e2e
+      retina-launcher --collect-only
+  needs:
+    - job: launcher
+      artifacts: false
+      optional: true
+
+e2e request validation:
+  stage: static
+  image:
+    name: ${CI_REGISTRY_IMAGE}/retina/launcher:${RETINA_VERSION}
+    entrypoint: ["/bin/sh", "-c"]
+  rules:
+    - if: $ON_MR
+      changes:
+        - retina/orchestrator/**/*
+        - e2e/retina_requests/**/*
   script:
     - |
       cd ${CI_PROJECT_DIR}/e2e/retina_requests
+      python3 ${CI_PROJECT_DIR}/retina/_scripts/generate_env.py --ocudu-path ${CI_PROJECT_DIR}/ocudu
       file_list=$(ls *.yml)
       for f in $file_list; do
           retina-request-checker --input $f
       done
-      python3 ${CI_PROJECT_DIR}/e2e/tests/viavi/validate_test_declaration.py
   needs:
-    - job: load retina env
-      artifacts: true
+    - job: launcher
+      artifacts: false
+      optional: true
 
 ## Build jobs for Scheduled Pipelines
-load retina scheduled:
-  extends: load retina variables
-  stage: build # To simplify number of stages in scheduled pipelines
-  rules:
-    - &watchdog
-      if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
-    - &emulated_nightly
-      if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-    - &rf_nightly
-      if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
-    - &emulated_weekly
-      if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
-  retry: 2
-
 zmq driver:
   extends: build trx driver
   retry: 2
   rules:
-    - *watchdog
-    - *emulated_nightly
-  needs:
-    - load retina scheduled
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
 
 release with deb info:
   extends: build
   retry: 2
   cache: []
   rules:
-    - *watchdog
-    - *emulated_nightly
-    - *rf_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
   variables:
     OS: ubuntu-24.04
     OCUDU_TARGET: ocu odu gnb
@@ -100,7 +109,7 @@ debug:
   retry: 2
   cache: []
   rules:
-    - *emulated_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
     OS: ubuntu-24.04
     OCUDU_TARGET: gnb
@@ -116,8 +125,8 @@ asan:
   retry: 2
   cache: []
   rules:
-    - *emulated_nightly
-    - *rf_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
   variables:
     OS: ubuntu-24.04
     OCUDU_TARGET: gnb
@@ -133,7 +142,7 @@ tsan:
   retry: 2
   cache: []
   rules:
-    - *emulated_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
     OS: ubuntu-24.04
     OCUDU_TARGET: gnb
@@ -149,8 +158,8 @@ dpdk rtsan avx512:
   retry: 2
   cache: []
   rules:
-    - *emulated_nightly
-    - *emulated_weekly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
   variables:
     OS: ubuntu-24.04-rtsan
     OCUDU_TARGET: gnb_split_7_2 gnb
@@ -169,7 +178,7 @@ dpdk rtsan avx512:
   extends: e2e
   stage: test mode
   rules:
-    - *emulated_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
     GROUP: zmq
     E2E_TAG: new-retina-e2e-amd64
@@ -181,20 +190,18 @@ dpdk rtsan avx512:
 test ue:
   extends: .test mode ue
   needs:
-    - load retina scheduled
     - release with deb info
 
 test ue asan:
   extends: .test mode ue
   needs:
-    - load retina scheduled
     - asan
 
 .test mode ru:
   extends: e2e
   stage: test mode
   rules:
-    - *emulated_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
     GROUP: viavi
     E2E_TAG: new-retina-e2e-amd64
@@ -207,7 +214,6 @@ ru dummy:
     MARKERS: test_mode
     KEYWORDS: test_ru
   needs:
-    - load retina scheduled
     - dpdk rtsan avx512
 
 ru dummy asan:
@@ -216,7 +222,6 @@ ru dummy asan:
     MARKERS: test_mode_not_crash
     KEYWORDS: "test_ru"
   needs:
-    - load retina scheduled
     - asan
 
 ru dummy tsan:
@@ -225,7 +230,6 @@ ru dummy tsan:
     MARKERS: test_mode_not_crash
     KEYWORDS: "test_ru"
   needs:
-    - load retina scheduled
     - tsan
 
 ru dummy test many ues:
@@ -234,7 +238,6 @@ ru dummy test many ues:
     MARKERS: test_mode_many_ues
     KEYWORDS: test_mode_many_ues
   needs:
-    - load retina scheduled
     - dpdk rtsan avx512
 
 ### SRSUE
@@ -242,14 +245,13 @@ ru dummy test many ues:
   extends: e2e
   stage: srsue
   rules:
-    - *emulated_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
     GROUP: zmq
     E2E_TAG: new-retina-e2e-amd64
     RETINA_ARGS: ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
     LAUNCHER_ARGS: -n 2
   needs:
-    - load retina scheduled
     - release with deb info
 
 srsue basic:
@@ -269,7 +271,7 @@ ric:
   extends: e2e
   stage: amarisoft zmq
   rules:
-    - *emulated_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
     GROUP: zmq
     E2E_TAG: new-retina-e2e-amd64
@@ -279,14 +281,13 @@ ric:
       gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.enable_integrity_protection=True
       ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
   needs:
-    - load retina scheduled
     - zmq driver
     - release with deb info
 
 smoke zmq:
   extends: .amarisoft_zmq
   rules:
-    - *watchdog
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
   variables:
     MARKERS: smoke
     LAUNCHER_ARGS: -x
@@ -311,7 +312,6 @@ gnb 4UE asan:
     MARKERS: smoke
     KEYWORDS: iperf
   needs:
-    - load retina scheduled
     - zmq driver
     - asan
 
@@ -321,7 +321,6 @@ gnb 4UE tsan:
     MARKERS: smoke
     KEYWORDS: iperf
   needs:
-    - load retina scheduled
     - zmq driver
     - tsan
 
@@ -333,7 +332,6 @@ gnb 4UE memcheck:
       gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.rlc_enable=True gnb.all.enable_integrity_protection=True
       ue.all.log_level=info gnb.all.log_level=warning 5gc.all.log_level=info
   needs:
-    - load retina scheduled
     - zmq driver
     - debug
 
@@ -438,7 +436,7 @@ cudu 64UE:
   extends: e2e
   stage: amarisoft s72
   rules:
-    - *emulated_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
     GROUP: viavi
     E2E_TAG: new-retina-e2e-amd64
@@ -448,7 +446,6 @@ cudu 64UE:
       gnb.all.pcap=True gnb.all.rlc_enable=False gnb.all.enable_integrity_protection=True
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
-    - load retina scheduled
     - dpdk rtsan avx512
 
 gnb 1UE s72:
@@ -472,7 +469,7 @@ gnb 1UE s72 FR2:
   extends: e2e
   stage: viavi
   rules:
-    - *emulated_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   timeout: 8h
   variables:
     E2E_TAG: new-retina-e2e-amd64
@@ -483,7 +480,6 @@ gnb 1UE s72 FR2:
       gnb.all.pcap=True gnb.all.rlc_enable=True gnb.all.rlc_rb_type=srb
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
-    - load retina scheduled
     - dpdk rtsan avx512
 
 1UE:
@@ -542,7 +538,7 @@ gnb 1UE s72 FR2:
   extends: e2e
   stage: amarisoft sdr
   rules:
-    - *rf_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
   variables:
     E2E_TAG: retina-e2e-amd64
     GROUP: rf
@@ -550,7 +546,6 @@ gnb 1UE s72 FR2:
     RETINA_ARGS: >
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
-    - load retina scheduled
     - release with deb info
 
 b200 asan:
@@ -558,7 +553,6 @@ b200 asan:
   variables:
     MARKERS: rf_not_crash
   needs:
-    - load retina scheduled
     - asan
 
 validate b200 config:
@@ -571,7 +565,7 @@ validate b200 config:
   extends: e2e
   stage: android
   rules:
-    - *rf_nightly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
   variables:
     E2E_TAG: retina-e2e-amd64
     GROUP: rf
@@ -579,7 +573,6 @@ validate b200 config:
     RETINA_ARGS: >
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
-    - load retina scheduled
     - release with deb info
 
 xiaomi b200:
@@ -612,7 +605,7 @@ xiaomi x300 ims:
 .viavi_weekly:
   extends: .viavi
   rules:
-    - *emulated_weekly
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
 
 32UE um:
   extends: .viavi_weekly

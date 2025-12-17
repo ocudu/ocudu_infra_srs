@@ -1,0 +1,7 @@
+set $path  /home/viavi/config/5g-core/scenario1
+set $probe 172.111.111.101
+set $user  viavi
+set verdictprint off
+set debug -1
+
+createshell 5g-core $probe $path $user continue

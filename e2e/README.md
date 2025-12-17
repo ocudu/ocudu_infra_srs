@@ -2,7 +2,7 @@
 
 This folder contains e2e tests sources, configurations and testbeds, alongside the Gitlab CI code to replicate SRS scheduled pipelines.
 
-To run them, you need to install and configure Retina framework
+To run them, you need to install and configure [Retina framework](../retina/README.md)
 
 ## Gitlab Pipelines
 
@@ -27,7 +27,7 @@ When the E2E testbed is configured for Amarisoft and ZMQ, the pipeline will auto
   - Variables must be **masked**.
   - Make them also **protected** if you're not going to trigger jobs in non protected branches.
 
-Please refer to the [build and e2e component documentation](../templates/README.md) for more info.
+Please refer read the [build and e2e component documentation](../templates/README.md) for more info.
 
 ## Scripts
 

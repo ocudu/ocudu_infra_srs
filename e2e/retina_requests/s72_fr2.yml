@@ -8,7 +8,7 @@
 
 - name: amarisoft-ue
   type: ue
-  image: ${RETINA_REGISTRY_PREFIX}/amarisoftue:${AMARISOFT_S72_FR2_VERSION}_${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/amarisoftue:2025-12-19_${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=srskit-rack1
   nof_ports: 16
@@ -30,7 +30,7 @@
 
 - name: ocudu-gnb
   type: gnb
-  image: ${RETINA_REGISTRY_PREFIX}/srsgnb:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/srsgnb:${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=dell-xr12
   requirements:
@@ -50,17 +50,17 @@
     - type: ru
       model: fr2-ru
   environment:
-    - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/gnb_split_7_2
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb_split_7_2
     - LD_LIBRARY_PATH: /opt/rohc/lib/:/opt/dpdk/${E2E_DPDK_VERSION}/lib/x86_64-linux-gnu/
     - RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
   shared_files:
-    - local_path: ${OCUDU_REL_BUILD_PATH}/apps/gnb_split_7_2/gnb
+    - local_path: ${OCUDU_PATH}/build_retina/apps/gnb_split_7_2/gnb
       remote_path: /usr/local/bin/gnb
       is_executable: true
 
 - name: open5gs
   type: 5gc
-  image: ${RETINA_REGISTRY_PREFIX}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=dell-xr12
   requirements:

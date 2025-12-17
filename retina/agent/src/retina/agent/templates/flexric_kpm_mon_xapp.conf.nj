@@ -1,0 +1,31 @@
+SM_DIR = "/usr/local/lib/flexric/"
+
+# supported name = xApp
+Name = "xApp"
+NearRT_RIC_IP = "{{ric_ip}}"
+E42_Port = 36422
+
+# supported name : KPM
+# supported time (ms): 1000
+# supported format: 1
+# supported ran_type: ngran_gNB
+Sub_ORAN_SM_List = (
+    { name = "KPM", time = 1000,
+      format = {{report_service_style}},
+      ran_type = "{{ran_type}}",
+      actions = (
+            {%- for metric in metrics %}
+                { name = "{{ metric }}" }{% if not loop.last %},{% endif %}
+            {%- endfor %}
+            )
+    }
+)
+
+xApp_DB = {
+    enable = "OFF"
+    ip = "127.0.0.1"
+    dir = "/tmp/"
+    filename = "testdb"
+    username = "your_username" # if using mysql
+    password = "your_passwd" # if using mysql
+}

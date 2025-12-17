@@ -85,17 +85,6 @@ spec:
       default: []
       description: "Needs configuration for the job."
 ---
-load retina variables:
-  stage: static
-  image: ubuntu:24.04
-  rules: $[[ inputs.rules ]]
-  retry: 2
-  script:
-    - cat e2e/retina_requests/.env
-  artifacts:
-    reports:
-      dotenv: e2e/retina_requests/.env
-
 "$[[ inputs.job ]]":
   stage: $[[ inputs.stage ]]
   rules: $[[ inputs.rules ]]
@@ -103,7 +92,7 @@ load retina variables:
   tags:
     - ${E2E_TAG}
   image:
-    name: ${RETINA_REGISTRY_PREFIX}/launcher:${RETINA_VERSION}
+    name: ${CI_REGISTRY_IMAGE}/retina/launcher:${RETINA_VERSION}
     entrypoint: ["/bin/sh", "-c"]
   variables:
     # CI variables
@@ -123,8 +112,6 @@ load retina variables:
     RUNNER_AFTER_SCRIPT_TIMEOUT: 20m
   resource_group: e2e-${GROUP}-${E2E_TAG}
   needs:
-    - job: load retina variables
-      artifacts: true
     - $[[ inputs.needs ]]
   artifacts:
     paths:
@@ -146,6 +133,11 @@ load retina variables:
       echo "KEYWORDS=${KEYWORDS}"
       echo "RETINA_ARGS=${RETINA_ARGS}"
       echo "LAUNCHER_ARGS=${LAUNCHER_ARGS}"
+    # Generate env file for e2e requests
+    - |
+      cd ${CI_PROJECT_DIR}/e2e/retina_requests
+      python3 ${CI_PROJECT_DIR}/retina/_scripts/generate_env.py --ocudu-path ${CI_PROJECT_DIR}/ocudu
+      cd ${CI_PROJECT_DIR}
     # Modify request to shared the complete folder with ocudu containers
     - |
       yq -i '(.[] | select(.name == "ocudu*") | .shared_files) = [{"local_path": "../ocudu", "remote_path": env(OCUDU_DIR), "is_executable": false}]' ${CI_PROJECT_DIR}/e2e/retina_requests/${TESTBED}.yml

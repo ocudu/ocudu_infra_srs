@@ -1,0 +1,58 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/python.yml
+
+stages:
+  - static
+  - publish
+
+.protocol_build_dependencies:
+  before_script:
+    - |
+      . /etc/os-release
+
+      echo "Setting up the OS"
+      case "$ID" in
+        debian | ubuntu) DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends build-essential libffi-dev ;;
+                 alpine) apk add build-base linux-headers libffi-dev ;;
+                      *) echo 'Unsupported OS' && exit 1 ;;
+      esac
+    - export PY_DIR=${CI_PROJECT_DIR}/retina/protocol
+
+tox:
+  stage: static
+  extends:
+    - .protocol_build_dependencies
+    - .tox
+
+publish deps:
+  stage: publish
+  extends:
+    - .protocol_build_dependencies
+    - .publish deps
+
+publish wheel:
+  stage: publish
+  extends:
+    - .protocol_build_dependencies
+    - .publish wheel

@@ -1,0 +1,163 @@
+{% if type != "ru"%}
+ru_sdr:
+  srate: {{ sample_rate / 1000000 }}
+  {% if type == "zmq" %}
+  device_driver: zmq
+  device_args: {{zmq_def}},id=gnb,base_srate={{sample_rate}}
+  {% elif type == "sdr" %}
+  device_driver: uhd
+  device_args: {{sdr_driver_args}}
+  tx_gain: {{ tx_gain }}
+  rx_gain: {{ rx_gain }}
+    {% if model == "b200" %}
+  otw_format: sc12
+    {% elif model == "x300" %}
+  lo_offset: 20
+    {% endif %}
+  clock: {{sync}}
+  {% endif %}
+  sync: {{sync}}
+  time_alignment_calibration: {{time_alignment_calibration}}
+{% endif %}
+
+{% if lcores_eal_args %}
+{% if type == "ru" %}
+hal:
+  eal_args: "--lcores {{ lcores_eal_args }}"
+{% elif accelerator_model == "acc100" %}
+hal:
+  bbdev_hwacc:
+    hwacc_type: {{ accelerator_model }}
+    id: {{ accelerator_id }}
+    pdsch_enc:
+      nof_hwacc: {{ accelerator_pdsch_enc_nof_hwacc }}
+      cb_mode: {{ accelerator_cb_mode }}
+    pusch_dec:
+      nof_hwacc: {{ accelerator_pusch_dec_nof_hwacc }}
+      harq_context_size: {{ accelerator_harq_context_size }}
+  eal_args: "--lcores {{ lcores_eal_args }} {{ accelerator_extra_eal_args }}"
+{% endif %}
+{% endif %}
+
+{###################################################}
+{# Special configuration for Viavi RU #}
+{###################################################}
+{% if type == "ru" and model == "viavi-ru"%}
+ru_ofh:
+  t1a_max_cp_dl: 500
+  t1a_min_cp_dl: 268
+  t1a_max_cp_ul: 350
+  t1a_min_cp_ul: 220
+  t1a_max_up: 350
+  t1a_min_up: 70
+  ta4_max: 1000
+  ta4_min: 10
+  is_prach_cp_enabled: true
+  ignore_ecpri_payload_size: true
+  compr_method_ul: bfp
+  compr_bitwidth_ul: 9
+  compr_method_dl: bfp
+  compr_bitwidth_dl: 9
+  compr_method_prach: bfp
+  compr_bitwidth_prach: 9
+  enable_ul_static_compr_hdr: true
+  enable_dl_static_compr_hdr: true
+  iq_scaling: 10
+  cells:
+  {% for ofh_cell in ru_ofh_cells %}
+  - network_interface: {{ ofh_cell.network_interface }}
+    ru_mac_addr: {{ ofh_cell.ru_mac_addr }}
+    du_mac_addr: {{ ofh_cell.du_mac_addr }}
+    vlan_tag_cp: {{ ofh_cell.vlan_tag_cp }}
+    vlan_tag_up: {{ ofh_cell.vlan_tag_up }}
+    prach_port_id: {{ ofh_cell.prach_port_id }}
+    dl_port_id: {{ ofh_cell.dl_port_id }}
+    ul_port_id: {{ ofh_cell.ul_port_id }}
+  {% endfor %}
+
+expert_phy:
+  max_proc_delay: 4
+{% endif %}
+{% if type == "ru" and model == "s72-ru"%}
+{###################################################}
+{# Special configuration for Amarisoft UE running in split 7.2 mode #}
+{###################################################}
+ru_ofh:
+  t1a_max_cp_dl: 430
+  t1a_min_cp_dl: 370
+  t1a_max_cp_ul: 430
+  t1a_min_cp_ul: 370
+  t1a_max_up: 340
+  t1a_min_up: 250
+  ta4_max: 600
+  ta4_min: 0                                     
+  is_prach_cp_enabled: true
+  compr_method_ul: bfp
+  compr_bitwidth_ul: 9
+  compr_method_dl: bfp
+  compr_bitwidth_dl: 9
+  compr_method_prach: bfp
+  compr_bitwidth_prach: 9
+  enable_ul_static_compr_hdr: true
+  enable_dl_static_compr_hdr: true
+  iq_scaling: 0.4
+  cells:
+  {% for ofh_cell in ru_ofh_cells %}
+  - network_interface: {{ ofh_cell.network_interface }}
+    ru_mac_addr: {{ ofh_cell.ru_mac_addr }}
+    du_mac_addr: {{ ofh_cell.du_mac_addr }}
+    vlan_tag_cp: {{ ofh_cell.vlan_tag_cp }}
+    vlan_tag_up: {{ ofh_cell.vlan_tag_up }}
+    prach_port_id: {{ ofh_cell.prach_port_id }}
+    dl_port_id: {{ ofh_cell.dl_port_id }}
+    ul_port_id: {{ ofh_cell.ul_port_id }}
+  {% endfor %}
+
+expert_phy:
+  max_request_headroom_slots: 3
+{% endif %}
+{% if type == "ru" and model == "fr2-ru"%}
+{###################################################}
+{# Special configuration for Amarisoft UE running in split 7.2 mode for FR2 testing #}
+{###################################################}
+ru_ofh:
+  t1a_max_cp_dl: 126
+  t1a_min_cp_dl: 110
+  t1a_max_cp_ul: 126
+  t1a_min_cp_ul: 110
+  t1a_max_up: 120
+  t1a_min_up: 20
+  ta4_max: 375
+  ta4_min: 0
+  is_prach_cp_enabled: true
+  compr_method_ul: bfp
+  compr_bitwidth_ul: 9
+  compr_method_dl: bfp
+  compr_bitwidth_dl: 9
+  compr_method_prach: bfp
+  compr_bitwidth_prach: 9
+  enable_ul_static_compr_hdr: true
+  enable_dl_static_compr_hdr: true
+  ru_reference_level_dBFS: -6
+  subcarrier_rms_backoff_dB: 12
+  cells:
+  {% for ofh_cell in ru_ofh_cells %}
+  - network_interface: {{ ofh_cell.network_interface }}
+    ru_mac_addr: {{ ofh_cell.ru_mac_addr }}
+    du_mac_addr: {{ ofh_cell.du_mac_addr }}
+    vlan_tag_cp: {{ ofh_cell.vlan_tag_cp }}
+    vlan_tag_up: {{ ofh_cell.vlan_tag_up }}
+    prach_port_id: {{ ofh_cell.prach_port_id }}
+    dl_port_id: {{ ofh_cell.dl_port_id }}
+    ul_port_id: {{ ofh_cell.ul_port_id }}
+  {% endfor %}
+
+trace:
+  layers:
+    phy_enable: true
+    du_high_enable: true
+
+expert_phy:
+  max_proc_delay: 6
+{% endif %}
+{###################################################}

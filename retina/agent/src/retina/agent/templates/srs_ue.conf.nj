@@ -1,0 +1,74 @@
+[rf]
+
+freq_offset = {{freq_offset}}
+tx_gain = {{tx_gain}}
+rx_gain = {{rx_gain}}
+srate = {{sample_rate}}
+nof_antennas = 1
+
+{% if type == "zmq" %}
+device_name = {{type}}
+device_args = tx_port=tcp://{{tx_port0}},rx_port=tcp://{{rx_port0}},id=ue,base_srate={{sample_rate}}
+
+{% elif type == "sdr" %}
+device_name = uhd
+device_args = {{sdr_driver_args}}
+{% endif %}
+
+[rat.eutra]
+dl_earfcn = 1575
+nof_carriers = 0
+
+[rat.nr]
+nof_carriers = 1
+bands = {{band}}
+
+[pcap]
+{% if pcap %}
+enable = mac,mac_nr
+mac_filename = {{ mac_filename }}
+mac_nr_filename = {{ mac_nr_filename }}
+nas_filename = {{ nas_filename }}
+{% endif %}
+
+[log]
+all_level = {{log_level}}
+phy_lib_level = {{log_level}}
+all_hex_limit = 32
+filename = {{ log_filename }}
+file_max_size = -1
+nas_level = warning
+
+[usim]
+mode = soft
+algo = {{subscriber.algo_str}}
+opc  = {{subscriber.opc}}
+k    = {{subscriber.k}}
+imsi = {{subscriber.imsi}}
+imei = 353490069873319
+
+[rrc]
+release = 15
+ue_category = 4
+
+[nas]
+apn = {{ apn }}
+apn_protocol = ipv4
+
+[phy]
+nof_phy_threads     = 2
+
+[sim]
+airplane_t_on_ms  = -1
+airplane_t_off_ms = -1
+
+[general]
+metrics_csv_enable  = true
+metrics_csv_filename = {{ metrics_filename }}
+
+[gw]
+ip_devname = tun_srsue
+ip_netmask = {{net_mask}}
+
+[gui]
+enable = false

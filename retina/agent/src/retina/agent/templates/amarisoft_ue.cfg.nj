@@ -1,0 +1,194 @@
+{
+
+  {% if log_level == "debug" %}
+  log_options: "all.level={{log_level}},{% if type == "ru" %}s72.level={{log_s72_level if log_s72_level else 'debug'}},time.us=1,{% endif %}all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'info'}},phy.dci_size=1,phy.csi=1,phy.cell_meas=1,phy.cch=1,rrc.max_size=16,nas.key=1,rrc.key=1{{',pdcp.crypto=1' if log_ip_level == 'debug' else ''}}{{',phy.ntn=1' if ntn_enable else ''}}",
+  {% elif log_level == "error" %}
+  log_options: "all.level={{log_level}},{% if type == "ru" %}s72.level={{log_s72_level if log_s72_level else 'error'}},time.us=1,{% endif %}all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'error'}}",
+  {% endif %}
+  log_filename: "{{log_filename}}",
+
+  /* Enable remote API and Web interface */
+  com_addr: "0.0.0.0:{{api_port}}",
+
+  {% if license_server %}
+  license_server: {
+    server_addr: "{{license_server}}",
+    tag: "{{license_args}}",
+  },
+  {% endif %}
+
+  rf_driver: {
+    {% if type == "zmq" %}
+    name:       "srsran",
+    {%- for tx_rx in zmq_def %}
+    tx_port{{loop.index-1}}:   "{{tx_rx[0]}}",
+    rx_port{{loop.index-1}}:   "{{tx_rx[1]}}",
+    {% endfor %}
+    args:       "id=ue,base_srate={{sample_rate}}",
+    dl_sample_bits: 16,
+    ul_sample_bits: 16,
+    sync:       "{{sync}}",
+    {% if ul_noise_spd != 0 %}
+    noise_spd: {{ ul_noise_spd }},
+    {% endif %}
+    {% elif type == "sdr" %}
+    name:       "uhd",
+    args:       "{{sdr_driver_args}}",
+    {% if rx_ant %}
+    rx_antenna: "{{rx_ant}}",
+    {% endif %}
+    clock:      "{{sync}}",
+    sync:       "{{sync}}",
+    {% elif type == "ru" %}
+    name: "s72",
+    tai_offset: 37,
+    rf_ports: [
+    {% for s72_port in s72_def %}
+      {
+        max_pdu_size: 9000,
+        transport: "ethernet",
+        bind_interface: "{{s72_port.interface}}",
+        remote_addr: "{{s72_port.du_mac_addr}}",
+        send_margin: 0,
+      },
+    {% endfor %}
+    ],
+    {% endif %}
+  },
+
+  tx_gain: {{tx_gain}},
+  rx_gain: {{rx_gain}},
+  {% if model == "b200" %}
+  tx_time_offset: -150,
+  {% else %}
+  tx_time_offset: 0,
+  {% endif %}
+
+  cell_groups: [
+    {
+      group_type: "nr",
+      {% if ue_count > 1 or num_cells > 1 %}
+      multi_ue: true,
+      {% else %}
+      multi_ue: false,
+      {% endif %}
+
+      {% if noise_spd != 0 or num_cells > 1 %}
+      channel_sim: true,
+      {% endif %}
+
+      cells: [
+      {% for cell_info in cell_array %}
+        {
+          rf_port: {{cell_info.rf_port}},
+          {% if type != "ru" %}
+          sample_rate: {{ sample_rate / 1000000 }},
+          {% endif %}
+          {% if rx_to_tx_latency > -1 %}
+          rx_to_tx_latency: {{rx_to_tx_latency}},
+          {% endif %}
+          band: {{cell_info.band}},
+          {% if cell_info.bandwidth > 0 %}
+          bandwidth: {{cell_info.bandwidth}},
+          {% endif %}
+          {% if n_rb_dl > 0 %}
+          n_rb_dl: {{n_rb_dl}},
+          {% endif %}
+          dl_nr_arfcn: {{cell_info.dl_nr_arfcn}},
+          ssb_nr_arfcn: {{cell_info.ssb_nr_arfcn}},
+          subcarrier_spacing: {{cell_info.subcarrier_spacing}},
+          ssb_subcarrier_spacing: {{cell_info.ssb_subcarrier_spacing}},
+          n_antenna_dl: {{nof_antennas_dl}},
+          n_antenna_ul: {{nof_antennas_ul}},
+          global_timing_advance: {{global_timing_advance}},
+          {% if nb_threads > 0 %}
+          nb_threads: {{nb_threads}},
+          {% endif %}
+          {% if noise_spd != 0 or num_cells > 1 %}
+          position: [{{cell_info.position.x}}, {{cell_info.position.y}}, {{cell_info.position.z}}],
+          antenna: {
+            type: "isotropic",
+          },
+            {% if noise_spd != 0 %}
+          ref_signal_power: -10,
+            {% else %}
+          ref_signal_power: 0,
+            {% endif %}
+          ul_power_attenuation: 0,
+          {% endif %}
+          {% if type == "ru" %}
+          s72: {
+            rtc_id: 0x0000,
+            ud_comp_hdr: 0x91,
+            port_mapping_prach: {{prach_ports}},
+            gen_prb0: true,
+            {% if log_level == "debug" or log_s72_level == "debug" %}
+            debug: true,
+            {% endif %}
+          },
+          {% endif %}
+          {% if ntn_enable %}
+          ntn: true,
+          ntn_eci_aligned_ecef: true,
+          ntn_ground_position: {
+            latitude: {{latitude}},
+            longitude: {{longitude}},
+            altitude: {{altitude}}
+          },
+          {% endif %}
+          {% if cell_info.pdcch_log_filename %}
+          pdcch_log_filename: "{{ cell_info.pdcch_log_filename }}",
+          {% endif %}
+        },
+      {% endfor %}
+      ],
+      // PDCCH fine tuning: Ignore candidates with less power than threshold (relative to SSB) to avoid false-positive phantoms and save CPU power.
+      pdcch_decode_opt: true,
+      pdcch_decode_opt_threshold: {{pdcch_decode_opt_threshold}},
+    },
+  ],
+
+  ue_list: [
+  {% for subscriber in subscriber_array %}
+    {
+      {% if subscriber.algo_str %}
+      sim_algo: "{{subscriber.algo_str}}",
+      {% endif %}
+      imsi: "{{subscriber.imsi}}",
+      K: "{{subscriber.k}}",
+      {% if subscriber.opc %}
+      opc: "{{subscriber.opc}}",
+      {% endif %}
+      apn: "{{apn}}",
+
+      /* UE capabilities */
+      {% if ntn_enable %}
+      as_release: 17,
+      {% else %}
+      as_release: 15,
+      {% endif %}
+      ue_category: "nr",
+
+      tun_setup_script: "{{tun_sh_path}}",
+
+      {% if noise_spd != 0 or num_cells > 1 %}
+      position: [0, 0],
+      speed: 0, // in km/h
+
+      power_control_enabled: false,
+      channel: {
+        type: "awgn",
+      },
+      {% endif %}
+      {% if noise_spd != 0 %}
+      ul_channel: {
+        type: "tdla30",
+        freq_doppler: 10,
+        mimo_correlation: "low",
+      },
+      noise_spd: {{ noise_spd }},
+      {% endif %}
+    },
+  {% endfor %}
+  ],
+}

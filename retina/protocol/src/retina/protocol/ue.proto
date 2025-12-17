@@ -1,0 +1,105 @@
+/*
+ *
+ * Copyright 2021-2025 Software Radio Systems Limited
+ *
+ * By using this file, you agree to the terms and conditions set
+ * forth in the LICENSE file which can be found at the top level of
+ * the distribution.
+ *
+ */
+
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+import "retina/protocol/base.proto";
+
+// UE service manages user equipment operations including attachment, movement, and traffic generation
+service UE {
+  // Get Basic information about the UE, like public ip or IDs
+  rpc GetDefinition(google.protobuf.Empty) returns (UEDefinition) {};
+  // Start the UE. Raise an error if can't be started.
+  rpc Start(UEStartInfo) returns (google.protobuf.Empty) {};
+  // Wait until attached. Raised an TimeoutError if timeout is reached
+  rpc WaitUntilAttached(google.protobuf.UInt32Value) returns (UEAttachedInfo) {};
+  // Wait until released. Raised an TimeoutError if timeout is reached
+  rpc WaitUntilReleased(google.protobuf.UInt32Value) returns (google.protobuf.Empty) {};
+  // Run a iperf
+  rpc IPerf(IPerfRequest) returns (google.protobuf.Empty) {};
+  // Run a reestablishment
+  rpc Reestablishment(google.protobuf.UInt32Value) returns (ReestablishmentInfo) {};
+  // Move the simulated UE
+  rpc Move(Position) returns (google.protobuf.Empty) {};
+  // Expect a Handover
+  rpc ExpectHandover(google.protobuf.UInt32Value) returns (HandoverInfo) {};
+  // Get messages
+  rpc GetMessages(google.protobuf.Empty) returns (RrcMessages) {};
+};
+
+message UEStartInfo {
+  repeated DUDefinition du_definition     = 1; // Only required in ZMQ mode
+  FiveGCDefinition      fivegc_definition = 2; // Only required for CotsUEs
+  StartInfo             start_info        = 3;
+};
+
+message UEAttachedInfo {
+  uint32 ue_id        = 1;
+  string pdn_id       = 2;
+  string interface    = 3;
+  string ipv4         = 4;
+  string ipv4_dns     = 5;
+  string ipv4_gateway = 6;
+  string ipv6         = 7;
+  string ipv6_dns     = 8;
+  string ipv6_gateway = 9;
+  uint32 rnti         = 10;
+};
+
+message IPerfRequest {
+  IPerfServer server        = 1;
+  uint64      duration      = 2;
+  IPerfDir    direction     = 3;
+  IPerfProto  proto         = 4;
+  uint64      bitrate       = 5;
+  uint32      packet_length = 6;
+  uint32      tos           = 7;
+};
+
+enum IPerfDir {
+  UPLINK        = 0;
+  DOWNLINK      = 1;
+  BIDIRECTIONAL = 2;
+};
+
+enum IPerfProto {
+  TCP = 0;
+  UDP = 1;
+};
+
+message Position {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+};
+
+message RrcMessages {
+  uint32 nof_setup                    = 1;
+  uint32 nof_reestablishment_complete = 2;
+  uint32 nof_reconfiguration          = 3;
+  uint32 nof_reconfiguration_complete = 4;
+};
+
+message ReestablishmentInfo {
+  bool        status            = 1;
+  RrcMessages previous_messages = 2;
+  RrcMessages last_messages     = 3;
+};
+
+message HandoverInfo {
+  bool        status            = 1;
+  uint32      previous_pci      = 2;
+  uint32      last_pci          = 3;
+  RrcMessages previous_messages = 4;
+  RrcMessages last_messages     = 5;
+};

@@ -1,0 +1,191 @@
+From a9e246a692bddad6999b6d687e381e5ad62dae66 Mon Sep 17 00:00:00 2001
+From: Piotr Gawlowicz <piotr.gawlowicz@srs.io>
+Date: Mon, 16 Jun 2025 22:44:30 +0200
+Subject: [PATCH] xapps: fix e2sm-rc prb-quota control xapp
+
+---
+ .../xApp/c/control/xapp_oran_slice_ctrl.c     | 88 +++++++++++++------
+ 1 file changed, 63 insertions(+), 25 deletions(-)
+
+diff --git a/examples/xApp/c/control/xapp_oran_slice_ctrl.c b/examples/xApp/c/control/xapp_oran_slice_ctrl.c
+index 5c37fe65..cba499e5 100644
+--- a/examples/xApp/c/control/xapp_oran_slice_ctrl.c
++++ b/examples/xApp/c/control/xapp_oran_slice_ctrl.c
+@@ -60,19 +60,22 @@ e2sm_rc_ctrl_hdr_t gen_rc_ctrl_hdr(e2sm_rc_ctrl_hdr_e hdr_frmt, ue_id_e2sm_t ue_
+ }
+ 
+ static
+-void gen_rrm_policy_ratio_group(lst_ran_param_t* RRM_Policy_Ratio_Group,
++void gen_rrm_policy_ratio_group(seq_ran_param_t* RRM_Policy_Ratio_Group,
+                                 const char* sst_str,
+                                 const char* sd_str,
+                                 int dedicated_prb)
+ {
+   // RRM Policy Ratio Group, STRUCTURE (RRM Policy Ratio List -> RRM Policy Ratio Group)
+   // lst_ran_param_t* RRM_Policy_Ratio_Group = &RRM_Policy_Ratio_List->ran_param_val.lst->lst_ran_param[0];
+-  // RRM_Policy_Ratio_Group->ran_param_id = RRM_Policy_Ratio_Group_8_4_3_6;
+-  RRM_Policy_Ratio_Group->ran_param_struct.sz_ran_param_struct = 4;
+-  RRM_Policy_Ratio_Group->ran_param_struct.ran_param_struct = calloc(4, sizeof(seq_ran_param_t));
+-  assert(RRM_Policy_Ratio_Group->ran_param_struct.ran_param_struct != NULL && "Memory exhausted");
++  RRM_Policy_Ratio_Group->ran_param_id = RRM_Policy_Ratio_Group_8_4_3_6;
++  RRM_Policy_Ratio_Group->ran_param_val.type = STRUCTURE_RAN_PARAMETER_VAL_TYPE;
++  RRM_Policy_Ratio_Group->ran_param_val.strct = calloc(1, sizeof(ran_param_struct_t));
++  assert(RRM_Policy_Ratio_Group->ran_param_val.strct != NULL && "Memory exhausted");
++  RRM_Policy_Ratio_Group->ran_param_val.strct->sz_ran_param_struct = 4;
++  RRM_Policy_Ratio_Group->ran_param_val.strct->ran_param_struct = calloc(4, sizeof(seq_ran_param_t));
++  assert(RRM_Policy_Ratio_Group->ran_param_val.strct->ran_param_struct != NULL && "Memory exhausted");
+   // RRM Policy, STRUCTURE (RRM Policy Ratio Group -> RRM Policy)
+-  seq_ran_param_t* RRM_Policy = &RRM_Policy_Ratio_Group->ran_param_struct.ran_param_struct[0];
++  seq_ran_param_t* RRM_Policy = &RRM_Policy_Ratio_Group->ran_param_val.strct->ran_param_struct[0];
+   RRM_Policy->ran_param_id = RRM_Policy_8_4_3_6;
+   RRM_Policy->ran_param_val.type = STRUCTURE_RAN_PARAMETER_VAL_TYPE;
+   RRM_Policy->ran_param_val.strct = calloc(1, sizeof(ran_param_struct_t));
+@@ -90,13 +93,22 @@ void gen_rrm_policy_ratio_group(lst_ran_param_t* RRM_Policy_Ratio_Group,
+   RRM_Policy_Member_List->ran_param_val.lst->lst_ran_param = calloc(1, sizeof(lst_ran_param_t));
+   assert(RRM_Policy_Member_List->ran_param_val.lst->lst_ran_param != NULL && "Memory exhausted");
+   // RRM Policy Member, STRUCTURE (RRM Policy Member List -> RRM Policy Member)
+-  lst_ran_param_t* RRM_Policy_Member = &RRM_Policy_Member_List->ran_param_val.lst->lst_ran_param[0];
+-  // RRM_Policy_Member->ran_param_id = RRM_Policy_Member_8_4_3_6;
+-  RRM_Policy_Member->ran_param_struct.sz_ran_param_struct = 2;
+-  RRM_Policy_Member->ran_param_struct.ran_param_struct = calloc(2, sizeof(seq_ran_param_t));
+-  assert(RRM_Policy_Member->ran_param_struct.ran_param_struct != NULL && "Memory exhausted");
++  lst_ran_param_t* lst_param = &RRM_Policy_Member_List->ran_param_val.lst->lst_ran_param[0];
++  lst_param->ran_param_struct.sz_ran_param_struct = 1;
++  lst_param->ran_param_struct.ran_param_struct = calloc(1, sizeof(seq_ran_param_t));
++  assert(lst_param->ran_param_struct.ran_param_struct != NULL && "Memory exhausted");
++
++  seq_ran_param_t* RRM_Policy_Member = &lst_param->ran_param_struct.ran_param_struct[0];
++  RRM_Policy_Member->ran_param_id = RRM_Policy_Member_8_4_3_6;
++  RRM_Policy_Member->ran_param_val.type = STRUCTURE_RAN_PARAMETER_VAL_TYPE;
++  RRM_Policy_Member->ran_param_val.strct = calloc(1, sizeof(ran_param_struct_t));
++  assert(RRM_Policy_Member->ran_param_val.strct != NULL && "Memory exhausted");
++  RRM_Policy_Member->ran_param_val.strct->sz_ran_param_struct = 2;
++  RRM_Policy_Member->ran_param_val.strct->ran_param_struct = calloc(2, sizeof(seq_ran_param_t));
++  assert(RRM_Policy_Member->ran_param_val.strct->ran_param_struct && "Memory exhausted");
++
+   // PLMN Identity, ELEMENT (RRM Policy Member -> PLMN Identity)
+-  seq_ran_param_t* PLMN_Identity = &RRM_Policy_Member->ran_param_struct.ran_param_struct[0];
++  seq_ran_param_t* PLMN_Identity = &RRM_Policy_Member->ran_param_val.strct->ran_param_struct[0];
+   PLMN_Identity->ran_param_id = PLMN_Identity_8_4_3_6;
+   PLMN_Identity->ran_param_val.type = ELEMENT_KEY_FLAG_FALSE_RAN_PARAMETER_VAL_TYPE;
+   PLMN_Identity->ran_param_val.flag_false = calloc(1, sizeof(ran_parameter_value_t));
+@@ -107,7 +119,7 @@ void gen_rrm_policy_ratio_group(lst_ran_param_t* RRM_Policy_Ratio_Group,
+   PLMN_Identity->ran_param_val.flag_false->octet_str_ran.len = plmn_id.len;
+   PLMN_Identity->ran_param_val.flag_false->octet_str_ran.buf = plmn_id.buf;
+   // S-NSSAI, STRUCTURE (RRM Policy Member -> S-NSSAI)
+-  seq_ran_param_t* S_NSSAI = &RRM_Policy_Member->ran_param_struct.ran_param_struct[1];
++  seq_ran_param_t* S_NSSAI = &RRM_Policy_Member->ran_param_val.strct->ran_param_struct[1];
+   S_NSSAI->ran_param_id = S_NSSAI_8_4_3_6;
+   S_NSSAI->ran_param_val.type = STRUCTURE_RAN_PARAMETER_VAL_TYPE;
+   S_NSSAI->ran_param_val.strct = calloc(1, sizeof(ran_param_struct_t));
+@@ -137,7 +149,7 @@ void gen_rrm_policy_ratio_group(lst_ran_param_t* RRM_Policy_Ratio_Group,
+   SD->ran_param_val.flag_false->octet_str_ran.len = sd.len;
+   SD->ran_param_val.flag_false->octet_str_ran.buf = sd.buf;
+   // Min PRB Policy Ratio, ELEMENT (RRM Policy Ratio Group -> Min PRB Policy Ratio)
+-  seq_ran_param_t* Min_PRB_Policy_Ratio = &RRM_Policy_Ratio_Group->ran_param_struct.ran_param_struct[1];
++  seq_ran_param_t* Min_PRB_Policy_Ratio = &RRM_Policy_Ratio_Group->ran_param_val.strct->ran_param_struct[1];
+   Min_PRB_Policy_Ratio->ran_param_id = Min_PRB_Policy_Ratio_8_4_3_6;
+   Min_PRB_Policy_Ratio->ran_param_val.type = ELEMENT_KEY_FLAG_FALSE_RAN_PARAMETER_VAL_TYPE;
+   Min_PRB_Policy_Ratio->ran_param_val.flag_false = calloc(1, sizeof(ran_parameter_value_t));
+@@ -146,7 +158,7 @@ void gen_rrm_policy_ratio_group(lst_ran_param_t* RRM_Policy_Ratio_Group,
+   int min_prb = 5; //TODO
+   Min_PRB_Policy_Ratio->ran_param_val.flag_false->int_ran = min_prb;
+   // Max PRB Policy Ratio, ELEMENT (RRM Policy Ratio Group -> Max PRB Policy Ratio)
+-  seq_ran_param_t* Max_PRB_Policy_Ratio = &RRM_Policy_Ratio_Group->ran_param_struct.ran_param_struct[2];
++  seq_ran_param_t* Max_PRB_Policy_Ratio = &RRM_Policy_Ratio_Group->ran_param_val.strct->ran_param_struct[2];
+   Max_PRB_Policy_Ratio->ran_param_id = Max_PRB_Policy_Ratio_8_4_3_6;
+   Max_PRB_Policy_Ratio->ran_param_val.type = ELEMENT_KEY_FLAG_FALSE_RAN_PARAMETER_VAL_TYPE;
+   Max_PRB_Policy_Ratio->ran_param_val.flag_false = calloc(1, sizeof(ran_parameter_value_t));
+@@ -155,7 +167,7 @@ void gen_rrm_policy_ratio_group(lst_ran_param_t* RRM_Policy_Ratio_Group,
+   int max_prb = 51; //TODO
+   Max_PRB_Policy_Ratio->ran_param_val.flag_false->int_ran = max_prb;
+   // Dedicated PRB Policy Ratio, ELEMENT (RRM Policy Ratio Group -> Dedicated PRB Policy Ratio)
+-  seq_ran_param_t* Dedicated_PRB_Policy_Ratio = &RRM_Policy_Ratio_Group->ran_param_struct.ran_param_struct[3];
++  seq_ran_param_t* Dedicated_PRB_Policy_Ratio = &RRM_Policy_Ratio_Group->ran_param_val.strct->ran_param_struct[3];
+   Dedicated_PRB_Policy_Ratio->ran_param_id = Dedicated_PRB_Policy_Ratio_8_4_3_6;
+   Dedicated_PRB_Policy_Ratio->ran_param_val.type = ELEMENT_KEY_FLAG_FALSE_RAN_PARAMETER_VAL_TYPE;
+   Dedicated_PRB_Policy_Ratio->ran_param_val.flag_false = calloc(1, sizeof(ran_parameter_value_t));
+@@ -170,8 +182,7 @@ void gen_rrm_policy_ratio_group(lst_ran_param_t* RRM_Policy_Ratio_Group,
+ static
+ void gen_rrm_policy_ratio_list(seq_ran_param_t* RRM_Policy_Ratio_List)
+ {
+-  int num_slice = 2;
+-  // seq_ran_param_t* RRM_Policy_Ratio_List =  &dst.ran_param[0];
++  int num_slice = 1; // Changed to 2 to match the number of slices in the arrays
+   RRM_Policy_Ratio_List->ran_param_id = RRM_Policy_Ratio_List_8_4_3_6;
+   RRM_Policy_Ratio_List->ran_param_val.type = LIST_RAN_PARAMETER_VAL_TYPE;
+   RRM_Policy_Ratio_List->ran_param_val.lst = calloc(1, sizeof(ran_param_list_t));
+@@ -180,14 +191,22 @@ void gen_rrm_policy_ratio_list(seq_ran_param_t* RRM_Policy_Ratio_List)
+   RRM_Policy_Ratio_List->ran_param_val.lst->lst_ran_param = calloc(num_slice, sizeof(lst_ran_param_t));
+   assert(RRM_Policy_Ratio_List->ran_param_val.lst->lst_ran_param != NULL && "Memory exhausted");
+ 
+-  const char* sst_str[] = {"1", "1"};
+-  const char* sd_str[] = {"0", "5"};
++  const char* sst_str[] = {"1"};
++  const char* sd_str[] = {"0"};
+   int dedicated_prb[] = {70, 30};
++
+   for (int i = 0; i < num_slice; i++) {
+-    gen_rrm_policy_ratio_group(&RRM_Policy_Ratio_List->ran_param_val.lst->lst_ran_param[i],
+-                               sst_str[i],
+-                               sd_str[i],
+-                               dedicated_prb[i]);
++    lst_ran_param_t* lst_param = &RRM_Policy_Ratio_List->ran_param_val.lst->lst_ran_param[i];
++    lst_param->ran_param_struct.sz_ran_param_struct = 1;
++    lst_param->ran_param_struct.ran_param_struct = calloc(1, sizeof(seq_ran_param_t));
++    assert(lst_param->ran_param_struct.ran_param_struct != NULL && "Memory exhausted");
++
++    seq_ran_param_t* RRM_Policy_Ratio_Group = &lst_param->ran_param_struct.ran_param_struct[0];
++    RRM_Policy_Ratio_Group->ran_param_id = 2;
++    RRM_Policy_Ratio_Group->ran_param_val.type = STRUCTURE_RAN_PARAMETER_VAL_TYPE;
++    RRM_Policy_Ratio_Group->ran_param_val.strct = calloc(1, sizeof(ran_param_struct_t));
++    assert(RRM_Policy_Ratio_Group->ran_param_val.strct != NULL && "Memory exhausted");
++    gen_rrm_policy_ratio_group(RRM_Policy_Ratio_Group, sst_str[i], sd_str[i], dedicated_prb[i]);
+   }
+ 
+   return;
+@@ -237,6 +256,22 @@ e2sm_rc_ctrl_msg_t gen_rc_ctrl_msg(e2sm_rc_ctrl_msg_e msg_frmt)
+   return dst;
+ }
+ 
++static
++gnb_du_e2sm_t fill_rnd_gnb_du_data(void)
++{
++  gnb_du_e2sm_t gnb_du = {0};
++
++  // 6.2.3.21
++  gnb_du.gnb_cu_ue_f1ap = 0;
++
++  // 6.2.3.25, OPTIONAL
++  // gnb_du.ran_ue_id = calloc(1, sizeof(uint64_t));
++  // assert(gnb_du.ran_ue_id != NULL && "Memory exhausted");
++  // *gnb_du.ran_ue_id = (rand() % 2^64) + 0;
++
++  return gnb_du;
++}
++
+ static
+ ue_id_e2sm_t gen_rc_ue_id(ue_id_e2sm_e type)
+ {
+@@ -251,6 +286,9 @@ ue_id_e2sm_t gen_rc_ue_id(ue_id_e2sm_e type)
+     ue_id.gnb.guami.amf_region_id = 0;
+     ue_id.gnb.guami.amf_set_id = 0;
+     ue_id.gnb.guami.amf_ptr = 0;
++  } else if (type == GNB_DU_UE_ID_E2SM) {
++    ue_id.type = GNB_DU_UE_ID_E2SM;
++    ue_id.gnb_du = fill_rnd_gnb_du_data();
+   } else {
+     assert(0!=0 && "not supported UE ID type");
+   }
+@@ -281,7 +319,7 @@ int main(int argc, char *argv[])
+   // E2SM-RC Control Header Format 1
+   // E2SM-RC Control Message Format 1
+   rc_ctrl_req_data_t rc_ctrl = {0};
+-  ue_id_e2sm_t ue_id = gen_rc_ue_id(GNB_UE_ID_E2SM);
++  ue_id_e2sm_t ue_id = gen_rc_ue_id(GNB_DU_UE_ID_E2SM);
+ 
+   rc_ctrl.hdr = gen_rc_ctrl_hdr(FORMAT_1_E2SM_RC_CTRL_HDR, ue_id, 2, Slice_level_PRB_quotal_7_6_3_1);
+   rc_ctrl.msg = gen_rc_ctrl_msg(FORMAT_1_E2SM_RC_CTRL_MSG);
+-- 
+2.34.1
+

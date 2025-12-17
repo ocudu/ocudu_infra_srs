@@ -1,0 +1,486 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+# This script needs multiple environment variables to be set before running it.
+# You can call the `generate_env.py` script to generate the environment variables.
+# ```bash
+# cd retina/_scripts
+# python3 generate_env.py --ocudu-path ~/develop/ocudu
+# ```
+
+# Available profiles:
+# - builders: Build gnb binary and amari-zmq driver
+# - zmq_srsue: srsUE with ZeroMQ + srsGNB + Open5gs
+# - zmq_amariue: Amarisoft UE with ZeroMQ + srsGNB + Open5gs
+# - zmq_amariue_1cu_2du: Amarisoft UE with ZeroMQ + srsCU + 2 srsDUs + Open5gs
+# - zmq_amariue_2gnb: Amarisoft UE with ZeroMQ + 2 srsGNBs + Open5gs
+# - zmq_ntn: Amarisoft UE with ZeroMQ + srsGNB + Open5gs + NTN Channel Emulator
+
+services:
+  ocudu-builder:
+    container_name: ocudu-builder
+    profiles:
+      - all
+      - builders
+    image: ${BUILDER_IMAGE}
+    volumes:
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+    environment:
+      CLICOLOR_FORCE: 1
+    network_mode: "none"
+    user: "${UID}:${GID}"
+    command:
+      [
+        "builder.sh",
+        "-b",
+        "build_retina",
+        "-c",
+        "gcc",
+        "-DBUILD_TESTING=False",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFORCE_DEBUG_INFO=False",
+        "-DASSERT_LEVEL=PARANOID",
+        "-DMARCH=x86-64-v3",
+        "-DLINKER=lld",
+        "/builds/ocudu/ocudu",
+      ]
+
+  amari-zmq-builder:
+    container_name: amari-zmq-builder
+    profiles:
+      - all
+      - builders
+    image: ${BUILDER_IMAGE}
+    volumes:
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+      - ${AMARISOFT_PATH}:/builds/amarisoftue
+    environment:
+      CLICOLOR_FORCE: 1
+    network_mode: "none"
+    user: "${UID}:${GID}"
+    command:
+      [
+        "builder.sh",
+        "-b",
+        "build_trx_retina",
+        "-x",
+        "ccache_trx_retina",
+        "-c",
+        "gcc",
+        "-m",
+        "trx_ocudu_test",
+        "-DBUILD_TESTING=False",
+        "-DENABLE_EXPORT=True",
+        "-DENABLE_UHD=False",
+        "-DENABLE_ZEROMQ=True",
+        "-DENABLE_TRX_DRIVER=True",
+        "-DMARCH=x86-64-v3",
+        "-DTRX_DRIVER_DIR=/builds/amarisoftue/trx_uhd-linux-${AMARISOFT_VERSION}",
+        "/builds/ocudu/ocudu",
+      ]
+
+  launcher:
+    container_name: launcher
+    profiles:
+      - all
+      - zmq_srsue
+      - zmq_amariue
+      - zmq_amariue_1cu_2du
+      - zmq_amariue_2gnb
+      - zmq_ntn
+      - launcher
+    image: ${CI_REGISTRY_IMAGE}/retina/launcher:${RETINA_VERSION}
+    build:
+      context: ../
+      dockerfile: launcher/Dockerfile
+      args: &variables
+        CI_REGISTRY_IMAGE: ${CI_REGISTRY_IMAGE}
+        RETINA_VERSION: ${RETINA_VERSION}
+        AGENT_OS_VERSION: ${AGENT_OS_VERSION}
+        AMARISOFT_VERSION: ${AMARISOFT_VERSION}
+        BUILDER_IMAGE: ${BUILDER_IMAGE}
+        OPEN5GS_VERSION: v${OPEN5GS_VERSION}
+        FLEXRIC_VERSION: ${FLEXRIC_VERSION}
+    environment:
+      LOGNAME: $USER
+      FORCE_COLOR: 1
+      HOME: /home/$USER
+    volumes:
+      - ~/.kube:/home/$USER/.kube
+      - ../..:/workdir
+    working_dir: /workdir/e2e
+    networks:
+      retina:
+        ipv4_address: 172.20.0.100
+    user: "${UID}:${GID}"
+    entrypoint: ["sh", "-c", "trap 'exit 0' SIGTERM; tail -f /dev/null & wait"]
+
+  agent-image:
+    profiles:
+      - all
+      - zmq_srsue
+      - zmq_amariue
+      - zmq_amariue_1cu_2du
+      - zmq_amariue_2gnb
+      - zmq_ntn
+    image: ${CI_REGISTRY_IMAGE}/retina/agent-ubuntu-${AGENT_OS_VERSION}:${RETINA_VERSION}
+    build:
+      context: ../
+      dockerfile: agent/Dockerfile
+      args:
+        <<: *variables
+    network_mode: "none"
+    entrypoint: ["true"]
+
+  amarisoft-ue:
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    container_name: amarisoft-ue
+    profiles:
+      - all
+      - zmq_amariue
+      - zmq_amariue_1cu_2du
+      - zmq_amariue_2gnb
+      - zmq_ntn
+    image: ${CI_REGISTRY_IMAGE}/retina/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+    build:
+      context: ../images/amarisoftue
+      additional_contexts:
+        agent: "service:agent-image"
+      args:
+        <<: *variables
+    environment:
+      RETINA_IP: &amariue_ip 172.20.0.2
+      RETINA_PORTS: 50064 50065 50066 50067 50068 50069 50070 50071 50072 50073 50074 50075 50076 50077 50078 50079 50080 50081 50082 50083 50084 50085 50086 50087 50088 50089 50090 50091 50092 50093 50094 50095 50096 50097 50098 50099 50100 50101 50102 50103 50104 50105 50106 50107 50108 50109 50110 50111 50112 50113 50114 50115 50116 50117 50118 50119 50120 50121 50122 50123 50124 50125 50126 50127
+      RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_LICENSE_TAG}
+    configs:
+      - source: amari_license.yml
+        target: /etc/retina/resources/amarisoft_ue_license.yml
+    cap_add:
+      - SYS_NICE
+      - NET_ADMIN
+      - CAP_SYS_PTRACE
+    sysctls:
+      - net.ipv6.conf.default.disable_ipv6=0
+    volumes:
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+    networks:
+      retina:
+        ipv4_address: *amariue_ip
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    entrypoint:
+      [
+        "bash",
+        "-c",
+        "ln -sf /builds/ocudu/ocudu/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so /opt/lteue/trx_srsran.so && /usr/local/bin/amarisoft_ue_entrypoint.sh",
+      ]
+    x-testbed:
+      type: ue
+
+  amarisoft-ue-remote:
+    container_name: amarisoft-ue-remote
+    profiles:
+      - all
+    image: ${CI_REGISTRY_IMAGE}/retina/amarisoftue-remote:${RETINA_VERSION}
+    build:
+      context: ../images/amarisoftue_remote
+      args:
+        <<: *variables
+      additional_contexts:
+        agent: "service:agent-image"
+    environment:
+      RETINA_IP: &amariue_remote_ip 172.20.0.3
+      RETINA_SECRETS: ${AMARISOFT_REMOTE_UE_IP}
+    configs:
+      - source: amari_remote_ue.yml
+        target: /etc/retina/resources/amari_remote_ue.yml
+    volumes:
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+      - ${OCUDU_PATH}/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so:/opt/lteue/trx_srsran.so
+    networks:
+      retina:
+        ipv4_address: *amariue_remote_ip
+    x-testbed:
+      type: ue
+
+  srs-ue:
+    container_name: srs-ue
+    profiles:
+      - all
+      - zmq_srsue
+    image: ${CI_REGISTRY_IMAGE}/retina/srsue:${SRSUE_VERSION}_${RETINA_VERSION}
+    build:
+      context: ../images/srsue
+      args:
+        <<: *variables
+      additional_contexts:
+        agent: "service:agent-image"
+    cap_add:
+      - SYS_NICE
+      - NET_ADMIN
+      - CAP_SYS_PTRACE
+    sysctls:
+      - net.ipv6.conf.default.disable_ipv6=0
+    environment:
+      RETINA_IP: &srsue_ip 172.20.0.4
+    networks:
+      retina:
+        ipv4_address: *srsue_ip
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    x-testbed:
+      type: ue
+
+  gnb-base-image:
+    image: ${CI_REGISTRY_IMAGE}/retina/srsgnb-base:${RETINA_VERSION}
+    profiles:
+      - all
+      - zmq_srsue
+      - zmq_amariue
+      - zmq_amariue_1cu_2du
+      - zmq_amariue_2gnb
+      - zmq_ntn
+    build:
+      context: ../images/srsgnb/base
+      args:
+        <<: *variables
+      additional_contexts:
+        agent: "service:agent-image"
+    network_mode: "none"
+    entrypoint: ["true"]
+
+  srs-gnb-1: &gnb_service
+    container_name: srs-gnb-1
+    profiles:
+      - all
+      - zmq_srsue
+      - zmq_amariue
+      - zmq_amariue_2gnb
+      - zmq_ntn
+    image: ${CI_REGISTRY_IMAGE}/retina/srsgnb:${RETINA_VERSION}
+    build:
+      context: ../images/srsgnb
+      args:
+        <<: *variables
+        RETINA_AGENT: srs-gnb # srs-gnb, srs-cudu, srs-cu, srs-du
+      additional_contexts:
+        gnb-base: "service:gnb-base-image"
+    cap_add:
+      - SYS_NICE
+      - CAP_SYS_PTRACE
+    volumes:
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+    environment:
+      RETINA_IP: &gnb0_ip 172.20.0.5
+      RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
+      PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
+    networks:
+      retina:
+        ipv4_address: *gnb0_ip
+    x-testbed:
+      type: gnb
+
+  srs-gnb-2:
+    <<: *gnb_service
+    container_name: srs-gnb-2
+    profiles:
+      - all
+      - zmq_amariue_2gnb
+    environment:
+      RETINA_IP: &gnb1_ip 172.20.0.6
+      RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
+      PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
+    networks:
+      retina:
+        ipv4_address: *gnb1_ip
+    x-testbed:
+      type: gnb
+
+  srs-cu:
+    <<: *gnb_service
+    container_name: srs-cu
+    profiles:
+      - all
+      - zmq_amariue_1cu_2du
+    image: ${CI_REGISTRY_IMAGE}/retina/srscu:${RETINA_VERSION}
+    build:
+      context: ../images/srsgnb
+      args:
+        <<: *variables
+        RETINA_AGENT: srs-cu
+      additional_contexts:
+        gnb-base: "service:gnb-base-image"
+    environment:
+      RETINA_IP: &cu_ip 172.20.0.7
+    networks:
+      retina:
+        ipv4_address: *cu_ip
+    x-testbed:
+      type: cu
+
+  srs-du-1:
+    <<: *gnb_service
+    container_name: srs-du-1
+    profiles:
+      - all
+      - zmq_amariue_1cu_2du
+    image: ${CI_REGISTRY_IMAGE}/retina/srsdu:${RETINA_VERSION}
+    build:
+      context: ../images/srsgnb
+      args:
+        <<: *variables
+        RETINA_AGENT: srs-du
+      additional_contexts:
+        gnb-base: "service:gnb-base-image"
+    environment:
+      RETINA_IP: &du0_ip 172.20.0.8
+    networks:
+      retina:
+        ipv4_address: *du0_ip
+    x-testbed:
+      type: du
+
+  srs-du-2:
+    <<: *gnb_service
+    container_name: srs-du-2
+    profiles:
+      - all
+      - zmq_amariue_1cu_2du
+    image: ${CI_REGISTRY_IMAGE}/retina/srsdu:${RETINA_VERSION}
+    build:
+      context: ../images/srsgnb
+      args:
+        <<: *variables
+        RETINA_AGENT: srs-du
+      additional_contexts:
+        gnb-base: "service:gnb-base-image"
+    environment:
+      RETINA_IP: &du1_ip 172.20.0.9
+    networks:
+      retina:
+        ipv4_address: *du1_ip
+    x-testbed:
+      type: du
+
+  srs-gnb-remote:
+    container_name: gnb-remote
+    profiles:
+      - all
+    image: ${CI_REGISTRY_IMAGE}/retina/srsgnb_remote:${RETINA_VERSION}
+    build:
+      context: ../images/srsgnb_remote
+      args:
+        <<: *variables
+      additional_contexts:
+        agent: "service:agent-image"
+    volumes:
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+    configs:
+      - source: gnb_remote.yml
+        target: /etc/retina/resources/gnb_remote.yml
+    environment:
+      RETINA_IP: &gnb_remote_ip 172.20.0.10
+      RETINA_SECRETS: ${GNB_REMOTE_IP}
+      PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb
+    networks:
+      retina:
+        ipv4_address: *gnb_remote_ip
+    x-testbed:
+      type: gnb
+
+  open5gs:
+    container_name: open5gs
+    profiles:
+      - all
+      - zmq_srsue
+      - zmq_amariue
+      - zmq_amariue_1cu_2du
+      - zmq_amariue_2gnb
+      - zmq_ntn
+    image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+    build:
+      context: ../images/open5gs
+      args:
+        <<: *variables
+      additional_contexts:
+        agent: "service:agent-image"
+    cap_add:
+      - NET_ADMIN
+      - CAP_SYS_PTRACE
+    sysctls:
+      - net.ipv6.conf.default.disable_ipv6=0
+    environment:
+      RETINA_IP: &core_ip 172.20.0.11
+    networks:
+      retina:
+        ipv4_address: *core_ip
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    x-testbed:
+      type: 5gc
+
+  flexric:
+    container_name: flexric
+    profiles:
+      - all
+      - zmq_srsue
+    image: ${CI_REGISTRY_IMAGE}/retina/flexric:${FLEXRIC_VERSION}_${RETINA_VERSION}
+    build:
+      context: ../images/flexric
+      args:
+        <<: *variables
+      additional_contexts:
+        agent: "service:agent-image"
+    environment:
+      RETINA_IP: &flexric_ip 172.20.0.12
+    networks:
+      retina:
+        ipv4_address: *flexric_ip
+    x-testbed:
+      type: ric
+
+configs:
+  amari_license.yml:
+    content: |
+      - type: License
+        address: ${AMARISOFT_LICENSE_IP}
+        args: ${AMARISOFT_LICENSE_TAG}
+  amari_remote_ue.yml:
+    content: |
+      - type: Remote
+        address: ${AMARISOFT_REMOTE_UE_IP}
+        user: unknown
+        password: unknown
+        path: "/opt/lteue"
+      - type: API
+        address: ${AMARISOFT_REMOTE_UE_IP}
+        port: 9002
+  gnb_remote.yml:
+    content: |
+      - type: Remote
+        address: ${GNB_REMOTE_IP}
+        user: unknown
+        password: unknown
+        path: ""
+
+networks:
+  retina:
+    name: retina_local_network
+    enable_ipv6: true
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.20.0.0/24"
+        - subnet: fd00:0:0:1::/64
+          gateway: fd00:0:0:1::1

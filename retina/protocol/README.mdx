@@ -1,0 +1,670 @@
+---
+title: Protocol Protobuf API
+hide_table_of_contents: true
+---
+
+import TOCInline from '@theme/TOCInline';
+
+<TOCInline toc={toc} minHeadingLevel={2} maxHeadingLevel={4} />
+
+## retina/protocol/base.proto
+
+### Messages
+
+#### BitratePeakAverage
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `av_5_samples` | `double` |||
+| `av_15_samples` | `double` |||
+| `av_30_samples` | `double` |||
+
+#### CUDefinition
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `cu_ip` | `string` |||
+| `cu_port` | `uint32` |||
+
+#### CellMetrics
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `error_indication_cnt` | `uint32` |||
+| `av_latency` | `uint32` |||
+| `max_latency` | `uint32` |||
+| `max_late_dl_harqs` | `uint64` |||
+| `max_late_ul_harqs` | `uint64` |||
+| `time_first` | `google.protobuf.Timestamp` |||
+| `time_last` | `google.protobuf.Timestamp` |||
+
+#### ChannelEmulatorDefinition
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `type` | `ChannelEmulatorType` |||
+| `zmq_ip` | `string` ||Empty if not zmq mode|
+| `dl_zmq_port` | `uint32` |||
+| `ul_zmq_port` | `uint32` |||
+
+#### DUDefinition
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `zmq_ip` | `string` ||Empty if not zmq mode|
+| `zmq_port_array` | `uint32` |`repeated`||
+
+#### FiveGCDefinition
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `amf_ip` | `string` |||
+| `amf_port` | `uint32` |||
+| `tun_ip` | `string` |||
+| `tun_mask` | `uint32` |||
+
+#### IPerfServer
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `ip` | `string` |||
+| `port` | `uint32` |||
+
+#### Metrics
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `ue_array` | `UeMetrics` |`repeated`||
+| `system` | `SystemMetrics` |||
+| `total` | `UeMetrics` |||
+| `cell` | `CellMetrics` |||
+
+#### NearRtRicDefinition
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `enabled` | `bool` ||Bool default value is False|
+| `ric_ip` | `string` |||
+| `ric_port` | `uint32` |||
+
+#### PLMN
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `mcc` | `string` |||
+| `mnc` | `string` |||
+
+#### Parameter
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `name` | `string` |||
+| `value` | `string` |||
+
+#### PingRequest
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `address` | `string` |||
+| `count` | `uint32` |||
+| `interval` | `double` |||
+
+#### PingResponse
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `status` | `bool` |||
+| `sent` | `uint32` |||
+| `received` | `uint32` |||
+| `min` | `double` |||
+| `avg` | `double` |||
+| `max` | `double` |||
+| `mdev` | `double` |||
+
+#### RetinaInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `agent_version` | `string` |||
+| `sut_version` | `string` |||
+
+#### StartInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `dryrun` | `bool` ||Bool default value is False|
+| `timeout` | `uint32` ||uint default value is 0|
+| `pre_commands` | `string` |`repeated`||
+| `post_commands` | `string` |`repeated`||
+
+#### StopResponse
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `exit_code` | `int32` |||
+| `error_count` | `uint32` |||
+| `error_msg` | `string` |||
+| `warning_count` | `uint32` |||
+| `warning_msg` | `string` |||
+
+#### Subscriber
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `imsi` | `string` |||
+| `algo_str` | `string` |||
+| `k` | `string` |||
+| `opc` | `string` |||
+| `amf` | `string` |||
+| `tel` | `uint64` |||
+| `sd` | `string` |||
+
+#### SubscriberArray
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `value` | `Subscriber` |`repeated`||
+
+#### SystemMetrics
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `nof_lates` | `uint32` |||
+| `nof_under` | `uint32` |||
+| `nof_seq_err` | `uint32` |||
+
+#### UEDefinition
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `subscriber` | `Subscriber` |||
+| `zmq_ip` | `string` ||Empty if not zmq mode|
+| `zmq_port_array` | `uint32` |`repeated`||
+
+#### UeMetrics
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `pci` | `uint32` |||
+| `rnti` | `uint32` |||
+| `dl_nof_ok` | `uint64` |||
+| `dl_nof_ko` | `uint64` |||
+| `dl_bitrate` | `double` |||
+| `dl_bitrate_min` | `double` |||
+| `dl_bitrate_max` | `double` |||
+| `ul_nof_ok` | `uint64` |||
+| `ul_nof_ko` | `uint64` |||
+| `ul_bitrate` | `double` |||
+| `ul_bitrate_min` | `double` |||
+| `ul_bitrate_max` | `double` |||
+| `nof_reestablishments` | `uint32` |||
+| `nof_handovers` | `uint32` |||
+| `nof_pucch_f0f1_invalid_harqs` | `uint32` |||
+| `nof_pucch_f2f3f4_invalid_harqs` | `uint32` |||
+| `nof_pucch_f2f3f4_invalid_csis` | `uint32` |||
+| `dl_bitrate_peak_av` | `BitratePeakAverage` |||
+| `ul_bitrate_peak_av` | `BitratePeakAverage` |||
+| `time_first` | `google.protobuf.Timestamp` |||
+| `time_last` | `google.protobuf.Timestamp` |||
+
+### Enums
+
+#### ChannelEmulatorType
+
+| Name | Number | Description |
+|---|---:|---|
+| `UNKNOWN` | 0 ||
+| `TN` | 1 ||
+| `NTN` | 2 ||
+
+### Services
+
+#### Base
+
+Base service provides health checking, version information, and common functionality
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+| `GetRetinaInfo` | `.google.protobuf.Empty` | `.RetinaInfo` |No|Get agent and binary versions|
+| `SetParameter` | `.Parameter` | `.google.protobuf.Empty` |No|Set parameters at runtime. If fails, it will raise an Error.|
+| `Ping` | `.PingRequest` | `.PingResponse` |No|Ping an ip|
+| `Stop` | `.google.protobuf.UInt32Value` | `.StopResponse` |No|Stop the sut in the specified timeout. Returns the exit code|
+| `GetMetrics` | `.google.protobuf.Empty` | `.Metrics` |No|Returns metrics|
+| `GetArtifactsId` | `.google.protobuf.Empty` | `.google.protobuf.StringValue` |No|Get Artifacts ID|
+| `DownloadArtifacts` | `.google.protobuf.Empty` | `.google.protobuf.BytesValue` |Yes|Download the artifacts|
+
+---
+
+## retina/protocol/ue.proto
+
+### Messages
+
+#### HandoverInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `status` | `bool` |||
+| `previous_pci` | `uint32` |||
+| `last_pci` | `uint32` |||
+| `previous_messages` | `RrcMessages` |||
+| `last_messages` | `RrcMessages` |||
+
+#### IPerfRequest
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `server` | `IPerfServer` |||
+| `duration` | `uint64` |||
+| `direction` | `IPerfDir` |||
+| `proto` | `IPerfProto` |||
+| `bitrate` | `uint64` |||
+| `packet_length` | `uint32` |||
+| `tos` | `uint32` |||
+
+#### Position
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `x` | `double` |||
+| `y` | `double` |||
+| `z` | `double` |||
+
+#### ReestablishmentInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `status` | `bool` |||
+| `previous_messages` | `RrcMessages` |||
+| `last_messages` | `RrcMessages` |||
+
+#### RrcMessages
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `nof_setup` | `uint32` |||
+| `nof_reestablishment_complete` | `uint32` |||
+| `nof_reconfiguration` | `uint32` |||
+| `nof_reconfiguration_complete` | `uint32` |||
+
+#### UEAttachedInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `ue_id` | `uint32` |||
+| `pdn_id` | `string` |||
+| `interface` | `string` |||
+| `ipv4` | `string` |||
+| `ipv4_dns` | `string` |||
+| `ipv4_gateway` | `string` |||
+| `ipv6` | `string` |||
+| `ipv6_dns` | `string` |||
+| `ipv6_gateway` | `string` |||
+| `rnti` | `uint32` |||
+
+#### UEStartInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `du_definition` | `DUDefinition` |`repeated`|Only required in ZMQ mode|
+| `fivegc_definition` | `FiveGCDefinition` ||Only required for CotsUEs|
+| `start_info` | `StartInfo` |||
+
+### Enums
+
+#### IPerfDir
+
+| Name | Number | Description |
+|---|---:|---|
+| `UPLINK` | 0 ||
+| `DOWNLINK` | 1 ||
+| `BIDIRECTIONAL` | 2 ||
+
+#### IPerfProto
+
+| Name | Number | Description |
+|---|---:|---|
+| `TCP` | 0 ||
+| `UDP` | 1 ||
+
+### Services
+
+#### UE
+
+UE service manages user equipment operations including attachment, movement, and traffic generation
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+| `GetDefinition` | `.google.protobuf.Empty` | `.UEDefinition` |No|Get Basic information about the UE, like public ip or IDs|
+| `Start` | `.UEStartInfo` | `.google.protobuf.Empty` |No|Start the UE. Raise an error if can't be started.|
+| `WaitUntilAttached` | `.google.protobuf.UInt32Value` | `.UEAttachedInfo` |No|Wait until attached. Raised an TimeoutError if timeout is reached|
+| `WaitUntilReleased` | `.google.protobuf.UInt32Value` | `.google.protobuf.Empty` |No|Wait until released. Raised an TimeoutError if timeout is reached|
+| `IPerf` | `.IPerfRequest` | `.google.protobuf.Empty` |No|Run a iperf|
+| `Reestablishment` | `.google.protobuf.UInt32Value` | `.ReestablishmentInfo` |No|Run a reestablishment|
+| `Move` | `.Position` | `.google.protobuf.Empty` |No|Move the simulated UE|
+| `ExpectHandover` | `.google.protobuf.UInt32Value` | `.HandoverInfo` |No|Expect a Handover|
+| `GetMessages` | `.google.protobuf.Empty` | `.RrcMessages` |No|Get messages|
+
+---
+
+## retina/protocol/gnb.proto
+
+### Messages
+
+#### CUStartInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `plmn` | `PLMN` |||
+| `fivegc_definition` | `FiveGCDefinition` |||
+| `start_info` | `StartInfo` |||
+
+#### DUStartInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `gnb_du_id` | `uint64` |||
+| `plmn` | `PLMN` |||
+| `num_cells` | `uint32` |||
+| `cell_offset` | `uint32` |||
+| `cu_definition` | `CUDefinition` |||
+| `ue_definition` | `UEDefinition` ||Only required in ZMQ mode|
+| `ric_definition` | `NearRtRicDefinition` ||if non-empty, E2 is enabled|
+| `start_info` | `StartInfo` |||
+
+#### GNBStartInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `plmn` | `PLMN` |||
+| `fivegc_definition` | `FiveGCDefinition` |||
+| `ue_definition` | `UEDefinition` ||Only required in ZMQ mode|
+| `ric_definition` | `NearRtRicDefinition` ||if non-empty, E2 is enabled|
+| `start_info` | `StartInfo` |||
+
+### Services
+
+#### CU
+
+CU service manages the Centralized Unit of the gNB split architecture
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+| `GetDefinition` | `.google.protobuf.Empty` | `.CUDefinition` |No|Get Basic information about the CU, like public ip or IDs|
+| `Start` | `.CUStartInfo` | `.google.protobuf.Empty` |No|Start the CU. Raise an error if can't be started.|
+
+#### DU
+
+DU service manages the Distributed Unit of the gNB split architecture
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+| `GetDefinition` | `.google.protobuf.UInt32Value` | `.DUDefinition` |No|Get Basic information about the DU, like public ip or IDs|
+| `Start` | `.DUStartInfo` | `.google.protobuf.Empty` |No|Start the DU. Raise an error if can't be started.|
+
+#### GNB
+
+GNB service manages the monolithic gNodeB base station
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+| `GetDefinition` | `.google.protobuf.UInt32Value` | `.DUDefinition` |No|Get Basic information about the GNB, like public ip or IDs|
+| `Start` | `.GNBStartInfo` | `.google.protobuf.Empty` |No|Start the GNB. Raise an error if can't be started.|
+
+---
+
+## retina/protocol/fivegc.proto
+
+### Messages
+
+#### FiveGCStartInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `plmn` | `PLMN` |||
+| `start_info` | `StartInfo` |||
+
+#### IPerfResponse
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `downlink` | `IPerfSummary` |||
+| `uplink` | `IPerfSummary` |||
+
+#### IPerfSummary
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `bytes` | `uint64` |||
+| `bits_per_second` | `double` |||
+| `seconds` | `double` |||
+| `lost_packets` | `uint64` |||
+| `packets` | `uint64` |||
+| `retransmits` | `uint64` |||
+
+### Services
+
+#### FiveGC
+
+FiveGC service manages the 5G Core network components
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+| `GetDefinition` | `.google.protobuf.Empty` | `.FiveGCDefinition` |No|Get Basic information about the UE, like public ip or IDs|
+| `Start` | `.FiveGCStartInfo` | `.google.protobuf.Empty` |No|Start the 5GC. Raise an error if can't be started.|
+| `AddUESubscriber` | `.Subscriber` | `.google.protobuf.Empty` |No|Register an UE into the 5GC. Raises an error if fails|
+| `StartIPerfService` | `.google.protobuf.StringValue` | `.IPerfServer` |No|Start a IPerf Server|
+| `StopIPerfService` | `.IPerfServer` | `.IPerfResponse` |No|Stop a IPerf Server|
+| `GetImsRegisteredUESubscriberArray` | `.google.protobuf.Empty` | `.SubscriberArray` |No|Return an array of Subscribers|
+
+---
+
+## retina/protocol/ric.proto
+
+### Messages
+
+#### ControlParameter
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `name` | `string` |||
+| `value` | `int32` |||
+
+#### KpmMonXappRequest
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `report_service_style` | `uint32` |||
+| `ue_id` | `uint32` |||
+| `metrics` | `string` |||
+
+#### NearRtRicStartInfo
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `start_info` | `StartInfo` |||
+
+#### NearRtRicSummary
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `nof_connected_agents` | `uint32` |||
+| `nof_connected_xapps` | `uint32` |||
+| `nof_subscription_reqs` | `uint32` |||
+| `nof_subscription_reps` | `uint32` |||
+| `nof_ric_indication` | `uint32` |||
+| `nof_control_reqs` | `uint32` |||
+| `nof_control_reps` | `uint32` |||
+
+#### RcXappRequest
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `control_service_style` | `uint32` |||
+| `action_id` | `uint32` |||
+| `parameters` | `RcXappRequest.ParametersEntry` |`repeated`||
+
+#### RcXappRequest.ParametersEntry
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `key` | `uint32` |||
+| `value` | `ControlParameter` |||
+
+### Services
+
+#### NearRtRic
+
+NearRtRic service manages the Near-Real-Time RAN Intelligent Controller
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+| `GetDefinition` | `.google.protobuf.Empty` | `.NearRtRicDefinition` |No|Get Basic information about the RIC, like public ip or IDs|
+| `Start` | `.NearRtRicStartInfo` | `.google.protobuf.Empty` |No|Start the RIC. Raise an error if can't be started.|
+| `StartKpmMonXapp` | `.KpmMonXappRequest` | `.google.protobuf.Empty` |No|Start a KPM xApp|
+| `StopKpmMonXapp` | `.google.protobuf.Empty` | `.google.protobuf.Empty` |No|Stop a KPM xApp|
+| `StartRcXapp` | `.RcXappRequest` | `.google.protobuf.Empty` |No|Start a RC xApp|
+| `StopRcXapp` | `.google.protobuf.Empty` | `.google.protobuf.Empty` |No|Stop a RC xApp|
+| `GetNearRtRicSummary` | `.google.protobuf.Empty` | `.NearRtRicSummary` |No|Get KPM xApp Summary|
+
+---
+
+## retina/protocol/channel_emulator.proto
+
+### Messages
+
+#### ChannelEmulatorStartInfo
+
+Generic Channel Emulator Messages
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `du_definition` | `DUDefinition` ||Requird in ZMQ mode|
+| `ue_definition` | `UEDefinition` ||Required in ZMQ mode|
+| `ntn_scenario` | `NtnScenarioDefinition` |`optional``oneof _ntn_scenario`||
+| `start_info` | `StartInfo` |||
+
+#### ChannelEmulatorSummary
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `placeholder` | `uint32` |||
+
+#### EphemerisInfoEcef
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `pos_x` | `double` |||
+| `pos_y` | `double` |||
+| `pos_z` | `double` |||
+| `vel_x` | `double` |||
+| `vel_y` | `double` |||
+| `vel_z` | `double` |||
+
+#### EphemerisOrbital
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `semi_major_axis` | `double` |||
+| `eccentricity` | `double` |||
+| `periapsis` | `double` |||
+| `longitude` | `double` |||
+| `inclination` | `double` |||
+| `mean_anomaly` | `double` |||
+
+#### NtnScenarioConfig
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `scenario_type` | `NtnScenarioType` |||
+| `sib19_cfg` | `Sib19Config` |||
+| `ta_cfg` | `TaSchedConfig` |||
+| `ue_position` | `UePosition` |||
+
+#### NtnScenarioDefinition
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `scenario_type` | `NtnScenarioType` |||
+| `ephemeris_info_type` | `EphemerisInfoType` |||
+| `min_sat_elevation_deg` | `uint32` |||
+| `pass_start_offset_s` | `uint32` |||
+| `access_link_dl_freq_hz` | `uint32` |||
+| `access_link_ul_freq_hz` | `uint32` |||
+| `enable_feeder_link` | `uint32` |||
+| `feeder_link_dl_freq_hz` | `uint32` |||
+| `feeder_link_ul_freq_hz` | `uint32` |||
+| `sample_rate` | `uint32` |||
+| `enable_doppler` | `bool` |||
+| `delay_offset_us` | `uint32` |||
+
+#### ScenarioConfig
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `ntn_config` | `NtnScenarioConfig` |`optional``oneof _ntn_config`||
+
+#### Sib19Config
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `epoch_time_sfn` | `uint32` |||
+| `epoch_time_subframe_number` | `uint32` |||
+| `ntn_ul_sync_validity_dur` | `uint32` |||
+| `cell_specific_koffset` | `uint32` |||
+| `ta_common` | `double` |||
+| `ta_common_drift` | `double` |||
+| `ta_common_drift_variant` | `double` |||
+| `ephemeris_info_type` | `EphemerisInfoType` |||
+| `ephemeris_info_ecef` | `EphemerisInfoEcef` |`optional``oneof _ephemeris_info_ecef`||
+| `ephemeris_orbital` | `EphemerisOrbital` |`optional``oneof _ephemeris_orbital`||
+
+#### TaSchedConfig
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `ta_target` | `float` |||
+| `slot_prohibit_period` | `uint32` |||
+| `slot_meas_period` | `uint32` |||
+| `ta_cmd_offset_threshold` | `uint32` |||
+
+#### UePosition
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `latitude` | `double` |||
+| `longitude` | `double` |||
+| `altitude` | `double` |||
+
+### Enums
+
+#### EphemerisInfoType
+
+| Name | Number | Description |
+|---|---:|---|
+| `ECEF` | 0 ||
+| `ORBITAL` | 1 ||
+
+#### NtnScenarioType
+
+NTN Channel Emulator Messages
+
+| Name | Number | Description |
+|---|---:|---|
+| `GEO` | 0 ||
+| `MEO` | 1 ||
+| `LEO` | 2 ||
+
+### Services
+
+#### ChannelEmulator
+
+ChannelEmulator service manages wireless channel emulation for testing
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+| `GetDefinition` | `.google.protobuf.Empty` | `.ChannelEmulatorDefinition` |No|Get Basic information about the Channel Emulator|
+| `Start` | `.ChannelEmulatorStartInfo` | `.google.protobuf.Empty` |No|Start the Channel Emulator. Raise an error if can't be started.|
+| `GetScenarioConfigs` | `.google.protobuf.Empty` | `.ScenarioConfig` |No|Get scenario configs to be used in gnb and UE.|
+| `GetChannelEmulatorSummary` | `.google.protobuf.Empty` | `.ChannelEmulatorSummary` |No|Get Channel Emulator Summary|
+
+---

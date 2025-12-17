@@ -8,9 +8,9 @@
 
 - name: ocudu-gnb
   type: gnb
-  image: ${RETINA_REGISTRY_PREFIX}/srsgnb:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/srsgnb:${RETINA_VERSION}
   labels:
-    - ${ZMQ_HOSTLABEL}
+    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
       requests: 1
@@ -23,10 +23,10 @@
   resources:
     - type: zmq
   environment:
-    - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/gnb
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
-    - local_path: ${OCUDU_REL_BUILD_PATH}/apps/gnb/gnb
+    - local_path: ${OCUDU_PATH}/build_retina/apps/gnb/gnb
       remote_path: /usr/local/bin/gnb
       is_executable: true
 
@@ -42,6 +42,6 @@
     ephemeral-storage:
       requests: "6G"
       limits: "6G"
-  image: ${RETINA_REGISTRY_PREFIX}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   labels:
-    - ${ZMQ_HOSTLABEL}
+    - kubernetes.io/hostname=fpga-virt-master

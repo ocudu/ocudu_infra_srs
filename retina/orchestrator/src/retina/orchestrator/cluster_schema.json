@@ -1,0 +1,145 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "global": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "networking-mode": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "dnsPolicy": {
+            "type": "string",
+            "enum": ["Default", "ClusterFirst", "ClusterFirstWithHostNet", "None"]
+          }
+        },
+        "required": ["name", "networking-mode", "version"]
+      },
+      "cluster_resource_list": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/cluster_resource"
+        }
+      },
+      "nodes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/node"
+        }
+      }
+    },
+    "required": ["global", "cluster_resource_list", "nodes"],
+    "definitions": {
+      "node_resource": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer"
+          },
+          "space": {
+            "type": "integer"
+          }
+        },
+        "required": ["type", "model", "capacity", "space"]
+      },
+      "cluster_resource": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer"
+          }
+        },
+        "required": ["name", "type", "model", "capacity"]
+      },
+      "node": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "compute-resources": {
+            "type": "object",
+            "properties": {
+              "cpu": {
+                "type": "integer"
+              },
+              "memory": {
+                "type": "string"
+              },
+              "ephemeral-storage": {
+                "type": "string"
+              },
+              "hugepages-1Gi": {
+                "type": "string"
+              }
+            }
+          },
+          "model": {
+            "type": "string"
+          },
+          "cpu_isolation": {
+            "$ref": "#/definitions/cpu_isolation"
+          },
+          "runner_list": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/runner_definition"
+            }
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/node_resource"
+              }
+          }
+        },
+        "required": ["name", "type", "compute-resources"]
+      },
+      "cpu_isolation": {
+        "type": "object",
+        "properties": {
+          "lcores_eal_args": {
+            "type": "string"
+          }
+        }
+      },
+      "runner_definition": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "disable_when": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": true
+      }
+    }
+  }
+  

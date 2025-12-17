@@ -1,0 +1,29 @@
+diff --git a/tests/common/application.c b/tests/common/application.c
+index 1bf1a0528..aff1a4012 100644
+--- a/tests/common/application.c
++++ b/tests/common/application.c
+@@ -123,9 +123,8 @@ ogs_thread_t *test_child_create(const char *name, const char *const argv[])
+     commandLine[i] = NULL;
+ 
+     /* buildroot/src/mme/open5gs-mmed */
+-    ogs_snprintf(command, sizeof command, "%s%s%s%sd",
+-            MESON_BUILD_ROOT OGS_DIR_SEPARATOR_S "src" OGS_DIR_SEPARATOR_S,
+-            name, OGS_DIR_SEPARATOR_S "open5gs-", name);
++    ogs_snprintf(command, sizeof command, "%s%sd",
++            MESON_BUILD_ROOT OGS_DIR_SEPARATOR_S "open5gs-", name);
+     commandLine[0] = command;
+ 
+     child = ogs_thread_create(child_main, commandLine);
+diff --git a/tests/common/meson.build b/tests/common/meson.build
+index 39ed57639..47ee22fbf 100644
+--- a/tests/common/meson.build
++++ b/tests/common/meson.build
+@@ -16,7 +16,7 @@
+ # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ 
+ libtestcommon_conf = configuration_data()
+-libtestcommon_conf.set_quoted('MESON_BUILD_ROOT', open5gs_build_dir)
++libtestcommon_conf.set_quoted('MESON_BUILD_ROOT', '/usr/local/bin')
+ configure_file(output : 'test-config-private.h',
+                configuration : libtestcommon_conf)
+ 

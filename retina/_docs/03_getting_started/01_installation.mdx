@@ -1,0 +1,81 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Installation
+
+## 1. Configuration
+
+Configure the access to your cluster in your PC. Please aks a cluster administrator for a .kube/config file or similar.
+
+## 2. Install
+
+<Tabs>
+  <TabItem value="python_venv" label="Python & pipx" default>
+
+### 2.1 Requirements
+
+- For Ubuntu & Debian:
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt install -y --no-install-recommends python3 python3-pip python3-venv pipx kubectl
+pipx ensurepath
+```
+
+- For Suse:
+
+```bash
+sudo zypper install curl
+sudo rpm --import https://packages.cloud.google.com/apt/doc/apt-key.gpg
+sudo zypper ar -f https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64 kubernetes
+sudo zypper refresh
+sudo zypper install kubectl
+zypper in python311-virtualenv
+zypper in python311-pipx
+pipx ensurepath
+```
+
+### 2.2 Installation
+
+- Install Retina package:
+
+```bash
+export RETINA_PYPI_URL=https://gitlab.com/api/v4/projects/75297912/packages/pypi/simple
+pipx install retina-launcher --include-deps --pip-args="--extra-index-url $RETINA_PYPI_URL"
+```
+
+`retina` binary is globally available now.
+
+### 2.3 Upgrade
+
+```bash
+export RETINA_PYPI_URL=https://gitlab.com/api/v4/projects/75297912/packages/pypi/simple
+pipx uninstall retina-launcher; pipx install retina-launcher --include-deps --pip-args="--extra-index-url $RETINA_PYPI_URL"
+```
+
+  </TabItem>
+  <TabItem value="docker" label="Docker">
+
+### Requirements
+
+- Install docker on your computer following [install instructions for your OS](https://docs.docker.com/engine/install/)
+- Review [post installation steps on linux](https://docs.docker.com/engine/install/). specially "Manage Docker as a non-root user" and "Configure Docker to start on boot" sections.
+- Validate everything is setup propertly by running `docker run hello-world`
+- **Optional** [Login in registry.gitlab.com](https://docs.gitlab.com/ee/user/packages/container_registry/#authenticate-with-the-container-registry)
+  - In [your gitlab settings](https://gitlab.com/-/profile/personal_access_tokens), create a personal access token with at least "read_registry" privilege. More info at [personal access token documentation](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
+  - Execute `docker login registry.gitlab.com` and it will ask your gitlab username and a password (Write here the access token, not your gitlab password). You can also run `docker login registry.gitlab.com -u <username> -p <token>`
+  - If the authentication fails, please run `docker logout registry.gitlab.com` before running `docker login...` again
+
+### Run retina docker
+
+```bash
+docker run -it --rm --pull=always -e LOGNAME=$USER --entrypoint sh -v ~/.kube:/root/.kube registry.gitlab.com/softwareradiosystems/ocudu_infra_srs/retina/launcher
+```
+
+- To share a folder in your PC with the container, add another `-v /absolute/path//pc:/absolute/path/container` before the image name.
+- `--pull=always` checks if the image and tag (latest) hasn't changed in the registry. If not, it won't download the image again. If there's a new version of the retina container, it will download it.
+- `LOGNAME` will be the name used by the booking system.
+
+</TabItem>
+</Tabs>

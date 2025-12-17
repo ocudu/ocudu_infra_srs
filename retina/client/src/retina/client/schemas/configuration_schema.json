@@ -1,0 +1,87 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema#",
+    "$id": "retina_parameters",
+    "title": "Retina Parameters",
+    "type": "object",
+    "properties": {
+        "ue": {
+            "$ref": "#/$defs/node_type"
+        },
+        "gnb": {
+            "$ref": "#/$defs/node_type"
+        },
+        "cu": {
+            "$ref": "#/$defs/node_type"
+        },
+        "du": {
+            "$ref": "#/$defs/node_type"
+        },
+        "5gc": {
+            "$ref": "#/$defs/node_type"
+        }
+    },
+    "uniqueItems": true,
+    "required": [],
+    "additionalProperties": false,
+    "$defs": {
+        "node_type": {
+            "type": "object",
+            "properties": {
+                "node_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/node"
+                    },
+                    "uniqueItems": true
+                },
+                "templates": {
+                    "$ref": "#/$defs/templates"
+                },
+                "parameters": {
+                    "$ref": "#/$defs/parameters"
+                }
+            },
+            "uniqueItems": true,
+            "required": [],
+            "additionalProperties": false
+        },
+        "node": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "pattern": "^([\\w-]+)$"
+                },
+                "templates": {
+                    "$ref": "#/$defs/templates"
+                },
+                "parameters": {
+                    "$ref": "#/$defs/parameters"
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "uniqueItems": true,
+            "additionalProperties": false
+        },
+        "parameters": {
+            "type": "object",
+            "uniqueItems": true,
+            "required": [],
+            "additionalProperties": true
+        },
+        "templates": {
+            "type": "object",
+            "uniqueItems": true,
+            "required": [],
+            "patternProperties": {
+                "^.*$": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

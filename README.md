@@ -19,3 +19,4 @@ Each folder contains a README.md and auxiliary markdown files to document each f
 - [GitLab Project Configuration](infra/gitlab/README.md)
 - [Gitlab CI Components](templates/README.md)
 - [OCUDU E2E Testing](e2e/README.md)
+- [Retina Framework for E2E Testing](retina/README.md)

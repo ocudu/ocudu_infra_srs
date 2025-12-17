@@ -1,0 +1,65 @@
+/*
+ *
+ * Copyright 2021-2025 Software Radio Systems Limited
+ *
+ * By using this file, you agree to the terms and conditions set
+ * forth in the LICENSE file which can be found at the top level of
+ * the distribution.
+ *
+ */
+
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+import "retina/protocol/base.proto";
+
+// CU service manages the Centralized Unit of the gNB split architecture
+service CU {
+  // Get Basic information about the CU, like public ip or IDs
+  rpc GetDefinition(google.protobuf.Empty) returns (CUDefinition) {};
+  // Start the CU. Raise an error if can't be started.
+  rpc Start(CUStartInfo) returns (google.protobuf.Empty) {};
+};
+
+// DU service manages the Distributed Unit of the gNB split architecture
+service DU {
+  // Get Basic information about the DU, like public ip or IDs
+  rpc GetDefinition(google.protobuf.UInt32Value) returns (DUDefinition) {};
+  // Start the DU. Raise an error if can't be started.
+  rpc Start(DUStartInfo) returns (google.protobuf.Empty) {};
+};
+
+// GNB service manages the monolithic gNodeB base station
+service GNB {
+  // Get Basic information about the GNB, like public ip or IDs
+  rpc GetDefinition(google.protobuf.UInt32Value) returns (DUDefinition) {};
+  // Start the GNB. Raise an error if can't be started.
+  rpc Start(GNBStartInfo) returns (google.protobuf.Empty) {};
+};
+
+message CUStartInfo {
+  PLMN             plmn              = 1;
+  FiveGCDefinition fivegc_definition = 2;
+  StartInfo        start_info        = 3;
+}
+
+message DUStartInfo {
+  uint64              gnb_du_id      = 1;
+  PLMN                plmn           = 2;
+  uint32              num_cells      = 3;
+  uint32              cell_offset    = 4;
+  CUDefinition        cu_definition  = 5;
+  UEDefinition        ue_definition  = 6; // Only required in ZMQ mode
+  NearRtRicDefinition ric_definition = 7; // if non-empty, E2 is enabled
+  StartInfo           start_info     = 8;
+}
+
+message GNBStartInfo {
+  PLMN                plmn              = 1;
+  FiveGCDefinition    fivegc_definition = 2;
+  UEDefinition        ue_definition     = 3; // Only required in ZMQ mode
+  NearRtRicDefinition ric_definition    = 4; // if non-empty, E2 is enabled
+  StartInfo           start_info        = 5;
+};

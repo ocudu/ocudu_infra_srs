@@ -1,0 +1,150 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+#########
+# Build #
+#########
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools >= 61", "wheel"]
+
+###########
+# Project #
+###########
+[project]
+authors = [
+  {name = "Software Radio Systems"},
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Development Status :: 4 - Beta",
+]
+dependencies = [
+  "retina_protocol",
+  "importlib-metadata < 7; python_version<'3.8'",
+  "PyYAML < 7",
+  "jsonschema < 4.18",
+]
+description = "Retina Software Client"
+dynamic = ["version"]
+name = "retina_client"
+requires-python = ">=3.9"
+
+#############
+# Dev Tools #
+#############
+[tool.black]
+line-length = 120
+
+[tool.isort]
+atomic = true
+combine_as_imports = true
+float_to_top = true
+force_alphabetical_sort_within_sections = true
+include_trailing_comma = true
+line_length = 120
+profile = "black"
+remove_redundant_aliases = true
+
+[tool.mypy]
+check_untyped_defs = true
+ignore_missing_imports = true
+install_types = true
+non_interactive = true
+warn_return_any = false
+warn_unused_configs = true
+
+[tool.pylint]
+disable = ["no-name-in-module"]
+ignore-signatures = true
+max-line-length = 120
+
+[tool.coverage.run]
+branch = true
+source = ["src/retina/client"]
+omit = [
+  "src/retina/client/output/grpc.py",
+  "src/retina/client/exception.py",
+  "src/retina/client/input/entrypoint.py",
+  "src/retina/client/manager.py",
+  "src/retina/client/core/version_port.py",
+  "src/retina/client/core/version_service.py",
+]
+
+[tool.coverage.report]
+fail_under = 55
+show_missing = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+minversion = 4.4.0
+envlist = 
+  format
+  lint
+  type
+  unittest
+  build
+
+[testenv]
+passenv = RETINA_VERSION
+
+[pkgenv]
+passenv = RETINA_VERSION
+
+[testenv:format]
+skip_install = true
+deps =
+  black
+  isort
+commands =
+  black --check --diff --color src
+  isort --check src
+
+[testenv:format_apply]
+skip_install = true
+deps =
+  black
+  isort
+commands =
+  black src
+  isort src
+
+[testenv:lint]
+deps =
+  pylint
+  -e ../protocol 
+commands =
+  pylint src
+
+[testenv:type]
+skip_install = true
+deps = 
+  mypy
+commands = 
+  mypy src
+
+[testenv:unittest]
+usedevelop = True
+deps =
+  coverage[toml]
+  -e ../protocol 
+commands =
+  coverage run -m unittest discover -v
+  coverage report
+  coverage xml
+  coverage html
+
+[testenv:build]
+skip_install = true
+deps =
+  build
+  -e ../protocol 
+commands =
+  python -m build
+"""

@@ -1,0 +1,64 @@
+/*
+ *
+ * Copyright 2021-2025 Software Radio Systems Limited
+ *
+ * By using this file, you agree to the terms and conditions set
+ * forth in the LICENSE file which can be found at the top level of
+ * the distribution.
+ *
+ */
+
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+import "retina/protocol/base.proto";
+
+// NearRtRic service manages the Near-Real-Time RAN Intelligent Controller
+service NearRtRic {
+  // Get Basic information about the RIC, like public ip or IDs
+  rpc GetDefinition(google.protobuf.Empty) returns (NearRtRicDefinition) {};
+  // Start the RIC. Raise an error if can't be started.
+  rpc Start(NearRtRicStartInfo) returns (google.protobuf.Empty) {};
+  // Start a KPM xApp
+  rpc StartKpmMonXapp(KpmMonXappRequest) returns (google.protobuf.Empty) {};
+  // Stop a KPM xApp
+  rpc StopKpmMonXapp(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  // Start a RC xApp
+  rpc StartRcXapp(RcXappRequest) returns (google.protobuf.Empty) {};
+  // Stop a RC xApp
+  rpc StopRcXapp(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  // Get KPM xApp Summary
+  rpc GetNearRtRicSummary(google.protobuf.Empty) returns (NearRtRicSummary) {};
+}
+
+message NearRtRicStartInfo {
+  StartInfo start_info = 1;
+};
+
+message KpmMonXappRequest {
+  uint32 report_service_style = 1;
+  uint32 ue_id                = 2;
+  string metrics              = 3;
+};
+
+message ControlParameter {
+  string name  = 1;
+  int32  value = 2;
+}
+
+message RcXappRequest {
+  uint32                        control_service_style = 1;
+  uint32                        action_id             = 2;
+  map<uint32, ControlParameter> parameters            = 3;
+};
+
+message NearRtRicSummary {
+  uint32 nof_connected_agents  = 1;
+  uint32 nof_connected_xapps   = 2;
+  uint32 nof_subscription_reqs = 3;
+  uint32 nof_subscription_reps = 4;
+  uint32 nof_ric_indication    = 5;
+  uint32 nof_control_reqs      = 6;
+  uint32 nof_control_reps      = 7;
+};

@@ -1,0 +1,17 @@
+ran_node_name: srsgnb01
+
+cu_cp:
+  amf:
+    addr: {{fivegc_ip}}
+    port: {{fivegc_port}}
+    bind_addr: {{ip}}
+    supported_tracking_areas:
+      - tac: {{tac}}
+        plmn_list:
+          - plmn: "{{mcc}}{{mnc}}"
+            tai_slice_support_list:
+              - sst: 1
+              {% for slice in slices %}
+              - sst: 1
+                sd: {{ slice.sd }}
+              {% endfor %}

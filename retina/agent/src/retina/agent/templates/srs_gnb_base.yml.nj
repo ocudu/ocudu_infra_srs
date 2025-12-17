@@ -1,0 +1,36 @@
+log:
+  filename: {{log_filename}}
+  all_level: {{log_level}}
+  lib_level: {{log_level}}
+  config_level: debug
+
+gnb_id: {{gnb_id}}
+
+{%+ if du_ip +%}
+f1ap:
+  cu_cp_addr: {{cu_ip}}
+  bind_addr: {{du_ip}}
+f1u:
+  bind_port: {{f1u_port}}
+  peer_port: {{f1u_port}}
+  socket:
+    -
+      bind_addr: {{du_ip}}
+{% elif cu_ip %}
+cu_cp:
+  f1ap:
+    bind_addr: {{cu_ip}}
+    procedure_timeout: 10000
+  rrc:
+    rrc_procedure_guard_time_ms: 10000
+cu_up:
+  f1u:
+    bind_port: {{f1u_port}}
+    peer_port: {{f1u_port}}
+    socket:
+      -
+        bind_addr: {{cu_ip}}
+{% endif %}
+
+metrics:
+  enable_log: true

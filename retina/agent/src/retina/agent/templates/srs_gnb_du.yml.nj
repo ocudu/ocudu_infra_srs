@@ -1,0 +1,305 @@
+{% if cell_array|length > 1 %}
+gnb_id_bit_length: {{gnb_id_bit_length}}
+{% endif %}
+
+gnb_du_id: {{gnb_du_id}}
+
+trace:
+  filename: {{tracing_filename}}
+  max_tracing_events_per_file: 1000000
+  nof_tracing_events_after_severe: 500
+
+pcap:
+  mac_filename: {{mac_filename}}
+  rlc_filename: {{rlc_filename}}
+{% if e2_du_enable%}
+  e2ap_du_filename: {{e2ap_du_filename}}
+{% endif %}
+
+{% if pcap %}
+{% if mac_enable %}
+pcap:
+  mac_enable: true
+  mac_type: dlt
+{% endif %}
+{% if rlc_enable %}
+pcap:
+  rlc_enable: true
+  rlc_rb_type: {{rlc_rb_type}}
+{% endif %}
+{% if e2_du_enable%}
+pcap:
+  e2ap_enable: true
+{% endif %}
+{% endif %}
+
+metrics:
+  layers:
+    enable_app_usage: true
+    enable_sched: true
+    enable_rlc: true
+    enable_mac: true
+    enable_du_low: true
+    enable_ru: true
+  periodicity:
+    app_usage_report_period: 10000
+    du_report_period: 1000
+
+{% if e2_du_enable%}
+e2:
+  enable_du_e2: true
+  addr: {{ric_ip}}
+  port: {{ric_port}}
+  bind_addr: {{ip}}
+  e2sm_kpm_enabled: true
+  e2sm_rc_enabled: true
+{% endif %}
+
+cell_cfg:
+  nof_antennas_dl: {{nof_antennas_dl}}
+  nof_antennas_ul: {{nof_antennas_ul}}
+  dl_arfcn: {{dl_arfcn}}
+  band: {{band}}
+  channel_bandwidth_MHz: {{bandwidth}}
+  common_scs: {{common_scs}}
+  plmn: "{{mcc}}{{mnc}}"
+  tac: {{tac}}
+  pucch:
+    formats: {{ pucch_formats }}
+{% if pdsch_mcs_table %}
+  pdsch:
+    mcs_table: {{pdsch_mcs_table}}
+{% endif %}
+{% if pusch_mcs_table %}
+  pusch:
+    mcs_table: {{pusch_mcs_table}}
+{% endif %}
+
+{% if common_search_space_enable %}
+  pdcch:
+    dedicated:
+      dci_format_0_1_and_1_1: false
+      ss2_type: common
+    common:
+      ss0_index: 0
+      coreset0_index: 6
+{% endif %}
+{% if prach_config_index >= 0 %}
+  prach:
+    prach_config_index: {{prach_config_index}}
+{% endif %}
+{% if enable_qos_reestablishment %}
+  prach:
+    nof_cb_preambles_per_ssb: 32
+{% endif %}
+{% if max_rb_size != -1 %}
+  pdsch:
+    max_rb_size: {{ max_rb_size }}
+{% endif %}
+{% if slices|length > 0 %}
+  slicing:
+  {% for slice in slices %}
+    - sst: 1
+      sd: {{ slice.sd }}
+      sched_cfg:
+        min_prb_policy_ratio: {{ slice.min_prb_policy_ratio }}
+        max_prb_policy_ratio: {{ slice.max_prb_policy_ratio }}
+      policy:
+        qos_sched:
+          pf_fairness_coeff: 5.0
+  {% endfor %}
+{% endif %}
+
+
+{% if pdsch_interleaving_bundle_size != 0 %}
+  pdsch:
+    interleaving_bundle_size: {{pdsch_interleaving_bundle_size}}
+{% endif %}
+
+  {% if mcs != -1 %}
+  pdsch:
+    min_ue_mcs: {{mcs}}
+    max_ue_mcs: {{mcs}}
+  pusch:
+    min_ue_mcs: {{mcs}}
+    max_ue_mcs: {{mcs}}
+  {% endif %}
+  {% if max_pdschs_per_slot != -1 %}
+  pdsch:
+    max_pdschs_per_slot: {{max_pdschs_per_slot}}
+  {% endif %}
+  {% if max_puschs_per_slot != -1 %}
+  pusch:
+    max_puschs_per_slot: {{max_puschs_per_slot}}
+  {% endif %}
+  {% if enable_channel_noise %}
+  ssb:
+    ssb_block_power_dbm: -10
+  {% endif %}
+  {% if type == "sdr" and model != "b200"%}
+  ssb:
+    ssb_block_power_dbm: -20
+  tdd_ul_dl_cfg:
+    nof_dl_slots: 7
+    nof_ul_slots: 2
+  {% endif %}
+
+cells:
+  {% for cell_info in cell_array %}
+  - pci: {{cell_info.pci}}
+    sector_id: {{cell_info.sector_id}}
+    dl_arfcn: {{dl_arfcn}}
+    band: {{band}}
+    common_scs: {{common_scs}}
+    prach:
+      prach_root_sequence_index: {{cell_info.prach_root_sequence_index}}
+  {% endfor %}
+
+{% if type == "zmq" and enable_dddsu %}
+cell_cfg:
+  pucch:
+    min_k1: 2
+  pusch:
+    min_k2: 2
+  tdd_ul_dl_cfg:
+    dl_ul_tx_period: 5
+    nof_dl_symbols: 6
+    nof_dl_slots: 3
+    nof_ul_slots: 1
+    nof_ul_symbols: 4
+{% endif %}
+
+{% if bandwidth <= 10 %}
+cell_cfg:
+  pucch:
+    nof_cell_sr_res: 6
+    nof_cell_csi_res: 6
+    nof_cell_res_set_configs: 1
+    f1_nof_cyclic_shifts: 6
+{% endif %}
+
+{% if enable_drx %}
+cell_cfg:
+  drx:
+    long_cycle: 80
+{% endif %}
+
+log:
+  high_latency_diagnostics_enabled: {{enable_high_latency_diagnostics}}
+
+{% if log_mac_level %}
+log:
+  mac_level: {{log_mac_level}}
+{% endif %}
+
+{% if log_phy_level %}
+log:
+  phy_level: {{log_phy_level}}
+{% endif %}
+
+{% if ntn_enable %}
+ntn:
+  epoch_time:
+    sfn: 0  # only placeholders, srsgnb overwrites it
+    subframe_number: 0  # only placeholders, srsgnb overwrites it
+  ntn_ul_sync_validity_dur: {{ sib19.ntn_ul_sync_validity_dur }}
+  cell_specific_koffset:  {{ sib19.cell_specific_koffset }}
+  ta_info:
+    ta_common:  {{ sib19.ta_common }}
+    ta_common_drift:  {{ sib19.ta_common_drift }}
+    ta_common_drift_variant:  {{ sib19.ta_common_drift_variant }}
+  {% if sib19.use_ephemeris_orbital %}
+  ephemeris_orbital:
+    semi_major_axis: {{ sib19.semi_major_axis }}
+    eccentricity: {{ sib19.eccentricity }}
+    periapsis: {{ sib19.periapsis }}
+    longitude: {{ sib19.longitude }}
+    inclination: {{ sib19.inclination }}
+    mean_anomaly: {{ sib19.mean_anomaly }}
+  {% else %}
+  ephemeris_info_ecef:
+    pos_x: {{ sib19.pos_x }}
+    pos_y: {{ sib19.pos_y }}
+    pos_z: {{ sib19.pos_z }}
+    vel_x: {{ sib19.vel_x }}
+    vel_y: {{ sib19.vel_y }}
+    vel_z: {{ sib19.vel_z }}
+  {% endif %}
+
+cell_cfg:
+  sib:
+    t300: 2000
+    t301: 2000
+    t319: 2000
+    si_window_length: 40
+    si_sched_info:
+      - si_period: 64               # Set SIB2 period.
+        sib_mapping: 2              # Enable SIB2.
+      - si_period: 64               # Set SIB19 period.
+        sib_mapping: 19             # Enable SIB19.
+        si_window_position: 2       # Set SIB19 position.
+  pucch:
+    sr_period_ms: 80
+  csi:
+    csi_rs_period: 80
+  pdsch:
+    nof_harqs: 16
+    max_nof_harq_retxs: 0
+    harq_mode_b: true
+  pusch:
+    max_nof_harq_retxs: 0
+    harq_mode_b: true
+  prach:
+    max_msg3_harq_retx: 0
+    prach_config_index: 31
+  ta:
+    ta_target: {{ ta_target }}
+    ta_measurement_slot_prohibit_period: {{ ta_meas_slot_prohibit_period }}
+    ta_measurement_slot_period: {{ ta_meas_slot_period }}
+    ta_cmd_offset_threshold: {{ ta_cmd_offset_threshold }}
+{% endif %}
+
+{###################################################}
+{# Special configuration for Viavi RU #}
+{###################################################}
+{% if type == "ru" and model == "viavi-ru" %}
+cell_cfg:
+  sib:
+    t301: 2000
+    t311: 3000
+  prach:
+    prach_root_sequence_index: 1
+    zero_correlation_zone: 0
+    prach_frequency_start: 12
+  pucch:
+    min_k1: 4
+  csi:
+    csi_rs_period: 40
+  pdsch:
+    max_pdschs_per_slot: 4
+    max_alloc_attempts: 8
+    olla_target_bler: 0.1
+    olla_cqi_inc_step: 0.05
+    olla_max_cqi_offset: 10
+  ul_common:
+    max_ul_grants_per_slot: 12
+    max_pucchs_per_slot: 10
+  pusch:
+    max_puschs_per_slot: 2
+    min_k2: 2
+    olla_target_bler: 0.1
+    olla_snr_inc_step: 0.05
+    olla_max_snr_offset: 20
+  ta:
+    ta_target: 0
+  pucch:
+    sr_period_ms: 40
+    nof_cell_sr_res: 30
+  tdd_ul_dl_cfg:
+    nof_dl_symbols: 8
+    nof_dl_slots: 7
+    nof_ul_slots: 2
+  ssb:
+    ssb_period: 20
+{% endif %}
+{###################################################}

@@ -1,0 +1,4 @@
+1. Create orchestration network ID (configmap)
+2. Reserve N ports (N configmap)
+3. Reserve N resource spaces (N configmap)
+4. Reserve deployment (deployment)

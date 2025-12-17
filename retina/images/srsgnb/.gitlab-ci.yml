@@ -1,0 +1,89 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/docker.yml
+
+stages:
+  - test
+  - publish
+
+.docker-builder-srsgnb-base:
+  extends: .docker-builder
+  variables:
+    NAME: retina/srsgnb-base
+    VERSION: ${RETINA_VERSION}
+    CONTEXT: retina/images/srsgnb/base
+    BUILDER_IMAGE_NAME: builder-ubuntu-${AGENT_OS_VERSION}:2025.12.01
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE};BUILDER_IMAGE=${OCUDU_REGISTRY_URI}/${BUILDER_IMAGE_NAME}
+    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "125G"
+    KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "125G"
+  tags:
+    - amd64-docker
+
+only build base:
+  stage: test
+  extends: .docker-builder-srsgnb-base
+  rules:
+    - if: $ON_MR
+  variables:
+    MODE: test
+
+build and publish base:
+  stage: publish
+  extends: .docker-builder-srsgnb-base
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+  retry: 2
+  variables:
+    MODE: publish
+
+build and publish final:
+  stage: publish
+  extends: .docker-builder
+  variables:
+    VERSION: ${RETINA_VERSION}
+    CONTEXT: retina/images/srsgnb
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE};RETINA_AGENT=${RETINA_AGENT}
+    MODE: publish
+    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "80G"
+    KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "80G"
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+  retry: 2
+  parallel:
+    matrix:
+      - NAME: retina/srsgnb
+        RETINA_AGENT: srs-gnb
+      - NAME: retina/srscudu
+        RETINA_AGENT: srs-cudu
+      - NAME: retina/srscu
+        RETINA_AGENT: srs-cu
+      - NAME: retina/srsdu
+        RETINA_AGENT: srs-du
+  needs:
+    - build and publish base

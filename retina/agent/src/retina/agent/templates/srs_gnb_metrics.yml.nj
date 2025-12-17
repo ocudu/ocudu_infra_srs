@@ -1,0 +1,6 @@
+metrics:
+  autostart_stdout_metrics: true
+  enable_json: true
+remote_control:
+  bind_addr: 0.0.0.0
+  enabled: true

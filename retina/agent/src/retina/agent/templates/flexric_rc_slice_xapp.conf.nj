@@ -1,0 +1,25 @@
+SM_DIR = "/usr/local/lib/flexric/"
+
+# supported name = xApp
+Name = "xApp"
+NearRT_RIC_IP = "{{ric_ip}}"
+E42_Port = 36422
+
+Sub_ORAN_SM_List = (
+    { name = "RC", time = 0,
+      format = 1,
+      ran_type = "{{ran_type}}",
+      actions = (          # 8.2.2 RAN Parameters for Report Service Style 2
+            { id = 6 }     # it seems that the ids are not parsed in the xapp
+            )
+    }
+)
+
+xApp_DB = {
+    enable = "OFF"
+    ip = "127.0.0.1"
+    dir = "/tmp/"
+    filename = "testdb"
+    username = "your_username" # if using mysql
+    password = "your_passwd" # if using mysql
+}

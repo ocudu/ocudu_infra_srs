@@ -1,0 +1,72 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema#",
+    "$id": "retina_testbed",
+    "title": "Retina Testbed",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "minLength": 1
+        },
+        "node_list": {
+            "$ref": "#/$defs/node_list"
+        }
+    },
+    "uniqueItems": true,
+    "required": [
+        "id",
+        "node_list"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+        "node_list": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/node"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "node": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "pattern": "^(?!ue|gnb|5gc|all)([\\w-]+)$"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "ue",
+                        "gnb",
+                        "cu",
+                        "du",
+                        "5gc",
+                        "ric",
+                        "channel-emulator",
+                        "generic"
+                    ]
+                },
+                "address": {
+                    "type": "string",
+                    "format": "ipv4",
+                    "minLength": 1
+                },
+                "port": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "resources": {
+                    "type": "array"
+                }
+            },
+            "required": [
+                "name",
+                "type",
+                "address",
+                "port"
+            ],
+            "additionalProperties": false
+        }
+    }
+}

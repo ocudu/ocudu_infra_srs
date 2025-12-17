@@ -1,0 +1,91 @@
+/* ltemme configuration file
+ * Copyright (C) 2015-2021 Amarisoft
+ */
+{
+
+  {% if log_level == "debug" %}
+  log_options: "all.level={{log_level}},all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'info'}},phy.dci_size=1,phy.csi=1,phy.cell_meas=1,phy.cch=1,rrc.max_size=16,nas.key=1,rrc.key=1{{',pdcp.crypto=1' if log_ip_level == 'debug' else ''}}",
+  {% elif log_level == "error" %}
+  log_options: "all.level={{log_level}},all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'error'}}",
+  {% endif %}
+  log_filename: "{{log_filename}}",
+
+  /* SIP bind address */
+  sip_addr: [
+      {addr: "{{subnet_prefix}}.4.1", bind_addr: "{{subnet_prefix}}.4.1", port_min: 10000, port_max: 20000},
+      //"2001:468:3000:1::",
+      {addr: "{{subnet_prefix}}.5.1", bind_addr: "{{subnet_prefix}}.5.1", port_min: 10000, port_max: 20000},
+      //"2001:468:4000:1::"
+  ],
+
+  mms_server_bind_addr: "{{subnet_prefix}}.3.1:1111",
+
+  /* MME connection for SMS over SG */
+  sctp_addr: "127.0.0.1",
+
+  /* Cx connection */
+  cx_server_addr: "127.0.1.100",
+  cx_bind_addr: "127.0.0.1",
+  cx_origin_host: "ims.mnc0{{mnc}}.mcc{{mcc}}.3gppnetwork.org",
+  cx_origin_realm: "mnc0{{mnc}}.mcc{{mcc}}.3gppnetwork.org",
+
+  /* Rx connection */
+  rx_server_addr: "127.0.1.100",
+  rx_origin_host: "ims.mnc0{{mnc}}.mcc{{mcc}}.3gppnetwork.org",
+  rx_origin_realm: "mnc0{{mnc}}.mcc{{mcc}}.3gppnetwork.org",
+
+  /* Enable remote API and Web interface */
+  com_addr: "0.0.0.0:{{api_port}}",
+
+  /* Global domain name (May be overriden for each user) */
+//    domain: "amarisoft.com",
+  domain: "ims.mnc0{{mnc}}.mcc{{mcc}}.3gppnetwork.org",
+
+  /* Echo phone number */
+  echo: [
+      "tel:666",
+      "tel:+666",
+      {impu: "tel:404", code: 404},     /* 404 test */
+      {impu: "urn:service:sos", anonymous: true, authentication: false}, /* Emergency call */
+      {impu: "urn:service:sos.police", anonymous: true, authentication: false}, /* Emergency call */
+  ],
+
+  /* Delay */
+  //sms_expires: 86400,
+  //binding_expires: 3600,
+
+  /* on: 3GPP mode allowed
+    * silent: 3GPP mode forced
+    * off: IETF mode
+    */
+  precondition: "on",
+  "100rel": true,
+
+  /* IPsec */
+  ipsec_aalg_list: ["hmac-md5-96", "hmac-sha-1-96"],
+  //ipsec_ealg_list: ["null", "aes-cbc", "des-cbc", "des-ede3-cbc"],
+  ipsec_ealg_list: ["null"],
+
+  mt_call_sdp_file: "mt_call_qos.sdp",
+
+  /* user data base */
+  ue_db: [
+  {% for subscriber in subscriber_array %}
+    {
+      {% if subscriber.algo_str %}
+      sim_algo: "{{subscriber.algo_str}}",
+      {% endif %}
+      imsi: "{{subscriber.imsi}}",
+      {% if subscriber.opc %}
+      opc: "{{subscriber.opc}}",
+      {% endif %}
+      amf: 0x{{subscriber.amf}},
+      sqn: "000000000000",
+      K: "{{subscriber.k}}",
+      impu: ["{{subscriber.imsi}}", "tel:{{subscriber.tel}}"],
+      impi: "{{subscriber.imsi}}@ims.mnc0{{mnc}}.mcc{{mcc}}.3gppnetwork.org",
+    },
+  {% endfor %}
+  ],
+
+}

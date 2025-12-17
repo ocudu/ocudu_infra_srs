@@ -1,0 +1,51 @@
+/*
+ *
+ * Copyright 2021-2025 Software Radio Systems Limited
+ *
+ * By using this file, you agree to the terms and conditions set
+ * forth in the LICENSE file which can be found at the top level of
+ * the distribution.
+ *
+ */
+
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+import "retina/protocol/base.proto";
+
+// FiveGC service manages the 5G Core network components
+service FiveGC {
+  // Get Basic information about the UE, like public ip or IDs
+  rpc GetDefinition(google.protobuf.Empty) returns (FiveGCDefinition) {};
+  // Start the 5GC. Raise an error if can't be started.
+  rpc Start(FiveGCStartInfo) returns (google.protobuf.Empty) {};
+  // Register an UE into the 5GC. Raises an error if fails
+  rpc AddUESubscriber(Subscriber) returns (google.protobuf.Empty) {};
+  // Start a IPerf Server
+  rpc StartIPerfService(google.protobuf.StringValue) returns (IPerfServer) {};
+  // Stop a IPerf Server
+  rpc StopIPerfService(IPerfServer) returns (IPerfResponse) {};
+  // Return an array of Subscribers
+  rpc GetImsRegisteredUESubscriberArray(google.protobuf.Empty) returns (SubscriberArray) {};
+}
+
+message FiveGCStartInfo {
+  PLMN      plmn       = 1;
+  StartInfo start_info = 2;
+};
+
+message IPerfResponse {
+  IPerfSummary downlink = 1;
+  IPerfSummary uplink   = 2;
+};
+
+message IPerfSummary {
+  uint64 bytes           = 1;
+  double bits_per_second = 2;
+  double seconds         = 3;
+  uint64 lost_packets    = 4;
+  uint64 packets         = 5;
+  uint64 retransmits     = 6;
+};

@@ -8,7 +8,7 @@
 
 - name: android-ue
   type: ue
-  image: ${RETINA_REGISTRY_PREFIX}/android:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/android:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 1
@@ -25,7 +25,7 @@
 
 - name: ocudu-gnb
   type: gnb
-  image: ${RETINA_REGISTRY_PREFIX}/srsgnb:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/srsgnb:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 12
@@ -42,16 +42,16 @@
     - type: sdr
       model: x300
   environment:
-    - PATH: ${CONTAINER_PATH}:${OCUDU_ABS_BUILD_PATH}/apps/gnb
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
-    - local_path: ${OCUDU_REL_BUILD_PATH}/apps/gnb/gnb
+    - local_path: ${OCUDU_PATH}/build_retina/apps/gnb/gnb
       remote_path: /usr/local/bin/gnb
       is_executable: true
 
 - name: amarisoft-mme
   type: 5gc
-  image: ${RETINA_REGISTRY_PREFIX}/amarisoft5gc-remote:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/amarisoft5gc-remote:${RETINA_VERSION}
   taints: ["purpose=retina"]
   force_external_ip: true
   requirements:

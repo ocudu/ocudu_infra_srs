@@ -1,0 +1,2 @@
+include src/retina/launcher/index.html.nj
+include src/retina/launcher/log.html.nj

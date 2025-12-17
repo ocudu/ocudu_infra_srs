@@ -1,0 +1,140 @@
+#
+# Copyright 2021-2025 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+#########
+# Build #
+#########
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools >= 61", "wheel"]
+
+###########
+# Project #
+###########
+[project]
+authors = [
+  {name = "Software Radio Systems"},
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Development Status :: 4 - Beta",
+]
+dependencies = [
+  "retina_protocol",
+  "kubernetes < 35",
+  "jinja2 < 4",
+  "rich < 14",
+  "jsonschema < 4.18",
+  "python-dotenv < 2",
+  "requests < 3",
+  "click < 9",
+  "websockets < 12",
+]
+description = "Retina orchestrator"
+dynamic = ["version"]
+name = "retina_orchestrator"
+requires-python = ">=3.9"
+
+[project.scripts]
+retina = "retina.orchestrator.entry_points.retina_entrypoint:retina"
+retina-deploy-cluster = "retina.orchestrator.entry_points.deploy_cluster_entrypoint:main"
+retina-deploy-cluster-version = "retina.orchestrator.entry_points.retina_deploy_cluster_version_entrypoint:main"
+retina-garbage-collector = "retina.orchestrator.entry_points.garbage_collector_entrypoint:main"
+retina-request-checker = "retina.orchestrator.entry_points.request_checker_entrypoint:main"
+
+#############
+# Dev Tools #
+#############
+[tool.black]
+line-length = 120
+
+[tool.isort]
+atomic = true
+combine_as_imports = true
+float_to_top = true
+force_alphabetical_sort_within_sections = true
+include_trailing_comma = true
+line_length = 120
+profile = "black"
+remove_redundant_aliases = true
+
+[tool.mypy]
+check_untyped_defs = true
+ignore_missing_imports = true
+install_types = true
+non_interactive = true
+warn_return_any = false
+warn_unused_configs = true
+
+[tool.pylint]
+ignore-signatures = true
+max-line-length = 120
+
+[tool.coverage.run]
+branch = true
+source = ["src/retina/orchestrator"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+minversion = 4.4.0
+envlist = 
+  format
+  lint
+  type
+  build
+
+[testenv]
+passenv = RETINA_VERSION
+
+[pkgenv]
+passenv = RETINA_VERSION
+
+[testenv:format]
+skip_install = true
+deps =
+  black
+  isort
+commands =
+  black --check --diff --color src
+  isort --check src
+
+[testenv:format_apply]
+skip_install = true
+deps =
+  black
+  isort
+commands =
+  black src
+  isort src
+
+[testenv:lint]
+deps =
+  pylint 
+  -e ../protocol 
+commands =
+  pylint src
+
+[testenv:type]
+skip_install = true
+deps = 
+  mypy
+commands = 
+  mypy src
+
+[testenv:build]
+skip_install = true
+deps =
+  build
+  -e ../protocol
+commands =
+  python -m build
+"""

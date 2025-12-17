@@ -1,0 +1,180 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema#",
+    "$id": "retina_request",
+    "title": "Retina Request",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"
+            },
+            "type": {
+                "type": "string"
+            },
+            "force_external_ip": {
+                "type": "boolean"
+            },
+            "image": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*(\\/[a-z0-9]+([._-][a-z0-9]+)*)*(\\:[a-zA-Z0-9._-]{1,128})?$"
+            },
+            "nof_ports": {
+                "type": "integer",
+                "minimum": 1
+            },
+            "command": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "host_network": {
+                "type": "string"
+            },
+            "taints": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "labels": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "environment": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "shared_files": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "local_path": {
+                            "type": "string"
+                        },
+                        "remote_path": {
+                            "type": "string"
+                        },
+                        "is_executable": {
+                            "type": "boolean"
+                        },
+                        "is_optional": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "local_path",
+                        "remote_path",
+                        "is_executable"
+                    ]
+                }
+            },
+            "resources": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        },
+                        "model": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ]
+                },
+                "additionalProperties": false,
+                "uniqueItems": false
+            },
+            "requirements": {
+                "type": "object",
+                "properties": {
+                    "cpu": {
+                        "type": "object",
+                        "properties": {
+                            "requests": {
+                                "type": "number"
+                            },
+                            "limits": {
+                                "type": "number"
+                            }
+                        },
+                        "required": [
+                            "requests"
+                        ]
+                    },
+                    "memory": {
+                        "type": "object",
+                        "properties": {
+                            "requests": {
+                                "type": "string"
+                            },
+                            "limits": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "requests"
+                        ]
+                    },
+                    "hugepages-1Gi": {
+                        "type": "object",
+                        "properties": {
+                            "requests": {
+                                "type": "string"
+                            },
+                            "limits": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "ephemeral-storage": {
+                        "type": "object",
+                        "properties": {
+                            "requests": {
+                                "type": "string"
+                            },
+                            "limits": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "requests"
+                        ]
+                    }
+                },
+                "required": [
+                    "cpu",
+                    "memory"
+                ],
+                "additionalProperties": false,
+                "uniqueItems": false
+            },
+            "grace_period": {
+                "type": "integer",
+                "minimum": 0
+            }
+        },
+        "required": [
+            "name",
+            "image"
+        ],
+        "additionalProperties": false,
+        "uniqueItems": true
+    }
+}

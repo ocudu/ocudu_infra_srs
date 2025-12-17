@@ -1,0 +1,101 @@
+---
+title: Protocol Protobuf API
+hide_table_of_contents: true
+---
+
+import TOCInline from '@theme/TOCInline';
+
+<TOCInline toc={toc} minHeadingLevel={2} maxHeadingLevel={4} />
+
+{{- /*
+Docusaurus-friendly protoc-gen-doc template:
+- No raw HTML headings or <a name="...">
+- Inline TOC rendered by Docusaurus (uses generated heading IDs)
+*/ -}}
+
+{{- range .Files }}
+
+## {{ .Name }}
+
+{{- if .Package }}
+**Package:** `{{ .Package }}`
+{{- end }}
+
+{{- if .Description }}
+
+{{ .Description }}
+{{- end }}
+
+{{- if .HasMessages }}
+
+### Messages
+
+{{- range .Messages }}
+
+#### {{ .LongName }}
+
+{{- if .Description }}
+
+{{ .Description }}
+{{- end }}
+
+{{- if .HasFields }}
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+{{- range .Fields }}
+| `{{ .Name }}` | `{{ .LongType }}` | {{- if .Label -}}`{{ .Label }}`{{- end -}}{{- if .IsOneof -}} `oneof {{ .OneofDecl }}`{{- end -}} | {{- if .Description -}}{{ nobr .Description }}{{- end -}} |
+{{- end }}
+
+{{- end }}
+
+{{- end }}
+{{- end }}
+
+{{- if .HasEnums }}
+
+### Enums
+
+{{- range .Enums }}
+
+#### {{ .LongName }}
+
+{{- if .Description }}
+
+{{ .Description }}
+{{- end }}
+
+| Name | Number | Description |
+|---|---:|---|
+{{- range .Values }}
+| `{{ .Name }}` | {{ .Number }} | {{- if .Description -}}{{ nobr .Description }}{{- end -}} |
+{{- end }}
+
+{{- end }}
+{{- end }}
+
+{{- if .HasServices }}
+
+### Services
+
+{{- range .Services }}
+
+#### {{ .LongName }}
+
+{{- if .Description }}
+
+{{ .Description }}
+{{- end }}
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+{{- range .Methods }}
+| `{{ .Name }}` | `{{ .RequestLongType }}` | `{{ .ResponseLongType }}` | {{- if or .RequestStreaming .ResponseStreaming -}}Yes{{- else -}}No{{- end -}} | {{- if .Description -}}{{ nobr .Description }}{{- end -}} |
+{{- end }}
+
+{{- end }}
+{{- end }}
+
+---
+
+{{- end }}

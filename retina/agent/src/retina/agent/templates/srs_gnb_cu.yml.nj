@@ -1,0 +1,183 @@
+{% if log_sec_level %}
+log:
+  sec_level: {{log_sec_level}}
+{% endif %}
+
+pcap:
+  ngap_filename: {{ngap_filename}}
+  f1ap_filename: {{f1ap_filename}}
+  e1ap_filename: {{e1ap_filename}}
+  n3_filename: {{n3_filename}}
+{% if pcap %}
+pcap:
+  ngap_enable: true
+  f1ap_enable: true
+  e1ap_enable: true
+{% if n3_enable %}
+pcap:
+  n3_enable: true
+{% endif %}
+{% endif %}
+
+metrics:
+  layers:
+    enable_app_usage: true
+    enable_pdcp: true
+  periodicity:
+    app_usage_report_period: 10000
+    cu_cp_report_period: 5000
+    cu_up_report_period: 5000
+
+cu_up:
+  warn_on_drop: {{ warn_on_drop }}
+
+{% if cell_array|length > 1 %}
+cu_cp:
+  mobility:
+    trigger_handover_from_measurements: true
+
+    # List of all cells known to the CU-CP, their configs (if not provided over F1) and their respective neighbor cells.
+    cells:
+      {% for cell_info in cell_array %}
+      - nr_cell_id: {{cell_info.cell_id}}
+        periodic_report_cfg_id: 1
+        ncells:
+          {% for neighbor_cell_info in cell_info.neighbor_array %}
+          - nr_cell_id: {{neighbor_cell_info.cell_id}}
+            report_configs: [ 2 ]
+          {% endfor %}
+      {% endfor %}
+
+    # gNB uses this report config to dynamically build a measConfig sent to the UEs using the below values.
+    report_configs:
+      - report_cfg_id: 1
+        report_type: periodical # periodical reports are only supported for serving cells
+        report_interval_ms: 2048
+      - report_cfg_id: 2
+        report_type: event_triggered
+        event_triggered_report_type: a3
+        meas_trigger_quantity: rsrp
+        meas_trigger_quantity_offset_db: 3
+        hysteresis_db: 0
+        time_to_trigger_ms: 100
+        report_interval_ms: 480
+{% endif %}
+
+{# Mobility config for NG HO #}
+{% if (gnb_id == 500) or (gnb_id == 501) %}
+cu_cp:
+  mobility:
+    trigger_handover_from_measurements: true
+
+    # List of all cells known to the CU-CP, their configs (if not provided over F1) and their respective neighbor cells.
+    cells:
+      {% if gnb_id == 500 %}
+      - nr_cell_id: {{gnb_id * 2**(36-gnb_id_bit_length)}}
+        periodic_report_cfg_id: 1
+        ncells:
+          - nr_cell_id: {{(gnb_id + 1) * 2**(36-gnb_id_bit_length) + 1}}
+            report_configs: [ 2 ]
+
+      - nr_cell_id: {{(gnb_id + 1) * 2**(36-gnb_id_bit_length) + 1}}
+        periodic_report_cfg_id: 1
+        ncells:
+          - nr_cell_id: {{gnb_id * 2**(36-gnb_id_bit_length)}}
+            report_configs: [ 2 ]
+      {% else %}
+      - nr_cell_id: {{gnb_id * 2**(36-gnb_id_bit_length) + 1}}
+        periodic_report_cfg_id: 1
+        ncells:
+          - nr_cell_id: {{(gnb_id - 1) * 2**(36-gnb_id_bit_length)}}
+            report_configs: [ 2 ]
+
+      - nr_cell_id: {{(gnb_id - 1) * 2**(36-gnb_id_bit_length)}}
+        periodic_report_cfg_id: 1
+        ncells:
+          - nr_cell_id: {{gnb_id * 2**(36-gnb_id_bit_length) + 1}}
+            report_configs: [ 2 ]
+      {% endif %}
+        # Must be present if values are not provided over F1.
+        gnb_id_bit_length: {{gnb_id_bit_length}}
+        {% if gnb_id == 500 %}
+        pci: 2
+        {% else %}
+        pci: 1
+        {% endif %}
+        {% if dl_arfcn == 520002 %}
+        ssb_arfcn: 516030
+        ssb_scs: 30
+        {% else %}
+        ssb_arfcn: 364090
+        ssb_scs: 15
+        {% endif %}
+        band: {{band}}
+        ssb_period: 10
+        ssb_offset: 0
+        ssb_duration: 5
+
+    # gNB uses this report config to dynamically build a measConfig sent to the UEs using the below values.
+    report_configs:
+      - report_cfg_id: 1
+        report_type: periodical # periodical reports are only supported for serving cells
+        report_interval_ms: 2048
+      - report_cfg_id: 2
+        report_type: event_triggered
+        event_triggered_report_type: a3
+        meas_trigger_quantity: rsrp
+        meas_trigger_quantity_offset_db: 3
+        hysteresis_db: 0
+        time_to_trigger_ms: 100
+        report_interval_ms: 480
+{% endif %}
+
+{% if enable_integrity_protection or enable_security_mode%}
+cu_cp:
+  security:
+    integrity: required
+{% endif %}
+
+{% if enable_security_mode %}
+cu_cp:
+  security:
+    confidentiality: required
+    nea_pref_list: nea2,nea0,nea1,nea3
+    nia_pref_list: nia2,nia1,nia3
+{% endif %}
+
+{% if cu_cp_inactivity_timer != -1 %}
+cu_cp:
+  inactivity_timer: {{cu_cp_inactivity_timer}}
+{% endif %}
+
+{% if request_pdu_session_timeout != -1 %}
+cu_cp:
+  request_pdu_session_timeout: {{request_pdu_session_timeout}}
+{% endif %}
+
+{% if rrc_procedure_guard_time_ms != -1 %}
+cu_cp:
+  rrc:
+    rrc_procedure_guard_time_ms: {{rrc_procedure_guard_time_ms}}
+{% endif %}
+
+{###################################################}
+{# Special configuration for Viavi RU #}
+{###################################################}
+{% if type == "ru" and model == "viavi-ru"%}
+cu_up:
+  ngu:
+    gtpu:
+      reordering_timer: 5
+      ignore_ue_ambr: true
+
+cu_cp:
+  rrc:
+    force_reestablishment_fallback: true
+  amf:
+    sctp_init_max_attempts: 6
+    sctp_max_init_timeo: 3000
+
+buffer_pool:
+  nof_segments: 1048576
+{% endif %}
+{###################################################}
