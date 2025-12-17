@@ -327,7 +327,7 @@ def _handover_multi_ues(
     nof_antennas_dl: int = 1,
     prach_config_index: int = -1,
     warning_as_errors: bool = True,
-    movement_steps: int = 10,
+    movement_steps: int = 20,
     sleep_between_movement_steps: int = 2,
     cell_position_offset: Tuple[float, float, float] = (1000, 0, 0),
     stop_gnb_first: bool = False,
