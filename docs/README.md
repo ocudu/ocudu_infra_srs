@@ -1,21 +1,21 @@
-# OCUDU Infra SRS Documentation
+# Documentation
 
-This directory contains the documentation infrastructure for the OCUDU Infra SRS project: a markdown-based documentation site (Docusaurus).
+The documentation for the OCUDU Infra SRS project is built with Docusaurus. It collects all markdown files across the repo and render them into a website.
 
-## Docker Services
+## Generate the documentation locally using Docker
 
 ```bash
 docker compose -f docs/docker-compose.yml up
 ```
 
-**Access:** [http://localhost:3000/ocudu_infra_srs](http://localhost:3000/ocudu_infra_srs)
+**Access:** [http://localhost:3000](http://localhost:3000)
 
-## Docusaurus
+## Docusaurus Details
 
 ### Automatically rendering of .md files in the repository
 
 1. It collects all markdown files anywhere in the repository (except excluded paths)
-2. A custom Docusaurus plugin [frontmatter-loader](./docusaurus/plugins/frontmatter-loader.js) automatically adds the required Docusaurus header (frontmatter).
+2. A custom Docusaurus plugin [frontmatter-loader](./plugins/frontmatter-loader.js) automatically adds the required Docusaurus header (frontmatter).
 3. Files appear in the sidebar and are searchable
 4. README.md files become index pages for their directory
 

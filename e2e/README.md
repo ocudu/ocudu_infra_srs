@@ -1,4 +1,4 @@
-# OCUDU E2E Testing
+# E2E Testing
 
 This folder contains e2e tests sources, configurations and testbeds, alongside the Gitlab CI code to replicate SRS scheduled pipelines.
 

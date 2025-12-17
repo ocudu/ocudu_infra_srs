@@ -125,13 +125,36 @@ module.exports = {
           exclude: [
             '**/node_modules/**',
             '**/.git/**',
-            '**/docs/**',
             '**/.tox/**',
             '**/__pycache__/**',
             '**/.pytest_cache/**',
           ],
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: undefined,
+          async sidebarItemsGenerator({ defaultSidebarItemsGenerator, ...args }) {
+            const sidebarItems = await defaultSidebarItemsGenerator(args);
+
+            // Flatten categories that don't have a README or index page
+            function flattenCategories(items) {
+              return items.flatMap(item => {
+                if (item.type === 'category') {
+                  // Check if category has a link (means it has README or _category_.yml with link)
+                  if (!item.link && item.items) {
+                    // No link means no README - flatten this category
+                    console.log(`[sidebar] Flattening category without README: ${item.label}`);
+                    return flattenCategories(item.items);
+                  }
+                  // Category has a link, keep it but process its children
+                  if (item.items) {
+                    item.items = flattenCategories(item.items);
+                  }
+                }
+                return [item];
+              });
+            }
+
+            return flattenCategories(sidebarItems);
+          },
         },
         blog: false,
         theme: {
@@ -142,7 +165,6 @@ module.exports = {
   ],
   plugins: [
     './plugins/inject-frontmatter-plugin.js',
-
     [
       require.resolve("@easyops-cn/docusaurus-search-local"),
       {

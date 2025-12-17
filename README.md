@@ -12,9 +12,10 @@ A third-party entity can replicate this repo's CI/CD flows to create their own t
 
 This repository have dependencies on third-party hardware and software, such as O-RUs, SDRs, commercial off-the-shelf (COTS) UEs, 5GC, and UE emulators.
 
-## Index
+## More
+
+Each folder contains a README.md and auxiliary markdown files to document each feature. Please read them to know more or navigate through the [documentation website](./docs/README.md) generated with all markdown files across the repo in [https://softwareradiosystems.gitlab.io/ocudu_infra_srs](https://softwareradiosystems.gitlab.io/ocudu_infra_srs).
 
 - [GitLab Project Configuration](infra/gitlab/README.md)
 - [Gitlab CI Components](templates/README.md)
 - [OCUDU E2E Testing](e2e/README.md)
-  - [Setup manual pipelines in your repository](e2e/README.md#manual-pipeline)
