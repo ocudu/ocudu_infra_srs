@@ -886,7 +886,7 @@ def multi_ue_mobility_iperf(
     always_download_artifacts: bool,
     noise_spd: int,
     warning_as_errors: bool = True,
-    movement_steps: int = 10,
+    movement_steps: int = 20,
     sleep_between_movement_steps: int = 2,
     cell_position_offset: Tuple[float, float, float] = (1000, 0, 0),
     nof_movements: int = 2,
