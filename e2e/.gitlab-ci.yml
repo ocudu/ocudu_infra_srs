@@ -467,7 +467,7 @@ cudu 64UE:
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
     - load retina scheduled
-    - dpdk rtsan avx2
+    - dpdk rtsan avx512
 
 gnb 1UE s72:
   extends: .amarisoft s72
