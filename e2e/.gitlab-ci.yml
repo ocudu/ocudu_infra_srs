@@ -144,24 +144,6 @@ tsan:
     TEST_MODE: none
     INFRASTRUCTURE_TAG: amd64-avx2
 
-dpdk rtsan avx2:
-  extends: build
-  retry: 2
-  cache: []
-  rules:
-    - *emulated_nightly
-  variables:
-    OS: ubuntu-24.04-rtsan
-    OCUDU_TARGET: gnb_split_7_2
-    COMPILER: clang
-    DPDK_VERSION: 24.11.2_avx2
-    BUILD_ARGS: >
-      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=True -DMARCH=x86-64-v3
-      -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
-      -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
-    TEST_MODE: none
-    INFRASTRUCTURE_TAG: amd64-avx2
-
 dpdk rtsan avx512:
   extends: build
   retry: 2
