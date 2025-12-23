@@ -16,6 +16,10 @@ spec:
       type: string
       default: dev
       description: "OCUDU reference branch or tag."
+    ocudu_build_dir:
+      type: string
+      default: build
+      description: "OCUDU build directory."
     job:
       type: string
       default: build_ocudu
@@ -98,6 +102,7 @@ include:
   rules: $[[ inputs.rules ]]
   variables:
     OCUDU_DIR: ${CI_PROJECT_DIR}/ocudu
+    OCUDU_BUILD_DIR: $[[ inputs.ocudu_build_dir ]]
     # Setup variables
     OCUDU_PATH: $[[ inputs.ocudu_path ]]
     OCUDU_REF: $[[ inputs.ocudu_ref ]]
@@ -178,22 +183,22 @@ include:
     # Save Testing output (ctest)
     - |
       cd ${OCUDU_DIR}
-      mkdir -p ${CI_PROJECT_DIR}/build/Testing
-      mv ${OCUDU_DIR}/build/Testing ${CI_PROJECT_DIR}/build/Testing || true >/dev/null 2>&1
+      mkdir -p ${CI_PROJECT_DIR}/${OCUDU_BUILD_DIR}/Testing
+      mv ${OCUDU_DIR}/${OCUDU_BUILD_DIR}/Testing ${CI_PROJECT_DIR}/${OCUDU_BUILD_DIR}/Testing || true >/dev/null 2>&1
     # Save .so
     - |
-      cd ${OCUDU_DIR}/build/
-      find . -name "*.so" -exec sh -c 'mkdir -p "${CI_PROJECT_DIR}/build/$(dirname "$1")" && cp "$1" "${CI_PROJECT_DIR}/build/$1"' _ {} \;
+      cd ${OCUDU_DIR}/${OCUDU_BUILD_DIR}/
+      find . -name "*.so" -exec sh -c 'mkdir -p "${CI_PROJECT_DIR}/${OCUDU_BUILD_DIR}/$(dirname "$1")" && cp "$1" "${CI_PROJECT_DIR}/${OCUDU_BUILD_DIR}/$1"' _ {} \;
     # Save built apps
     - |
-      cd ${OCUDU_DIR}/build/apps
-      find . -type f -executable -exec sh -c 'mkdir -p "${CI_PROJECT_DIR}/build/apps/$(dirname "$1")" && cp "$1" "${CI_PROJECT_DIR}/build/apps/$1"' _ {} \;
+      cd ${OCUDU_DIR}/${OCUDU_BUILD_DIR}/apps
+      find . -type f -executable -exec sh -c 'mkdir -p "${CI_PROJECT_DIR}/${OCUDU_BUILD_DIR}/apps/$(dirname "$1")" && cp "$1" "${CI_PROJECT_DIR}/${OCUDU_BUILD_DIR}/apps/$1"' _ {} \;
     # Copy build folder back to OCUDU directory
     - |
       cd ${OCUDU_DIR}
-      rm -Rf ${OCUDU_DIR}/build
-      cp -r ${CI_PROJECT_DIR}/build ${OCUDU_DIR}/build
-      echo "OCUDU build size is" $(du -hs build | cut -f1)
+      rm -Rf ${OCUDU_DIR}/${OCUDU_BUILD_DIR}
+      cp -r ${CI_PROJECT_DIR}/${OCUDU_BUILD_DIR} ${OCUDU_DIR}/${OCUDU_BUILD_DIR}
+      echo "OCUDU build size is" $(du -hs ${OCUDU_BUILD_DIR} | cut -f1)
   cache: $[[ inputs.cache ]]
   artifacts:
     paths:

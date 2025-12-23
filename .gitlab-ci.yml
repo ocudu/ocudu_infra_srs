@@ -125,6 +125,7 @@ include:
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
+      ocudu_build_dir: build_retina
       job: build
       rules:
         - if: $ON_WEB
@@ -145,6 +146,7 @@ include:
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
+      ocudu_build_dir: build_retina
       job: build trx driver
       rules:
         - if: '"$[[ inputs.testbed ]]" !~ /^zmq/'
