@@ -37,7 +37,8 @@ stages:
                  alpine) apk add build-base linux-headers libffi-dev ;;
                       *) echo 'Unsupported OS' && exit 1 ;;
       esac
-    - export PY_DIR=${CI_PROJECT_DIR}/retina/client
+  variables:
+    PY_DIR: retina/client
 
 tox:
   stage: static

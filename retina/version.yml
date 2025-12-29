@@ -7,4 +7,4 @@
 #
 
 variables:
-  RETINA_VERSION: "0.91.0"
+  RETINA_VERSION: "0.91.1"

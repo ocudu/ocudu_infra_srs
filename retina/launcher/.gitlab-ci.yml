@@ -51,7 +51,8 @@ stages:
                  alpine) apk add build-base linux-headers libffi-dev ;;
                       *) echo 'Unsupported OS' && exit 1 ;;
       esac
-    - export PY_DIR=${CI_PROJECT_DIR}/retina/launcher
+  variables:
+    PY_DIR: retina/launcher
 
 tox:
   stage: static
@@ -107,23 +108,15 @@ publish manifest:
   needs:
     - publish docker
 
-publish docker latest:
-  stage: publish
-  extends: .docker manifest
-  rules:
-    - if: $ON_DEFAULT_BRANCH
-    - if: $ON_MR
-      when: manual
-      allow_failure: true
-  needs:
-    - job: publish manifest
-      artifacts: false
+publish latest:
+  extends: publish manifest
   variables:
     <<: *image_variables
   script:
     - |
       docker manifest create \
-        ${REGISTRY_URI}${REGISTRY_ORG}/${NAME}:latest \
-        --amend ${REGISTRY_URI}${REGISTRY_ORG}/${NAME}:${VERSION}-amd64 \
-        --amend ${REGISTRY_URI}${REGISTRY_ORG}/${NAME}:${VERSION}-arm64
-      docker manifest push ${REGISTRY_URI}${REGISTRY_ORG}/${NAME}:latest
+        ${CI_REGISTRY_IMAGE}/${NAME}:latest \
+        --amend ${CI_REGISTRY_IMAGE}/${NAME}:${VERSION}-amd64 \
+        --amend ${CI_REGISTRY_IMAGE}/${NAME}:${VERSION}-arm64
+      docker manifest push ${CI_REGISTRY_IMAGE}/${NAME}:latest
+      echo "Image ${CI_REGISTRY_IMAGE}/${NAME}:latest pushed"
