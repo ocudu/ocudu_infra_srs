@@ -48,16 +48,15 @@ def main():
 
     # argparser
     parser = argparse.ArgumentParser(description="Docker compose tool")
-    parser.add_argument("--ocudu-path", required=True, help="GNB repo path")
+    parser.add_argument("--ocudu-path", required=False, help="OCUDU repo path", default=None)
     parser.add_argument("--amari-path", required=False, help="Amarisoft path", default=None)
     parser.add_argument("--dpdk-version", required=False, help="E2E DPDK version", default=DEFAULT_DPDK_VERSION)
     args = parser.parse_args()
 
     retina_dir = (Path(__file__).resolve().parent / "..").resolve()
-    ocudu_path = Path(args.ocudu_path).resolve()
-    amari_path = None
-    if args.amari_path is not None:
-        amari_path = Path(args.amari_path).resolve()
+    ocudu_path = None if args.ocudu_path is None else Path(args.ocudu_path).resolve()
+    amari_path = None if args.amari_path is None else Path(args.amari_path).resolve()
+
     dpdk_version = args.dpdk_version
     if dpdk_version:
         dpdk_version = dpdk_version.split("_")[0].strip()  # Keep only the version number
@@ -94,6 +93,13 @@ def main():
         OCUDU_REGISTRY_URI + "/" + srsgnb_data[".docker-builder-srsgnb-base"]["variables"]["BUILDER_IMAGE_NAME"]
     )
 
+    if ocudu_path is None:
+        logging.warning("Skipped Builder version support: OCUDU path not provided (do it by adding --ocudu-path argument)")
+        docker_builder_version = "latest"
+    else:    
+        builder_data = load_yaml(ocudu_path / ".gitlab/ci/builders/version.yml")
+        docker_builder_version = builder_data["variables"]["DOCKER_BUILDER_VERSION"]
+
     flexric_data = load_yaml(retina_dir / "images/flexric/.gitlab-ci.yml")
     flexric_version = flexric_data["variables"]["FLEXRIC_VERSION"]
 
@@ -112,6 +118,7 @@ def main():
         "CONTAINER_PATH": CONTAINER_PATH,
         "OCUDU_PATH": str(ocudu_path),
         "AMARISOFT_PATH": str(amari_path),
+        "DOCKER_BUILDER_VERSION": docker_builder_version,
         "BUILDER_IMAGE": builder_image,
         "DPDK_VERSION": dpdk_version,
         "UID": str(os.getuid()),

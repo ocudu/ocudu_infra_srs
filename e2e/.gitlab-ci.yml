@@ -68,7 +68,7 @@ e2e request validation:
   script:
     - |
       cd ${CI_PROJECT_DIR}/e2e/retina_requests
-      python3 ${CI_PROJECT_DIR}/retina/_scripts/generate_env.py --ocudu-path ${CI_PROJECT_DIR}/ocudu
+      python3 ${CI_PROJECT_DIR}/retina/_scripts/generate_env.py
       file_list=$(ls *.yml)
       for f in $file_list; do
           retina-request-checker --input $f
