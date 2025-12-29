@@ -51,7 +51,7 @@
       model: fr2-ru
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb_split_7_2
-    - LD_LIBRARY_PATH: /opt/rohc/lib/:/opt/dpdk/${E2E_DPDK_VERSION}/lib/x86_64-linux-gnu/
+    - LD_LIBRARY_PATH: /opt/rohc/lib/:/opt/dpdk/${DPDK_VERSION}/lib/x86_64-linux-gnu/
     - RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
   shared_files:
     - local_path: ${OCUDU_PATH}/build_retina/apps/gnb_split_7_2/gnb

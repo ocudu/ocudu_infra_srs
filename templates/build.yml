@@ -172,6 +172,10 @@ include:
       git config --global --add safe.directory ${OCUDU_DIR}
       git rev-parse HEAD > .gitlab/ci/version.txt
     - cd ${CI_PROJECT_DIR}
+    # Save build info
+    - |
+      echo "${DPDK_VERSION}" > ${OCUDU_DIR}/.gitlab/ci/dpdk_version.txt
+      echo "${UHD_VERSION}"  > ${OCUDU_DIR}/.gitlab/ci/uhd_version.txt
     # Build
     - build_ocudu
     # Run unit and integration tests

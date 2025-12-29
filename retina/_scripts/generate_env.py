@@ -26,6 +26,7 @@ import yaml
 CI_REGISTRY_IMAGE = os.getenv("CI_REGISTRY_IMAGE", "registry.gitlab.com/softwareradiosystems/ocudu_infra_srs")
 OCUDU_REGISTRY_URI = os.getenv("OCUDU_REGISTRY_URI", "registry.gitlab.com/ocudu/ocudu")
 CONTAINER_PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+DEFAULT_DPDK_VERSION = "24.11.2"
 
 
 def load_yaml(file_path):
@@ -49,6 +50,7 @@ def main():
     parser = argparse.ArgumentParser(description="Docker compose tool")
     parser.add_argument("--ocudu-path", required=True, help="GNB repo path")
     parser.add_argument("--amari-path", required=False, help="Amarisoft path", default=None)
+    parser.add_argument("--dpdk-version", required=False, help="E2E DPDK version", default=DEFAULT_DPDK_VERSION)
     args = parser.parse_args()
 
     retina_dir = (Path(__file__).resolve().parent / "..").resolve()
@@ -56,27 +58,33 @@ def main():
     amari_path = None
     if args.amari_path is not None:
         amari_path = Path(args.amari_path).resolve()
+    dpdk_version = args.dpdk_version
+    if dpdk_version:
+        dpdk_version = dpdk_version.split("_")[0].strip()  # Keep only the version number
+    else:
+        dpdk_version = DEFAULT_DPDK_VERSION
 
     # From CI
+    root_data = load_yaml(retina_dir / "../.gitlab-ci.yml")
+    root_variables = root_data["variables"]
+
     version_data = load_yaml(retina_dir / "version.yml")
     retina_version = version_data["variables"]["RETINA_VERSION"]
 
     agent_data = load_yaml(retina_dir / "agent/.gitlab-ci.yml")
-    variables = agent_data[".agent-docker"]["variables"]
-    os_name = variables["AGENT_OS_NAME"]
-    os_version = variables["AGENT_OS_VERSION"]
+    agent_variables = agent_data[".agent-docker"]["variables"]
+    os_name = agent_variables["AGENT_OS_NAME"]
+    os_version = agent_variables["AGENT_OS_VERSION"]
 
     if amari_path is None:
         logging.warning("Skipped Amarisoft support: path not provided (do it by adding --amari-path argument)")
-        amarisoft_data = load_yaml(retina_dir / "../.gitlab-ci.yml")
-        variables = amarisoft_data["variables"]
-        amarisoft_version = variables["AMARISOFT_VERSION"]
+        amarisoft_version = root_variables["AMARISOFT_VERSION"]
     else:
         amarisoft_version = manage_amari_binaries(retina_dir, amari_path)
 
     srsue_data = load_yaml(retina_dir / "images/srsue/.gitlab-ci.yml")
-    variables = srsue_data["variables"]
-    SRSUE_VERSION = variables["SRSUE_VERSION"]
+    srsue_variables = srsue_data["variables"]
+    srsue_version = srsue_variables["SRSUE_VERSION"]
 
     open5gs_data = load_yaml(retina_dir / "images/open5gs/.gitlab-ci.yml")
     open5gs_version = open5gs_data["variables"]["OPEN5GS_VERSION"]
@@ -98,13 +106,14 @@ def main():
         "AGENT_OS_NAME": os_name,
         "AGENT_OS_VERSION": os_version,
         "AMARISOFT_VERSION": amarisoft_version,
-        "SRSUE_VERSION": SRSUE_VERSION,
+        "SRSUE_VERSION": srsue_version,
         "OPEN5GS_VERSION": open5gs_version,
         "FLEXRIC_VERSION": flexric_version,
         "CONTAINER_PATH": CONTAINER_PATH,
         "OCUDU_PATH": str(ocudu_path),
         "AMARISOFT_PATH": str(amari_path),
         "BUILDER_IMAGE": builder_image,
+        "DPDK_VERSION": dpdk_version,
         "UID": str(os.getuid()),
         "GID": str(os.getgid()),
     }
