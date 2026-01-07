@@ -245,7 +245,7 @@ cell_cfg:
   pdsch:
     nof_harqs: 16
     max_nof_harq_retxs: 0
-    harq_mode_b: true
+    harq_feedback_disabled: true
   pusch:
     max_nof_harq_retxs: 0
     harq_mode_b: true
