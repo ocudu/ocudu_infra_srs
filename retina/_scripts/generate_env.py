@@ -94,14 +94,19 @@ def main():
     )
 
     if ocudu_path is None:
-        logging.warning("Skipped Builder version support: OCUDU path not provided (do it by adding --ocudu-path argument)")
+        logging.warning(
+            "Skipped Builder version support: OCUDU path not provided (do it by adding --ocudu-path argument)"
+        )
         docker_builder_version = "latest"
-    else:    
+    else:
         builder_data = load_yaml(ocudu_path / ".gitlab/ci/builders/version.yml")
         docker_builder_version = builder_data["variables"]["DOCKER_BUILDER_VERSION"]
 
     flexric_data = load_yaml(retina_dir / "images/flexric/.gitlab-ci.yml")
     flexric_version = flexric_data["variables"]["FLEXRIC_VERSION"]
+
+    ntn_channel_emulator_data = load_yaml(retina_dir / "images/ntn-channel-emulator/.gitlab-ci.yml")
+    ntn_channel_emulator_version = ntn_channel_emulator_data["variables"]["NTN_CHANNEL_EMULATOR_VERSION"]
 
     # .env creating
     current_working_directory = Path.cwd()
@@ -115,6 +120,7 @@ def main():
         "SRSUE_VERSION": srsue_version,
         "OPEN5GS_VERSION": open5gs_version,
         "FLEXRIC_VERSION": flexric_version,
+        "NTN_CHANNEL_EMULATOR_VERSION": ntn_channel_emulator_version,
         "CONTAINER_PATH": CONTAINER_PATH,
         "OCUDU_PATH": str(ocudu_path),
         "AMARISOFT_PATH": str(amari_path),

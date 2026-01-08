@@ -43,6 +43,7 @@ include:
   - &srsgnb_remote_changes retina/images/srsgnb_remote/**/*
   - &srsue_changes retina/images/srsue/**/*
   - &flexric_changes retina/images/flexric/**/*
+  - &ntn_channel_emulator_changes retina/images/ntn-channel-emulator/**/*
   - &orchestrator_changes retina/orchestrator/**/*
   - &launcher_changes retina/launcher/**/*
 
@@ -467,6 +468,41 @@ flexric image:
   trigger:
     include:
       - local: retina/images/flexric/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+ntn-channel-emulator image:
+  stage: ci
+  rules:
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *ntn_channel_emulator_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *ntn_channel_emulator_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/ntn-channel-emulator/.gitlab-ci.yml
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]

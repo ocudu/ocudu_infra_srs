@@ -106,6 +106,7 @@ services:
         BUILDER_IMAGE: ${BUILDER_IMAGE}
         OPEN5GS_VERSION: v${OPEN5GS_VERSION}
         FLEXRIC_VERSION: ${FLEXRIC_VERSION}
+        NTN_CHANNEL_EMULATOR_VERSION: ${NTN_CHANNEL_EMULATOR_VERSION}
     environment:
       LOGNAME: $USER
       FORCE_COLOR: 1
@@ -427,6 +428,26 @@ services:
     x-testbed:
       type: 5gc
 
+  ntn-channel-emulator:
+    container_name: ntn-channel-emulator
+    profiles:
+      - all
+      - zmq_ntn
+    image: ${CI_REGISTRY_IMAGE}/retina/ntn-channel-emulator:${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
+    build:
+      context: ../images/ntn-channel-emulator
+      args:
+        <<: *variables
+      additional_contexts:
+        agent: "service:agent-image"
+    environment:
+      RETINA_IP: &emulator_ip 172.20.0.12
+    networks:
+      retina:
+        ipv4_address: *emulator_ip
+    x-testbed:
+      type: channel-emulator
+
   flexric:
     container_name: flexric
     profiles:
@@ -440,7 +461,7 @@ services:
       additional_contexts:
         agent: "service:agent-image"
     environment:
-      RETINA_IP: &flexric_ip 172.20.0.12
+      RETINA_IP: &flexric_ip 172.20.0.13
     networks:
       retina:
         ipv4_address: *flexric_ip

@@ -1,0 +1,68 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/docker.yml
+
+stages:
+  - test
+  - publish
+
+variables:
+  NTN_CHANNEL_EMULATOR_VERSION: d15635f3
+
+.docker-builder-ntn-channel-emulator:
+  extends: .docker-builder
+  variables:
+    NAME: retina/ntn-channel-emulator
+    CONTEXT: retina/images/ntn-channel-emulator
+    VERSION: ${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
+  before_script:
+    - |
+      download_ntn_channel_emulator() {
+        cd ${CI_PROJECT_DIR}/${CONTEXT}
+        curl -u "${AMARISOFT_PACKAGE_REG_USER}:${AMARISOFT_PACKAGE_REG_PWD}" ${NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY}/${NTN_CHANNEL_EMULATOR_VERSION}/ntn-channel-emulator.tar.gz -o ntn-channel-emulator.tar.gz
+        tar -zxf ntn-channel-emulator.tar.gz
+        mv ntn-channel-emulator-*/ ntn-channel-emulator/
+        cd ${CI_PROJECT_DIR}
+      }
+    - download_ntn_channel_emulator
+
+only-build:
+  stage: test
+  extends: .docker-builder-ntn-channel-emulator
+  rules:
+    - if: $ON_MR
+  variables:
+    MODE: test
+
+build-and-publish:
+  stage: publish
+  extends: .docker-builder-ntn-channel-emulator
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+  retry: 2
+  variables:
+    MODE: publish

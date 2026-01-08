@@ -301,6 +301,17 @@ gnb 1UE:
   variables:
     MARKERS: zmq_single_ue
 
+gnb 1UE ntn:
+  extends: .amarisoft_zmq
+  variables:
+    TESTBED: zmq_ntn
+    MARKERS: zmq_ntn
+    LAUNCHER_ARGS: ""
+  parallel:
+    matrix:
+      - E2E_FILE_OR_DIR: tests/ping.py
+      - E2E_FILE_OR_DIR: tests/iperf.py
+
 gnb 4UE:
   extends: .amarisoft_zmq
   variables:
@@ -371,7 +382,7 @@ gnb 32UE:
         KEYWORDS: "not sequentially"
       - MARKERS: zmq_2x2_mimo
 
-amari 32UE [tests/pucch.py]:
+gnb 32UE [tests/pucch.py]:
   extends: .amarisoft_zmq
   variables:
     MARKERS: "zmq and not smoke"
