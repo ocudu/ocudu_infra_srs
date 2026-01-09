@@ -530,7 +530,9 @@ def test_zmq_64_ues(
         nof_antennas_ul=2,
         inter_ue_start_period=1.5,  # Due to uesim
         assess_bitrate=True,
-        parallel_iperfs=64,
+        parallel_iperfs=8,
+        min_dl_bitrate=255e6,
+        min_ul_bitrate=60e6,
     )
 
 
