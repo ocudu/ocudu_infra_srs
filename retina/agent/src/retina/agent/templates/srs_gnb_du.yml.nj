@@ -238,6 +238,7 @@ cell_cfg:
       - si_period: 64               # Set SIB19 period.
         sib_mapping: 19             # Enable SIB19.
         si_window_position: 2       # Set SIB19 position.
+    sib2:
   pucch:
     sr_period_ms: 80
   csi:
