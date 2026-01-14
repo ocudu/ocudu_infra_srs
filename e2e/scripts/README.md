@@ -1,4 +1,3 @@
-
 # Scripts
 
 In this folder there are some scripts to help the user to trigger customized Build + E2E Pipelines.
@@ -50,13 +49,17 @@ The script provides flexible ways to specify pipeline inputs:
 
 You can add the `--dyrun` flag to preview the input values without creating any pipeline.
 
+**Running on a non-default infrastructure git repository/branch:**
+
+You can set the environment variables `OCUDU_INFRA_PATH` and `OCUDU_INFRA_REF` to specify a different repository and branch other than the defaults (`softwareradiosystems/ocudu_infra_srs` and `main`).
+
 **Examples:**
 
 ```bash
 python3 run_e2e_pipeline.py --token YOUR_GITLAB_TOKEN
 
 📝 Fill the inputs. Press enter to keep the value between brackets. You can skip this confirmation adding --yes flag to the call.
- - ocudu_ref ["main"]: 
+ - ocudu_ref ["main"]:
  - os=ubuntu-24.04
 ...
 ⏩ Creating pipeline with inputs:
@@ -122,6 +125,10 @@ python3 run_viavi_pipeline.py \
   --ocudu-ref dev \
   --build-mode standard
 ```
+
+**C) Running on a non-default infrastructure git repository/branch:**
+
+You can set the environment variables `OCUDU_INFRA_PATH` and `OCUDU_INFRA_REF` to specify a different repository and branch other than the defaults (`softwareradiosystems/ocudu_infra_srs` and `main`).
 
 ### Arguments
 
