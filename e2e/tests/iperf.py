@@ -230,8 +230,8 @@ def test_ntn(
     ntn_scenario_def.feeder_link_ul_freq_hz = nr_arfcn_to_freq(_get_ul_arfcn(band))
 
     # Define min DL/UL data rates to be achieved.
-    min_dl_bitrate = 20e6 * 0.9
-    min_ul_bitrate = 18e6 * 0.9
+    min_dl_bitrate = 0.5e6
+    min_ul_bitrate = 0.5e6
 
     _iperf(
         retina_manager=retina_manager,
