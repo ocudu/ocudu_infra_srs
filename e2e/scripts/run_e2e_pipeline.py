@@ -13,7 +13,6 @@ Run an e2e OCUDU pipeline in Gitlab.
 It allows the user to specify all the parameters.
 """
 
-
 import argparse
 import json
 import os

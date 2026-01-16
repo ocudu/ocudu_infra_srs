@@ -66,6 +66,9 @@ latitude: float = 0
 longitude: float = 0
 altitude: float = 0
 
+# temporal
+ue_simulator_mode: bool = False
+
 
 # pylint: disable=duplicate-code
 class CellBandArray(TypedDict, total=False):

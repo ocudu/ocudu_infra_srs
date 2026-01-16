@@ -325,22 +325,7 @@ def ue_start_and_attach(
     Start an array of UEs and wait until attached to already running gnb and 5gc
     """
 
-    if channel_emulator and du_definition[0].zmq_ip is not None:
-        # Overwrite the ZMQ IP and port, so the UE connects to the channel emulator.
-        channel_emulator_definition = channel_emulator.GetDefinition(Empty())
-        du_definition[0].zmq_ip = channel_emulator_definition.zmq_ip
-        du_definition[0].zmq_port_array[0] = channel_emulator_definition.dl_zmq_port
-
-    for ue_stub in ue_array:
-        with handle_start_error(name=f"UE [{id(ue_stub)}]"):
-            ue_stub.Start(
-                UEStartInfo(
-                    du_definition=du_definition,
-                    fivegc_definition=fivegc.GetDefinition(Empty()),
-                    start_info=StartInfo(timeout=ue_startup_timeout),
-                )
-            )
-            sleep(inter_ue_start_period)
+    ue_start(ue_array, du_definition, fivegc, ue_startup_timeout, inter_ue_start_period, channel_emulator)
 
     # Attach in parallel
     ue_attach_task_dict: Dict[UEStub, grpc.Future] = {
@@ -359,6 +344,36 @@ def ue_start_and_attach(
         pytest.fail("Attach timeout reached")
 
     return ue_attach_info_dict
+
+
+def ue_start(
+    ue_array: Sequence[UEStub],
+    du_definition: Sequence[DUDefinition],
+    fivegc: FiveGCStub,
+    ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
+    inter_ue_start_period: int = INTER_UE_START_PERIOD,
+    channel_emulator: Optional[ChannelEmulatorStub] = None,
+):
+    """
+    Start an array of UEs
+    """
+
+    if channel_emulator and du_definition[0].zmq_ip is not None:
+        # Overwrite the ZMQ IP and port, so the UE connects to the channel emulator.
+        channel_emulator_definition = channel_emulator.GetDefinition(Empty())
+        du_definition[0].zmq_ip = channel_emulator_definition.zmq_ip
+        du_definition[0].zmq_port_array[0] = channel_emulator_definition.dl_zmq_port
+
+    for ue_stub in ue_array:
+        with handle_start_error(name=f"UE [{id(ue_stub)}]"):
+            ue_stub.Start(
+                UEStartInfo(
+                    du_definition=du_definition,
+                    fivegc_definition=fivegc.GetDefinition(Empty()),
+                    start_info=StartInfo(timeout=ue_startup_timeout),
+                )
+            )
+            sleep(inter_ue_start_period)
 
 
 def ue_await_release(

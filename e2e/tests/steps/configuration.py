@@ -10,9 +10,12 @@
 Configuration related steps
 """
 
+import contextlib
 import logging
 import socket
+import tempfile
 from collections import defaultdict
+from pathlib import Path
 from pprint import pformat
 from typing import List, NamedTuple, Optional, Tuple, Union
 
@@ -488,3 +491,75 @@ def nr_arfcn_to_freq(nr_arfcn: int) -> float:
         return 0.0
 
     return int(params.F_REF_Offs_MHz * 1e6 + params.delta_F_kHz * (nr_arfcn - params.N_REF_Offs) * 1e3)
+
+
+def set_config_files(
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    ue_config_files: List[str],
+    gnb_config_files: List[str],
+    core_config_files: List[str],
+):
+    """
+    Overwrite default config files with the provided ones
+    """
+
+    with contextlib.ExitStack() as stack:
+        # Create empty temp file
+        tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
+        tmp_file.write(" ")  # Make it not empty to overwrite default one
+        tmp_file.flush()
+
+        # Create and populate gnb temp file
+        ue_tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
+        for ue_config_file in ue_config_files:
+            with (Path(__file__).parent.parent / "simulator_test_cases" / "amarisoft_ue" / ue_config_file).open(
+                "r", encoding="UTF-8"
+            ) as file:
+                ue_config_content = file.read()
+            ue_tmp_file.write(ue_config_content + "\n")
+        ue_tmp_file.flush()
+
+        # Create and populate gnb temp file
+        gnb_tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
+        for gnb_config_file in gnb_config_files:
+            with (Path(__file__).parent.parent / "configs" / gnb_config_file).open("r", encoding="UTF-8") as file:
+                gnb_config_content = file.read()
+            gnb_tmp_file.write(gnb_config_content + "\n")
+        gnb_tmp_file.flush()
+
+        # Create and populate core temp file
+        core_tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
+        for core_config_file in core_config_files:
+            with (Path(__file__).parent.parent / "simulator_test_cases" / "amarisoft_mme" / core_config_file).open(
+                "r", encoding="UTF-8"
+            ) as file:
+                core_config_content = file.read()
+            core_tmp_file.write(core_config_content + "\n")
+        core_tmp_file.flush()
+
+        retina_data.test_config = {
+            "ue": {
+                "parameters": {
+                    "ue_simulator_mode": True,
+                },
+                "templates": {
+                    "ue": ue_tmp_file.name,
+                },
+            },
+            "gnb": {
+                "templates": {
+                    "cu": gnb_tmp_file.name,
+                    "du": tmp_file.name,
+                    "qos": tmp_file.name,
+                },
+            },
+            "5gc": {
+                "templates": {
+                    "core": core_tmp_file.name,
+                    "ims": tmp_file.name,
+                },
+            },
+        }
+        retina_manager.parse_configuration(retina_data.test_config)
+        retina_manager.push_all_config()

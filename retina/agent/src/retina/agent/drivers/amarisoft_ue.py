@@ -99,6 +99,9 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> UEDefinition:
         ue_definition: UEDefinition = super().GetDefinition(request, context)
 
+        if ue_defaults.ue_simulator_mode:
+            return ue_definition
+
         if context.peer() not in self._subscriber_client_dict:
             # New subscriber
             with self._amarisoft_lock:
@@ -225,12 +228,16 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     "cell_array": tuple(
                         _CellInfo(
                             rf_port=i,
-                            band=ue_defaults.cells[i]["band"],
-                            bandwidth=ue_defaults.cells[i]["bandwidth"],
-                            dl_nr_arfcn=ue_defaults.cells[i]["dl_nr_arfcn"],
-                            ssb_nr_arfcn=ue_defaults.cells[i]["ssb_nr_arfcn"],
-                            subcarrier_spacing=ue_defaults.cells[i]["subcarrier_spacing"],
-                            ssb_subcarrier_spacing=ue_defaults.cells[i]["ssb_subcarrier_spacing"],
+                            band=ue_defaults.cells[i]["band"] if ue_defaults.cells else -1,
+                            bandwidth=ue_defaults.cells[i]["bandwidth"] if ue_defaults.cells else -1,
+                            dl_nr_arfcn=ue_defaults.cells[i]["dl_nr_arfcn"] if ue_defaults.cells else -1,
+                            ssb_nr_arfcn=ue_defaults.cells[i]["ssb_nr_arfcn"] if ue_defaults.cells else -1,
+                            subcarrier_spacing=(
+                                ue_defaults.cells[i]["subcarrier_spacing"] if ue_defaults.cells else -1
+                            ),
+                            ssb_subcarrier_spacing=(
+                                ue_defaults.cells[i]["ssb_subcarrier_spacing"] if ue_defaults.cells else -1
+                            ),
                             position=Position(
                                 x=i * ue_defaults.cell_position_offset[0],
                                 y=i * ue_defaults.cell_position_offset[1],
@@ -299,11 +306,14 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         if self._websocket is None:
             raise ChildProcessError("Process has died")
 
-        subscriber_id = self._subscriber_client_dict[context.peer()].subscriber_id
-        self._websocket.send_command_and_wait_response(message="power_on", ue_id=subscriber_id)
-        sleep(self.AMARISOFT_POWER_ON_SLEEP)
-        self._subscriber_client_dict[context.peer()].started = True
-        logging.info("Power on user with id %s", subscriber_id)
+        if len(self._subscriber_client_dict) > 0:
+            subscriber_id = self._subscriber_client_dict[context.peer()].subscriber_id
+            self._websocket.send_command_and_wait_response(message="power_on", ue_id=subscriber_id)
+            sleep(self.AMARISOFT_POWER_ON_SLEEP)
+            self._subscriber_client_dict[context.peer()].started = True
+            logging.info("Power on user with id %s", subscriber_id)
+        else:
+            logging.info("Test Simulation Mode")
 
         self._metrics_dict[context.peer()] = {}
 

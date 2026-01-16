@@ -6,5 +6,7 @@
 # the distribution.
 #
 
-variables:
-  RETINA_VERSION: "0.93.0"
+my example test:
+  template: amarisoft_simulator
+  ue_config: [example.cfg]
+  gnb_config: [example.yml]
