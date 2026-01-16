@@ -44,7 +44,7 @@ from retina.protocol.ric_pb2_grpc import add_NearRtRicServicer_to_server, NearRt
 from retina.protocol.ue_pb2_grpc import add_UEServicer_to_server, UE, UEServicer
 
 from retina.agent.app.logger import retina_log_setup
-from retina.agent.drivers.amarisoft_5gc import RemoteAmarisoft5gc
+from retina.agent.drivers.amarisoft_5gc import LocalAmarisoft5gc, RemoteAmarisoft5gc
 from retina.agent.drivers.amarisoft_ue import LocalAmarisoftUe, RemoteAmarisoftUe
 from retina.agent.drivers.android import AdbAndroidUE
 from retina.agent.drivers.base import BaseDriver
@@ -72,6 +72,7 @@ _DRIVER_CODENAME_DICT: Dict[str, BaseDriver] = {
     "open5gs-5gc": LocalOpen5gs5gc,
     "flexric-ric": LocalFlexricRic,
     "ntn-channel-emulator": LocalNtnChannelEmulator,
+    "amarisoft-5gc": LocalAmarisoft5gc,
     "amarisoft-5gc-remote": RemoteAmarisoft5gc,
 }
 

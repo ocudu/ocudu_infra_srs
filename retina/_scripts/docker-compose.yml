@@ -20,6 +20,7 @@
 # - zmq_amariue_1cu_2du: Amarisoft UE with ZeroMQ + OCUDU cu + 2 OCUDU du + Open5gs
 # - zmq_amariue_2gnb: Amarisoft UE with ZeroMQ + 2 OCUDU gNBs + Open5gs
 # - zmq_ntn: Amarisoft UE with ZeroMQ + OCUDU gNB + Open5gs + NTN Channel Emulator
+# - zmq_amariue_mme: Amarisoft UE with ZeroMQ + Amarisoft 5GC
 
 services:
   ocudu-builder:
@@ -92,6 +93,7 @@ services:
       - zmq_amariue
       - zmq_amariue_1cu_2du
       - zmq_amariue_2gnb
+      - zmq_amariue_mme
       - zmq_ntn
       - launcher
     image: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
@@ -128,6 +130,7 @@ services:
       - zmq_amariue
       - zmq_amariue_1cu_2du
       - zmq_amariue_2gnb
+      - zmq_amariue_mme
       - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/agent-ubuntu-${AGENT_OS_VERSION}:${RETINA_VERSION}
     build:
@@ -149,6 +152,7 @@ services:
       - zmq_amariue
       - zmq_amariue_1cu_2du
       - zmq_amariue_2gnb
+      - zmq_amariue_mme
       - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
     build:
@@ -160,9 +164,9 @@ services:
     environment:
       RETINA_IP: &amariue_ip 172.20.0.2
       RETINA_PORTS: 50064 50065 50066 50067 50068 50069 50070 50071 50072 50073 50074 50075 50076 50077 50078 50079 50080 50081 50082 50083 50084 50085 50086 50087 50088 50089 50090 50091 50092 50093 50094 50095 50096 50097 50098 50099 50100 50101 50102 50103 50104 50105 50106 50107 50108 50109 50110 50111 50112 50113 50114 50115 50116 50117 50118 50119 50120 50121 50122 50123 50124 50125 50126 50127
-      RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_LICENSE_TAG}
+      RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_UE_LICENSE_TAG}
     configs:
-      - source: amari_license.yml
+      - source: amari_ue_license.yml
         target: /etc/retina/resources/amarisoft_ue_license.yml
     cap_add:
       - SYS_NICE
@@ -248,6 +252,7 @@ services:
       - zmq_amariue
       - zmq_amariue_1cu_2du
       - zmq_amariue_2gnb
+      - zmq_amariue_mme
       - zmq_ntn
     build:
       context: ../images/ocudu/base
@@ -265,6 +270,7 @@ services:
       - zmq_srsue
       - zmq_amariue
       - zmq_amariue_2gnb
+      - zmq_amariue_mme
       - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
     build:
@@ -426,6 +432,36 @@ services:
     x-testbed:
       type: 5gc
 
+  amarisoft-5gc:
+    container_name: amarisoft-5gc
+    profiles:
+      - all
+      - zmq_amariue_mme
+    image: ${CI_REGISTRY_IMAGE}/retina/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+    build:
+      context: ../images/amarisoft5gc
+      additional_contexts:
+        agent: "service:agent-image"
+      args:
+        <<: *variables
+    environment:
+      RETINA_IP: &amari5gc_ip 172.20.0.12
+    cap_add:
+      - NET_ADMIN
+      - CAP_SYS_PTRACE
+    configs:
+      - source: amari_mme_license.yml
+        target: /etc/retina/resources/amarisoft_mme_license.yml
+    sysctls:
+      - net.ipv6.conf.default.disable_ipv6=0
+    networks:
+      retina:
+        ipv4_address: *amari5gc_ip
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    x-testbed:
+      type: 5gc
+
   ntn-channel-emulator:
     container_name: ntn-channel-emulator
     profiles:
@@ -439,7 +475,7 @@ services:
       additional_contexts:
         agent: "service:agent-image"
     environment:
-      RETINA_IP: &emulator_ip 172.20.0.12
+      RETINA_IP: &emulator_ip 172.20.0.13
     networks:
       retina:
         ipv4_address: *emulator_ip
@@ -459,7 +495,7 @@ services:
       additional_contexts:
         agent: "service:agent-image"
     environment:
-      RETINA_IP: &flexric_ip 172.20.0.13
+      RETINA_IP: &flexric_ip 172.20.0.14
     networks:
       retina:
         ipv4_address: *flexric_ip
@@ -467,11 +503,16 @@ services:
       type: ric
 
 configs:
-  amari_license.yml:
+  amari_ue_license.yml:
     content: |
       - type: License
         address: ${AMARISOFT_LICENSE_IP}
-        args: ${AMARISOFT_LICENSE_TAG}
+        args: ${AMARISOFT_UE_LICENSE_TAG}
+  amari_mme_license.yml:
+    content: |
+      - type: License
+        address: ${AMARISOFT_LICENSE_IP}
+        args: ${AMARISOFT_MME_LICENSE_TAG}
   amari_remote_ue.yml:
     content: |
       - type: Remote

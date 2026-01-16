@@ -9,6 +9,13 @@
   /* Enable remote API and Web interface */
   com_addr: "0.0.0.0:{{api_port}}",
 
+  {% if license_server %}
+  license_server: {
+    server_addr: "{{license_server}}",
+    tag: "{{license_args}}",
+  },
+  {% endif %}
+
   /* bind address for GTP-U. Normally = address of the PC, here bound
     on local interface to be able to run ltemme on the same PC as
     lteenb. By default, the S1AP SCTP connection is bound on the same
@@ -27,8 +34,8 @@
 
   /* network name and network short name sent in the EMM information
      message to the UE */
-  network_name: "Amarisoft Network",
-  network_short_name: "Amarisoft",
+  network_name: "Retina Network",
+  network_short_name: "{{apn}}",
 
   ims_list: [{ims_addr: "127.0.0.1", bind_addr: "127.0.0.2"}],
 

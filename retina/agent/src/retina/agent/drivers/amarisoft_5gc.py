@@ -309,7 +309,7 @@ class Amarisoft5gc(FiveGCDriver):
         )
 
 
-class LocalAmarisoft5gc(Amarisoft5gc):
+class LocalAmarisoft5gc(_AmarisoftMme):
     """
     AmarisoftMME 5GC Agent for local
     """

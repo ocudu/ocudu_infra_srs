@@ -1,0 +1,88 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/docker.yml
+
+stages:
+  - test
+  - publish
+
+variables:
+  AMARISOFT_PACKAGE_REGISTRY: ${CI_API_V4_URL}/projects/44296988/packages/generic/amarisoft
+
+.docker-builder-amarisoft:
+  extends: .docker-builder
+  variables: &image_variables
+    AMARISOFT_RELEASE: ${AMARISOFT_VERSION}
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    NAME: amarisoft5gc
+    CONTEXT: retina/images/amarisoft5gc
+    VERSION: ${AMARISOFT_VERSION}_${RETINA_VERSION}
+    BUILD_ARGS: AMARISOFT_VERSION=${AMARISOFT_VERSION};RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
+    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "10G"
+  before_script:
+    - |
+      download_amarisoft() {
+        cd ${CI_PROJECT_DIR}/${CONTEXT}
+        mkdir amarisoft
+        curl -u "${AMARISOFT_PACKAGE_REG_USER}:${AMARISOFT_PACKAGE_REG_PWD}" ${AMARISOFT_PACKAGE_REGISTRY}/${AMARISOFT_VERSION}/amarisoft.${AMARISOFT_VERSION}.tar.gz -o amarisoft.${AMARISOFT_VERSION}.tar.gz
+        tar -zxf amarisoft.${AMARISOFT_VERSION}.tar.gz -C amarisoft
+        cd ${CI_PROJECT_DIR}
+      }
+    - download_amarisoft
+
+only-build:
+  stage: test
+  extends: .docker-builder-amarisoft
+  rules:
+    - if: $ON_MR
+  variables:
+    MODE: test
+
+build-and-publish:
+  stage: publish
+  extends: .docker-builder-amarisoft
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+  retry: 2
+  variables:
+    MODE: publish
+    MULTI_ARCH_BUILD: "true"
+  parallel:
+    matrix:
+      - PLATFORM: ["amd64", "arm64"]
+
+publish manifest:
+  stage: publish
+  extends: .docker manifest
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+  variables:
+    <<: *image_variables
+  needs:
+    - build-and-publish

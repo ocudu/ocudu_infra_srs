@@ -36,6 +36,7 @@ include:
   - &images_changes retina/images/**/*
   - &amarisoftue_changes retina/images/amarisoftue/**/*
   - &amarisoftue_remote_changes retina/images/amarisoftue_remote/**/*
+  - &amarisoft5gc_changes retina/images/amarisoft5gc/**/*
   - &amarisoft5gc_remote_changes retina/images/amarisoft5gc_remote/**/*
   - &android_changes retina/images/android/**/*
   - &open5gs_changes retina/images/open5gs/**/*
@@ -284,6 +285,45 @@ amarisoftue remote image:
   trigger:
     include:
       - local: retina/images/amarisoftue_remote/.gitlab-ci.yml
+        inputs:
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+          ocudu_path: $[[ inputs.ocudu_path ]]
+    strategy: depend
+  variables:
+    <<: *images_variables
+  needs:
+    - job: protocol
+      optional: true
+      artifacts: false
+    - job: agent
+      optional: true
+      artifacts: false
+
+amarisoft5gc image:
+  stage: ci
+  rules:
+    - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
+      when: never
+    - if: $ON_MR
+      changes:
+        <<: *agent_container_changes
+    - if: $ON_MR
+      changes:
+        paths:
+          - *amarisoft5gc_changes
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *agent_changes
+          - *amarisoft5gc_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+  trigger:
+    include:
+      - local: retina/images/amarisoft5gc/.gitlab-ci.yml
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
