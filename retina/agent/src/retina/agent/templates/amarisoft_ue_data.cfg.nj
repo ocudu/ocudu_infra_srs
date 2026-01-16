@@ -1,68 +1,3 @@
-{
-
-  {% if log_level == "debug" %}
-  log_options: "all.level={{log_level}},{% if type == "ru" %}s72.level={{log_s72_level if log_s72_level else 'debug'}},time.us=1,{% endif %}all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'info'}},phy.dci_size=1,phy.csi=1,phy.cell_meas=1,phy.cch=1,rrc.max_size=16,nas.key=1,rrc.key=1{{',pdcp.crypto=1' if log_ip_level == 'debug' else ''}}{{',phy.ntn=1' if ntn_enable else ''}}",
-  {% elif log_level == "error" %}
-  log_options: "all.level={{log_level}},{% if type == "ru" %}s72.level={{log_s72_level if log_s72_level else 'error'}},time.us=1,{% endif %}all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'error'}}",
-  {% endif %}
-  log_filename: "{{log_filename}}",
-
-  /* Enable remote API and Web interface */
-  com_addr: "0.0.0.0:{{api_port}}",
-
-  {% if license_server %}
-  license_server: {
-    server_addr: "{{license_server}}",
-    tag: "{{license_args}}",
-  },
-  {% endif %}
-
-  rf_driver: {
-    {% if type == "zmq" %}
-    name:       "srsran",
-    {%- for tx_rx in zmq_def %}
-    tx_port{{loop.index-1}}:   "{{tx_rx[0]}}",
-    rx_port{{loop.index-1}}:   "{{tx_rx[1]}}",
-    {% endfor %}
-    args:       "id=ue,base_srate={{sample_rate}}",
-    dl_sample_bits: 16,
-    ul_sample_bits: 16,
-    sync:       "{{sync}}",
-    {% if ul_noise_spd != 0 %}
-    noise_spd: {{ ul_noise_spd }},
-    {% endif %}
-    {% elif type == "sdr" %}
-    name:       "uhd",
-    args:       "{{sdr_driver_args}}",
-    {% if rx_ant %}
-    rx_antenna: "{{rx_ant}}",
-    {% endif %}
-    clock:      "{{sync}}",
-    sync:       "{{sync}}",
-    {% elif type == "ru" %}
-    name: "s72",
-    tai_offset: 37,
-    rf_ports: [
-    {% for s72_port in s72_def %}
-      {
-        max_pdu_size: 9000,
-        transport: "ethernet",
-        bind_interface: "{{s72_port.interface}}",
-        remote_addr: "{{s72_port.du_mac_addr}}",
-        send_margin: 0,
-      },
-    {% endfor %}
-    ],
-    {% endif %}
-  },
-
-  tx_gain: {{tx_gain}},
-  rx_gain: {{rx_gain}},
-  {% if model == "b200" %}
-  tx_time_offset: -150,
-  {% else %}
-  tx_time_offset: 0,
-  {% endif %}
 
   cell_groups: [
     {
@@ -191,4 +126,3 @@
     },
   {% endfor %}
   ],
-}

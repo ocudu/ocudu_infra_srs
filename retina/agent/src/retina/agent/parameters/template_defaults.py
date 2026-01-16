@@ -21,8 +21,10 @@ convert_to_parameter_source(__name__, ParameterNamespace.TEMPLATE)
 ##########
 # pylint: disable=invalid-name
 main: str = ""
+ue: str = ""
 cu: str = ""
 du: str = ""
 ru: str = ""
 qos: str = ""
+core: str = ""
 ims: str = ""

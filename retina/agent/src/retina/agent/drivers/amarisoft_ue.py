@@ -70,7 +70,9 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     AMARISOFT_LICENSE_RETRY: float = 3
     AMARISOFT_STDOUT_NAME: str = "stdout"
     AMARISOFT_LOG_FILENAME: str = "ue.log"
-    AMARISOFT_CONF_FILE_BASE_NAME: str = "amarisoft_ue.cfg"
+    AMARISOFT_CONF_FILE_BASE_NAME: str = "amarisoft_ue_base.cfg"
+    AMARISOFT_CONF_FILE_DATA_NAME: str = "amarisoft_ue_data.cfg"
+    AMARISOFT_CONF_FILE_FINAL_NAME: str = "amarisoft_ue.cfg"
     AMARISOFT_START_UP_TIMEOUT: int = 5
     AMARISOFT_POWER_ON_SLEEP: float = 0.3
     AMARISOFT_STOP_TIMEOUT: int = 64
@@ -178,8 +180,13 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     raise ValueError("The UE agent can't be started in split 7.2 mode due to incorrect config")
 
             config_file = self._render(
-                filename=self.AMARISOFT_CONF_FILE_BASE_NAME,
-                templates={self.AMARISOFT_CONF_FILE_BASE_NAME: template_defaults.main},
+                filename=self.AMARISOFT_CONF_FILE_FINAL_NAME,
+                templates={
+                    self.AMARISOFT_CONF_FILE_BASE_NAME: template_defaults.main,
+                    self.AMARISOFT_CONF_FILE_DATA_NAME: template_defaults.ue,
+                },
+                prefix="{",
+                suffix="\n}",
                 values={
                     **get_module_variables(testbed_defaults),
                     **get_module_variables(ue_defaults),

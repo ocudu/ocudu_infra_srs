@@ -202,11 +202,14 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             self._executor.close_folder(self._current_report_folder)
         self._current_report_folder = None
 
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
     def _render(
         self,
         filename: str,
         templates: Dict[str, str],
         values: Dict,
+        prefix: str = "",
+        suffix: str = "",
     ) -> str:
 
         # Get conf file content
@@ -219,7 +222,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             # Evaluate template
             file_content += Template(content).render(**values) + os.linesep
         # Remove multiple empty lines
-        file_content = re.sub(r"\n\s*\n", "\n\n", file_content)
+        file_content = prefix + re.sub(r"\n\s*\n", "\n\n", file_content) + suffix
 
         # Write conf file content to file
         configuration_file_path = self.get_filepath_in_report_folder(filename)

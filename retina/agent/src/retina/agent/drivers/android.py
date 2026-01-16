@@ -293,7 +293,7 @@ class AndroidUe(UEDriver):
                     self._get_wait_time(),
                     self._wait_timeout,
                 )
-                (has_ip, interface, ip_address) = self._has_ip()
+                has_ip, interface, ip_address = self._has_ip()
             logging.info(
                 "UE has IP address %s on interface %s. (%.3fs/%.3fs)",
                 ip_address,

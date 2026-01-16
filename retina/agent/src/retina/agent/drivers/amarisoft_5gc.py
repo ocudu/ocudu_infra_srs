@@ -32,7 +32,9 @@ from retina.agent.tools.time import TimeoutHandler
 
 
 class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
-    AMARISOFT_MME_CONF_FILE_BASE_NAME: str = "amarisoft_mme.cfg"
+    AMARISOFT_MME_CONF_FILE_BASE_NAME: str = "amarisoft_mme_base.cfg"
+    AMARISOFT_MME_CONF_FILE_DATA_NAME: str = "amarisoft_mme_data.cfg"
+    AMARISOFT_MME_CONF_FILE_FINAL_NAME: str = "amarisoft_mme.cfg"
     AMARISOFT_MME_LOG_FILENAME: str = "mme.log"
     AMARISOFT_MME_STDOUT_NAME: str = "stdout_mme"
     AMARISOFT_MME_TUN_SH = "amarisoft_mme_tun.sh"
@@ -57,8 +59,13 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
         self.Stop(UInt32Value(value=request.start_info.timeout), context)
 
         mme_config_file = self._render(
-            filename=self.AMARISOFT_MME_CONF_FILE_BASE_NAME,
-            templates={self.AMARISOFT_MME_CONF_FILE_BASE_NAME: template_defaults.main},
+            filename=self.AMARISOFT_MME_CONF_FILE_FINAL_NAME,
+            templates={
+                self.AMARISOFT_MME_CONF_FILE_BASE_NAME: template_defaults.main,
+                self.AMARISOFT_MME_CONF_FILE_DATA_NAME: template_defaults.core,
+            },
+            prefix="{",
+            suffix="\n}",
             values={
                 **get_module_variables(testbed_defaults),
                 **get_module_variables(fivegc_defaults),
