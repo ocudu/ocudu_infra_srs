@@ -7,7 +7,7 @@
 #
 
 """
-SrsCuDu Agent
+OCUDU CU-DU Agent
 """
 
 import ipaddress
@@ -19,16 +19,16 @@ from retina.protocol.base_pb2 import Metrics, StartInfo, StopResponse
 from retina.protocol.gnb_pb2 import CUStartInfo, DUStartInfo, GNBStartInfo
 
 from retina.agent.drivers.gnb import GNBDriver
-from retina.agent.drivers.srs_cu import SrsCu
-from retina.agent.drivers.srs_du import SrsDu
+from retina.agent.drivers.ocudu_cu import OcuduCu
+from retina.agent.drivers.ocudu_du import OcuduDu
 from retina.agent.features.executor import Executor, LocalExecutor
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.parameters import gnb_defaults, testbed_defaults
 
 
-class SrsCuDu(GNBDriver, BaseDriverSutHandler):
+class OcuduCuDu(GNBDriver, BaseDriverSutHandler):
     """
-    SrsCuDu Agent
+    OCUDU CU-DU Agent
     """
 
     CU_DU_NETWORK = "127.0.10.1"
@@ -37,10 +37,10 @@ class SrsCuDu(GNBDriver, BaseDriverSutHandler):
         super().__init__(
             *args, report_folder=report_folder, resource_folder=resource_folder, executor=executor, **kwargs
         )
-        self._cu = SrsCu(
+        self._cu = OcuduCu(
             *args, report_folder=report_folder + "/cu", resource_folder=resource_folder, executor=executor, *kwargs
         )
-        self._du = SrsDu(
+        self._du = OcuduDu(
             *args, report_folder=report_folder + "/du", resource_folder=resource_folder, executor=executor, *kwargs
         )
 
@@ -123,9 +123,9 @@ class SrsCuDu(GNBDriver, BaseDriverSutHandler):
         return self._du.GetMetrics(request, context)
 
 
-class LocalSrsCuDu(SrsCuDu):
+class LocalOcuduCuDu(OcuduCuDu):
     """
-    SrsCuDu Agent for local
+    OCUDU CU-DU Agent for local
     """
 
     def __init__(self, *args, **kwargs) -> None:

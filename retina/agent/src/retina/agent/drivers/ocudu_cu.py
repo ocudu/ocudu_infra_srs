@@ -7,7 +7,7 @@
 #
 
 """
-SrsCu Agent
+OCUDU CU Agent
 """
 
 import socket
@@ -21,12 +21,12 @@ from retina.protocol.gnb_pb2 import CUStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.gnb import CUDriver
-from retina.agent.drivers.srs_du import (
+from retina.agent.drivers.ocudu_du import (
     get_cell_array,
+    OCUDU_ERROR_HEADER,
+    OCUDU_WARNING_HEADER,
+    OCUDU_WERROR_FOOTER,
     RTSAN_ERROR,
-    SRS_ERROR_HEADER,
-    SRS_WARNING_HEADER,
-    SRS_WERROR_FOOTER,
 )
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.sut_handler import BaseDriverSutHandler
@@ -35,20 +35,20 @@ from retina.agent.parameters import gnb_defaults, template_defaults, testbed_def
 from retina.agent.tools.time import TimeoutHandler
 
 
-class SrsCu(CUDriver, BaseDriverSutHandler):
+class OcuduCu(CUDriver, BaseDriverSutHandler):
     """
-    SrsCu Agent
+    OCUDU CU Agent
     """
 
-    CU_BINARY_NAME: str = "srscu"
+    CU_BINARY_NAME: str = "ocu"
     CU_STDOUT_NAME: str = "stdout_cu"
     CU_LOG_FILENAME: str = "cu.log"
     CU_VERSION_REGEX: str = r"(\d+\.\d+(?:\.\d+)? \(\w+\))"
-    CU_CONF_FINAL_NAME: str = "srs_cu.yml"
-    CU_CONF_MAIN_NAME: str = "srs_gnb_base.yml"
-    CU_CONF_AMF_NAME: str = "srs_gnb_amf.yml"
-    CU_CONF_CU_NAME: str = "srs_gnb_cu.yml"
-    CU_CONF_QOS_NAME: str = "srs_gnb_qos.yml"
+    CU_CONF_FINAL_NAME: str = "ocudu_cu.yml"
+    CU_CONF_MAIN_NAME: str = "ocudu_gnb_base.yml"
+    CU_CONF_AMF_NAME: str = "ocudu_gnb_amf.yml"
+    CU_CONF_CU_NAME: str = "ocudu_gnb_cu.yml"
+    CU_CONF_QOS_NAME: str = "ocudu_gnb_qos.yml"
     CU_START_UP_TIMEOUT: int = 5
 
     def _get_sut_version(self) -> str:
@@ -140,14 +140,14 @@ class SrsCu(CUDriver, BaseDriverSutHandler):
 
     @property
     def _warning_regex(self) -> str:
-        return SRS_WARNING_HEADER + CU_WARNING_BODY + SRS_WERROR_FOOTER
+        return OCUDU_WARNING_HEADER + OCUDU_CU_WARNING_BODY + OCUDU_WERROR_FOOTER
 
     @property
     def _error_regex(self) -> str:
-        return r"(?:" + RTSAN_ERROR + ")|(?:" + SRS_ERROR_HEADER + SRS_WERROR_FOOTER + r")"
+        return r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
 
 
-CU_WARNING_BODY: str = (
+OCUDU_CU_WARNING_BODY: str = (
     r"(?!.*Could not check scaling governor)"
     r"(?!.*Dropping UeContextReleaseCommand. UE does not exist)"
     r"(?!.*Dropped GTP-U PDU, queue is full)"
@@ -155,9 +155,9 @@ CU_WARNING_BODY: str = (
 )
 
 
-class LocalSrsCu(SrsCu):
+class LocalOcuduCu(OcuduCu):
     """
-    SrsCu Agent for local
+    OCUDU CU Agent for local
     """
 
     def __init__(self, *args, **kwargs) -> None:

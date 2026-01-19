@@ -28,12 +28,12 @@
       model: amarisoft-ue.*
   shared_files:
     - local_path: ${OCUDU_PATH}/build_retina/utils/trx_ocudu/libtrx_ocudu.so
-      remote_path: /opt/lteue/trx_srsran.so
+      remote_path: /opt/lteue/trx_ocudu.so
       is_executable: true
 
 - name: ocudu-gnb-1
   type: gnb
-  image: ${CI_REGISTRY_IMAGE}/retina/srsgnb:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/ocudu-gnb:${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=fpga-virt-master
   requirements:
@@ -59,7 +59,7 @@
 
 - name: ocudu-gnb-2
   type: gnb
-  image: ${CI_REGISTRY_IMAGE}/retina/srsgnb:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/ocudu-gnb:${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=fpga-virt-master
   requirements:

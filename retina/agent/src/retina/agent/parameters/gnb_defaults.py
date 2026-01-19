@@ -7,7 +7,7 @@
 #
 
 """
-Module with a set of parameters related with srs gnb configuration
+Module with a set of parameters related with gnb configuration
 They must be lowercase and snake case because they're variables and not constants
 Must always be explicit typed.
 """

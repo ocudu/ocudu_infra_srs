@@ -37,7 +37,7 @@ from retina.orchestrator.entry_points.utils import check_user_name, set_default_
 from retina.orchestrator.license_utils.license_utils import display_license_info
 from retina.orchestrator.reservation.managers import get_resources_in_cluster
 from retina.orchestrator.reservation.resources import ResourceType
-from retina.orchestrator.srs_kubernetes import Kubernetes
+from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.orchestrator.utils import get_retina_user
 
 TIMEOUT = 20

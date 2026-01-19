@@ -21,14 +21,14 @@ RESOURCE_DATA_PREFIX = "rdata"
 RESOURCE_DATA_FILE = "resource.yml"
 
 # Name of the service opening the ports
-PORT_SERVICE_NAME = "srs-retina-service"
+PORT_SERVICE_NAME = "retina-service"
 
-NUMBER_PORT_INIT = 31000
+NUMBER_PORT_INIT = 32000
 NUMBER_OF_PORTS = 700
 
 SERVICE_LOADBALANCER = "loadBalancer"
 SERVICE_NODEPORT = "NodePort"
-LABEL = "srs-label"
+LABEL = "retina-label"
 
 # Pods in privileged mode
 PRIVILEGED_MODE = True

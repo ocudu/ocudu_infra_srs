@@ -7,7 +7,7 @@
 #
 
 """
-SrsDu Agent
+OCUDU DU Agent
 """
 
 import datetime
@@ -108,22 +108,22 @@ class MovingAverage:
 
 
 # pylint: disable=too-many-instance-attributes
-class SrsDu(DUDriver, BaseDriverSutHandler):
+class OcuduDu(DUDriver, BaseDriverSutHandler):
     """
-    SrsDu Agent
+    OCUDU DU Agent
     """
 
-    DU_BINARY_NAME: str = "srsdu"
+    DU_BINARY_NAME: str = "odu"
     DU_STDOUT_NAME: str = "stdout_du"
     DU_LOG_FILENAME: str = "du.log"
     DU_TRACING_FILENAME: str = "tracing.json"
     DU_VERSION_REGEX: str = r"(\d+\.\d+(?:\.\d+)? \(\w+\))"
-    DU_CONF_FINAL_NAME: str = "srs_du.yml"
-    DU_CONF_MAIN_NAME: str = "srs_gnb_base.yml"
-    DU_CONF_DU_NAME: str = "srs_gnb_du.yml"
-    DU_CONF_RU_NAME: str = "srs_gnb_ru.yml"
-    DU_QOS_NAME: str = "srs_gnb_qos.yml"
-    DU_CONF_METRICS_NAME: str = "srs_gnb_metrics.yml"
+    DU_CONF_FINAL_NAME: str = "ocudu_du.yml"
+    DU_CONF_MAIN_NAME: str = "ocudu_gnb_base.yml"
+    DU_CONF_DU_NAME: str = "ocudu_gnb_du.yml"
+    DU_CONF_RU_NAME: str = "ocudu_gnb_ru.yml"
+    DU_QOS_NAME: str = "ocudu_gnb_qos.yml"
+    DU_CONF_METRICS_NAME: str = "ocudu_gnb_metrics.yml"
     DU_START_UP_TIMEOUT: int = 5
     _METRICS_ENCODING: str = "utf-8"
 
@@ -541,11 +541,11 @@ class SrsDu(DUDriver, BaseDriverSutHandler):
 
     @property
     def _warning_regex(self) -> str:
-        return SRS_WARNING_HEADER + DU_WARNING_BODY + gnb_defaults.warning_extra_regex + SRS_WERROR_FOOTER
+        return OCUDU_WARNING_HEADER + OCUDU_DU_WARNING_BODY + gnb_defaults.warning_extra_regex + OCUDU_WERROR_FOOTER
 
     @property
     def _error_regex(self) -> str:
-        return r"(?:" + RTSAN_ERROR + ")|(?:" + SRS_ERROR_HEADER + SRS_WERROR_FOOTER + r")"
+        return r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         metrics = super().GetMetrics(request, context)
@@ -559,9 +559,9 @@ class SrsDu(DUDriver, BaseDriverSutHandler):
 
 
 RTSAN_ERROR = r".*==ERROR.*$"
-SRS_ERROR_HEADER: str = r"^.*\[.*\[E\]"
-SRS_WARNING_HEADER: str = r"^.*\[.*\[W\]"
-DU_WARNING_BODY: str = (
+OCUDU_ERROR_HEADER: str = r"^.*\[.*\[E\]"
+OCUDU_WARNING_HEADER: str = r"^.*\[.*\[W\]"
+OCUDU_DU_WARNING_BODY: str = (
     r"(?!.*Could not check scaling governor)"
     r"(?!.*uci slot.*not found)"
     r"(?!.*ACK Wait Timeout)"
@@ -572,12 +572,12 @@ DU_WARNING_BODY: str = (
     r"(?!.*sysfs is not available.)"
     r"(?!.*RAPL MSR interface is not available.)"
 )
-SRS_WERROR_FOOTER: str = r".*$"
+OCUDU_WERROR_FOOTER: str = r".*$"
 
 
-class LocalSrsDu(SrsDu):
+class LocalOcuduDu(OcuduDu):
     """
-    SrsDu Agent for local
+    OCUDU DU Agent for local
     """
 
     def __init__(self, *args, **kwargs) -> None:

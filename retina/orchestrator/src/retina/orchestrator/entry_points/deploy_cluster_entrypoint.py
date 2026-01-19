@@ -18,7 +18,7 @@ from pathlib import Path
 import yaml
 
 from retina.orchestrator.reservation.utils import deploy_server
-from retina.orchestrator.srs_kubernetes import Kubernetes
+from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.orchestrator.utils import validate
 
 

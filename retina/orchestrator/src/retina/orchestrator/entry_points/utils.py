@@ -17,7 +17,7 @@ from typing import Iterable
 from rich.console import Console
 from rich.table import Table
 
-from retina.orchestrator.orchestration_network import SRSPod
+from retina.orchestrator.orchestration_network import RetinaPod
 
 GITLAB_RUNNER_POD_PREFIX = "glr-ci"
 GITLAB_RUNNER_NAMESPACE = "gitlab-runner"
@@ -68,7 +68,7 @@ def check_user_name(user_name: str):
     """
     Get user name
     """
-    forbidden_username = ["root", "admin", "administrator", "sysadmin", "system", "superuser", "su", "sudo", "srsadmin"]
+    forbidden_username = ["root", "admin", "administrator", "sysadmin", "system", "superuser", "su", "sudo"]
     if user_name in forbidden_username:
         logging.error(
             "Forbidden username: %s. Please choose another one not in the list %s", user_name, forbidden_username
@@ -76,7 +76,7 @@ def check_user_name(user_name: str):
         sys.exit(1)
 
 
-def print_table(pod_list: Iterable[SRSPod]):
+def print_table(pod_list: Iterable[RetinaPod]):
     """
     Print resource table
     """
@@ -102,7 +102,7 @@ def print_table(pod_list: Iterable[SRSPod]):
     console.print(table)
 
 
-def print_table_resources(pod_list: Iterable[SRSPod]):
+def print_table_resources(pod_list: Iterable[RetinaPod]):
     """
     Print resource table
     """

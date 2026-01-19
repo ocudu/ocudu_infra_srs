@@ -28,8 +28,6 @@ from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition, UeMetr
 from retina.protocol.ue_pb2 import UEAttachedInfo, UEStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
-from retina.agent.drivers.srs_cu import CU_WARNING_BODY
-from retina.agent.drivers.srs_du import DU_WARNING_BODY, SRS_ERROR_HEADER, SRS_WARNING_HEADER, SRS_WERROR_FOOTER
 from retina.agent.drivers.ue import SubscriberWithStatus, UEDriver
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.sut_handler import BaseDriverSutHandler
@@ -274,21 +272,20 @@ class SrsUe(UEDriver, BaseDriverSutHandler):
     @property
     def _warning_regex(self) -> str:
         return (
-            SRS_WARNING_HEADER
+            self.SRS_WARNING_HEADER
             + r"(?!.*Option pdcch_cfg not present)"
             + r"(?!.*proc_time: detected long duration)"
-            + CU_WARNING_BODY
-            + DU_WARNING_BODY
-            + SRS_WERROR_FOOTER
+            + self.SRS_WARNING_BODY
+            + self.SRS_WERROR_FOOTER
         )
 
     @property
     def _error_regex(self) -> str:
         return (
-            SRS_ERROR_HEADER
+            self.SRS_ERROR_HEADER
             + r"(?!.*Invalid config. Priority=1 already configured for lcg=0)"
             + r"(?!.*Couldn't register logical channel at BSR procedure.)"
-            + SRS_WERROR_FOOTER
+            + self.SRS_WERROR_FOOTER
         )
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
@@ -300,6 +297,24 @@ class SrsUe(UEDriver, BaseDriverSutHandler):
             metrics.total.rnti = 0
         logging.info("Metrics: %s", MessageToString(metrics, as_one_line=True))
         return metrics
+
+    SRS_WARNING_HEADER: str = r"^.*\[.*\[W\]"
+    SRS_WARNING_BODY: str = (
+        r"(?!.*Could not check scaling governor)"
+        r"(?!.*Dropped GTP-U PDU, queue is full)"
+        r"(?!.*uci slot.*not found)"
+        r"(?!.*ACK Wait Timeout)"
+        r"(?!.*build data PDU, tx_window is full)"
+        r"(?!.*no metrics will be reported as no layer was enabled)"
+        r"(?!.*Radio realtime event)"
+        r"(?!.*Dropping SDU to avoid)"
+        r"(?!.*Dropping UeContextReleaseCommand. UE does not exist)"
+        r"(?!.*Real-time failure in RF: late)"
+        r"(?!.*sysfs is not available.)"
+        r"(?!.*RAPL MSR interface is not available.)"
+    )
+    SRS_ERROR_HEADER: str = r"^.*\[.*\[E\]"
+    SRS_WERROR_FOOTER: str = r".*$"
 
 
 class LocalSrsUe(SrsUe):

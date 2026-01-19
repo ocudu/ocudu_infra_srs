@@ -13,6 +13,7 @@ Amarisoft License Client module for interacting with Amarisoft License Server.
 This module provides a client implementation for the Amarisoft LTE License Server Remote API.
 It handles authentication, command sending, and response parsing through a WebSocket interface.
 """
+
 import asyncio
 import hashlib
 import hmac

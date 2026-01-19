@@ -31,7 +31,7 @@ from retina.orchestrator.reservation.resources import (
     ResourceList,
 )
 from retina.orchestrator.reservation.utils import create_resource_data_configmap, get_resource_data_configmap_name
-from retina.orchestrator.srs_kubernetes import DEFAULT_NAMESPACE, ErrorCode, Kubernetes
+from retina.orchestrator.retina_kubernetes import DEFAULT_NAMESPACE, ErrorCode, Kubernetes
 from retina.orchestrator.timeout_handler import TimeoutHandler
 from retina.orchestrator.utils import (
     check_binary_can_exec,
@@ -44,14 +44,13 @@ from retina.orchestrator.utils import (
 
 @dataclass
 # pylint: disable=too-many-instance-attributes
-class SRSPod:
+class RetinaPod:
     """
-    SRS pod
+    Retina pod
     """
 
     name: str
     type_deploy: str
-    service_name: str
     address: str
     port_array: Tuple[int, ...]
     extra_port_array: Tuple[int, ...]
@@ -89,7 +88,7 @@ class OrchestratorManager:
     ############################################################################
     # Utils
     ############################################################################
-    def get_json_output_orchestration(self, setup: Iterable[SRSPod], orch_id: str):
+    def get_json_output_orchestration(self, setup: Iterable[RetinaPod], orch_id: str):
         """
         Get output declaration for orchestration network
         """
@@ -196,7 +195,7 @@ class OrchestratorManager:
         orch_id = self.get_orchestration_network_id(user_name)
         self._append_to_alive_orch_id_list(orch_id)
 
-        srs_setup: List[SRSPod] = []
+        retina_setup: List[RetinaPod] = []
         try:
             req = parse_request(request_path)
 
@@ -230,7 +229,7 @@ class OrchestratorManager:
                     for req_reservation in pool_request.request_reservation_list
                 ]
                 for future in futures:
-                    srs_setup.append(future.result())
+                    retina_setup.append(future.result())
             finally:
                 timeout_handler.cancel()
                 executor.shutdown(wait=True, cancel_futures=True)
@@ -239,17 +238,17 @@ class OrchestratorManager:
             self.delete_orchestration_network(orch_id)
             raise exc
         if print_info:
-            self.print_orchestration_network_info(orch_id, srs_setup)
+            self.print_orchestration_network_info(orch_id, retina_setup)
         return (
             orch_id,
-            srs_setup,
-            self.get_json_output_orchestration(srs_setup, orch_id),
+            retina_setup,
+            self.get_json_output_orchestration(retina_setup, orch_id),
         )
 
     ############################################################################
     # Services
     ############################################################################
-    def create_loadbalancer_service(self):
+    def create_loadbalancer_service(self) -> None:
         """
         Create retina loadbalancer service
         """
@@ -264,10 +263,13 @@ class OrchestratorManager:
             "type": const.SERVICE_LOADBALANCER,
         }
 
-        self.k_server.create_retina_service(service_config)
-        logging.info("LoadBalancer service created.")
+        response = self.k_server.create_retina_service(service_config)
+        if response == ErrorCode.OK:
+            logging.info("LoadBalancer service created.")
+        else:
+            raise RuntimeError(f"Error creating LoadBalancer service: {response}")
 
-    def create_nodeport_service(self):
+    def create_nodeport_service(self) -> None:
         """
         Create retina nodePort service
         """
@@ -288,8 +290,11 @@ class OrchestratorManager:
             "type": const.SERVICE_NODEPORT,
         }
 
-        self.k_server.create_retina_service(service_config)
-        logging.info("NodePort service created.")
+        response = self.k_server.create_retina_service(service_config)
+        if response == ErrorCode.OK:
+            logging.info("NodePort service created.")
+        else:
+            raise RuntimeError(f"Error creating NodePort service: {response}")
 
     ############################################################################
     # ConfigMap
@@ -365,7 +370,7 @@ class OrchestratorManager:
         timeout_handler: TimeoutHandler,
         not_finite_execution: bool,
         force_external_ip: bool,
-    ) -> SRSPod:
+    ) -> RetinaPod:
         """
         Create Pod
 
@@ -490,10 +495,9 @@ class OrchestratorManager:
         if not not_finite_execution:
             self.check_pod_port_list(load_balancer_ip, retina_ports_number_array, timeout_handler)
 
-        srs_pod = SRSPod(
+        retina_pod = RetinaPod(
             name=request_reservation.name,
             type_deploy=request_reservation.type_r,
-            service_name=const.PORT_SERVICE_NAME,
             address=pod_ip if self.k_server.is_incluster() else load_balancer_ip,
             port_array=tuple(retina_ports_number_array),
             extra_port_array=tuple(extra_ports_number_array),
@@ -504,11 +508,11 @@ class OrchestratorManager:
             node_resource=node_resource,
         )
         if dev_mode:
-            logging.info("Deployment ready: %s", srs_pod.pod_name)
+            logging.info("Deployment ready: %s", retina_pod.pod_name)
         else:
-            logging.info("Pod ready: %s", srs_pod.pod_name)
+            logging.info("Pod ready: %s", retina_pod.pod_name)
 
-        return srs_pod
+        return retina_pod
 
     def copy_binaries(self, binary_list: List[BinaryDefinition], pod_name: str):
         """
@@ -531,7 +535,7 @@ class OrchestratorManager:
             self.k_server.copy_to_pod(local_path, remote_path, pod_name, DEFAULT_NAMESPACE)
             logging.info("Copied!")
 
-    def print_orchestration_network_info(self, orch_id: str, srs_setup: Iterable[SRSPod]):
+    def print_orchestration_network_info(self, orch_id: str, retina_setup: Iterable[RetinaPod]):
         """
         Show orchestration network information
         """
@@ -540,7 +544,7 @@ class OrchestratorManager:
 Ochestration network ID = {orch_id}
 *************************************************************
 """
-        for pod in srs_setup:
+        for pod in retina_setup:
             name = pod.name
             address = pod.address
             port = ",".join(map(str, pod.port_array))

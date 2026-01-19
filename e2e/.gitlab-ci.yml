@@ -58,7 +58,7 @@ e2e dynamic tests validation:
 e2e request validation:
   stage: static
   image:
-    name: ${CI_REGISTRY_IMAGE}/retina/launcher:${RETINA_VERSION}
+    name: ${CI_REGISTRY_IMAGE}/retina/launcher:latest
     entrypoint: ["/bin/sh", "-c"]
   rules:
     - if: $ON_MR

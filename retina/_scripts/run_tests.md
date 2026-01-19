@@ -165,7 +165,7 @@ gnb-base-image-1 exited with code 0
 amariue           | 2024-12-11 12:13:51,732 - INFO - Parameter grpc.maximum_workers set to 96
 amariue           | 2024-12-11 12:13:51,732 - INFO - Parameter grpc.server_ports set to [50064, 50065, 50066, 50067]
 amariue           | 2024-12-11 12:13:51,737 - INFO - Retina Agent for amarisoft-ue listening at port(s) 50064, 50065, 50066, 50067
-gnb               | 2024-12-11 12:13:51,876 - INFO - Retina Agent for srs-gnb listening at port(s) 50051
+gnb               | 2024-12-11 12:13:51,876 - INFO - Retina Agent for ocudu-gnb listening at port(s) 50051
 open5gs           | 2024-12-11 12:13:53,579 - INFO - Parameter grpc.maximum_workers set to 96
 open5gs           | 2024-12-11 12:13:53,579 - INFO - Parameter 5gc.tun_mask set to 24
 open5gs           | 2024-12-11 12:13:53,583 - INFO - Retina Agent for open5gs-5gc listening at port(s) 50051
@@ -280,7 +280,7 @@ PASSED                                                                          
 2024-12-04 14:26:02 [INFO] Closing open5gs-5gc [131224370898048]
 2024-12-04 14:26:02 [INFO] Waiting for Keep alive thread to finish
 2024-12-04 14:26:02 [INFO] Keep alive thread ended.
-2024-12-04 14:26:02 [INFO] Closing srs-gnb [131224370904144]
+2024-12-04 14:26:02 [INFO] Closing ocudu-gnb [131224370904144]
 2024-12-04 14:26:02 [INFO] Waiting for Keep alive thread to finish
 2024-12-04 14:26:02 [INFO] Keep alive thread ended.
 

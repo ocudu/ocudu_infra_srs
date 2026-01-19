@@ -20,7 +20,7 @@ import yaml
 
 from retina.orchestrator import configs, const
 from retina.orchestrator.const import CLUSTER_CONFIGURATION_CONFIGMAP_NAME
-from retina.orchestrator.srs_kubernetes import ErrorCode, Kubernetes
+from retina.orchestrator.retina_kubernetes import ErrorCode, Kubernetes
 from retina.orchestrator.utils import get_current_time
 
 
@@ -149,8 +149,8 @@ def deploy_server(config_path: Path, k_server: Kubernetes):
         "cluster_resource_list": cluster_resource_list,
     }
     config_map_config = configs.ConfigmapConfig(
-        orch_id="srsretinaadmin",
-        user_name="srsretinaadmin",
+        orch_id="retinaadmin",
+        user_name="retinaadmin",
         timeout=None,
         data=data,
         name=CLUSTER_CONFIGURATION_CONFIGMAP_NAME,

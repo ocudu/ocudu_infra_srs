@@ -27,7 +27,7 @@ from retina.agent.drivers.fivegc import FiveGCDriver
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
-from retina.agent.parameters import fivegc_defaults, template_defaults, testbed_defaults, ue_defaults
+from retina.agent.parameters import fivegc_defaults, template_defaults, testbed_defaults
 from retina.agent.tools.time import TimeoutHandler
 
 
@@ -133,7 +133,7 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
                     "default_indicator": True,
                     "session": [
                         {
-                            "name": ue_defaults.apn,
+                            "name": fivegc_defaults.apn,
                             "type": 3,
                             "pcc_rule": [],
                             "ambr": {

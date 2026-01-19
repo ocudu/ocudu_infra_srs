@@ -15,7 +15,7 @@ from random import shuffle
 from typing import Dict, List
 
 import retina.orchestrator.reservation.resources as rs
-from retina.orchestrator.srs_kubernetes import Kubernetes
+from retina.orchestrator.retina_kubernetes import Kubernetes
 
 
 def get_cluster_resources(resource_list: rs.ResourceList) -> rs.ResourceList:

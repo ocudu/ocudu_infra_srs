@@ -88,9 +88,9 @@ def main():
     open5gs_data = load_yaml(retina_dir / "images/open5gs/.gitlab-ci.yml")
     open5gs_version = open5gs_data["variables"]["OPEN5GS_VERSION"]
 
-    srsgnb_data = load_yaml(retina_dir / "images/srsgnb/.gitlab-ci.yml")
+    ocudu_data = load_yaml(retina_dir / "images/ocudu/.gitlab-ci.yml")
     builder_image = (
-        OCUDU_REGISTRY_URI + "/" + srsgnb_data[".docker-builder-srsgnb-base"]["variables"]["BUILDER_IMAGE_NAME"]
+        OCUDU_REGISTRY_URI + "/" + ocudu_data[".docker-builder-ocudu-base"]["variables"]["BUILDER_IMAGE_NAME"]
     )
 
     if ocudu_path is None:

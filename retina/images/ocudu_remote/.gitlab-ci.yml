@@ -26,18 +26,18 @@ stages:
   - test
   - publish
 
-.docker-builder-srsgnb:
+.docker-builder-ocudu-gnb:
   extends: .docker-builder
   variables: &image_variables
-    NAME: retina/srsgnb-remote
-    CONTEXT: retina/images/srsgnb_remote
+    NAME: retina/ocudu-gnb-remote
+    CONTEXT: retina/images/ocudu_remote
     VERSION: ${RETINA_VERSION}
     BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "10G"
 
 only-build:
   stage: test
-  extends: .docker-builder-srsgnb
+  extends: .docker-builder-ocudu-gnb
   rules:
     - if: $ON_MR
   variables:
@@ -45,7 +45,7 @@ only-build:
 
 build-and-publish:
   stage: publish
-  extends: .docker-builder-srsgnb
+  extends: .docker-builder-ocudu-gnb
   rules:
     - if: $ON_DEFAULT_BRANCH
     - if: $ON_MR

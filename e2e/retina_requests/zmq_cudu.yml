@@ -28,12 +28,12 @@
       model: amarisoft-ue.*
   shared_files:
     - local_path: ${OCUDU_PATH}/build_retina/utils/trx_ocudu/libtrx_ocudu.so
-      remote_path: /opt/lteue/trx_srsran.so
+      remote_path: /opt/lteue/trx_ocudu.so
       is_executable: true
 
 - name: ocudu-gnb
   type: gnb
-  image: ${CI_REGISTRY_IMAGE}/retina/srscudu:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/ocudu-cudu:${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=fpga-virt-master
   requirements:
@@ -53,10 +53,10 @@
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
     - local_path: ${OCUDU_PATH}/build_retina/apps/cu/ocu
-      remote_path: /usr/local/bin/srscu
+      remote_path: /usr/local/bin/ocu
       is_executable: true
     - local_path: ${OCUDU_PATH}/build_retina/apps/du/odu
-      remote_path: /usr/local/bin/srsdu
+      remote_path: /usr/local/bin/odu
       is_executable: true
 
 - name: open5gs

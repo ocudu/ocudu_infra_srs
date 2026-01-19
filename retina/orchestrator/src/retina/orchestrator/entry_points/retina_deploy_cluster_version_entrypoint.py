@@ -17,7 +17,7 @@ import sys
 
 from retina.orchestrator.cluster_utils import get_retina_version, set_retina_version
 from retina.orchestrator.entry_points.utils import set_default_colored_logger
-from retina.orchestrator.srs_kubernetes import Kubernetes
+from retina.orchestrator.retina_kubernetes import Kubernetes
 
 
 def parse_version(version):

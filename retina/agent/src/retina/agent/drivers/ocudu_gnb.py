@@ -7,7 +7,7 @@
 #
 
 """
-srsGNB Agent
+OCUDU gNB Agent
 """
 
 import logging
@@ -21,14 +21,14 @@ from retina.protocol.gnb_pb2 import GNBStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.gnb import GNBDriver
-from retina.agent.drivers.srs_cu import CU_WARNING_BODY, SrsCu
-from retina.agent.drivers.srs_du import (
-    DU_WARNING_BODY,
+from retina.agent.drivers.ocudu_cu import OCUDU_CU_WARNING_BODY, OcuduCu
+from retina.agent.drivers.ocudu_du import (
+    OCUDU_DU_WARNING_BODY,
+    OCUDU_ERROR_HEADER,
+    OCUDU_WARNING_HEADER,
+    OCUDU_WERROR_FOOTER,
+    OcuduDu,
     RTSAN_ERROR,
-    SRS_ERROR_HEADER,
-    SRS_WARNING_HEADER,
-    SRS_WERROR_FOOTER,
-    SrsDu,
 )
 from retina.agent.features.executor import LocalExecutor, SshExecutor
 from retina.agent.features.gnb_report import transform_metrics
@@ -58,29 +58,29 @@ class _OFHRUInfo:
     ul_port_id: str = ""
 
 
-class SrsGnb(GNBDriver, BaseDriverSutHandler):
+class OcuduGnb(GNBDriver, BaseDriverSutHandler):
     """
-    srsGNB Agent
+    OCUDU gNB Agent
     """
 
     GNB_BINARY_NAME: str = "gnb"
     GNB_STDOUT_NAME: str = "stdout"
     GNB_LOG_FILENAME: str = "gnb.log"
-    GNB_CONF_FINAL_NAME: str = "srs_gnb.yml"
-    GNB_CONF_MAIN_NAME: str = "srs_gnb_base.yml"
-    GNB_CONF_AMF_NAME: str = "srs_gnb_amf.yml"
-    GNB_CONF_CU_NAME: str = "srs_gnb_cu.yml"
-    GNB_CONF_DU_NAME: str = "srs_gnb_du.yml"
-    GNB_CONF_RU_NAME: str = "srs_gnb_ru.yml"
-    GNB_CONF_QOS_NAME: str = "srs_gnb_qos.yml"
-    GNB_CONF_METRICS_NAME: str = "srs_gnb_metrics.yml"
+    GNB_CONF_FINAL_NAME: str = "ocudu_gnb.yml"
+    GNB_CONF_MAIN_NAME: str = "ocudu_gnb_base.yml"
+    GNB_CONF_AMF_NAME: str = "ocudu_gnb_amf.yml"
+    GNB_CONF_CU_NAME: str = "ocudu_gnb_cu.yml"
+    GNB_CONF_DU_NAME: str = "ocudu_gnb_du.yml"
+    GNB_CONF_RU_NAME: str = "ocudu_gnb_ru.yml"
+    GNB_CONF_QOS_NAME: str = "ocudu_gnb_qos.yml"
+    GNB_CONF_METRICS_NAME: str = "ocudu_gnb_metrics.yml"
     GNB_START_UP_TIMEOUT: int = 5
     GNB_VERSION_REGEX: str = r"(\d+\.\d+(?:\.\d+)? \(\w+\))"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self._cu = SrsCu(*args, **kwargs)
-        self._du = SrsDu(*args, **kwargs)
+        self._cu = OcuduCu(*args, **kwargs)
+        self._du = OcuduDu(*args, **kwargs)
 
     def _get_sut_version(self) -> str:
         output = tuple(
@@ -212,33 +212,33 @@ class SrsGnb(GNBDriver, BaseDriverSutHandler):
     @property
     def _warning_regex(self) -> str:
         return (
-            SRS_WARNING_HEADER
-            + CU_WARNING_BODY
-            + DU_WARNING_BODY
+            OCUDU_WARNING_HEADER
+            + OCUDU_CU_WARNING_BODY
+            + OCUDU_DU_WARNING_BODY
             + gnb_defaults.warning_extra_regex
-            + SRS_WERROR_FOOTER
+            + OCUDU_WERROR_FOOTER
         )
 
     @property
     def _error_regex(self) -> str:
-        return r"(?:" + RTSAN_ERROR + ")|(?:" + SRS_ERROR_HEADER + SRS_WERROR_FOOTER + r")"
+        return r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         return self._du.GetMetrics(request, context)
 
 
-class LocalSrsGnb(SrsGnb):
+class LocalOcuduGnb(OcuduGnb):
     """
-    srsGNB Agent for local
+    OCUDU gNB Agent for local
     """
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs, executor=LocalExecutor())
 
 
-class RemoteSrsGnb(SrsGnb):
+class RemoteOcuduGnb(OcuduGnb):
     """
-    srsGNB Agent for remote
+    OCUDU gNB Agent for remote
     """
 
     def __init__(self, *args, **kwargs) -> None:

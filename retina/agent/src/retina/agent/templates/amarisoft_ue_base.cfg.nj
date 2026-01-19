@@ -18,7 +18,7 @@
 
   rf_driver: {
     {% if type == "zmq" %}
-    name:       "srsran",
+    name:       "ocudu",
     {%- for tx_rx in zmq_def %}
     tx_port{{loop.index-1}}:   "{{tx_rx[0]}}",
     rx_port{{loop.index-1}}:   "{{tx_rx[1]}}",

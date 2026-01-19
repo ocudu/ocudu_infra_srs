@@ -31,7 +31,7 @@ from retina.orchestrator.entry_points.utils import (
     set_default_colored_logger,
 )
 from retina.orchestrator.orchestration_network import OrchestratorManager
-from retina.orchestrator.srs_kubernetes import DEFAULT_NAMESPACE, Kubernetes, PodStatus
+from retina.orchestrator.retina_kubernetes import DEFAULT_NAMESPACE, Kubernetes, PodStatus
 from retina.orchestrator.utils import get_retina_user
 
 DEFAULT_TIMEOUT = 30 * 60

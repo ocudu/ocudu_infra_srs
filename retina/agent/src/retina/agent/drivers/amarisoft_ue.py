@@ -840,7 +840,7 @@ class RemoteAmarisoftUe(AmarisoftUe):
     Amarisoft UE Agent for remote execution
     """
 
-    _ZMQ_DRIVER = "trx_srsran.so"
+    _ZMQ_DRIVER = "trx_ocudu.so"
     _NETNS_TUN_SH = "amarisoft_ue_tun_netns.sh"
 
     def __init__(self, *args, **kwargs) -> None:

@@ -16,7 +16,7 @@ from retina.orchestrator.reservation.utils import (
     unlock_cluster_resource,
     unlock_resource_space,
 )
-from retina.orchestrator.srs_kubernetes import Kubernetes
+from retina.orchestrator.retina_kubernetes import Kubernetes
 
 
 def reserve_cluster_resource(k_server: Kubernetes, username: str, resource_id: str, timeout) -> bool:

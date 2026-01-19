@@ -200,8 +200,8 @@ log:
 {% if ntn_enable %}
 ntn:
   epoch_time:
-    sfn: 0  # only placeholders, srsgnb overwrites it
-    subframe_number: 0  # only placeholders, srsgnb overwrites it
+    sfn: 0  # only placeholders, gnb overwrites it
+    subframe_number: 0  # only placeholders, gnb overwrites it
   ntn_ul_sync_validity_dur: {{ sib19.ntn_ul_sync_validity_dur }}
   cell_specific_koffset:  {{ sib19.cell_specific_koffset }}
   ta_info:

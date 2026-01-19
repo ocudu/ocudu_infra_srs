@@ -11,7 +11,7 @@ set -e
 shopt -s nullglob
 
 # Define or export the RETINA_AGENT variable
-export RETINA_AGENT=${RETINA_AGENT:-srs-gnb}
+export RETINA_AGENT=${RETINA_AGENT:-ocudu-gnb}
 
 if grep -q avx512 /proc/cpuinfo; then
     # If there are avx512 versions of dpdk libs -> Rename them as default ones

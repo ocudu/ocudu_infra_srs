@@ -39,8 +39,8 @@ include:
   - &amarisoft5gc_remote_changes retina/images/amarisoft5gc_remote/**/*
   - &android_changes retina/images/android/**/*
   - &open5gs_changes retina/images/open5gs/**/*
-  - &srsgnb_changes retina/images/srsgnb/**/*
-  - &srsgnb_remote_changes retina/images/srsgnb_remote/**/*
+  - &ocudu_changes retina/images/ocudu/**/*
+  - &ocudu_remote_changes retina/images/ocudu_remote/**/*
   - &srsue_changes retina/images/srsue/**/*
   - &flexric_changes retina/images/flexric/**/*
   - &ntn_channel_emulator_changes retina/images/ntn-channel-emulator/**/*
@@ -342,7 +342,7 @@ open5gs image:
       optional: true
       artifacts: false
 
-srsgnb image:
+ocudu image:
   stage: ci
   rules:
     - if: $ON_MR
@@ -351,18 +351,18 @@ srsgnb image:
     - if: $ON_MR
       changes:
         paths:
-          - *srsgnb_changes
+          - *ocudu_changes
     - if: $ON_DEFAULT_BRANCH
       changes:
         paths:
           - *version_changes
           - *protocol_changes
           - *agent_changes
-          - *srsgnb_changes
+          - *ocudu_changes
         compare_to: "$CI_COMMIT_BEFORE_SHA"
   trigger:
     include:
-      - local: retina/images/srsgnb/.gitlab-ci.yml
+      - local: retina/images/ocudu/.gitlab-ci.yml
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
@@ -377,7 +377,7 @@ srsgnb image:
       optional: true
       artifacts: false
 
-srsgnb remote image:
+ocudu remote image:
   stage: ci
   rules:
     - if: $ON_MR
@@ -386,18 +386,18 @@ srsgnb remote image:
     - if: $ON_MR
       changes:
         paths:
-          - *srsgnb_remote_changes
+          - *ocudu_remote_changes
     - if: $ON_DEFAULT_BRANCH
       changes:
         paths:
           - *version_changes
           - *protocol_changes
           - *agent_changes
-          - *srsgnb_remote_changes
+          - *ocudu_remote_changes
         compare_to: "$CI_COMMIT_BEFORE_SHA"
   trigger:
     include:
-      - local: retina/images/srsgnb_remote/.gitlab-ci.yml
+      - local: retina/images/ocudu_remote/.gitlab-ci.yml
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]

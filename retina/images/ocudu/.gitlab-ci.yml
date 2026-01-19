@@ -26,12 +26,12 @@ stages:
   - test
   - publish
 
-.docker-builder-srsgnb-base:
+.docker-builder-ocudu-base:
   extends: .docker-builder
   variables:
-    NAME: retina/srsgnb-base
+    NAME: retina/ocudu-base
     VERSION: ${RETINA_VERSION}
-    CONTEXT: retina/images/srsgnb/base
+    CONTEXT: retina/images/ocudu/base
     BUILDER_IMAGE_NAME: builder-ubuntu-${AGENT_OS_VERSION}:${DOCKER_BUILDER_VERSION}
     BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE};BUILDER_IMAGE=${OCUDU_REGISTRY_URI}/${BUILDER_IMAGE_NAME}
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "125G"
@@ -41,7 +41,7 @@ stages:
 
 only build base:
   stage: test
-  extends: .docker-builder-srsgnb-base
+  extends: .docker-builder-ocudu-base
   rules:
     - if: $ON_MR
   variables:
@@ -49,7 +49,7 @@ only build base:
 
 build and publish base:
   stage: publish
-  extends: .docker-builder-srsgnb-base
+  extends: .docker-builder-ocudu-base
   rules:
     - if: $ON_DEFAULT_BRANCH
     - if: $ON_MR
@@ -64,7 +64,7 @@ build and publish final:
   extends: .docker-builder
   variables:
     VERSION: ${RETINA_VERSION}
-    CONTEXT: retina/images/srsgnb
+    CONTEXT: retina/images/ocudu
     BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE};RETINA_AGENT=${RETINA_AGENT}
     MODE: publish
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "80G"
@@ -77,13 +77,13 @@ build and publish final:
   retry: 2
   parallel:
     matrix:
-      - NAME: retina/srsgnb
-        RETINA_AGENT: srs-gnb
-      - NAME: retina/srscudu
-        RETINA_AGENT: srs-cudu
-      - NAME: retina/srscu
-        RETINA_AGENT: srs-cu
-      - NAME: retina/srsdu
-        RETINA_AGENT: srs-du
+      - NAME: retina/ocudu-gnb
+        RETINA_AGENT: ocudu-gnb
+      - NAME: retina/ocudu-cudu
+        RETINA_AGENT: ocudu-cudu
+      - NAME: retina/ocudu-cu
+        RETINA_AGENT: ocudu-cu
+      - NAME: retina/ocudu-du
+        RETINA_AGENT: ocudu-du
   needs:
     - build and publish base

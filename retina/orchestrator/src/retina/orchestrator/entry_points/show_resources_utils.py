@@ -27,7 +27,7 @@ from retina.orchestrator.entry_points.utils import (
 from retina.orchestrator.reservation.managers import get_resources_in_cluster
 from retina.orchestrator.reservation.resources import ResourceType
 from retina.orchestrator.reservation.utils import check_cluster_resource_user_reservation, check_space_user_reservation
-from retina.orchestrator.srs_kubernetes import DEFAULT_NAMESPACE, Kubernetes, PodStatus
+from retina.orchestrator.retina_kubernetes import DEFAULT_NAMESPACE, Kubernetes, PodStatus
 
 
 def convert_to_gb(size_str):

@@ -64,7 +64,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     htop nano \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install srs-tools & aux tools
+# Install the generated wheels
 RUN python3 -m pip install --break-system-packages /app/*.whl py-spy
 
 WORKDIR /var/log/retina
@@ -74,4 +74,4 @@ EXPOSE 50051
 
 ADD agent/agent.sh /usr/local/bin/
 
-ENTRYPOINT ["/usr/local/bin/agent.sh", "srs-gnb"]
+ENTRYPOINT ["/usr/local/bin/agent.sh", "ocudu-gnb"]

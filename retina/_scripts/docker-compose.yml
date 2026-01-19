@@ -15,11 +15,11 @@
 
 # Available profiles:
 # - builders: Build gnb binary and amari-zmq driver
-# - zmq_srsue: srsUE with ZeroMQ + srsGNB + Open5gs
-# - zmq_amariue: Amarisoft UE with ZeroMQ + srsGNB + Open5gs
-# - zmq_amariue_1cu_2du: Amarisoft UE with ZeroMQ + srsCU + 2 srsDUs + Open5gs
-# - zmq_amariue_2gnb: Amarisoft UE with ZeroMQ + 2 srsGNBs + Open5gs
-# - zmq_ntn: Amarisoft UE with ZeroMQ + srsGNB + Open5gs + NTN Channel Emulator
+# - zmq_srsue: srsUE with ZeroMQ + OCUDU gNB + Open5gs
+# - zmq_amariue: Amarisoft UE with ZeroMQ + OCUDU gNB + Open5gs
+# - zmq_amariue_1cu_2du: Amarisoft UE with ZeroMQ + OCUDU cu + 2 OCUDU du + Open5gs
+# - zmq_amariue_2gnb: Amarisoft UE with ZeroMQ + 2 OCUDU gNBs + Open5gs
+# - zmq_ntn: Amarisoft UE with ZeroMQ + OCUDU gNB + Open5gs + NTN Channel Emulator
 
 services:
   ocudu-builder:
@@ -181,7 +181,7 @@ services:
       [
         "bash",
         "-c",
-        "ln -sf /builds/ocudu/ocudu/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so /opt/lteue/trx_srsran.so && /usr/local/bin/amarisoft_ue_entrypoint.sh",
+        "ln -sf /builds/ocudu/ocudu/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so /opt/lteue/trx_ocudu.so && /usr/local/bin/amarisoft_ue_entrypoint.sh",
       ]
     x-testbed:
       type: ue
@@ -205,7 +205,7 @@ services:
         target: /etc/retina/resources/amari_remote_ue.yml
     volumes:
       - ${OCUDU_PATH}:/builds/ocudu/ocudu
-      - ${OCUDU_PATH}/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so:/opt/lteue/trx_srsran.so
+      - ${OCUDU_PATH}/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so:/opt/lteue/trx_ocudu.so
     networks:
       retina:
         ipv4_address: *amariue_remote_ip
@@ -240,8 +240,8 @@ services:
     x-testbed:
       type: ue
 
-  gnb-base-image:
-    image: ${CI_REGISTRY_IMAGE}/retina/srsgnb-base:${RETINA_VERSION}
+  ocudu-base-image:
+    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-base:${RETINA_VERSION}
     profiles:
       - all
       - zmq_srsue
@@ -250,7 +250,7 @@ services:
       - zmq_amariue_2gnb
       - zmq_ntn
     build:
-      context: ../images/srsgnb/base
+      context: ../images/ocudu/base
       args:
         <<: *variables
       additional_contexts:
@@ -258,22 +258,22 @@ services:
     network_mode: "none"
     entrypoint: ["true"]
 
-  srs-gnb-1: &gnb_service
-    container_name: srs-gnb-1
+  ocudu-gnb-1: &gnb_service
+    container_name: ocudu-gnb-1
     profiles:
       - all
       - zmq_srsue
       - zmq_amariue
       - zmq_amariue_2gnb
       - zmq_ntn
-    image: ${CI_REGISTRY_IMAGE}/retina/srsgnb:${RETINA_VERSION}
+    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-gnb:${RETINA_VERSION}
     build:
-      context: ../images/srsgnb
+      context: ../images/ocudu
       args:
         <<: *variables
-        RETINA_AGENT: srs-gnb # srs-gnb, srs-cudu, srs-cu, srs-du
+        RETINA_AGENT: ocudu-gnb # ocudu-gnb, ocudu-cudu, ocudu-cu, ocudu-du
       additional_contexts:
-        gnb-base: "service:gnb-base-image"
+        ocudu-base: "service:ocudu-base-image"
     cap_add:
       - SYS_NICE
       - CAP_SYS_PTRACE
@@ -289,9 +289,9 @@ services:
     x-testbed:
       type: gnb
 
-  srs-gnb-2:
+  ocudu-gnb-2:
     <<: *gnb_service
-    container_name: srs-gnb-2
+    container_name: ocudu-gnb-2
     profiles:
       - all
       - zmq_amariue_2gnb
@@ -305,20 +305,20 @@ services:
     x-testbed:
       type: gnb
 
-  srs-cu:
+  ocudu-cu:
     <<: *gnb_service
-    container_name: srs-cu
+    container_name: ocudu-cu
     profiles:
       - all
       - zmq_amariue_1cu_2du
-    image: ${CI_REGISTRY_IMAGE}/retina/srscu:${RETINA_VERSION}
+    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-cu:${RETINA_VERSION}
     build:
-      context: ../images/srsgnb
+      context: ../images/ocudu
       args:
         <<: *variables
-        RETINA_AGENT: srs-cu
+        RETINA_AGENT: ocudu-cu
       additional_contexts:
-        gnb-base: "service:gnb-base-image"
+        ocudu-base: "service:ocudu-base-image"
     environment:
       RETINA_IP: &cu_ip 172.20.0.7
     networks:
@@ -327,20 +327,20 @@ services:
     x-testbed:
       type: cu
 
-  srs-du-1:
+  ocudu-du-1:
     <<: *gnb_service
-    container_name: srs-du-1
+    container_name: ocudu-du-1
     profiles:
       - all
       - zmq_amariue_1cu_2du
-    image: ${CI_REGISTRY_IMAGE}/retina/srsdu:${RETINA_VERSION}
+    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-du:${RETINA_VERSION}
     build:
-      context: ../images/srsgnb
+      context: ../images/ocudu
       args:
         <<: *variables
-        RETINA_AGENT: srs-du
+        RETINA_AGENT: ocudu-du
       additional_contexts:
-        gnb-base: "service:gnb-base-image"
+        ocudu-base: "service:ocudu-base-image"
     environment:
       RETINA_IP: &du0_ip 172.20.0.8
     networks:
@@ -349,20 +349,20 @@ services:
     x-testbed:
       type: du
 
-  srs-du-2:
+  ocudu-du-2:
     <<: *gnb_service
-    container_name: srs-du-2
+    container_name: ocudu-du-2
     profiles:
       - all
       - zmq_amariue_1cu_2du
-    image: ${CI_REGISTRY_IMAGE}/retina/srsdu:${RETINA_VERSION}
+    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-du:${RETINA_VERSION}
     build:
-      context: ../images/srsgnb
+      context: ../images/ocudu
       args:
         <<: *variables
-        RETINA_AGENT: srs-du
+        RETINA_AGENT: ocudu-du
       additional_contexts:
-        gnb-base: "service:gnb-base-image"
+        ocudu-base: "service:ocudu-base-image"
     environment:
       RETINA_IP: &du1_ip 172.20.0.9
     networks:
@@ -371,13 +371,13 @@ services:
     x-testbed:
       type: du
 
-  srs-gnb-remote:
+  ocudu-gnb-remote:
     container_name: gnb-remote
     profiles:
       - all
-    image: ${CI_REGISTRY_IMAGE}/retina/srsgnb_remote:${RETINA_VERSION}
+    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-remote:${RETINA_VERSION}
     build:
-      context: ../images/srsgnb_remote
+      context: ../images/ocudu_remote
       args:
         <<: *variables
       additional_contexts:

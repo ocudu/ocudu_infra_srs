@@ -16,4 +16,4 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     ssh sshpass \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["/usr/local/bin/agent.sh", "srs-gnb-remote"]
+ENTRYPOINT ["/usr/local/bin/agent.sh", "ocudu-gnb-remote"]

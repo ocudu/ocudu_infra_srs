@@ -48,7 +48,7 @@ class NtnChannelEmulator(ChannelEmulatorDriver, BaseDriverSutHandler):
     EMULATOR_STDOUT_NAME: str = "stdout"
     EMULATOR_CONF_FILE_BASE_NAME: str = "ntn_channel_emulator.yml"
     EMULATOR_START_UP_TIMEOUT: int = 20  # It can take a while to generate a NTN scenario.
-    SRSGNB_NTN_CONFIG_FN: str = "srs_ntn.yml"
+    OCUDU_NTN_CONFIG_FN: str = "ocudu_ntn.yml"
     UE_POSITION_FN: str = "ue-position.cfg"
     UE_GS_POSITION_FN: str = "gs-position.cfg"
     EMULATOR_UE_POSITION_FN: str = "emulator-ue-position.cfg"
@@ -84,7 +84,7 @@ class NtnChannelEmulator(ChannelEmulatorDriver, BaseDriverSutHandler):
             "ue_zmq_port": ue.zmq_port_array[0],
             "tle_fn": self.GEO_TLE_FN if ntn_scenario.scenario_type == NtnScenarioType.GEO else self.LEO_TLE_FN,
             "sib19_format": "orbital" if ntn_scenario.ephemeris_info_type == EphemerisInfoType.ORBITAL else "ecef",
-            "gnb_ntn_config_fn": self.get_filepath_in_report_folder(self.SRSGNB_NTN_CONFIG_FN),
+            "gnb_ntn_config_fn": self.get_filepath_in_report_folder(self.OCUDU_NTN_CONFIG_FN),
             "ue_position_fn": self.get_filepath_in_report_folder(self.UE_POSITION_FN),
             "amariue_position_fn": self.get_filepath_in_report_folder(self.EMULATOR_UE_POSITION_FN),
             "amariue_gs_position_fn": self.get_filepath_in_report_folder(self.UE_GS_POSITION_FN),
@@ -188,11 +188,11 @@ class NtnChannelEmulator(ChannelEmulatorDriver, BaseDriverSutHandler):
         """
         Put the TA-related config into NtnScenarioConfig.
         """
-        path = self.get_filepath_in_report_folder(self.SRSGNB_NTN_CONFIG_FN)
-        srsgnb_cfg = None
+        path = self.get_filepath_in_report_folder(self.OCUDU_NTN_CONFIG_FN)
+        ocudu_gnb_cfg = None
         with open(path, "r", encoding="utf-8") as file:
-            srsgnb_cfg = yaml.safe_load(file)
-            ta_sched_cfg_dict = srsgnb_cfg["cell_cfg"]["ta"]
+            ocudu_gnb_cfg = yaml.safe_load(file)
+            ta_sched_cfg_dict = ocudu_gnb_cfg["cell_cfg"]["ta"]
             ta_sched_cfg.ta_target = ta_sched_cfg_dict["ta_target"]
             ta_sched_cfg.slot_prohibit_period = ta_sched_cfg_dict["ta_measurement_slot_prohibit_period"]
             ta_sched_cfg.slot_meas_period = ta_sched_cfg_dict["ta_measurement_slot_period"]
@@ -202,12 +202,12 @@ class NtnChannelEmulator(ChannelEmulatorDriver, BaseDriverSutHandler):
         """
         Put the initial SIB19 config into NtnScenarioConfig.
         """
-        path = self.get_filepath_in_report_folder(self.SRSGNB_NTN_CONFIG_FN)
-        srsgnb_cfg = None
+        path = self.get_filepath_in_report_folder(self.OCUDU_NTN_CONFIG_FN)
+        ocudu_gnb_cfg = None
         with open(path, "r", encoding="utf-8") as file:
-            srsgnb_cfg = yaml.safe_load(file)
+            ocudu_gnb_cfg = yaml.safe_load(file)
 
-        ntn_cfg = srsgnb_cfg["ntn"]
+        ntn_cfg = ocudu_gnb_cfg["ntn"]
         sib19_cfg.epoch_time_sfn = 0  # gnb overwrites it
         sib19_cfg.epoch_time_subframe_number = 0  # gnb overwrites it
         sib19_cfg.ntn_ul_sync_validity_dur = ntn_cfg["ntn_ul_sync_validity_dur"]

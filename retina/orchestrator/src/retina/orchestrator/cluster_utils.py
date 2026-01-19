@@ -16,7 +16,7 @@ from time import sleep
 from typing import Union
 
 from retina.orchestrator import configs
-from retina.orchestrator.srs_kubernetes import Kubernetes
+from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.orchestrator.utils import get_package_version
 
 CONFIGMAP_NAME_RETINA_VERSION = "retina-version"

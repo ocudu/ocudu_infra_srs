@@ -51,11 +51,11 @@ from retina.agent.drivers.base import BaseDriver
 from retina.agent.drivers.flexric import LocalFlexricRic
 from retina.agent.drivers.health import RetinaHealth
 from retina.agent.drivers.ntn_channel_emulator import LocalNtnChannelEmulator
+from retina.agent.drivers.ocudu_cu import LocalOcuduCu
+from retina.agent.drivers.ocudu_cudu import LocalOcuduCuDu
+from retina.agent.drivers.ocudu_du import LocalOcuduDu
+from retina.agent.drivers.ocudu_gnb import LocalOcuduGnb, RemoteOcuduGnb
 from retina.agent.drivers.open5gs_5gc import LocalOpen5gs5gc
-from retina.agent.drivers.srs_cu import LocalSrsCu
-from retina.agent.drivers.srs_cudu import LocalSrsCuDu
-from retina.agent.drivers.srs_du import LocalSrsDu
-from retina.agent.drivers.srs_gnb import LocalSrsGnb, RemoteSrsGnb
 from retina.agent.drivers.srs_ue import LocalSrsUe
 from retina.agent.tools.time import now_timestamp_file
 
@@ -63,11 +63,11 @@ _DRIVER_CODENAME_DICT: Dict[str, BaseDriver] = {
     "amarisoft-ue": LocalAmarisoftUe,
     "amarisoft-ue-remote": RemoteAmarisoftUe,
     "android": AdbAndroidUE,
-    "srs-gnb": LocalSrsGnb,
-    "srs-gnb-remote": RemoteSrsGnb,
-    "srs-cudu": LocalSrsCuDu,
-    "srs-cu": LocalSrsCu,
-    "srs-du": LocalSrsDu,
+    "ocudu-gnb": LocalOcuduGnb,
+    "ocudu-gnb-remote": RemoteOcuduGnb,
+    "ocudu-cudu": LocalOcuduCuDu,
+    "ocudu-cu": LocalOcuduCu,
+    "ocudu-du": LocalOcuduDu,
     "srs-ue": LocalSrsUe,
     "open5gs-5gc": LocalOpen5gs5gc,
     "flexric-ric": LocalFlexricRic,

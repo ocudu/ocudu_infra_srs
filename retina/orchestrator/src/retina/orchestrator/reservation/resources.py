@@ -48,7 +48,7 @@ from retina.orchestrator.reservation.utils import (
     get_space_name,
     reserve_cluster_resource_configmap,
 )
-from retina.orchestrator.srs_kubernetes import Kubernetes
+from retina.orchestrator.retina_kubernetes import Kubernetes
 
 ################################################################################
 # Types

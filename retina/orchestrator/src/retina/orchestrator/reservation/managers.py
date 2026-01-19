@@ -22,7 +22,7 @@ from retina.orchestrator.elements import Node
 from retina.orchestrator.requirement import RequirementManager
 from retina.orchestrator.reservation import utils
 from retina.orchestrator.reservation.utils import get_space_name
-from retina.orchestrator.srs_kubernetes import Kubernetes
+from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.orchestrator.timeout_handler import TimeoutHandler
 
 

@@ -28,6 +28,7 @@ from retina.orchestrator.configs import ConfigmapConfig, PodConfig
 from retina.orchestrator.const import (
     CLUSTER_CONFIGURATION_CONFIGMAP_NAME,
     LABEL,
+    PORT_SERVICE_NAME,
     RETINA_DEPLOY_LABEL_KEY,
     SERVICE_LOADBALANCER,
     SERVICE_NODEPORT,
@@ -112,7 +113,7 @@ class Kubernetes(KubernetesManager):
         Get load balancer service
         """
         for service in self._get_service_dict(namespace).values():
-            if service.spec.type == SERVICE_LOADBALANCER:
+            if service.metadata.name == PORT_SERVICE_NAME and service.spec.type == SERVICE_LOADBALANCER:
                 return service
         return None
 
@@ -121,7 +122,7 @@ class Kubernetes(KubernetesManager):
         Get node port service
         """
         for service in self._get_service_dict(namespace).values():
-            if service.spec.type == SERVICE_NODEPORT:
+            if service.metadata.name == PORT_SERVICE_NAME and service.spec.type == SERVICE_NODEPORT:
                 return service
         return None
 
@@ -129,7 +130,6 @@ class Kubernetes(KubernetesManager):
         """
         Get load balancer information
 
-        :param service_name: name
         :return: info
         """
         ip_add = ""
@@ -518,7 +518,7 @@ class Kubernetes(KubernetesManager):
             "dnsPolicy": config.dns_policy,
             "containers": [
                 {
-                    "name": "srs-app",
+                    "name": "retina-app",
                     "image": config.image,
                     "securityContext": {
                         "capabilities": {"add": ["SYS_NICE", "NET_ADMIN", "IPC_LOCK", "SYS_ADMIN"]},

@@ -21,7 +21,7 @@ VALID_UE = {
     "port": 50061,
 }
 VALID_UE_2 = {
-    "name": "srsenb",
+    "name": "srsue",
     "type": "ue",
     "address": "172.0.0.2",
     "port": 50068,
@@ -34,7 +34,7 @@ VALID_UE_3 = {
 }
 
 VALID_GNB = {
-    "name": "srs-gnb",
+    "name": "ocudu-gnb",
     "type": "gnb",
     "address": "localhost",
     "port": 50062,

@@ -8,10 +8,10 @@
 
 ARG CI_REGISTRY_IMAGE
 ARG RETINA_VERSION
-FROM ${CI_REGISTRY_IMAGE}/retina/srsgnb-base:$RETINA_VERSION AS gnb-base
-FROM gnb-base AS srsgnb
+FROM ${CI_REGISTRY_IMAGE}/retina/ocudu-base:$RETINA_VERSION AS ocudu-base
+FROM ocudu-base AS ocudu-gnb
 
-ARG RETINA_AGENT=srs-gnb
+ARG RETINA_AGENT=ocudu-gnb
 ENV RETINA_AGENT=$RETINA_AGENT
 
-ENTRYPOINT ["/usr/local/bin/srsgnb_entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/ocudu_entrypoint.sh"]

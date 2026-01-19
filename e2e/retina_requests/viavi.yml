@@ -8,7 +8,7 @@
 
 - name: ocudu-gnb
   type: gnb
-  image: ${CI_REGISTRY_IMAGE}/retina/srsgnb:${RETINA_VERSION}
+  image: ${CI_REGISTRY_IMAGE}/retina/ocudu-gnb:${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=dell-xr12
   requirements:
