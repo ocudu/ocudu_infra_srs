@@ -393,13 +393,12 @@ class OrchestratorManager:
         ########################################################################
         # Create service if it doesn't exist
         ########################################################################
-        if not self.k_server.is_incluster():
-            if networking_mode == const.SERVICE_LOADBALANCER:
-                if self.k_server.get_load_balancer_service() is None:
-                    self.create_loadbalancer_service()
-            else:
-                if self.k_server.get_node_port_service() is None:
-                    self.create_nodeport_service()
+        if networking_mode == const.SERVICE_LOADBALANCER:
+            if self.k_server.get_load_balancer_service() is None:
+                self.create_loadbalancer_service()
+        else:
+            if self.k_server.get_node_port_service() is None:
+                self.create_nodeport_service()
 
         ########################################################################
         # Create configmap RS
