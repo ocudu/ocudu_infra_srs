@@ -20,6 +20,7 @@ from enum import Enum
 from time import sleep
 from typing import Dict, List, Optional, Union
 
+from retina.protocol.redact import add_log_secret
 from retina.protocol.resource import (
     Accelerator,
     API,
@@ -301,6 +302,7 @@ class ResourceLicense(ClusterResource):
             model=model,
             connection=ConnectionType.NETWORK,
         )
+        add_log_secret(ip_address)
         self.ip_address = ip_address
         self.args = args
 
@@ -344,12 +346,15 @@ class ResourceEmulator(ClusterResource):
             model=model,
             connection=ConnectionType.NETWORK,
         )
+        add_log_secret(user)
         self.user = user
+        add_log_secret(password)
         self.password = password
         self.api_address = api_address
         self.api_port = api_port
         self.amf_address = amf_address
         self.amf_port = amf_port
+        add_log_secret(tma_path)
         self.tma_path = tma_path
         self.tma_profile = tma_profile
 
@@ -482,6 +487,8 @@ class ResourceSDR(NodeResource):
         super().__init__(
             capacity=capacity, type_r=Sdr.__name__, model=model, connection=connection, space=space, node=node
         )
+
+        add_log_secret(args)
         self.args = args
         self.sample_rate = sample_rate
         self.tx_gain = tx_gain
@@ -626,6 +633,7 @@ class ResourceAccelerator(NodeResource):
             node=node,
         )
         self.hwacc_type = hwacc_type
+        add_log_secret(str(accelerator_id))
         self.accelerator_id = accelerator_id
         self.pdsch_enc_nof_hwacc = pdsch_enc_nof_hwacc
         self.cb_mode = cb_mode
@@ -683,11 +691,13 @@ class ResourceAndroid(NodeResource):
             space=space,
             node=node,
         )
+        add_log_secret(serial_id)
         self.serial_id = serial_id
         self.imsi = imsi
         self.k = k
         self.amf = amf
         self.opc = opc
+        add_log_secret(adb_key)
         self.adb_key = adb_key
 
     def __hash__(self):

@@ -95,6 +95,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             set_parameter("testbed.user", available_resources.remote.user)
             add_log_secret(available_resources.remote.password)
             set_parameter("testbed.password", available_resources.remote.password)
+            add_log_secret(available_resources.remote.path)
             set_parameter("testbed.tma_path", available_resources.remote.path)
 
         # Core
@@ -111,6 +112,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
 
         # License
         if available_resources.license is not None:
+            add_log_secret(available_resources.license.address)
             set_parameter("testbed.license_server", available_resources.license.address)
             set_parameter("testbed.license_args", available_resources.license.args)
 
@@ -118,6 +120,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         if available_resources.sdr is not None:
             set_parameter("testbed.type", "sdr")
             set_parameter("testbed.model", available_resources.sdr.model)
+            add_log_secret(available_resources.sdr.args)
             set_parameter("testbed.args", available_resources.sdr.args)
             set_parameter("testbed.sync", available_resources.sdr.sync)
             set_parameter("testbed.sample_rate", available_resources.sdr.sample_rate)
@@ -143,6 +146,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         if available_resources.ue is not None:
             set_parameter("testbed.type", "android")
             set_parameter("testbed.model", available_resources.ue.model)
+            add_log_secret(available_resources.ue.serial_id)
             set_parameter("testbed.serial_id", available_resources.ue.serial_id)
             set_parameter("testbed.imsi", available_resources.ue.imsi)
             set_parameter("testbed.k", available_resources.ue.k)
@@ -156,6 +160,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             set_parameter("testbed.type", "accelerator")
             set_parameter("testbed.accelerator_model", available_resources.accelerator.model)
             set_parameter("testbed.accelerator_hwacc_type", available_resources.accelerator.hwacc_type)
+            add_log_secret(available_resources.accelerator.id)
             set_parameter("testbed.accelerator_id", available_resources.accelerator.id)
             set_parameter("testbed.accelerator_cb_mode", available_resources.accelerator.cb_mode)
             set_parameter(

@@ -14,10 +14,11 @@ import contextlib
 import json
 import os
 import pathlib
-from pprint import pprint
+from pprint import pformat
 from typing import Any, Dict, List
 
 import jinja2
+from retina.protocol.redact import redact_string
 
 _IGNORE_EXTENSIONS_TO_HTML = (".pcap", ".dat", ".idx")
 _MAX_FILE_SIZE_TO_HTML = 10 * 1024 * 1024
@@ -41,7 +42,7 @@ def create_report(
     """
 
     with open(pathlib.Path(test_log_folder) / "testbed.json", "w", encoding="UTF-8") as testbed_f:
-        pprint(testbed_info, stream=testbed_f, indent=4)
+        testbed_f.write(redact_string(pformat(testbed_info, indent=4)))
 
     bin_folders = []
     with contextlib.suppress(Exception):
@@ -146,7 +147,7 @@ def write_html_report(
         os.mkdir(test_log_folder)
 
     with open(output_path, mode="w", encoding="UTF-8") as file:
-        file.write(template)
+        file.write(redact_string(template))
     return "./" + os.path.normpath(os.path.relpath(output_path, start=os.path.join(report_html_path, "..")))
 
 

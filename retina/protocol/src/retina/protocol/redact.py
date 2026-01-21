@@ -28,7 +28,7 @@ class _SecretFilter(logging.Filter):
         """Add secrets used for redaction."""
         self._secrets.add(secret)
 
-    def _redact(self, value: str) -> str:
+    def redact(self, value: str) -> str:
         """Return the input string with all secrets replaced by the mask."""
         for secret in self._secrets:
             value = value.replace(secret, self._mask)
@@ -37,9 +37,9 @@ class _SecretFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         """Apply redaction to the log record message and arguments."""
         if record.args:
-            record.args = tuple(self._redact(arg) if isinstance(arg, str) else arg for arg in record.args)
+            record.args = tuple(self.redact(arg) if isinstance(arg, str) else arg for arg in record.args)
         if isinstance(record.msg, str):
-            record.msg = self._redact(record.msg)
+            record.msg = self.redact(record.msg)
         return True
 
 
@@ -58,3 +58,10 @@ def setup_secret_log_filter() -> None:
     Add the shared secret filter to the root logger.
     """
     logging.root.addFilter(_SECRET_FILTER)
+
+
+def redact_string(value: str) -> str:
+    """
+    Redact secrets from a string using the shared secret filter.
+    """
+    return _SECRET_FILTER.redact(value)
