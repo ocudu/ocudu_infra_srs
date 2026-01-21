@@ -14,12 +14,30 @@ import argparse
 import json
 import os
 from pathlib import Path
+from typing import Optional
 
 import yaml
 
 from retina.orchestrator.reservation.utils import deploy_server
 from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.orchestrator.utils import validate
+
+
+def _infer_runners_file(input_path: Path) -> Optional[Path]:
+    """
+    Infer a sibling runners file for a given cluster definition input.
+
+    Example:
+      lab_cluster.yaml -> lab_cluster_runners.yaml
+      def_high_performance.yml -> def_high_performance_runners.yaml
+    """
+    base_dir = input_path.parent
+    base_name = input_path.stem
+    for suffix in ("yaml", "yml"):
+        candidate = base_dir / f"{base_name}_runners.{suffix}"
+        if candidate.exists():
+            return candidate
+    return None
 
 
 def main():
@@ -32,6 +50,11 @@ def main():
         default="../../../../tests/helpers/cluster.yml",
         help="YAML file with the resources.",
     )
+    parser.add_argument(
+        "--runners-file",
+        default="",
+        help="Optional runners YAML file (e.g. lab_cluster_runners.yaml). If omitted, it is inferred from --input.",
+    )
     parser.add_argument("--in-cluster", action="store_true", help="Running inside a cluster.")
     parser.add_argument("--dry-run", action="store_true", help="Dry run.")
     args = parser.parse_args()
@@ -39,6 +62,9 @@ def main():
     dry_run = args.dry_run
 
     i_path: Path = Path(args.input).resolve()
+    runners_path: Optional[Path] = (
+        Path(args.runners_file).resolve() if args.runners_file else _infer_runners_file(i_path)
+    )
 
     # Validate input yaml with jsonschema
     with open(
@@ -56,7 +82,7 @@ def main():
 
     if not dry_run:
         k_server = Kubernetes(is_incluster=in_cluster)
-        deploy_server(config_path=i_path, k_server=k_server)
+        deploy_server(config_path=i_path, k_server=k_server, runners_path=runners_path)
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ import base64
 import json
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import yaml
 
@@ -129,7 +129,7 @@ def create_resource_data_configmap(
     return result
 
 
-def deploy_server(config_path: Path, k_server: Kubernetes):
+def deploy_server(config_path: Path, k_server: Kubernetes, runners_path: Optional[Path] = None):
     """
     Deploy Kubernetes cluster
     """
@@ -139,6 +139,12 @@ def deploy_server(config_path: Path, k_server: Kubernetes):
     current_date = get_current_time()
     resource_list = base64.b64encode(json.dumps(conf["nodes"]).encode("ascii")).decode("ascii")
     cluster_resource_list = base64.b64encode(json.dumps(conf["cluster_resource_list"]).encode("ascii")).decode("ascii")
+    runners_b64: str = ""
+    if runners_path is not None and runners_path.exists():
+        with open(str(runners_path), encoding="UTF-8") as file:
+            runners_conf = yaml.load(file, Loader=yaml.FullLoader) or {}
+        runners_map = runners_conf.get("runners", {})
+        runners_b64 = base64.b64encode(json.dumps(runners_map).encode("ascii")).decode("ascii")
 
     data = {
         "update-time": current_date,
@@ -148,6 +154,8 @@ def deploy_server(config_path: Path, k_server: Kubernetes):
         "resource": resource_list,
         "cluster_resource_list": cluster_resource_list,
     }
+    if runners_b64:
+        data["runners"] = runners_b64
     config_map_config = configs.ConfigmapConfig(
         orch_id="retinaadmin",
         user_name="retinaadmin",

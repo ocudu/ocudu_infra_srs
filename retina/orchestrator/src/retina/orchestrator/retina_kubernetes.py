@@ -240,6 +240,9 @@ class Kubernetes(KubernetesManager):
             cluster_resource_list = json.loads(
                 base64.b64decode(config_map_data["cluster_resource_list"].encode("ascii")).decode("ascii")
             )
+            runners: Dict[str, Any] = {}
+            if "runners" in config_map_data and config_map_data["runners"]:
+                runners = json.loads(base64.b64decode(config_map_data["runners"].encode("ascii")).decode("ascii"))
 
             retina_node_dict = self.get_retina_node_dict(False, False)
             for i, value in enumerate(resource):
@@ -254,6 +257,7 @@ class Kubernetes(KubernetesManager):
                 "version": config_map_data["version"],
                 "nodes": resource,
                 "cluster_resource_list": cluster_resource_list,
+                "runners": runners,
             }
         else:
             raise RuntimeError(f"Error getting cluster info: {CLUSTER_CONFIGURATION_CONFIGMAP_NAME}")
