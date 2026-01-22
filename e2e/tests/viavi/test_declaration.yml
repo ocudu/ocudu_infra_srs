@@ -230,7 +230,7 @@ tests:
     expected_dl_bitrate: 14.0e+3
     expected_ul_bitrate: 1.0e+3
     expected_max_late_harqs: 4
-    expected_nof_kos: 0
+    expected_nof_kos: 2
     warning_as_errors: true
     warning_allowlist: *base_warning_allowlist
 
@@ -292,7 +292,7 @@ tests:
     expected_dl_bitrate: 14.0e+3
     expected_ul_bitrate: 1.0e+3
     expected_max_late_harqs: 4
-    expected_nof_kos: 0
+    expected_nof_kos: 2
     warning_as_errors: true
     warning_allowlist: *base_warning_allowlist
 
@@ -364,7 +364,7 @@ tests:
     expected_dl_bitrate: 14.0e+3
     expected_ul_bitrate: 1.0e+3
     expected_max_late_harqs: 4
-    expected_nof_kos: 0
+    expected_nof_kos: 2
     warning_as_errors: true
     warning_allowlist: *base_warning_allowlist
 
@@ -434,7 +434,7 @@ tests:
     expected_dl_bitrate: 14.0e+3
     expected_ul_bitrate: 1.0e+3
     expected_max_late_harqs: 4
-    expected_nof_kos: 0
+    expected_nof_kos: 2
     warning_as_errors: true
     warning_allowlist: *base_warning_allowlist
 
