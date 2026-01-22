@@ -17,15 +17,10 @@ spec:
       type: string
       default: dev
       description: "OCUDU reference branch or tag."
-    infrastructure_tag:
-      type: string
-      default: amd64-avx2
-      description: "Tag to use for the build job."
-      options:
-        - amd64
-        - amd64-avx2
-        - amd64-avx2-avx512
-        - arm64
+    build_tags:
+      type: array
+      default: [amd64-avx2]
+      description: "Tags to use for the build job."
     os:
       type: string
       default: ubuntu-24.04
@@ -55,13 +50,10 @@ spec:
       default: none
       description: "Run ctest selecting tests with labels matching regular expression. `none` wont run any test at all."
     # E2E job configuration for web and api triggered pipelines
-    e2e_tag:
-      type: string
-      default: new-retina-e2e-amd64
-      description: "Tag to use for the e2e job."
-      options:
-        - new-retina-e2e-amd64
-        - retina-e2e-amd64
+    e2e_tags:
+      type: array
+      default: [new-retina-e2e-amd64]
+      description: "Tags to use for the e2e job."
     group:
       type: string
       default: zmq
@@ -130,7 +122,7 @@ include:
       rules:
         - if: $ON_WEB
         - if: $ON_API
-      tag: $[[ inputs.infrastructure_tag ]]
+      tags: $[[ inputs.build_tags ]]
       os: $[[ inputs.os ]]
       compiler: $[[ inputs.compiler ]]
       ocudu_target: $[[ inputs.ocudu_target ]]
@@ -139,7 +131,7 @@ include:
       dpdk_version: $[[ inputs.dpdk_version ]]
       test_mode: $[[ inputs.test_mode ]]
       cache:
-        - key: $[[ inputs.os ]]-$[[ inputs.compiler ]]-$[[ inputs.infrastructure_tag ]]
+        - key: $[[ inputs.os ]]-$[[ inputs.compiler ]]-$[[ inputs.build_tags ]]
           paths: [ocudu/ccache]
           policy: pull-push
   - local: templates/build.yml
@@ -153,7 +145,7 @@ include:
           when: never
         - if: $ON_WEB
         - if: $ON_API
-      tag: $[[ inputs.infrastructure_tag ]]
+      tags: $[[ inputs.build_tags ]]
       os: $[[ inputs.os ]]
       compiler: gcc
       ocudu_target: trx_ocudu_test
@@ -176,7 +168,7 @@ include:
           when: never
         - if: $ON_WEB
         - if: $ON_API
-      tag: $[[ inputs.e2e_tag ]]
+      tags: $[[ inputs.e2e_tags ]]
       group: $[[ inputs.group ]]
       testbed: $[[ inputs.testbed ]]
       markers: $[[ inputs.markers ]]

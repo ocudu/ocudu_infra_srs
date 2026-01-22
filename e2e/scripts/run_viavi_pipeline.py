@@ -53,7 +53,7 @@ class _TestDefinition:
 
 @dataclass
 class _BuildDefinition:
-    tag: str
+    tags: list
     os: str
     compiler: str
     target: str
@@ -64,7 +64,7 @@ class _BuildDefinition:
 
 BUILD_DEFINITIONS: Dict[str, _BuildDefinition] = {
     "standard": _BuildDefinition(
-        tag="amd64-avx2-avx512",
+        tags=["amd64-avx2"],
         os="ubuntu-24.04",
         compiler="gcc",
         target="gnb_split_7_2",
@@ -74,7 +74,7 @@ BUILD_DEFINITIONS: Dict[str, _BuildDefinition] = {
         uhd_version="",
     ),
     "rtsan": _BuildDefinition(
-        tag="amd64-avx2-avx512",
+        tags=["amd64-avx2"],
         os="ubuntu-24.04-rtsan",
         compiler="clang",
         target="gnb_split_7_2",
@@ -192,7 +192,7 @@ def _run_test(args_definition: _ArgsDefinition, test_definition: _TestDefinition
     input_dict = {
         "ocudu_path": args_definition.ocudu_path,
         "ocudu_ref": args_definition.ocudu_ref,
-        "infrastructure_tag": build_definition.tag,
+        "build_tags": build_definition.tags,
         "os": build_definition.os,
         "ocudu_target": build_definition.target,
         "compiler": build_definition.compiler,
@@ -200,7 +200,7 @@ def _run_test(args_definition: _ArgsDefinition, test_definition: _TestDefinition
         "dpdk_version": build_definition.dpdk_version,
         "uhd_version": build_definition.uhd_version,
         "test_mode": "none",
-        "e2e_tag": "new-retina-e2e-amd64",
+        "e2e_tags": ["new-retina-e2e-amd64"],
         "group": "viavi",
         "testbed": "viavi",
         "markers": "viavi_manual",

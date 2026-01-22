@@ -36,7 +36,7 @@ except ImportError:
 
 try:
     import gitlab
-    from gitlab.v4.objects import Project
+    from gitlab.v4.objects import Project, ProjectJob
 except ImportError:
     print("Error: Gitlab Python library is required. Install it with: pip install python_gitlab", file=sys.stderr)
     sys.exit(1)
@@ -132,7 +132,7 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
         job_id = int(job_name)
         for project in project_array:
             try:
-                job = project.jobs.get(job_id)
+                job: ProjectJob = project.jobs.get(job_id)
                 variable_dict.update(_extract_variables_from_job(project, job.id))
             except gitlab.exceptions.GitlabGetError:
                 continue
@@ -151,6 +151,12 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
                         variable_dict.update(_extract_variables_from_job(project, job.id))
                         if not variable_dict:
                             continue  # If the variable dict is empty, keep searching
+                        if "LAUNCHER_ARGS" in variable_dict:
+                            # e2e job found
+                            variable_dict["E2E_TAGS"] = job.tag_list
+                        else:
+                            # Build job found
+                            variable_dict["BUILD_TAGS"] = job.tag_list
                         return variable_dict
                     if time.time() >= time_to_reach:
                         print(

@@ -24,13 +24,10 @@ spec:
       type: string
       default: 3 hours
       description: "Timeout for the job."
-    tag: # TODO Convert to array when in-cluster is ready
-      type: string
-      default: new-retina-e2e-amd64
+    tags:
+      type: array
+      default: [new-retina-e2e-amd64]
       description: "Tags to use for the job."
-      options:
-        - new-retina-e2e-amd64
-        - retina-e2e-amd64
     group:
       type: string
       default: zmq
@@ -89,8 +86,7 @@ spec:
   stage: $[[ inputs.stage ]]
   rules: $[[ inputs.rules ]]
   timeout: $[[ inputs.timeout ]]
-  tags:
-    - ${E2E_TAG}
+  tags: $[[ inputs.tags ]]
   image:
     name: ${CI_REGISTRY_IMAGE}/retina/launcher:${RETINA_VERSION}
     entrypoint: ["/bin/sh", "-c"]
@@ -98,7 +94,6 @@ spec:
     # CI variables
     OCUDU_DIR: ${CI_PROJECT_DIR}/ocudu
     GROUP: $[[ inputs.group ]]
-    E2E_TAG: $[[ inputs.tag ]]
     # Retina E2E variables
     TESTBED: $[[ inputs.testbed ]]
     MARKERS: $[[ inputs.markers ]]
@@ -125,7 +120,6 @@ spec:
       export OCUDU_COMMIT=$(cat ${OCUDU_DIR}/.gitlab/ci/version.txt)
     # Print E2E parameters
     - |
-      echo "E2E_TAG=${E2E_TAG}"
       echo "GROUP=${GROUP}"
       echo "TESTBED=${TESTBED}"
       echo "MARKERS=${MARKERS}"
