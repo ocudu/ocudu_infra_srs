@@ -271,10 +271,14 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                 msg="Amarisoft lteue start timeout reached",
             )
 
+            # Add -t flag for ZMQ mode to use radio-derived clock
+            zmq_args = ["-t"] if testbed_defaults.type == "zmq" else []
+
             # Launch
             self.start_sut(
                 *(item for pre_command in request.start_info.pre_commands for item in pre_command.split(" ")),
                 self._get_binary_name(),
+                *zmq_args,
                 config_file,
                 *(item for post_command in request.start_info.post_commands for item in post_command.split(" ")),
                 logfile=logfile,
