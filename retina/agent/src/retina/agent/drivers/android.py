@@ -13,9 +13,7 @@ Android UE Agent
 import ipaddress
 import logging
 import os
-import re
 import time
-from collections import defaultdict
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -28,7 +26,7 @@ from retina.protocol.ue_pb2 import UEAttachedInfo, UEStartInfo
 from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.ue import UEDriver
 from retina.agent.features.executor import AdbExecutor, LocalExecutor
-from retina.agent.parameters import testbed_defaults, ue_defaults
+from retina.agent.parameters import testbed_defaults
 
 
 class AndroidUe(UEDriver):
@@ -125,102 +123,6 @@ class AndroidUe(UEDriver):
                 "svc",
                 "wifi",
                 AndroidUe.bool_to_state_str(wifi_state),
-            )
-        )
-
-    def _set_apn(self):
-        apn_params = defaultdict(
-            lambda: "",
-            {
-                "carrier": ue_defaults.apn,
-                "apn": ue_defaults.apn,
-            },
-        )
-
-        carr_id = self._get_carrier_id(apn_params["carrier"])
-        self._delete_carrier(apn_params["carrier"])
-        self._add_carrier(apn_params)
-        self._select_preferred_carrier(carr_id)
-
-    def _get_carrier_id(self, carr_name: str) -> str:
-        carr_id: Optional[str] = None
-        for available_carrier in self._executor.run_binary('content query --uri "content://telephony/carriers"'):
-            if "name=" + carr_name in available_carrier:
-                carr_id = re.findall(r"_id=(\S+),", available_carrier)[0]
-                break
-
-        if carr_id is None:
-            raise KeyError(f"Can not find apn {carr_name}")
-
-        return carr_id
-
-    def _delete_carrier(self, carr_name: str) -> None:
-        """
-        Delete it if exist to force a new connection
-        """
-        tuple(
-            self._executor.run_binary(
-                "content delete --uri content://telephony/carriers --where 'name=\"" + str(carr_name) + "\" '"
-            )
-        )
-
-    def _add_carrier(self, apn_params: Dict[str, str]) -> None:
-        tuple(
-            self._executor.run_binary(
-                "content insert --uri content://telephony/carriers"
-                + ' --bind name:s:"'
-                + apn_params["carrier"]
-                + '"'
-                + ' --bind numeric:s:"'
-                + apn_params["mcc"]
-                + apn_params["mnc"]
-                + '"'
-                + ' --bind mcc:s:"'
-                + apn_params["mcc"]
-                + '"'
-                + ' --bind mnc:s:"'
-                + apn_params["mnc"]
-                + '"'
-                + ' --bind apn:s:"'
-                + apn_params["apn"]
-                + '"'
-                + ' --bind user:s:"'
-                + apn_params["user"]
-                + '"'
-                + ' --bind password:s:"'
-                + apn_params["password"]
-                + '"'
-                + ' --bind mmsc:s:"'
-                + apn_params["mmsc"]
-                + '"'
-                + ' --bind mmsport:s:"'
-                + apn_params["mmsport"]
-                + '"'
-                + ' --bind mmsproxy:s:"'
-                + apn_params["mmsproxy"]
-                + '"'
-                + ' --bind authtype:s:"'
-                + apn_params["auth"]
-                + '"'
-                + ' --bind type:s:"'
-                + apn_params["type"]
-                + '"'
-                + ' --bind protocol:s:"'
-                + apn_params["protocol"]
-                + '"'
-                + ' --bind mvno_type:s:"'
-                + apn_params["mvnotype"]
-                + '"'
-                + ' --bind mvno_match_data:s:"'
-                + apn_params["mvnoval"]
-                + '"'
-            )
-        )
-
-    def _select_preferred_carrier(self, carr_id: str) -> None:
-        tuple(
-            self._executor.run_binary(
-                'content insert --uri content://telephony/carriers/preferapn --bind apn_id:s:"' + str(carr_id) + '"'
             )
         )
 
