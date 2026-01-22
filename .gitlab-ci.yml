@@ -186,21 +186,8 @@ include:
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
+  - local: .gitlab-ci-stages.yml
   - local: docs/.gitlab-ci.yml
-
-stages:
-  - ci
-  - static
-  - infra
-  - build
-  - e2e
-  - test mode
-  - srsue
-  - amarisoft zmq
-  - amarisoft s72
-  - viavi
-  - amarisoft sdr
-  - android
 
 variables:
   OCUDU_REGISTRY_URI: ${CI_TEMPLATE_REGISTRY_HOST}/$[[ inputs.ocudu_path ]]

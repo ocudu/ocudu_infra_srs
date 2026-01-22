@@ -21,6 +21,10 @@ include:
   - project: $[[ inputs.ocudu_path ]]
     ref: $[[ inputs.ocudu_ref ]]
     file: .gitlab/ci-shared/python.yml
+  - local: e2e/functional-config.yml
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/static.yml
 
 # E2E CI/CD Pipeline
 
@@ -78,6 +82,17 @@ e2e request validation:
       artifacts: false
       optional: true
 
+dynamically generated pipeline validation:
+  extends: .static
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+  script:
+    - |
+      python3 e2e/scripts/generate_pipelines.py --input_path=e2e/tests/suites --pipelines_output_path=e2e --stages_output_path=.
+      is-pristine-repo.sh
+
 ## Build jobs for Scheduled Pipelines
 zmq driver:
   extends: build trx driver
@@ -85,6 +100,7 @@ zmq driver:
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
 
 release with deb info:
   extends: build
@@ -94,6 +110,7 @@ release with deb info:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     OS: ubuntu-24.04
     OCUDU_TARGET: ocu odu gnb

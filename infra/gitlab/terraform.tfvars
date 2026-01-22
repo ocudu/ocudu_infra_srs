@@ -148,6 +148,14 @@ schedules = {
     active      = true
     variables   = {}
   }
+  functional = {
+    description = "functional"
+    cron        = "00 21 * * 0-5"
+    timezone    = "Europe/Madrid"
+    ref         = "refs/heads/main"
+    active      = false
+    variables   = {}
+  }
   rf_nightly = {
     description = "RF Nightly"
     cron        = "00 22 * * 0-5"
