@@ -21,7 +21,6 @@ Orchestrator's main input is the request file. In that file we write down what w
   resources:
     - type: zmq
   environment:
-    - RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:

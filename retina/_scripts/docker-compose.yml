@@ -281,7 +281,6 @@ services:
       - ${OCUDU_PATH}:/builds/ocudu/ocudu
     environment:
       RETINA_IP: &gnb0_ip 172.20.0.5
-      RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
       PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
     networks:
       retina:
@@ -297,7 +296,6 @@ services:
       - zmq_amariue_2gnb
     environment:
       RETINA_IP: &gnb1_ip 172.20.0.6
-      RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
       PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
     networks:
       retina:

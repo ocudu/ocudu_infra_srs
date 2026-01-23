@@ -49,7 +49,6 @@
   resources:
     - type: zmq
   environment:
-    - RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
@@ -76,7 +75,6 @@
     - type: zmq
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb
-    - RTSAN_OPTIONS: halt_on_error=false:suppress_equal_stacks=true
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
     - local_path: ${OCUDU_PATH}/build_retina/apps/gnb/gnb

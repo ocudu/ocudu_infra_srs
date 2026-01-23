@@ -105,7 +105,7 @@ spec:
     TRANSFER_METER_FREQUENCY: 5s
     ARTIFACT_COMPRESSION_LEVEL: slowest
     RUNNER_AFTER_SCRIPT_TIMEOUT: 20m
-  resource_group: e2e-${GROUP}-${E2E_TAG}
+  resource_group: e2e-${GROUP}
   needs:
     - $[[ inputs.needs ]]
   artifacts:

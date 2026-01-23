@@ -28,7 +28,11 @@ RUN chmod -R 600 /opt/dpdk/*/lib/*-linux-gnu/ \
     && apt-get update && apt-get install -y --no-install-recommends llvm gdb \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ENV ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 ENV ASAN_OPTIONS=symbol_line=1
+ENV TSAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
+ENV RTSAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
+ENV RTSAN_OPTIONS="halt_on_error=false:suppress_equal_stacks=true"
 
 RUN uhd_images_downloader -t b2xx_
 RUN uhd_images_downloader -t n310
