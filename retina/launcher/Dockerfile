@@ -37,7 +37,7 @@ RUN curl -L "https://github.com/instrumenta/kubeval/releases/latest/download/kub
     && rm kubeval.tar.gz
 
 # Install auxiliar tools
-RUN apk add --no-cache git git-lfs yq coreutils zip sshpass openssh-client
+RUN apk add --no-cache git yq coreutils zip sshpass openssh-client
 RUN apk add py-spy --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
 
 ARG INFLUX_VERSION=2.7.5

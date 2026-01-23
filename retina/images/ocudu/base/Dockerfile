@@ -23,12 +23,12 @@ COPY --from=builder /opt/uhd /opt/uhd
 COPY --from=builder /opt/rohc /opt/rohc
 
 RUN chmod -R 600 /opt/dpdk/*/lib/*-linux-gnu/ \
-    && /usr/local/bin/install_ocudu_dependencies.sh \
-    # llvm-symbolizer required for ASAN/TSAN 
-    && apt-get install -y --no-install-recommends llvm gdb \
+    && /usr/local/bin/install_ocudu_dependencies.sh run \
+    && /usr/local/bin/install_ocudu_dependencies.sh extra \
+    && apt-get update && apt-get install -y --no-install-recommends llvm gdb \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN export ASAN_OPTIONS=symbol_line=1
+ENV ASAN_OPTIONS=symbol_line=1
 
 RUN uhd_images_downloader -t b2xx_
 RUN uhd_images_downloader -t n310
