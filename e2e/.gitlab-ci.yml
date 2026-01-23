@@ -179,9 +179,9 @@ dpdk rtsan avx512:
   stage: test mode
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: zmq
-    E2E_TAG: new-retina-e2e-amd64
     TESTBED: test_mode_ue
     MARKERS: test_mode
     KEYWORDS: test_ue
@@ -202,9 +202,9 @@ test ue asan:
   stage: test mode
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: viavi
-    E2E_TAG: new-retina-e2e-amd64
     TESTBED: test_mode_ru
     RETINA_ARGS: ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
 
@@ -246,9 +246,9 @@ ru dummy test many ues:
   stage: srsue
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: zmq
-    E2E_TAG: new-retina-e2e-amd64
     RETINA_ARGS: ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
     LAUNCHER_ARGS: -n 2
   needs:
@@ -272,9 +272,9 @@ ric:
   stage: amarisoft zmq
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: zmq
-    E2E_TAG: new-retina-e2e-amd64
     TESTBED: zmq
     LAUNCHER_ARGS: -n 2
     RETINA_ARGS: >
@@ -448,9 +448,9 @@ cudu 64UE:
   stage: amarisoft s72
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: viavi
-    E2E_TAG: new-retina-e2e-amd64
     TESTBED: s72
     MARKERS: s72
     RETINA_ARGS: >
@@ -482,8 +482,8 @@ gnb 1UE s72 FR2:
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   timeout: 8h
+  tags: [new-retina-e2e-amd64]
   variables:
-    E2E_TAG: new-retina-e2e-amd64
     GROUP: viavi
     TESTBED: viavi
     MARKERS: viavi
@@ -550,8 +550,8 @@ gnb 1UE s72 FR2:
   stage: amarisoft sdr
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
+  tags: [retina-e2e-amd64]
   variables:
-    E2E_TAG: retina-e2e-amd64
     GROUP: rf
     TESTBED: rf_b200
     RETINA_ARGS: >
@@ -577,8 +577,8 @@ validate b200 config:
   stage: android
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
+  tags: [retina-e2e-amd64]
   variables:
-    E2E_TAG: retina-e2e-amd64
     GROUP: rf
     MARKERS: android
     RETINA_ARGS: >
