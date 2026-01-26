@@ -10,7 +10,7 @@
 
 const { themes } = require('prism-react-renderer');
 
-const gitlab_namespace = 'softwareradiosystems';
+const gitlab_namespace = 'ocudu';
 const gitlab_project = 'ocudu_infra_srs';
 const url = `https://${gitlab_namespace}.gitlab.io/`;
 const baseUrl = process.env.BASE_URL || '/';

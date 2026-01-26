@@ -23,7 +23,7 @@ from string import Template
 
 import yaml
 
-CI_REGISTRY_IMAGE = os.getenv("CI_REGISTRY_IMAGE", "registry.gitlab.com/softwareradiosystems/ocudu_infra_srs")
+CI_REGISTRY_IMAGE = os.getenv("CI_REGISTRY_IMAGE", "registry.gitlab.com/ocudu/ocudu_infra_srs")
 OCUDU_REGISTRY_URI = os.getenv("OCUDU_REGISTRY_URI", "registry.gitlab.com/ocudu/ocudu")
 CONTAINER_PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 DEFAULT_DPDK_VERSION = "24.11.2"

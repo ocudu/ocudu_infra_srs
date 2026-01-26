@@ -14,7 +14,7 @@ This repository have dependencies on third-party hardware and software, such as 
 
 ## More
 
-Each folder contains a README.md and auxiliary markdown files to document each feature. Please read them to know more or navigate through the [documentation website](./docs/README.md) generated with all markdown files across the repo in [https://softwareradiosystems.gitlab.io/ocudu_infra_srs](https://softwareradiosystems.gitlab.io/ocudu_infra_srs).
+Each folder contains a README.md and auxiliary markdown files to document each feature. Please read them to know more or navigate through the [documentation website](./docs/README.md) generated with all markdown files across the repo in [https://ocudu.gitlab.io/ocudu_infra_srs](https://ocudu.gitlab.io/ocudu_infra_srs).
 
 - [Gitlab CI Components](templates/README.md)
 - [OCUDU E2E Testing](e2e/README.md)

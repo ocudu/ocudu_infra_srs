@@ -70,7 +70,7 @@ pipx uninstall retina-launcher; pipx install retina-launcher --include-deps --pi
 ### Run retina docker
 
 ```bash
-docker run -it --rm --pull=always -e LOGNAME=$USER --entrypoint sh -v ~/.kube:/root/.kube registry.gitlab.com/softwareradiosystems/ocudu_infra_srs/retina/launcher
+docker run -it --rm --pull=always -e LOGNAME=$USER --entrypoint sh -v ~/.kube:/root/.kube registry.gitlab.com/ocudu/ocudu_infra_srs/retina/launcher
 ```
 
 - To share a folder in your PC with the container, add another `-v /absolute/path//pc:/absolute/path/container` before the image name.

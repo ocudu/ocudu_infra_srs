@@ -51,7 +51,7 @@ You can add the `--dyrun` flag to preview the input values without creating any 
 
 **Running on a non-default infrastructure git repository/branch:**
 
-You can set the environment variables `OCUDU_INFRA_PATH` and `OCUDU_INFRA_REF` to specify a different repository and branch other than the defaults (`softwareradiosystems/ocudu_infra_srs` and `main`).
+You can set the environment variables `OCUDU_INFRA_PATH` and `OCUDU_INFRA_REF` to specify a different repository and branch other than the defaults (`ocudu/ocudu_infra_srs` and `main`).
 
 **Examples:**
 
@@ -128,7 +128,7 @@ python3 run_viavi_pipeline.py \
 
 **C) Running on a non-default infrastructure git repository/branch:**
 
-You can set the environment variables `OCUDU_INFRA_PATH` and `OCUDU_INFRA_REF` to specify a different repository and branch other than the defaults (`softwareradiosystems/ocudu_infra_srs` and `main`).
+You can set the environment variables `OCUDU_INFRA_PATH` and `OCUDU_INFRA_REF` to specify a different repository and branch other than the defaults (`ocudu/ocudu_infra_srs` and `main`).
 
 ### Arguments
 

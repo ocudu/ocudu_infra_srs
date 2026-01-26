@@ -25,7 +25,7 @@ from typing import Any, Callable, Dict, Optional, Sequence
 
 # Setup those environment variables to override default ocudu_infra repository
 GITLAB_URL = os.getenv("GITLAB_URL", "https://gitlab.com")
-OCUDU_INFRA_PATH = os.getenv("OCUDU_INFRA_PATH", "softwareradiosystems/ocudu_infra_srs")
+OCUDU_INFRA_PATH = os.getenv("OCUDU_INFRA_PATH", "ocudu/ocudu_infra_srs")
 OCUDU_INFRA_REF = os.getenv("OCUDU_INFRA_REF", "main")
 
 try:

@@ -66,7 +66,8 @@ module "settings" {
   # Basic Project Settings
   # =============================================================================
   default_branch   = "main"
-  visibility_level = "private" # private, internal, public
+  visibility_level = "public" # private, internal, public
+  description      = "https://ocudu.gitlab.io/ocudu_infra_srs"
 
   # =============================================================================
   # Merge Request Configuration
