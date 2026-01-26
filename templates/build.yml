@@ -92,7 +92,7 @@ include:
 
 "$[[ inputs.job ]]":
   extends: .build_and_unit_template
-  image: "$[[ inputs.image_prefix ]]$[[ inputs.os ]]:$[[ inputs.image_version ]]"
+  image: "$[[ inputs.image_prefix ]]${OS}:$[[ inputs.image_version ]]"
   stage: $[[ inputs.stage ]]
   rules: $[[ inputs.rules ]]
   variables:
