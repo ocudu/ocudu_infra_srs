@@ -34,7 +34,7 @@ spec:
       description: "Defines the `rules` of the job."
     tags:
       type: array
-      default: [amd64-avx2]
+      default: [saas-linux-medium-amd64]
       description: "Tags to use for the job."
     image_version:
       type: string

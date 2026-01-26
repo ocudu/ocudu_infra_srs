@@ -64,7 +64,7 @@ class _BuildDefinition:
 
 BUILD_DEFINITIONS: Dict[str, _BuildDefinition] = {
     "standard": _BuildDefinition(
-        tags=["amd64-avx2"],
+        tags=["saas-linux-medium-amd64"],
         os="ubuntu-24.04",
         compiler="gcc",
         target="gnb_split_7_2",
@@ -74,7 +74,7 @@ BUILD_DEFINITIONS: Dict[str, _BuildDefinition] = {
         uhd_version="",
     ),
     "rtsan": _BuildDefinition(
-        tags=["amd64-avx2"],
+        tags=["saas-linux-medium-amd64"],
         os="ubuntu-24.04-rtsan",
         compiler="clang",
         target="gnb_split_7_2",

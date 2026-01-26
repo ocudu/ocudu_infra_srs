@@ -19,7 +19,7 @@ spec:
       description: "OCUDU reference branch or tag."
     build_tags:
       type: array
-      default: [amd64-avx2]
+      default: [saas-linux-medium-amd64]
       description: "Tags to use for the build job."
     os:
       type: string
