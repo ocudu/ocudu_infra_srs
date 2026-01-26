@@ -354,7 +354,6 @@ class ResourceEmulator(ClusterResource):
         self.api_port = api_port
         self.amf_address = amf_address
         self.amf_port = amf_port
-        add_log_secret(tma_path)
         self.tma_path = tma_path
         self.tma_profile = tma_profile
 

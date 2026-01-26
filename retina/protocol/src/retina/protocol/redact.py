@@ -12,12 +12,16 @@ Helpers to redact sensitive values from log messages
 
 import logging
 import os
+import re
+from typing import Optional
 
 
 class _SecretFilter(logging.Filter):
     """
     Logging filter that redacts provided secret values from messages and args
     """
+
+    _REGEX_PATTERN = re.compile(r"\b(?:[0-9A-Fa-f]{2}[:-]){5,7}[0-9A-Fa-f]{2}\b")
 
     def __init__(self, mask: str = "[masked]"):
         super().__init__()
@@ -26,12 +30,16 @@ class _SecretFilter(logging.Filter):
 
     def add_secret(self, secret: str) -> None:
         """Add secrets used for redaction."""
-        self._secrets.add(secret)
+        if secret:
+            self._secrets.add(secret)
 
-    def redact(self, value: str) -> str:
+    def redact(self, value: Optional[str]) -> Optional[str]:
         """Return the input string with all secrets replaced by the mask."""
+        if value is None:
+            return value
         for secret in self._secrets:
             value = value.replace(secret, self._mask)
+        value = self._REGEX_PATTERN.sub(self._mask, value)
         return value
 
     def filter(self, record: logging.LogRecord) -> bool:
@@ -60,7 +68,7 @@ def setup_secret_log_filter() -> None:
     logging.root.addFilter(_SECRET_FILTER)
 
 
-def redact_string(value: str) -> str:
+def redact_string(value: Optional[str]) -> Optional[str]:
     """
     Redact secrets from a string using the shared secret filter.
     """

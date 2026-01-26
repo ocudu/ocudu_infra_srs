@@ -52,14 +52,47 @@ def _copy_and_redact_tree(src: Path, dst: Path) -> None:
             src_path = Path(root) / name
             dst_path = dst_root / name
             if _is_binary_file(src_path):
-                shutil.copy2(src_path, dst_path)
-                continue
-            try:
-                with src_path.open("r", encoding="utf-8") as in_f, dst_path.open("w", encoding="utf-8") as out_f:
-                    for line in in_f:
-                        out_f.write(redact_string(line))
-            except UnicodeDecodeError:
-                shutil.copy2(src_path, dst_path)
+                _copy_binary_file(src_path, dst_path)
+            else:
+                # Stream text files line-by-line to avoid loading large files into memory
+                try:
+                    has_redaction = False
+                    with tempfile.NamedTemporaryFile(
+                        mode="w", encoding="utf-8", delete=False, dir=dst_root.parent
+                    ) as tmp:
+                        tmp_path = Path(tmp.name)
+                        try:
+                            with src_path.open("r", encoding="utf-8") as src_file:
+                                for line in src_file:
+                                    redacted_line = redact_string(line)
+                                    if redacted_line != line:
+                                        has_redaction = True
+                                    tmp.write(redacted_line)
+
+                            # If no redaction occurred, use hardlink; otherwise move temp file
+                            if not has_redaction:
+                                tmp_path.unlink()
+                                try:
+                                    os.link(src_path, dst_path)
+                                except (OSError, NotImplementedError):
+                                    shutil.copy2(src_path, dst_path)
+                            else:
+                                shutil.move(str(tmp_path), str(dst_path))
+                                shutil.copystat(src_path, dst_path)
+                        except Exception:
+                            tmp_path.unlink(missing_ok=True)
+                            raise
+                except UnicodeDecodeError:
+                    _copy_binary_file(src_path, dst_path)
+
+
+def _copy_binary_file(src_path: Path, dst_path: Path) -> None:
+    # Use hardlink for binary files (much faster than copy)
+    try:
+        os.link(src_path, dst_path)
+    except (OSError, NotImplementedError):
+        # Fallback to copy if hardlink fails (e.g., cross-device)
+        shutil.copy2(src_path, dst_path)
 
 
 def calculate_folder_hash(folder: Path) -> str:

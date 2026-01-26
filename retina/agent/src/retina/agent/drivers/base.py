@@ -95,7 +95,6 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             set_parameter("testbed.user", available_resources.remote.user)
             add_log_secret(available_resources.remote.password)
             set_parameter("testbed.password", available_resources.remote.password)
-            add_log_secret(available_resources.remote.path)
             set_parameter("testbed.tma_path", available_resources.remote.path)
 
         # Core
