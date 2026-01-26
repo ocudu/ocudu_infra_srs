@@ -198,34 +198,6 @@ log:
 {% endif %}
 
 {% if ntn_enable %}
-ntn:
-  epoch_time:
-    sfn: 0  # only placeholders, gnb overwrites it
-    subframe_number: 0  # only placeholders, gnb overwrites it
-  ntn_ul_sync_validity_dur: {{ sib19.ntn_ul_sync_validity_dur }}
-  cell_specific_koffset:  {{ sib19.cell_specific_koffset }}
-  ta_info:
-    ta_common:  {{ sib19.ta_common }}
-    ta_common_drift:  {{ sib19.ta_common_drift }}
-    ta_common_drift_variant:  {{ sib19.ta_common_drift_variant }}
-  {% if sib19.use_ephemeris_orbital %}
-  ephemeris_orbital:
-    semi_major_axis: {{ sib19.semi_major_axis }}
-    eccentricity: {{ sib19.eccentricity }}
-    periapsis: {{ sib19.periapsis }}
-    longitude: {{ sib19.longitude }}
-    inclination: {{ sib19.inclination }}
-    mean_anomaly: {{ sib19.mean_anomaly }}
-  {% else %}
-  ephemeris_info_ecef:
-    pos_x: {{ sib19.pos_x }}
-    pos_y: {{ sib19.pos_y }}
-    pos_z: {{ sib19.pos_z }}
-    vel_x: {{ sib19.vel_x }}
-    vel_y: {{ sib19.vel_y }}
-    vel_z: {{ sib19.vel_z }}
-  {% endif %}
-
 cell_cfg:
   sib:
     t300: 2000
@@ -258,6 +230,33 @@ cell_cfg:
     ta_measurement_slot_prohibit_period: {{ ta_meas_slot_prohibit_period }}
     ta_measurement_slot_period: {{ ta_meas_slot_period }}
     ta_cmd_offset_threshold: {{ ta_cmd_offset_threshold }}
+  ntn:
+    epoch_time:
+      sfn: 0  # only placeholders, gnb overwrites it
+      subframe_number: 0  # only placeholders, gnb overwrites it
+    ntn_ul_sync_validity_dur: {{ sib19.ntn_ul_sync_validity_dur }}
+    cell_specific_koffset:  {{ sib19.cell_specific_koffset }}
+    ta_info:
+      ta_common:  {{ sib19.ta_common }}
+      ta_common_drift:  {{ sib19.ta_common_drift }}
+      ta_common_drift_variant:  {{ sib19.ta_common_drift_variant }}
+    {% if sib19.use_ephemeris_orbital %}
+    ephemeris_orbital:
+      semi_major_axis: {{ sib19.semi_major_axis }}
+      eccentricity: {{ sib19.eccentricity }}
+      periapsis: {{ sib19.periapsis }}
+      longitude: {{ sib19.longitude }}
+      inclination: {{ sib19.inclination }}
+      mean_anomaly: {{ sib19.mean_anomaly }}
+    {% else %}
+    ephemeris_info_ecef:
+      pos_x: {{ sib19.pos_x }}
+      pos_y: {{ sib19.pos_y }}
+      pos_z: {{ sib19.pos_z }}
+      vel_x: {{ sib19.vel_x }}
+      vel_y: {{ sib19.vel_y }}
+      vel_z: {{ sib19.vel_z }}
+    {% endif %}
 {% endif %}
 
 {###################################################}
