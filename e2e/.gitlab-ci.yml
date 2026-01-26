@@ -88,6 +88,9 @@ dynamically generated pipeline validation:
     - if: $ON_MR
       changes:
         - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
   script:
     - |
       python3 e2e/scripts/generate_pipelines.py --input_path=e2e/tests/suites --pipelines_output_path=e2e --stages_output_path=.

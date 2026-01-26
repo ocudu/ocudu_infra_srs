@@ -199,7 +199,6 @@ def generate_stages_file(output_path, dynamic_stages):
             stages = [
                 "ci",
                 "static",
-                "infra",
                 "build",
                 "e2e",
                 "test mode",

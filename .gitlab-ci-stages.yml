@@ -9,7 +9,6 @@
 stages:
   - ci
   - static
-  - infra
   - build
   - e2e
   - test mode
