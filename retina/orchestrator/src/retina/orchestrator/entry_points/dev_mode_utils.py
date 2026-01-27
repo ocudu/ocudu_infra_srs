@@ -35,7 +35,7 @@ from retina.orchestrator.retina_kubernetes import DEFAULT_NAMESPACE, Kubernetes,
 from retina.orchestrator.utils import get_retina_user
 
 DEFAULT_TIMEOUT = 30 * 60
-DEFAULT_DOCKER_IMAGE = "registry.gitlab.com/softwareradiosystems/ci/dev-container/ssh:0.2.2"
+DEFAULT_DOCKER_IMAGE = "docker/desktop-kubernetes-pause:3.10"
 
 
 def _signal_handler(*args, **kwargs):
