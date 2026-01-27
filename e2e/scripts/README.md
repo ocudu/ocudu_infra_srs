@@ -1,36 +1,39 @@
 # Scripts
 
-In this folder there are some scripts to help the user to trigger customized Build + E2E Pipelines.
+This directory contains utility scripts to help trigger customized Build + E2E pipelines in GitLab.
 
-- [run_e2e_pipeline](#pipeline-trigger-script)
-- [run_viavi_pipeline](#viavi-pipeline-trigger-script)
+## Available Scripts
+
+- [Pipeline Trigger Script](#pipeline-trigger-script) - `run_e2e_pipeline.py`: Trigger custom E2E test pipelines
+- [Viavi Pipeline Trigger Script](#viavi-pipeline-trigger-script) - `run_viavi_pipeline.py`: Trigger Viavi-specific test pipelines
 
 ## Pipeline Trigger Script
 
-The `run_e2e_pipeline.py` script allows you to create a [GitLab pipeline with custom configurations](../README.md#manual-pipeline), helping the user to fill all the inputs that Gitlab CI expects.
+The `run_e2e_pipeline.py` script allows you to create [GitLab pipelines with custom configurations](../README.md#manual-pipeline), helping you specify all the inputs that GitLab CI expects.
 
 ### Installation
 
 ```bash
-# Install dependencies
-pip install pyyaml python_gitlab
+# Install required dependencies
+pip install pyyaml python-gitlab
 ```
 
 ### Usage
 
 The script provides flexible ways to specify pipeline inputs:
 
-**Default behavior (Interactive Mode):**
+#### Default Behavior (Interactive Mode)
 
-- The script will prompt you for **every input field**. Press Enter to accept the default value shown in brackets
+- The script will prompt you for **every input field**
+- Press Enter to accept the default value shown in brackets
 - If you provide a value via **command-line argument**, the script will show it and ask for confirmation
 
-**Using `--yes` flag:**
+#### Using `--yes` Flag
 
 - Skips all interactive prompts and confirmations
 - Uses command-line values if provided, otherwise uses defaults
 
-**Using `--replicate JOB_ID_OR_NAME`:**
+#### Using `--replicate JOB_ID_OR_NAME`
 
 - Fetches all input values from an existing GitLab job
 - Pre-populates all fields with values from that job
@@ -38,22 +41,27 @@ The script provides flexible ways to specify pipeline inputs:
   - Interactive input (without `--yes`)
   - Command-line arguments (takes priority)
 
-**Priority order (highest to lowest):**
+#### Priority Order (Highest to Lowest)
 
 1. Command-line arguments
 2. Interactive user input (if not using `--yes`)
 3. Replicated job values (if using `--replicate`)
 4. Default values from `.gitlab-ci.yml`
 
-**Dryrun mode:**
+#### Dry Run Mode
 
-You can add the `--dyrun` flag to preview the input values without creating any pipeline.
+Add the `--dryrun` flag to preview the input values without creating any pipeline.
 
-**Running on a non-default infrastructure git repository/branch:**
+#### Custom Infrastructure Repository/Branch
 
-You can set the environment variables `OCUDU_INFRA_PATH` and `OCUDU_INFRA_REF` to specify a different repository and branch other than the defaults (`ocudu/ocudu_infra_srs` and `main`).
+Set environment variables to use a different infrastructure repository or branch:
 
-**Examples:**
+- `OCUDU_INFRA_PATH`: Repository path (default: `ocudu/ocudu_infra_srs`)
+- `OCUDU_INFRA_REF`: Branch name (default: `main`)
+
+#### Examples
+
+**Interactive mode:**
 
 ```bash
 python3 run_e2e_pipeline.py --token YOUR_GITLAB_TOKEN
@@ -68,6 +76,8 @@ python3 run_e2e_pipeline.py --token YOUR_GITLAB_TOKEN
 ✅ Pipeline created: https://...
 ```
 
+**Non-interactive mode with explicit parameters:**
+
 ```bash
 python3 run_e2e_pipeline.py --token YOUR_GITLAB_TOKEN --ocudu-ref main --testbed none --yes
 
@@ -76,6 +86,8 @@ python3 run_e2e_pipeline.py --token YOUR_GITLAB_TOKEN --ocudu-ref main --testbed
 ...
 ✅ Pipeline created: https://...
 ```
+
+**Replicate existing job with override:**
 
 ```bash
 python3 run_e2e_pipeline.py --token YOUR_GITLAB_TOKEN --replicate "smoke zmq" --compiler gcc --yes
@@ -105,7 +117,9 @@ pip install pyyaml python_gitlab
 
 The script provides two ways to run Viavi tests:
 
-**A) Use predefined tests from test_declaration.yml:**
+#### Option A: Use Predefined Tests
+
+Run tests from `test_declaration.yml`:
 
 ```bash
 python3 run_viavi_pipeline.py \
@@ -115,7 +129,9 @@ python3 run_viavi_pipeline.py \
   --build-mode rtsan
 ```
 
-**B) Use custom test from Viavi campaign:**
+#### Option B: Use Custom Test from Viavi Campaign
+
+Run a custom test from a Viavi campaign file:
 
 ```bash
 python3 run_viavi_pipeline.py \
@@ -126,59 +142,79 @@ python3 run_viavi_pipeline.py \
   --build-mode standard
 ```
 
-**C) Running on a non-default infrastructure git repository/branch:**
+#### Option C: Custom Infrastructure Repository/Branch
 
-You can set the environment variables `OCUDU_INFRA_PATH` and `OCUDU_INFRA_REF` to specify a different repository and branch other than the defaults (`ocudu/ocudu_infra_srs` and `main`).
+Set environment variables to use a different infrastructure repository or branch:
+
+- `OCUDU_INFRA_PATH`: Repository path (default: `ocudu/ocudu_infra_srs`)
+- `OCUDU_INFRA_REF`: Branch name (default: `main`)
 
 ### Arguments
 
-**Required:**
+#### Required
 
-- `--token`: GitLab private access token
+| Argument | Description |
+|----------|-------------|
+| `--token` | GitLab private access token |
 
-**Common options:**
+#### Common Options
 
-- `--ocudu-path`: OCUDU repository path (default: `ocudu/ocudu`)
-- `--ocudu-ref`: Branch or tag to test (default: `dev`)
-- `--build-mode`: Build configuration - `standard` or `rtsan` (default: `rtsan`)
-  - standard: Release build
-  - rtsan: Same as standard but with RealTime Sanitizer enabled
-- `--timeout`: Test timeout in seconds (optional, uses Viavi default if not specified)
+| Argument | Description | Default |
+|----------|-------------|----------|
+| `--ocudu-path` | OCUDU repository path | `ocudu/ocudu` |
+| `--ocudu-ref` | Branch or tag to test | `dev` |
+| `--build-mode` | Build configuration: `standard` or `rtsan` | `rtsan` |
+| `--timeout` | Test timeout in seconds (optional) | Viavi default |
 
-**For predefined tests:**
+**Build modes:**
 
-- `--testid`: Test ID from `test_declaration.yml` (e.g., `"1UE ideal UDP bidirectional"`)
+- `standard`: Release build
+- `rtsan`: Release build with RealTime Sanitizer enabled
 
-**For custom tests:**
+#### For Predefined Tests
 
-- `--test`: Test name in the Viavi campaign
-- `--campaign`: Campaign file path (default: uses default CI campaign)
+| Argument | Description |
+|----------|-------------|
+| `--testid` | Test ID from `test_declaration.yml` (e.g., `"1UE ideal UDP bidirectional"`) |
 
-**Advanced:**
+#### For Custom Tests
 
-- `--gnb-cli`: Custom arguments for the gNB binary (e.g., `"log --all_level=info"`)
-  - ⚠️ This overrides any configuration in `test_declaration.yml`
+| Argument | Description | Default |
+|----------|-------------|----------|
+| `--test` | Test name in the Viavi campaign | - |
+| `--campaign` | Campaign file path | Default CI campaign |
+
+#### Advanced Options
+
+| Argument | Description |
+|----------|-------------|
+| `--gnb-cli` | Custom arguments for the gNB binary (e.g., `"log --all_level=info"`) |
+
+⚠️ **Note**: Using `--gnb-cli` overrides any configuration in `test_declaration.yml`.
 
 ### Examples
 
+**Run predefined test with rtsan:**
+
 ```bash
-# Run predefined test with rtsan
 python3 run_viavi_pipeline.py \
   --token YOUR_TOKEN \
   --testid "1UE ideal UDP bidirectional" \
   --build-mode rtsan
 ```
 
+**Run custom test with standard build:**
+
 ```bash
-# Run custom test with standard build
 python3 run_viavi_pipeline.py \
   --token YOUR_TOKEN \
   --test "My Custom Test" \
   --build-mode standard
 ```
 
+**Run with custom gNB logging:**
+
 ```bash
-# Run with custom gNB logging
 python3 run_viavi_pipeline.py \
   --token YOUR_TOKEN \
   --testid "1UE ideal UDP bidirectional" \

@@ -1,34 +1,39 @@
+---
+sidebar_position: 4
+---
+
 # E2E Testing
 
-This folder contains e2e tests sources, configurations and testbeds, alongside the Gitlab CI code to replicate SRS scheduled pipelines.
+This folder contains E2E test sources, configurations and testbed definitions, alongside the GitLab CI code to replicate SRS scheduled pipelines.
 
-To run them, you need to install and configure [Retina framework](../retina/README.md)
+## Prerequisites
 
-## Gitlab Pipelines
+**Amarisoft ZMQ Configuration**: When the E2E testbed is configured for Amarisoft and ZMQ, the pipeline will automatically attempt to build the ZMQ driver alongside the normal build process. This requires following variables:
 
-### Scheduled pipelines
+| Variable | Description |
+|----------|-------------|
+| `AMARISOFT_PACKAGE_REGISTRY` | URL to the Amarisoft package repository |
+| `AMARISOFT_PACKAGE_REG_USER` | Username for private package registry authentication (if applicable) |
+| `AMARISOFT_PACKAGE_REG_PWD` | Password for private package registry authentication (if applicable) |
 
-- Nightlies: Scheduled pipelines that run every night.
-  - Emulated: Run E2E Tests using emulators like srsue (ZMQ), Amarisoft UE (over ZMQ and s72 emulation) or Viavi (RU Emulation).
-  - RF: Run E2E Tests using SDRs, COTS Phones, etc.
-- Weeklies: Scheduled pipelines that run during the weekend to execute longer tests:
-  - Emulated: Performance and long tests using Viavi and more.
+**Security best practices**:
+
+- Variables must be **masked** to hide sensitive values in logs
+- Mark variables as **protected** if you only trigger jobs on protected branches
+
+For detailed configuration options, see the [build and E2E component documentation](../templates/README.md).
+
+## GitLab Pipelines
+
+### Scheduled Pipelines
 
 ### Manual Pipeline
 
-We have a pipeline designed for triggered executions from the GitLab API or web interface. This pipeline orchestrates two main jobs:
+This pipeline is designed for on-demand executions triggered from the GitLab API or web interface. It orchestrates two main jobs:
 
-1. **Build Job**: Compiles ocudu according to specified parameters
+1. **Build Job**: Compiles OCUDU according to specified parameters
 2. **E2E Job**: Runs selected end-to-end tests
-
-When the E2E testbed is configured for Amarisoft and ZMQ, the pipeline will automatically attempt to build the ZMQ driver alongside the normal build process. This requires:
-
-- The `AMARISOFT_PACKAGE_REGISTRY` variable to be available in the GitLab repository. If it's a private URL, like a private gitlab package registry, please also set `AMARISOFT_PACKAGE_REG_USER` and `AMARISOFT_PACKAGE_REG_PWD`.
-  - Variables must be **masked**.
-  - Make them also **protected** if you're not going to trigger jobs in non protected branches.
-
-Please refer read the [build and e2e component documentation](../templates/README.md) for more info.
 
 ## Scripts
 
-In the script folder there are scripts that will help you to trigger customized pipelines in Gitlab. Please refer read [that documentation to know more](scripts/README.md).
+The [scripts directory](scripts/README.md) contains utilities to help you trigger customized pipelines in GitLab. See the [scripts documentation](scripts/README.md) for detailed usage instructions.

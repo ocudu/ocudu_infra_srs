@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # Retina
 
 ## Summary
@@ -8,7 +12,7 @@ Retina uses Kubernetes as its orchestration platform. Kubernetes is a popular op
 
 To handle complex distributed infrastructures, Retina deploys agents in each node the test is going to use, configured to handle some specific software. The main node, where the test will be launched, will create a client for each one of those agents and connect to them through TCP/IP.
 
-Retina architecture has been design with following ideas in mind:
+Retina architecture has been designed with the following ideas in mind:
 
 - Testing Infrastructure should be:
   - Scalable
