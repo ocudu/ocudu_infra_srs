@@ -423,10 +423,10 @@ services:
     sysctls:
       - net.ipv6.conf.default.disable_ipv6=0
     environment:
-      RETINA_IP: &core_ip 172.20.0.11
+      RETINA_IP: &open5gs_ip 172.20.0.11
     networks:
       retina:
-        ipv4_address: *core_ip
+        ipv4_address: *open5gs_ip
     devices:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
@@ -437,16 +437,18 @@ services:
     profiles:
       - all
       - zmq_amariue_mme
-    image: ${CI_REGISTRY_IMAGE}/retina/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
     build:
       context: ../images/amarisoft5gc
-      additional_contexts:
-        agent: "service:agent-image"
       args:
         <<: *variables
+      additional_contexts:
+        agent: "service:agent-image"
     environment:
       RETINA_IP: &amari5gc_ip 172.20.0.12
+      RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_MME_LICENSE_TAG}
     cap_add:
+      - SYS_NICE
       - NET_ADMIN
       - CAP_SYS_PTRACE
     configs:

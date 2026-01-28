@@ -10,11 +10,9 @@
 
 set -e
 
-. amarisoft_mme_setup.sh
-
 mkdir -p /etc/retina/resources
 echo """- type: core
-  address: 192.168.0.1
+  address: ${RETINA_IP}
   port: 38412
   mask: 24""" > /etc/retina/resources/core_network.yaml
 

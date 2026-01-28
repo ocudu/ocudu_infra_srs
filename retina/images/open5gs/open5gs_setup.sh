@@ -18,7 +18,7 @@ TUN_MASK="${TUN_MASK:-24}"
 ###############################################################################
 for ((LOIP=2; LOIP <= NUM_LOOP_IFACE; LOIP++)); do
     ip link add name lo$LOIP type dummy
-    ip ad ad 127.0.0.$LOIP/24 dev lo$LOIP
+    ip addr add 127.0.0.$LOIP/24 dev lo$LOIP
     ip link set lo$LOIP up >/dev/null 2>&1
 done
 
@@ -34,7 +34,7 @@ for ((SUBNET = 0; SUBNET < NUM_SUBNETS; SUBNET++)); do
     ip addr del "$TUN_IP_PREFIX.$SUBNET.1/$TUN_MASK" dev ogstun 2>/dev/null || true
     ip addr add "$TUN_IP_PREFIX.$SUBNET.1/$TUN_MASK" dev ogstun 2>/dev/null || true
 
-    # Redirect traffict to ogstun interface & route via subnet ip (to reach IPs from outside of the container)
+    # Redirect traffic to ogstun interface & route via subnet ip (to reach IPs from outside of the container)
     iptables -t nat -A POSTROUTING -s "$TUN_IP_PREFIX.$SUBNET.0/$TUN_MASK" ! -o ogstun -j MASQUERADE 2>/dev/null || true
     iptables -A INPUT -i ogstun -j ACCEPT 2>/dev/null || true
 done

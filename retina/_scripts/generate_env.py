@@ -205,6 +205,18 @@ def manage_amari_binaries(base_path: Path, amari_path: Path) -> str:
         shutil.copytree(amari_path, amari_path_inside_context)
         logging.info("Amarisoft folder copied inside AmariUE Retina build context: %s", amari_path_inside_context)
 
+    # Copy amari folder to Amarisoft MME Retina Image context build
+    amari_path_inside_context = base_path / f"images/amarisoft5gc/amarisoft/{amarisoft_version}"
+    if amari_path != amari_path_inside_context:
+        if amari_path_inside_context.exists():
+            if amari_path_inside_context.is_symlink():
+                amari_path_inside_context.unlink()
+            else:
+                shutil.rmtree(amari_path_inside_context)
+        amari_path_inside_context.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(amari_path, amari_path_inside_context)
+        logging.info("Amarisoft folder copied inside Amarisoft 5GC Retina build context: %s", amari_path_inside_context)
+
     return amarisoft_version
 
 
