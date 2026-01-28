@@ -448,7 +448,8 @@ tests:
       cell_cfg:
         nof_antennas_ul: 2
         srs:
-          srs_period_ms: 10
+          srs_type_enabled: "periodic"
+          srs_period_prohib_time_ms: 10
     retina_params:
       nof_antennas_ul: 2
     # Pass / Fail Criteria

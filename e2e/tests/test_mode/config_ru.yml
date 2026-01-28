@@ -45,7 +45,8 @@ cell_cfg:
     mcs_table: qam256
     rv_sequence: 0
   srs:
-    srs_period_ms: 40
+    srs_type_enabled: "periodic"
+    srs_period_prohib_time_ms: 40
 
 cells:
   - pci: 1
