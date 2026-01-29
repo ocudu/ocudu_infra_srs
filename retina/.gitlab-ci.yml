@@ -486,14 +486,14 @@ flexric image:
 ntn-channel-emulator image:
   stage: ci
   rules:
-    - if: $ON_MR
+    - if: $NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY && $ON_MR
       changes:
         <<: *agent_container_changes
-    - if: $ON_MR
+    - if: $NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY && $ON_MR
       changes:
         paths:
           - *ntn_channel_emulator_changes
-    - if: $ON_DEFAULT_BRANCH
+    - if: $NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY && $ON_DEFAULT_BRANCH
       changes:
         paths:
           - *version_changes

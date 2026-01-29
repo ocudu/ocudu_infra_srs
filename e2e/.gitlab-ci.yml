@@ -318,6 +318,8 @@ gnb 1UE:
 
 gnb 1UE ntn:
   extends: .amarisoft_zmq
+  rules:
+    - if: $NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY && $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
     TESTBED: zmq_ntn
     MARKERS: zmq_ntn
