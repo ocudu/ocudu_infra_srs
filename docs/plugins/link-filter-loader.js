@@ -12,16 +12,14 @@ const path = require('path');
 
 module.exports = function linkFilterLoader(source) {
     const filePath = this.resourcePath;
+    const options = this.getOptions();
+    const versionUrl = options?.versionUrl;
+    const docsPath = options?.docsPath;
 
     // Filter out links to non-markdown files (keep only links to .md/.mdx files and directories)
     // This regex matches markdown links: [text](path)
     // Note: This preserves HTML anchor tags like <a id="..."></a> which are used for linking within documents
     const filteredSource = source.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, link) => {
-
-        // Custom exception for files without extension
-        if (link === './LICENSE') {
-            return text;
-        }
 
         // Keep external links (http://, https://, mailto:, etc.)
         if (/^[a-z]+:/i.test(link)) {
@@ -48,9 +46,25 @@ module.exports = function linkFilterLoader(source) {
             return match;
         }
 
+        if (versionUrl && docsPath) {
+            // Resolve the absolute path of the linked file
+            const currentDir = path.dirname(filePath);
+            const absoluteTargetPath = path.resolve(currentDir, link);
+
+            // Get relative path from docs root
+            const relativePath = path.relative(docsPath, absoluteTargetPath);
+
+            // Create GitLab blob URL (assuming main branch)
+            const gitlabLink = `${versionUrl}/${relativePath}`;
+
+            console.log(`[link-filter-loader] Converting link: ${link} -> ${gitlabLink} in ${filePath}`);
+            return `[${text}](${gitlabLink})`;
+        }
+
         // Remove link to non-markdown file, keep only the text
         console.log(`[link-filter-loader] Filtering out link: ${link} in ${filePath}`);
         return text;
+
     });
 
     return filteredSource;

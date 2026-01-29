@@ -10,16 +10,13 @@
 
 const { themes } = require('prism-react-renderer');
 
-const gitlab_namespace = 'ocudu';
-const gitlab_project = 'ocudu_infra_srs';
-const url = `https://${gitlab_namespace}.gitlab.io/`;
+const gitlabNamespace = 'ocudu';
+const gitlabProject = 'ocudu_infra_srs';
+const url = `https://${gitlabNamespace}.gitlab.io/`;
 const baseUrl = process.env.BASE_URL || '/';
-const version = process.env.CI_COMMIT_SHORT_SHA || 'local';
-const gitlab_repo_url = `https://gitlab.com/${gitlab_namespace}/${gitlab_project}`;
-
-const versionLink = version !== 'local'
-  ? `<a href="${gitlab_repo_url}/-/tree/${version}" target="_blank" rel="noopener noreferrer">Version: ${version}</a>`
-  : `Version: ${version}`;
+const version = process.env.CI_COMMIT_SHORT_SHA || 'main';
+const gitlabRepoUrl = `https://gitlab.com/${gitlabNamespace}/${gitlabProject}`;
+const versionUrl = `${gitlabRepoUrl}/-/tree/${version}`;
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
@@ -30,10 +27,10 @@ module.exports = {
   onBrokenLinks: 'throw',
   onBrokenAnchors: 'throw',
   favicon: 'https://srs.io/wp-content/uploads/ocudu_color.png',
-  organizationName: gitlab_namespace,
-  projectName: gitlab_project,
+  organizationName: gitlabNamespace,
+  projectName: gitlabProject,
   customFields: {
-    version: version,
+    versionUrl: versionUrl,
   },
   markdown: {
     mermaid: true,
@@ -72,7 +69,7 @@ module.exports = {
           position: 'right',
         },
         {
-          href: gitlab_repo_url,
+          href: gitlabRepoUrl,
           label: 'Gitlab',
           position: 'right',
         },
@@ -102,12 +99,12 @@ module.exports = {
             },
             {
               label: 'Gitlab',
-              href: gitlab_repo_url,
+              href: gitlabRepoUrl,
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Software Radio Systems. | ${versionLink}`,
+      copyright: `Copyright © ${new Date().getFullYear()} Software Radio Systems. | <a href="${versionUrl}" target="_blank" rel="noopener noreferrer">Version: ${version}</a>`,
     },
   },
   i18n: {
@@ -165,10 +162,10 @@ module.exports = {
                 // README files always come first
                 const aIsReadme = a.id?.endsWith('/README') || a.id === 'README';
                 const bIsReadme = b.id?.endsWith('/README') || b.id === 'README';
-                
+
                 if (aIsReadme && !bIsReadme) return -1;
                 if (!aIsReadme && bIsReadme) return 1;
-                
+
                 // Otherwise maintain original order (use position if exists)
                 return 0;
               });
