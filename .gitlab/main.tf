@@ -189,7 +189,7 @@ module "settings" {
       cron        = "00 10-18/2 * * 1-5"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
-      active      = false
+      active      = true
       variables   = {}
     }
     nightly = {
@@ -202,10 +202,10 @@ module "settings" {
     }
     functional = {
       description = "functional"
-      cron        = "00 21 * * 0-5"
+      cron        = "30 21 * * 0-5"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
-      active      = false
+      active      = true
       variables   = {}
     }
     rf_nightly = {
