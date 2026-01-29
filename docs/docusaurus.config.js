@@ -164,7 +164,7 @@ module.exports = {
     ],
   ],
   plugins: [
-    './plugins/inject-frontmatter-plugin.js',
+    './plugins/link-filter-plugin.js',
     [
       require.resolve("@easyops-cn/docusaurus-search-local"),
       {

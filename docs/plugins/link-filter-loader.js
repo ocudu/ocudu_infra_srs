@@ -10,31 +10,12 @@
 
 const path = require('path');
 
-module.exports = function frontmatterLoader(source) {
+module.exports = function linkFilterLoader(source) {
     const filePath = this.resourcePath;
-
-    // Skip if already has frontmatter
-    if (source.trim().startsWith('---')) {
-        console.log('[frontmatter-loader] Skipping (already has frontmatter):', filePath);
-        return source;
-    }
-
-    const docsPath = path.resolve(__dirname, '../../');
-    const relativePath = path.relative(docsPath, filePath);
-    const id = relativePath.replace(/\.mdx?$/, '').replace(/\\/g, '/');
-
-    // Extract title from first H1 heading or use filename
-    let title = path.basename(filePath, path.extname(filePath));
-    const h1Match = source.match(/^#\s+(.+)$/m);
-    if (h1Match) {
-        title = h1Match[1];
-    }
-
-    // Generate slug from the file path
-    let slug = '/' + id.toLowerCase();
 
     // Filter out links to non-markdown files (keep only links to .md/.mdx files and directories)
     // This regex matches markdown links: [text](path)
+    // Note: This preserves HTML anchor tags like <a id="..."></a> which are used for linking within documents
     const filteredSource = source.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, link) => {
 
         // Custom exception for files without extension
@@ -52,8 +33,13 @@ module.exports = function frontmatterLoader(source) {
             return match;
         }
 
-        // Keep links to markdown files
-        if (/\.mdx?$/i.test(link)) {
+        // Keep image links (png, jpg, jpeg, gif, svg, etc.)
+        if (/\.(png|jpe?g|gif|svg|webp|bmp|ico)$/i.test(link)) {
+            return match;
+        }
+
+        // Keep links to markdown files (including with anchors like file.md#section)
+        if (/\.mdx?(#|$)/i.test(link)) {
             return match;
         }
 
@@ -63,19 +49,9 @@ module.exports = function frontmatterLoader(source) {
         }
 
         // Remove link to non-markdown file, keep only the text
+        console.log(`[link-filter-loader] Filtering out link: ${link} in ${filePath}`);
         return text;
     });
 
-    // Inject frontmatter
-    const frontmatter = `---
-id: ${id}
-title: ${title}
-sidebar_label: ${title}
-slug: ${slug}
----
-
-`;
-
-    console.log('[frontmatter-loader]:', filePath, ' > ', slug);
-    return frontmatter + filteredSource;
+    return filteredSource;
 };

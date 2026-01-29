@@ -9,14 +9,13 @@
  */
 
 const path = require('path');
-const fs = require('fs');
 
-module.exports = function injectFrontmatterPlugin(context, options) {
+module.exports = function linkFilterPlugin(context, options) {
     return {
-        name: 'inject-frontmatter-plugin',
+        name: 'link-filter-plugin',
 
         getPathsToWatch() {
-            // Watch the repo root for markdown files
+            // Watch for markdown files
             return [path.resolve(context.siteDir, '../**/*.{md,mdx}')];
         },
 
@@ -25,7 +24,7 @@ module.exports = function injectFrontmatterPlugin(context, options) {
         },
 
         configureWebpack(config) {
-            const loaderPath = path.resolve(__dirname, 'frontmatter-loader.js');
+            const loaderPath = path.resolve(__dirname, 'link-filter-loader.js');
 
             return {
                 module: {

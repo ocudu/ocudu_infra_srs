@@ -21,7 +21,7 @@ docker compose -f docs/docker-compose.yml up
 The documentation system automatically processes all `.md` files in the repository:
 
 1. Gathers all markdown files from anywhere in the repository (excluding specified paths)
-2. A custom Docusaurus plugin ([frontmatter-loader](./plugins/frontmatter-loader.js)) automatically adds the required Docusaurus header (frontmatter) to each file
+2. A custom Docusaurus plugin ([link-filter-loader](./plugins/link-filter-loader.js)) automatically converts links to valid references in the webpage.
 3. Files automatically appear in the sidebar navigation
 4. `README.md` files become index pages for their respective directories
 
