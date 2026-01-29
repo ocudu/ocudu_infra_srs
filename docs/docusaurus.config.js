@@ -46,6 +46,9 @@ module.exports = {
       defaultLanguage: 'bash',
       additionalLanguages: ['bash', 'shell-session', 'python', 'json', 'yaml'],
     },
+    mermaid: {
+      theme: {light: 'neutral', dark: 'dark'},
+    },    
     navbar: {
       title: '',
       logo: {
