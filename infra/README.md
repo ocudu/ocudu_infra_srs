@@ -76,10 +76,7 @@ Deploy a Kubernetes cluster for test orchestration.
 
 ### 4. Install Retina in the Cluster
 
-Deploy the Retina framework components to your Kubernetes cluster.
-
-- label
-- registry credentials
+Deploy the Retina framework components to your Kubernetes cluster by following [the instructions in the retina documentation](../retina/_docs/02_cluster_setup.md#configure-the-cluster-to-use-retina).
 
 ### 5. Configure Cluster Information in Retina
 

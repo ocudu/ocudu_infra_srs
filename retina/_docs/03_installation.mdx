@@ -1,7 +1,7 @@
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Installation
+# Install Retina on your PC
 
 ## 1. Configuration
 
@@ -12,7 +12,7 @@ Configure the access to your cluster in your PC. Please aks a cluster administra
 <Tabs>
   <TabItem value="python_venv" label="Python & pipx" default>
 
-### 2.1 Requirements
+### 2.1. Requirements
 
 - For Ubuntu & Debian:
 
@@ -36,7 +36,7 @@ zypper in python311-pipx
 pipx ensurepath
 ```
 
-### 2.2 Installation
+### 2.2. Installation
 
 - Install Retina package:
 
@@ -47,7 +47,7 @@ pipx install retina-launcher --include-deps --pip-args="--extra-index-url $RETIN
 
 `retina` binary is globally available now.
 
-### 2.3 Upgrade
+### 2.3. Upgrade
 
 ```bash
 export RETINA_PYPI_URL=https://gitlab.com/api/v4/projects/78028160/packages/pypi/simple
@@ -57,7 +57,7 @@ pipx uninstall retina-launcher; pipx install retina-launcher --include-deps --pi
   </TabItem>
   <TabItem value="docker" label="Docker">
 
-### Requirements
+### 2.1. Requirements
 
 - Install docker on your computer following [install instructions for your OS](https://docs.docker.com/engine/install/)
 - Review [post installation steps on linux](https://docs.docker.com/engine/install/). specially "Manage Docker as a non-root user" and "Configure Docker to start on boot" sections.
@@ -67,7 +67,7 @@ pipx uninstall retina-launcher; pipx install retina-launcher --include-deps --pi
   - Execute `docker login registry.gitlab.com` and it will ask your gitlab username and a password (Write here the access token, not your gitlab password). You can also run `docker login registry.gitlab.com -u <username> -p <token>`
   - If the authentication fails, please run `docker logout registry.gitlab.com` before running `docker login...` again
 
-### Run retina docker
+### 2.2. Run retina docker
 
 ```bash
 docker run -it --rm --pull=always -e LOGNAME=$USER --entrypoint sh -v ~/.kube:/root/.kube registry.gitlab.com/ocudu/ocudu_infra_srs/retina/launcher
@@ -79,3 +79,34 @@ docker run -it --rm --pull=always -e LOGNAME=$USER --entrypoint sh -v ~/.kube:/r
 
 </TabItem>
 </Tabs>
+
+
+## Advanced: Editable mode for Retina development
+
+Create a virtual environment with all necessary packages in editable mode:
+
+```bash
+rm -Rf .venv && python3 -m venv .venv && .venv/bin/pip install -e protocol/ -e client/ -e viavi/ -e agent/ -e orchestrator/ -e launcher/ grpcio-tools black isort pylint mypy mypy-protobuf tox
+source .venv/bin/activate
+```
+
+### Validation
+
+Can run all test and checker by running:
+
+```bash
+cd protocol     && python3 -m tox -r && cd .. && \
+cd viavi        && python3 -m tox -r && cd .. && \
+cd agent        && python3 -m tox -r && cd .. && \
+cd client       && python3 -m tox -r && cd .. && \
+cd orchestrator && python3 -m tox -r && cd .. && \
+cd launcher     && python3 -m tox -r && cd ..
+```
+
+### Autogenerate files
+
+To autogenerate protocol files go to the [protocol folder](../protocol) and run
+
+```bash
+tox -re grpc
+```

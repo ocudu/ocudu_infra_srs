@@ -27,6 +27,8 @@ Retina uses [pytest](https://docs.pytest.org/) as test framework. Tests are writ
 ## Index
 
 - [Overview](_docs/01_overview.md)
-- [Architecture](_docs/02_architecture.md)
-- [Getting Started](_docs/03_getting_started/README.mdx)
-- [Working in local](_scripts/README.md)
+- [Cluster Setup](_docs/02_cluster_setup.md)
+- [Install Retina on your PC](_docs/03_installation.mdx)
+- [Use the booking system](_docs/04_reserve_resources.md)
+- [Run a Retina Test in the Cluster](_docs/05_run_cluster_test.md)
+- [Run a Retina Test in local](_scripts/README.md)

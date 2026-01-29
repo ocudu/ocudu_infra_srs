@@ -1,6 +1,4 @@
-# Orchestrator
-
-## Request file
+# Orchestrator Request file
 
 Orchestrator's main input is the request file. In that file we write down what we need to deploy in the cluster. It's content is similar to the following example:
 
@@ -51,14 +49,14 @@ The format is:
   - labels: [list of labels](#custom-labels)
   - requirements:
     - cpu `mandatory`
-      - requests `mandatory`: See [Requests vs limits](#requests-vs-limits) and [CPU](#cpu) sections below.
-      - limits: See [Requests vs limits](#requests-vs-limits) and [CPU](#cpu) sections below.
+      - requests `mandatory`: See [Requests vs limits](#requirements) and [CPU](#cpu) sections below.
+      - limits: See [Requests vs limits](#requirements) and [CPU](#cpu) sections below.
     - memory `mandatory`
-      - requests `mandatory`: See [Requests vs limits](#requests-vs-limits) and [Memory](#memory) sections below.
-      - limits: See [Requests vs limits](#requests-vs-limits) and [Memory](#memory) sections below.
+      - requests `mandatory`: See [Requests vs limits](#requirements) and [Memory](#memory) sections below.
+      - limits: See [Requests vs limits](#requirements) and [Memory](#memory) sections below.
     - ephemeral-storage
-      - requests `mandatory`: See [Requests vs limits](#requests-vs-limits) and [Ephemeral Storage](#ephemeral-storage) sections below.
-      - limits: See [Requests vs limits](#requests-vs-limits) and [Ephemeral Storage](#ephemeral-storage) sections below.
+      - requests `mandatory`: See [Requests vs limits](#requirements) and [Ephemeral Storage](#ephemeral-storage) sections below.
+      - limits: See [Requests vs limits](#requirements) and [Ephemeral Storage](#ephemeral-storage) sections below.
   - resources: array of resources we want to book. Each item of the array has two fields:
     - type `mandatory`
     - model
@@ -67,9 +65,9 @@ The format is:
     - remote_path `mandatory`: absolute path in the container.
     - is_executable `mandatory`: `true`/`false`. If `true`, executable rights are given.
 
-### Requests vs limits
+## Requirements
 
-`requests` section defines the resource's quantity reserved exclusively for that pod. However, the pod can use more of that requirement (cpu, memory, etc) if available in the host. To limit the maximum quantity of a resource the pod can access to, you can set `limits`
+In each requirement, the `requests` section defines the resource's quantity reserved exclusively for that pod. However, the pod can use more of that requirement (cpu, memory, etc) if available in the host. To limit the maximum quantity of a resource the pod can access to, you can set `limits`
 
 [Read more at kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)
 
@@ -108,9 +106,7 @@ Requests for ephemeral-storage are measured in byte quantities. You can express 
 
 Pay attention to the case of the suffixes. If you request `400m` of ephemeral-storage, this is a request for 0.4 bytes. Someone who types that probably meant to ask for 400 mebibytes (`400Mi`) or 400 megabytes (`400M`).
 
-## Taints and labels
-
-### Custom labels
+## Custom labels
 
 The label "kubernetes.io/hostname=my-pc" will be added to the Retina labels.
 
@@ -129,7 +125,7 @@ The label "kubernetes.io/hostname=my-pc" will be added to the Retina labels.
   labels: ["kubernetes.io/hostname=my-pc"]
 ```
 
-### Custom taints
+## Custom taints
 
 It will override all the taints:
 

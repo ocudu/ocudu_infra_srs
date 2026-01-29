@@ -1,4 +1,4 @@
-# Booking system
+# Use the booking system
 
 Retina provides a system to manage the reservation of resources like PCs, licenses, SDRs, etc. You can reserve, release, and check the current status of these resources. When a resource is reserved, it ensures that no other user or external system (such as GitLab) can use it, avoiding potential conflicts.
 
@@ -19,7 +19,7 @@ Commands:
 
 ## Prerequisites
 
-Before using these commands, ensure you have [installed](./01_installation.mdx) the Retina framework as per previous chapters.
+Before using these commands, ensure you have [installed](./03_installation.mdx) the Retina framework as per previous chapters.
 
 ## Viewing Resources
 

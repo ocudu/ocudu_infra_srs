@@ -1,8 +1,8 @@
-# Run a Retina Test in the Testing Cluster
+# Run a Retina Test in the Cluster
 
 ## Pre requisite
 
-You should have [installed](./01_installation.mdx) the framework according to previous chapters.
+You should have [installed](./03_installation.mdx) the framework according to previous chapters.
 
 ## 1. Setup environment
 
@@ -18,7 +18,7 @@ Review the variables defined in `ocudu_infra_srs/e2e/retina_requests/.env`, spec
 
 ### 1.2 Build ocudu binaries
 
-For the OCUDU binaries, you can download them from the CI or [build them in local](../../_scripts/run_tests.md#3-build-ocudu-apps-and-zmq-driver).
+For the OCUDU binaries, you can download them from the CI or [build them in local](../_scripts/README.md#3-build-ocudu-apps-and-zmq-driver).
 
 ## 2. Running the test
 
