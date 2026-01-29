@@ -1,7 +1,3 @@
----
-sidebar_position: 4
----
-
 # E2E Testing
 
 This folder contains E2E test sources, configurations and testbed definitions, alongside the GitLab CI code to replicate SRS scheduled pipelines.

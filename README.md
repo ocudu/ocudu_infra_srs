@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # OCUDU Infra SRS
 
 This repository contains all the software required to run the [SRS](https://srs.io/) suite of end-to-end tests for [OCUDU](https://gitlab.com/ocudu):

@@ -153,7 +153,29 @@ module.exports = {
               });
             }
 
-            return flattenCategories(sidebarItems);
+            // Sort items to put README files first
+            function sortReadmeFirst(items) {
+              return items.map(item => {
+                // Recursively process category items
+                if (item.type === 'category' && item.items) {
+                  item.items = sortReadmeFirst(item.items);
+                }
+                return item;
+              }).sort((a, b) => {
+                // README files always come first
+                const aIsReadme = a.id?.endsWith('/README') || a.id === 'README';
+                const bIsReadme = b.id?.endsWith('/README') || b.id === 'README';
+                
+                if (aIsReadme && !bIsReadme) return -1;
+                if (!aIsReadme && bIsReadme) return 1;
+                
+                // Otherwise maintain original order (use position if exists)
+                return 0;
+              });
+            }
+
+            const flattened = flattenCategories(sidebarItems);
+            return sortReadmeFirst(flattened);
           },
         },
         blog: false,

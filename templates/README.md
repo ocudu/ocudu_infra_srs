@@ -1,7 +1,3 @@
----
-sidebar_position: 3
----
-
 # GitLab CI Components
 
 This directory contains reusable GitLab CI/CD components for OCUDU testing infrastructure:

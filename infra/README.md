@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # Infrastructure Setup
 
 This guide explains how to set up the infrastructure needed to run OCUDU end-to-end tests using the Retina framework.

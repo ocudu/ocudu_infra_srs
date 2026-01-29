@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Run a Retina Test in the in local
 
 ## TL;DR

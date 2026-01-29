@@ -1,7 +1,3 @@
----
-sidebar_position: 6
----
-
 # Documentation
 
 The documentation for the OCUDU Infra SRS project is built with [Docusaurus](https://docusaurus.io/). It automatically collects all markdown files across the repository and renders them into a searchable, navigable website.
