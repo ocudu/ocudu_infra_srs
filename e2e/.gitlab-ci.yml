@@ -35,7 +35,10 @@ e2e tests tox:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/**/*
+        - e2e/tests/**/*
+        - e2e/scripts/**/*
+        - e2e/conftest.py
+        - e2e/pyproject.toml
   variables:
     PY_DIR: e2e
   before_script:
@@ -49,7 +52,10 @@ e2e dynamic tests validation:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/**/*
+        - retina/launcher/**/*
+        - e2e/tests/**/*
+        - e2e/conftest.py
+        - e2e/pyproject.toml
   script:
     - |
       cd ${CI_PROJECT_DIR}/e2e
