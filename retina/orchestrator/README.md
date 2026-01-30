@@ -5,7 +5,7 @@ Orchestrator's main input is the request file. In that file we write down what w
 ```yml
 - name: ocudu-gnb
   type: gnb
-  image: ${CI_REGISTRY_IMAGE}/retina/ocudu-gnb:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 6
@@ -36,7 +36,7 @@ Orchestrator's main input is the request file. In that file we write down what w
     ephemeral-storage:
       requests: "3G"
       limit: "3G"
-  image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
 ```
 
 The format is:
@@ -121,7 +121,7 @@ The label "kubernetes.io/hostname=my-pc" will be added to the Retina labels.
     ephemeral-storage:
       requests: "3G"
       limit: "3G"
-  image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   labels: ["kubernetes.io/hostname=my-pc"]
 ```
 
@@ -140,6 +140,6 @@ It will override all the taints:
     ephemeral-storage:
       requests: "3G"
       limit: "3G"
-  image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   taints: ["my-custom-taint"]
 ```

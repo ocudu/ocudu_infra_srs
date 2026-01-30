@@ -7,14 +7,14 @@
 #
 
 ARG AGENT_OS_VERSION=24.04
-ARG CI_REGISTRY_IMAGE
+ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
 
 ARG BUILDER_IMAGE
 
 FROM $BUILDER_IMAGE AS builder
 
-FROM ${CI_REGISTRY_IMAGE}/retina/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
+FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
 FROM agent AS ocudu-base
 
 COPY --from=builder /usr/local/bin/install_dependencies.sh /usr/local/bin/install_ocudu_dependencies.sh

@@ -29,10 +29,11 @@ stages:
 .docker-builder-android:
   extends: .docker-builder
   variables: &image_variables
-    NAME: retina/android
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    NAME: android
     CONTEXT: retina/images/android
     VERSION: ${RETINA_VERSION}
-    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
 
 only-build:
   stage: test

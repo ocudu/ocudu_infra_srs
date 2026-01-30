@@ -8,7 +8,7 @@
 
 - name: amarisoft-ue
   type: ue
-  image: ${CI_REGISTRY_IMAGE}/retina/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=fpga-virt-master
   nof_ports: 64
@@ -33,7 +33,7 @@
 
 - name: ocudu-gnb
   type: gnb
-  image: ${CI_REGISTRY_IMAGE}/retina/ocudu-gnb:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=fpga-virt-master
   requirements:
@@ -58,7 +58,7 @@
 
 - name: ntn-channel-emulator
   type: channel-emulator
-  image: ${CI_REGISTRY_IMAGE}/retina/ntn-channel-emulator:${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ntn-channel-emulator:${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=fpga-virt-master
   requirements:
@@ -86,6 +86,6 @@
     ephemeral-storage:
       requests: "4G"
       limits: "4G"
-  image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=fpga-virt-master

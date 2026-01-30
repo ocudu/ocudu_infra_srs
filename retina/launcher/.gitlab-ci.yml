@@ -34,7 +34,8 @@ stages:
   variables: &image_variables
     PYTHON_VERSION: "3.12"
     OS: alpine
-    NAME: retina/launcher
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    NAME: launcher
     CONTEXT: ${CI_PROJECT_DIR}/retina
     DOCKERFILE: retina/launcher
     BUILD_ARGS: PYTHON_VERSION=${PYTHON_VERSION};OS=${OS};RETINA_VERSION=${RETINA_VERSION}
@@ -115,8 +116,8 @@ publish latest:
   script:
     - |
       docker manifest create \
-        ${CI_REGISTRY_IMAGE}/${NAME}:latest \
-        --amend ${CI_REGISTRY_IMAGE}/${NAME}:${VERSION}-amd64 \
-        --amend ${CI_REGISTRY_IMAGE}/${NAME}:${VERSION}-arm64
-      docker manifest push ${CI_REGISTRY_IMAGE}/${NAME}:latest
-      echo "Image ${CI_REGISTRY_IMAGE}/${NAME}:latest pushed"
+        ${RETINA_REGISTRY_URI}/${NAME}:latest \
+        --amend ${RETINA_REGISTRY_URI}/${NAME}:${VERSION}-amd64 \
+        --amend ${RETINA_REGISTRY_URI}/${NAME}:${VERSION}-arm64
+      docker manifest push ${RETINA_REGISTRY_URI}/${NAME}:latest
+      echo "Image ${RETINA_REGISTRY_URI}/${NAME}:latest pushed"

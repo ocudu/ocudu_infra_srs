@@ -9,9 +9,9 @@
 # syntax=docker/dockerfile:1.2
 
 ARG AGENT_OS_VERSION=24.04
-ARG CI_REGISTRY_IMAGE
+ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
-FROM ${CI_REGISTRY_IMAGE}/retina/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION as agent
+FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION as agent
 FROM agent AS ntn-channel-emulator
 
 RUN apt-get update && \

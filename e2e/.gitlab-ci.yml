@@ -47,7 +47,7 @@ e2e tests tox:
 e2e dynamic tests validation:
   stage: static
   image:
-    name: ${CI_REGISTRY_IMAGE}/retina/launcher:latest
+    name: ${RETINA_REGISTRY_URI}/launcher:latest
     entrypoint: ["/bin/sh", "-c"]
   rules:
     - if: $ON_MR
@@ -68,7 +68,7 @@ e2e dynamic tests validation:
 e2e request validation:
   stage: static
   image:
-    name: ${CI_REGISTRY_IMAGE}/retina/launcher:latest
+    name: ${RETINA_REGISTRY_URI}/launcher:latest
     entrypoint: ["/bin/sh", "-c"]
   rules:
     - if: $ON_MR

@@ -7,7 +7,7 @@
 #
 
 ARG AGENT_OS_VERSION=24.04
-ARG CI_REGISTRY_IMAGE
+ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
 FROM ubuntu:${AGENT_OS_VERSION} AS builder
 
@@ -56,7 +56,7 @@ RUN mkdir build && \
 
 RUN ldconfig
 
-FROM ${CI_REGISTRY_IMAGE}/retina/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
+FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
 FROM agent AS flexric
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder /usr/local/lib /usr/local/lib

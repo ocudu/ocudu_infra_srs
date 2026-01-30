@@ -8,7 +8,7 @@
 
 - name: android-ue
   type: ue
-  image: ${CI_REGISTRY_IMAGE}/retina/android:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/android:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 1
@@ -25,7 +25,7 @@
 
 - name: ocudu-gnb
   type: gnb
-  image: ${CI_REGISTRY_IMAGE}/retina/ocudu-gnb:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 4
@@ -49,7 +49,7 @@
 
 - name: open5gs
   type: 5gc
-  image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   taints: ["purpose=retina"]
   requirements:
     cpu:

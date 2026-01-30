@@ -88,7 +88,7 @@ spec:
   timeout: $[[ inputs.timeout ]]
   tags: $[[ inputs.tags ]]
   image:
-    name: ${CI_REGISTRY_IMAGE}/retina/launcher:${RETINA_VERSION}
+    name: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
     entrypoint: ["/bin/sh", "-c"]
   variables:
     # CI variables

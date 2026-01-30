@@ -6,5 +6,7 @@
 # the distribution.
 #
 
+# A modification of this file will force a rebuild of retina images and packages.
+
 variables:
-  RETINA_VERSION: "0.96.2"
+  RETINA_VERSION: "0.96.3"

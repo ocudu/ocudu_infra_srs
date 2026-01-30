@@ -7,10 +7,10 @@
 #
 
 ARG AGENT_OS_VERSION=24.04
-ARG CI_REGISTRY_IMAGE
+ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
 
-FROM ${CI_REGISTRY_IMAGE}/retina/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
+FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
 FROM agent AS gnb-remote
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
     ssh sshpass \

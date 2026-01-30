@@ -29,10 +29,11 @@ stages:
 .docker-builder-ocudu-gnb:
   extends: .docker-builder
   variables: &image_variables
-    NAME: retina/ocudu-gnb-remote
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    NAME: ocudu-gnb-remote
     CONTEXT: retina/images/ocudu_remote
     VERSION: ${RETINA_VERSION}
-    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "10G"
 
 only-build:

@@ -8,7 +8,7 @@
 
 - name: amarisoft-ue
   type: ue
-  image: ${CI_REGISTRY_IMAGE}/retina/amarisoftue:2025-12-19_0.91.3
+  image: ${RETINA_REGISTRY_URI}/amarisoftue:2025-12-19_0.91.3
   labels:
     - kubernetes.io/hostname=srskit-rack1
   nof_ports: 16
@@ -30,7 +30,7 @@
 
 - name: ocudu-gnb
   type: gnb
-  image: ${CI_REGISTRY_IMAGE}/retina/ocudu-gnb:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=dell-xr12
   requirements:
@@ -59,7 +59,7 @@
 
 - name: open5gs
   type: 5gc
-  image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=dell-xr12
   requirements:

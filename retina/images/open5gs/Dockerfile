@@ -7,7 +7,7 @@
 #
 
 ARG AGENT_OS_VERSION=24.04
-ARG CI_REGISTRY_IMAGE
+ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
 FROM ubuntu:${AGENT_OS_VERSION} AS builder
 
@@ -68,7 +68,7 @@ RUN git clone --depth 1 --branch $OPEN5GS_VERSION $REPO_URL open5gs\
     && cd build \
     && ninja install
 
-FROM ${CI_REGISTRY_IMAGE}/retina/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
+FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
 FROM agent AS open5gs
 COPY --from=builder /open5gs/install/bin /usr/local/bin
 COPY --from=builder /open5gs/build/tests/app/5gc /usr/local/bin/5gc

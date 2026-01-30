@@ -7,7 +7,7 @@
 #
 
 ARG AGENT_OS_VERSION=24.04
-ARG CI_REGISTRY_IMAGE
+ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
 
 FROM ubuntu:$AGENT_OS_VERSION AS binary_setup
@@ -42,7 +42,7 @@ RUN mv /usr/lib/*-linux-gnu/libcrypto.so.1.1 /opt/lteue/libcrypto.so.1.1 && \
 # RUN [ ! -d /opt/lteue/libcrypto.so.1.1 ] && ln -sf /opt/lteue/libcrypto.so.1 /opt/lteue/libcrypto.so.1.1
 # RUN [ ! -d /opt/lteue/libssl.so.1.1 ] && ln -sf /opt/lteue/libssl.so.1 /opt/lteue/libssl.so.1.1
 
-FROM ${CI_REGISTRY_IMAGE}/retina/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
+FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
 FROM agent AS amarisoftue
 COPY --from=binary_setup /opt/lteue /opt/lteue
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \

@@ -32,10 +32,11 @@ variables:
 .docker-builder-ntn-channel-emulator:
   extends: .docker-builder
   variables:
-    NAME: retina/ntn-channel-emulator
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    NAME: ntn-channel-emulator
     CONTEXT: retina/images/ntn-channel-emulator
     VERSION: ${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
-    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
   before_script:
     - |
       download_ntn_channel_emulator() {

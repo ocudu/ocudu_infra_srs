@@ -29,11 +29,12 @@ stages:
 .docker-builder-ocudu-base:
   extends: .docker-builder
   variables:
-    NAME: retina/ocudu-base
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    NAME: ocudu-base
     VERSION: ${RETINA_VERSION}
     CONTEXT: retina/images/ocudu/base
     BUILDER_IMAGE_NAME: builder-ubuntu-${AGENT_OS_VERSION}:${DOCKER_BUILDER_VERSION}
-    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE};BUILDER_IMAGE=${OCUDU_REGISTRY_URI}/${BUILDER_IMAGE_NAME}
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};BUILDER_IMAGE=${OCUDU_REGISTRY_URI}/${BUILDER_IMAGE_NAME}
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "100G"
     KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "100G"
   tags: [saas-linux-large-amd64]
@@ -62,9 +63,10 @@ build and publish final:
   stage: publish
   extends: .docker-builder
   variables:
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
     VERSION: ${RETINA_VERSION}
     CONTEXT: retina/images/ocudu
-    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE};RETINA_AGENT=${RETINA_AGENT}
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_AGENT=${RETINA_AGENT}
     MODE: publish
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "80G"
     KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "80G"
@@ -76,13 +78,13 @@ build and publish final:
   retry: 2
   parallel:
     matrix:
-      - NAME: retina/ocudu-gnb
+      - NAME: ocudu-gnb
         RETINA_AGENT: ocudu-gnb
-      - NAME: retina/ocudu-cudu
+      - NAME: ocudu-cudu
         RETINA_AGENT: ocudu-cudu
-      - NAME: retina/ocudu-cu
+      - NAME: ocudu-cu
         RETINA_AGENT: ocudu-cu
-      - NAME: retina/ocudu-du
+      - NAME: ocudu-du
         RETINA_AGENT: ocudu-du
   needs:
     - build and publish base

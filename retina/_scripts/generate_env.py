@@ -23,7 +23,7 @@ from string import Template
 
 import yaml
 
-CI_REGISTRY_IMAGE = os.getenv("CI_REGISTRY_IMAGE", "registry.gitlab.com/ocudu/ocudu_infra_srs")
+RETINA_REGISTRY_URI = os.getenv("RETINA_REGISTRY_URI", "registry.gitlab.com/ocudu/ocudu_infra_srs/retina")
 OCUDU_REGISTRY_URI = os.getenv("OCUDU_REGISTRY_URI", "registry.gitlab.com/ocudu/ocudu")
 CONTAINER_PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 DEFAULT_DPDK_VERSION = "24.11.2"
@@ -112,7 +112,7 @@ def main():
     current_working_directory = Path.cwd()
 
     env_vars = {
-        "CI_REGISTRY_IMAGE": CI_REGISTRY_IMAGE,
+        "RETINA_REGISTRY_URI": RETINA_REGISTRY_URI,
         "RETINA_VERSION": retina_version,
         "AGENT_OS_NAME": os_name,
         "AGENT_OS_VERSION": os_version,

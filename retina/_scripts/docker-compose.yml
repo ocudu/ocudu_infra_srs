@@ -94,12 +94,12 @@ services:
       - zmq_amariue_2gnb
       - zmq_ntn
       - launcher
-    image: ${CI_REGISTRY_IMAGE}/retina/launcher:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
     build:
       context: ../
       dockerfile: launcher/Dockerfile
       args: &variables
-        CI_REGISTRY_IMAGE: ${CI_REGISTRY_IMAGE}
+        RETINA_REGISTRY_URI: ${RETINA_REGISTRY_URI}
         RETINA_VERSION: ${RETINA_VERSION}
         AGENT_OS_VERSION: ${AGENT_OS_VERSION}
         AMARISOFT_VERSION: ${AMARISOFT_VERSION}
@@ -129,7 +129,7 @@ services:
       - zmq_amariue_1cu_2du
       - zmq_amariue_2gnb
       - zmq_ntn
-    image: ${CI_REGISTRY_IMAGE}/retina/agent-ubuntu-${AGENT_OS_VERSION}:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/agent-ubuntu-${AGENT_OS_VERSION}:${RETINA_VERSION}
     build:
       context: ../
       dockerfile: agent/Dockerfile
@@ -150,7 +150,7 @@ services:
       - zmq_amariue_1cu_2du
       - zmq_amariue_2gnb
       - zmq_ntn
-    image: ${CI_REGISTRY_IMAGE}/retina/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
     build:
       context: ../images/amarisoftue
       additional_contexts:
@@ -190,7 +190,7 @@ services:
     container_name: amarisoft-ue-remote
     profiles:
       - all
-    image: ${CI_REGISTRY_IMAGE}/retina/amarisoftue-remote:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/amarisoftue-remote:${RETINA_VERSION}
     build:
       context: ../images/amarisoftue_remote
       args:
@@ -217,7 +217,7 @@ services:
     profiles:
       - all
       - zmq_srsue
-    image: ${CI_REGISTRY_IMAGE}/retina/srsue:${SRSUE_VERSION}_${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/srsue:${SRSUE_VERSION}_${RETINA_VERSION}
     build:
       context: ../images/srsue
       args:
@@ -241,7 +241,7 @@ services:
       type: ue
 
   ocudu-base-image:
-    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-base:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu-base:${RETINA_VERSION}
     profiles:
       - all
       - zmq_srsue
@@ -266,7 +266,7 @@ services:
       - zmq_amariue
       - zmq_amariue_2gnb
       - zmq_ntn
-    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-gnb:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
     build:
       context: ../images/ocudu
       args:
@@ -309,7 +309,7 @@ services:
     profiles:
       - all
       - zmq_amariue_1cu_2du
-    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-cu:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu-cu:${RETINA_VERSION}
     build:
       context: ../images/ocudu
       args:
@@ -331,7 +331,7 @@ services:
     profiles:
       - all
       - zmq_amariue_1cu_2du
-    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-du:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu-du:${RETINA_VERSION}
     build:
       context: ../images/ocudu
       args:
@@ -353,7 +353,7 @@ services:
     profiles:
       - all
       - zmq_amariue_1cu_2du
-    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-du:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu-du:${RETINA_VERSION}
     build:
       context: ../images/ocudu
       args:
@@ -373,7 +373,7 @@ services:
     container_name: gnb-remote
     profiles:
       - all
-    image: ${CI_REGISTRY_IMAGE}/retina/ocudu-remote:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu-remote:${RETINA_VERSION}
     build:
       context: ../images/ocudu_remote
       args:
@@ -404,7 +404,7 @@ services:
       - zmq_amariue_1cu_2du
       - zmq_amariue_2gnb
       - zmq_ntn
-    image: ${CI_REGISTRY_IMAGE}/retina/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
     build:
       context: ../images/open5gs
       args:
@@ -431,7 +431,7 @@ services:
     profiles:
       - all
       - zmq_ntn
-    image: ${CI_REGISTRY_IMAGE}/retina/ntn-channel-emulator:${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ntn-channel-emulator:${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
     build:
       context: ../images/ntn-channel-emulator
       args:
@@ -451,7 +451,7 @@ services:
     profiles:
       - all
       - zmq_srsue
-    image: ${CI_REGISTRY_IMAGE}/retina/flexric:${FLEXRIC_VERSION}_${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/flexric:${FLEXRIC_VERSION}_${RETINA_VERSION}
     build:
       context: ../images/flexric
       args:

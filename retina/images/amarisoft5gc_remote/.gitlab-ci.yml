@@ -29,10 +29,11 @@ stages:
 .docker-builder-amarisoft:
   extends: .docker-builder
   variables: &image_variables
-    NAME: retina/amarisoft5gc-remote
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    NAME: amarisoft5gc-remote
     CONTEXT: retina/images/amarisoft5gc_remote
     VERSION: ${RETINA_VERSION}
-    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "10G"
 
 only-build:

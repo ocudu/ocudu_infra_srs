@@ -32,10 +32,11 @@ variables:
 .docker-builder-amarisoft:
   extends: .docker-builder
   variables: &image_variables
-    NAME: retina/amarisoftue
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    NAME: amarisoftue
     CONTEXT: retina/images/amarisoftue
     VERSION: ${AMARISOFT_VERSION}_${RETINA_VERSION}
-    BUILD_ARGS: AMARISOFT_VERSION=${AMARISOFT_VERSION};RETINA_VERSION=${RETINA_VERSION};CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
+    BUILD_ARGS: AMARISOFT_VERSION=${AMARISOFT_VERSION};RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "10G"
   before_script:
     - |

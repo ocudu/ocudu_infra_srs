@@ -6,9 +6,9 @@
 # the distribution.
 #
 
-ARG CI_REGISTRY_IMAGE
+ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
-FROM ${CI_REGISTRY_IMAGE}/retina/ocudu-base:$RETINA_VERSION AS ocudu-base
+FROM ${RETINA_REGISTRY_URI}/ocudu-base:$RETINA_VERSION AS ocudu-base
 FROM ocudu-base AS ocudu-gnb
 
 ARG RETINA_AGENT=ocudu-gnb
