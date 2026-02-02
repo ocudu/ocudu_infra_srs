@@ -137,7 +137,7 @@ include:
       dpdk_version: $[[ inputs.dpdk_version ]]
       test_mode: $[[ inputs.test_mode ]]
       cache:
-        - key: $[[ inputs.os ]]-$[[ inputs.compiler ]]-$[[ inputs.build_tags ]]
+        - key: $[[ inputs.os ]]-$[[ inputs.compiler ]]-$[[ inputs.build_args ]]
           paths: [ocudu/ccache]
           policy: pull-push
   - local: templates/build.yml
