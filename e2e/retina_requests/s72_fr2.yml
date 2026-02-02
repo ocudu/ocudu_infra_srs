@@ -8,7 +8,7 @@
 
 - name: amarisoft-ue
   type: ue
-  image: ${RETINA_REGISTRY_URI}/amarisoftue:2025-12-19_0.91.3
+  image: ${RETINA_REGISTRY_URI}/amarisoftue:2025-12-19_${RETINA_VERSION}
   labels:
     - kubernetes.io/hostname=srskit-rack1
   nof_ports: 16
