@@ -109,7 +109,7 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
                 return self.Start(request, context)
         try:
             self._websocket = AmarisoftWebSocket()
-        except ConnectionRefusedError as err:
+        except (ConnectionRefusedError, ConnectionResetError) as err:
             raise ChildProcessError("Process has died") from err
 
         if not self._check_alive_thread.is_alive():
@@ -202,7 +202,7 @@ class _AmarisoftIms(FiveGCDriver, AmarisoftBaseDriver):
                 return self.Start(request, context)
         try:
             self._websocket = AmarisoftWebSocket()
-        except ConnectionRefusedError as err:
+        except (ConnectionRefusedError, ConnectionResetError) as err:
             raise ChildProcessError("Process has died") from err
 
         if not self._check_alive_thread.is_alive():

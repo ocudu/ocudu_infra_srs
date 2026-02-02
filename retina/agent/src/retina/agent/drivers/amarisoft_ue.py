@@ -291,7 +291,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     return self._start_unlock(request, context)
             try:
                 self._websocket = AmarisoftWebSocket()
-            except ConnectionRefusedError as err:
+            except (ConnectionRefusedError, ConnectionResetError) as err:
                 raise ChildProcessError("Process has died") from err
 
             self._metrics_dict.clear()
