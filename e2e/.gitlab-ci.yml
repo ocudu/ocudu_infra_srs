@@ -207,6 +207,7 @@ dpdk rtsan avx512:
     MARKERS: test_mode
     KEYWORDS: test_ue
     RETINA_ARGS: ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
+    LAUNCHER_ARGS: -n 2
 
 test ue:
   extends: .test mode ue
