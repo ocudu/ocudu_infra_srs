@@ -223,15 +223,6 @@ class Node:
                 return True
         return False
 
-    def is_retina_node(self):
-        """
-        Returns true if the node is a retina node
-        """
-        for label in self.label_list:
-            if label.name == "retina.srs.io/member" and label.value == "true":
-                return True
-        return False
-
     def check_label_list(self, label_list: List[LabelDefinition]):
         """
         Check if the label list is in the node

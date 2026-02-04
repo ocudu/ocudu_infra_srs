@@ -958,8 +958,7 @@ class RequestReservation:
         if len(reserved_node_resources) == 0:
             # No resources in the request search for general nodes
             for node in node_dict.values():
-                if node.is_retina_node():
-                    node_match_list.append(node)
+                node_match_list.append(node)
         else:
             for reserved_resource in reserved_node_resources:
                 if not reserved_resource.is_cluster_resource() and not reserved_resource.is_zmq_resource():

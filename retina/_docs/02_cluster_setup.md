@@ -3,11 +3,6 @@
 ## Configure the cluster to use Retina
 
 - Create a `retina` namespace.
-- Add `retina.srs.io/member=true` label to all nodes you want to be used by retina:
-
-```bash
-kubectl label nodes <node_name> retina.srs.io/member=true
-```
 
 - If the retina container registry is not public, you need to create a secret with the credentials:
 
