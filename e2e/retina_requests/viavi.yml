@@ -9,21 +9,18 @@
 - name: ocudu-gnb
   type: gnb
   image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=dell-xr12
   requirements:
     cpu:
-      requests: 10
-      limits: 10
+      requests: 100%
+      limits: 100%
     memory:
-      requests: "60G"
-      limits: "60G"
+      requests: 100%
+      limits: 100%
     hugepages-1Gi:
       requests: 2Gi
       limits: 2Gi
     ephemeral-storage:
-      requests: "150G"
-      limits: "150G"
+      requests: "15G"
   resources:
     - type: emulator
       model: viavi

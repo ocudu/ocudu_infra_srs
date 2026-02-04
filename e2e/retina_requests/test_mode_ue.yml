@@ -9,17 +9,15 @@
 - name: ocudu-gnb
   type: gnb
   image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
-      requests: 1
+      requests: 40%
+      limits: 40%
     memory:
-      requests: "8G"
-      limits: "8G"
+      requests: 40%
+      limits: 40%
     ephemeral-storage:
-      requests: "6G"
-      limits: "6G"
+      requests: 6G
   resources:
     - type: zmq
   environment:
@@ -32,16 +30,16 @@
 
 - name: open5gs
   type: 5gc
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 1
-      limits: 1
+      requests: 10%
+      limits: 10%
     memory:
-      requests: "8G"
-      limits: "8G"
+      requests: 10%
+      limits: 10%
     ephemeral-storage:
-      requests: "6G"
-      limits: "6G"
-  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
+      requests: 6G
+  resources:
+    - type: zmq
+      capacity: 0

@@ -9,18 +9,14 @@
 - name: amarisoft-ue
   type: ue
   image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
-  labels: ["kubernetes.io/hostname=sdr6"]
   nof_ports: 4
   requirements:
     cpu:
-      requests: 12
-      limits: 12
+      requests: 4
     memory:
-      requests: "20G"
-      limits: "20G"
+      requests: 8G
     ephemeral-storage:
-      requests: "9G"
-      limits: "9G"
+      requests: 6G
   resources:
     - type: sdr
       model: b200
@@ -30,17 +26,13 @@
 - name: ocudu-gnb
   type: gnb
   image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
-  labels: ["kubernetes.io/hostname=sdr4"]
   requirements:
     cpu:
-      requests: 8
-      limits: 8
+      requests: 4
     memory:
-      requests: "12G"
-      limits: "12G"
+      requests: 8G
     ephemeral-storage:
-      requests: "9G"
-      limits: "9G"
+      requests: 6G
   resources:
     - type: sdr
       model: b200
@@ -55,14 +47,14 @@
 - name: open5gs
   type: 5gc
   image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
-  taints: ["purpose=retina"]
   requirements:
     cpu:
-      requests: 4
-      limits: 4
+      requests: 2
     memory:
-      requests: "4G"
-      limits: "4G"
+      requests: 2G
     ephemeral-storage:
-      requests: "6G"
-      limits: "6G"
+      requests: 6G
+  resources:
+    - type: sdr
+      model: b200
+      capacity: 0

@@ -9,19 +9,16 @@
 - name: amarisoft-ue
   type: ue
   image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
   nof_ports: 64
   requirements:
     cpu:
-      requests: 6
-      limits: 6
+      requests: 10%
+      limits: 10%
     memory:
-      requests: "24G"
-      limits: "24G"
+      requests: 10%
+      limits: 10%
     ephemeral-storage:
-      requests: "6G"
-      limits: "6G"
+      requests: 6G
   resources:
     - type: zmq
     - type: license
@@ -34,18 +31,18 @@
 - name: ocudu-cu
   type: cu
   image: ${RETINA_REGISTRY_URI}/ocudu-cu:${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
-      requests: 2
-      limits: 2
+      requests: 10%
+      limits: 10%
     memory:
-      requests: "8G"
-      limits: "8G"
+      requests: 10%
+      limits: 10%
     ephemeral-storage:
-      requests: "15G"
-      limits: "15G"
+      requests: 6G
+  resources:
+    - type: zmq
+      capacity: 0
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/cu
     - LD_LIBRARY_PATH: /opt/rohc/lib/
@@ -57,20 +54,18 @@
 - name: ocudu-du-1
   type: du
   image: ${RETINA_REGISTRY_URI}/ocudu-du:${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
-      requests: 2
-      limits: 2
+      requests: 10%
+      limits: 10%
     memory:
-      requests: "12G"
-      limits: "12G"
+      requests: 10%
+      limits: 10%
     ephemeral-storage:
-      requests: "15G"
-      limits: "15G"
+      requests: 6G
   resources:
     - type: zmq
+      capacity: 0
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/du
   shared_files:
@@ -81,20 +76,18 @@
 - name: ocudu-du-2
   type: du
   image: ${RETINA_REGISTRY_URI}/ocudu-du:${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
-      requests: 2
-      limits: 2
+      requests: 10%
+      limits: 10%
     memory:
-      requests: "12G"
-      limits: "12G"
+      requests: 10%
+      limits: 10%
     ephemeral-storage:
-      requests: "15G"
-      limits: "15G"
+      requests: 6G
   resources:
     - type: zmq
+      capacity: 0
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/du
   shared_files:
@@ -104,16 +97,16 @@
 
 - name: open5gs
   type: 5gc
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 2
-      limits: 2
+      requests: 10%
+      limits: 10%
     memory:
-      requests: "8G"
-      limits: "8G"
+      requests: 10%
+      limits: 10%
     ephemeral-storage:
-      requests: "6G"
-      limits: "6G"
-  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
+      requests: 6G
+  resources:
+    - type: zmq
+      capacity: 0

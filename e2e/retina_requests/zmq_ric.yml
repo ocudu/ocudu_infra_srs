@@ -9,38 +9,33 @@
 - name: srs-ue
   type: ue
   image: ${RETINA_REGISTRY_URI}/srsue:${SRSUE_VERSION}_${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
-      requests: 4
-      limits: 4
+      requests: 15%
+      limits: 15%
     memory:
-      requests: "22G"
-      limits: "22G"
+      requests: 15%
+      limits: 15%
     ephemeral-storage:
       requests: "6G"
-      limits: "6G"
   resources:
     - type: zmq
 
 - name: ocudu-gnb
   type: gnb
   image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
   requirements:
     cpu:
-      requests: 4
-      limits: 4
+      requests: 15%
+      limits: 15%
     memory:
-      requests: "22G"
-      limits: "22G"
+      requests: 15%
+      limits: 15%
     ephemeral-storage:
-      requests: "15G"
-      limits: "15G"
+      requests: "6G"
   resources:
     - type: zmq
+      capacity: 0
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb
     - LD_LIBRARY_PATH: /opt/rohc/lib/
@@ -51,32 +46,32 @@
 
 - name: open5gs
   type: 5gc
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 2
-      limits: 2
+      requests: 10%
+      limits: 10%
     memory:
-      requests: "8G"
-      limits: "8G"
+      requests: 10%
+      limits: 10%
     ephemeral-storage:
       requests: "6G"
-      limits: "6G"
-  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
+  resources:
+    - type: zmq
+      capacity: 0
 
 - name: flexric-ric
   type: ric
+  image: ${RETINA_REGISTRY_URI}/flexric:${FLEXRIC_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 2
-      limits: 2
+      requests: 10%
+      limits: 10%
     memory:
-      requests: "8G"
-      limits: "8G"
+      requests: 10%
+      limits: 10%
     ephemeral-storage:
       requests: "6G"
-      limits: "6G"
-  image: ${RETINA_REGISTRY_URI}/flexric:${FLEXRIC_VERSION}_${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=fpga-virt-master
+  resources:
+    - type: zmq
+      capacity: 0

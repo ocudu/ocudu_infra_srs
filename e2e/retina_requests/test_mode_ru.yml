@@ -9,21 +9,18 @@
 - name: ocudu-gnb
   type: gnb
   image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
-  labels:
-    - kubernetes.io/hostname=dell-xr12
   requirements:
     cpu:
-      requests: 10
-      limits: 10
+      requests: 100%
+      limits: 100%
     memory:
-      requests: "60G"
-      limits: "60G"
+      requests: 100%
+      limits: 100%
     hugepages-1Gi:
       requests: 2Gi
       limits: 2Gi
     ephemeral-storage:
-      requests: "150G"
-      limits: "150G"
+      requests: "15G"
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb
     - LD_LIBRARY_PATH: /opt/rohc/lib/:/opt/dpdk/${DPDK_VERSION}/lib/x86_64-linux-gnu/
@@ -31,3 +28,7 @@
     - local_path: ${OCUDU_PATH}/build_retina/apps/gnb/gnb
       remote_path: /usr/local/bin/gnb
       is_executable: true
+  resources:
+    - type: ru
+      model: viavi-ru
+      capacity: 0
