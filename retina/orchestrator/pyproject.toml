@@ -127,6 +127,7 @@ commands =
 skip_install = true
 deps = 
   mypy
+  types-PyYAML
 commands = 
   mypy src
 

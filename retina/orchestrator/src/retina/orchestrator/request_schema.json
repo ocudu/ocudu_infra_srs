@@ -108,10 +108,10 @@
                         "type": "object",
                         "properties": {
                             "requests": {
-                                "type": "number"
+                                "type": ["string", "number"]
                             },
                             "limits": {
-                                "type": "number"
+                                "type": ["string", "number"]
                             }
                         },
                         "required": [

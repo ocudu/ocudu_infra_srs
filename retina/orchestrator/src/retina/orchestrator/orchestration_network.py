@@ -449,8 +449,8 @@ class OrchestratorManager:
                 else request_reservation.get_taints(k_server=self.k_server)
             ),
             label_list=request_reservation.get_labels(),
-            request_list=request_reservation.get_requirements(),
-            node_name=request_reservation.get_node_name(),
+            request_list=request_reservation.get_requirements(k_server=self.k_server),
+            node_name=request_reservation.get_node_name(k_server=self.k_server),
             enable_network_connection=request_reservation.get_enable_network_connection(),
             enable_usb_connection=request_reservation.get_enable_usb_connection(),
             enable_pci_connection=request_reservation.get_enable_pci_connection(),

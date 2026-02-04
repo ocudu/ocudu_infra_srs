@@ -76,9 +76,6 @@ def create_request(k_server: Kubernetes, node_name: str, docker_image: str, verb
         print(f"Node {node_name} has no compute resources. Ask the administrator to add them.")
         sys.exit(1)
 
-    node_cpu = node_compute_resources["cpu"]
-    node_memory = node_compute_resources["memory"]
-    node_ephemeral_storage = node_compute_resources["ephemeral-storage"]
     node_huge_pages_1gi = node_compute_resources.get("hugepages-1Gi", None)
 
     request_json: List[Dict] = [
@@ -91,16 +88,16 @@ def create_request(k_server: Kubernetes, node_name: str, docker_image: str, verb
             "host_network": "InternalIP",
             "requirements": {
                 "cpu": {
-                    "requests": node_cpu,
-                    "limits": node_cpu,
+                    "requests": "100%",
+                    "limits": "100%",
                 },
                 "memory": {
-                    "requests": node_memory,
-                    "limits": node_memory,
+                    "requests": "100%",
+                    "limits": "100%",
                 },
                 "ephemeral-storage": {
-                    "requests": node_ephemeral_storage,
-                    "limits": node_ephemeral_storage,
+                    "requests": "100%",
+                    "limits": "100%",
                 },
             },
         }

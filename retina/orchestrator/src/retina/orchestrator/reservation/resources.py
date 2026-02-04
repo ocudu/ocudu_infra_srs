@@ -18,7 +18,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from time import sleep
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from retina.protocol.redact import add_log_secret
 from retina.protocol.resource import (
@@ -878,6 +878,7 @@ class RequestReservation:
         self.command = command
         self.force_external_ip = force_external_ip
         self.grace_period = grace_period
+        self._node: Optional[Node] = None
 
     def get_binaries(self) -> List[BinaryDefinition]:
         """
@@ -917,31 +918,27 @@ class RequestReservation:
                     return "InternalIP"
         return ""
 
-    def get_node_name(self) -> Optional[str]:
+    def get_node_name(self, k_server: Kubernetes) -> str:
         """
         Get node name for the reservation
         """
-        for resource in self.reserved_resources.get_resources():
-            if not resource.is_cluster_resource() and not resource.is_zmq_resource():
-                return resource.node.name  # type: ignore
-        return None
+        return self._get_node(k_server=k_server).name
 
-    def get_node_configuration(self, k_server: Kubernetes) -> Union[None, NodeConfiguration]:
+    def get_node_configuration(self, k_server: Kubernetes) -> NodeConfiguration:
         """
         Get node configuration
         """
-        node_name = self.get_node_name()
-        if node_name is None:
-            return None
-
-        cpu_isolation = get_cpu_isolation_for_node_from_cluster_info(k_server, node_name)
+        cpu_isolation = get_cpu_isolation_for_node_from_cluster_info(k_server, self.get_node_name(k_server=k_server))
         return NodeConfiguration(cpu_isolation=cpu_isolation)
 
+    def _get_node(self, k_server: Kubernetes) -> Node:
+        if self._node is None:
+            self._node = self._match_node(k_server=k_server)
+        return self._node
+
     # pylint: disable=too-many-branches
-    def get_taints(self, k_server: Kubernetes) -> List[TaintDefinition]:
-        """
-        Get taints
-        """
+    def _match_node(self, k_server: Kubernetes) -> Node:
+
         node_match_list: List[Node] = []
         node_dict = k_server.get_retina_node_dict(only_retina_labels=False, skip_not_available=True)
 
@@ -951,21 +948,22 @@ class RequestReservation:
             if label.name == "kubernetes.io/hostname":
                 node_name = label.value
                 if node_name in node_dict:
-                    return node_dict[node_name].taint_list
+                    return node_dict[node_name]
 
-        reserved_node_resources = [r for r in self.reserved_resources.get_resources() if not r.is_cluster_resource()]
-        # No resources in the request search for general nodes
+        reserved_node_resources = [
+            r
+            for r in self.reserved_resources.get_resources()
+            if not r.is_cluster_resource() and not r.is_zmq_resource()
+        ]
         if len(reserved_node_resources) == 0:
+            # No resources in the request search for general nodes
             for node in node_dict.values():
                 if node.is_retina_node():
                     node_match_list.append(node)
         else:
             for reserved_resource in reserved_node_resources:
                 if not reserved_resource.is_cluster_resource() and not reserved_resource.is_zmq_resource():
-                    try:
-                        return reserved_resource.node.taint_list  # type: ignore
-                    except AttributeError:
-                        return []
+                    return reserved_resource.node  # type: ignore
 
         node_match_list_copy = node_match_list.copy()
         for node in node_match_list:
@@ -981,7 +979,13 @@ class RequestReservation:
             logging.error(get_nodelist_status(node_dict.values()))
             raise RuntimeError("No node found")
 
-        return node_match_list_copy[random.randint(0, len(node_match_list_copy) - 1)].taint_list
+        return node_match_list_copy[random.randint(0, len(node_match_list_copy) - 1)]
+
+    def get_taints(self, k_server: Kubernetes) -> List[TaintDefinition]:
+        """
+        Get taints
+        """
+        return self._get_node(k_server=k_server).taint_list
 
     def get_labels(self) -> List[str]:
         """
@@ -989,10 +993,32 @@ class RequestReservation:
         """
         return self.requirement_manager.get_label_list()
 
-    def get_requirements(self) -> List[RequirementDefinition]:
+    def get_requirements(self, k_server: Kubernetes) -> List[RequirementDefinition]:
         """
         Get labels
         """
+        node_name = self.get_node_name(k_server=k_server)
+        node_requirements: Dict[str, Any] = {}
+
+        for req in self.requirement_manager.req_list:
+            for attr_name, value in {"requests": req.requests, "limits": req.limits}.items():
+                if str(value).endswith("%"):
+                    if not node_requirements:
+                        node_requirements = get_compute_resources_for_node_from_cluster_info(k_server, node_name)
+                        if not node_requirements:
+                            raise RuntimeError(
+                                "Cannot convert percentage requirements to values if the node is not known"
+                            )
+
+                    match = re.match(r"^([\d.]+)([a-zA-Z]*)$", str(node_requirements.get(req.name, 0)))
+                    if match:
+                        total_value = float(match.group(1))
+                        suffix = match.group(2)
+                    else:
+                        total_value = 0
+                        suffix = ""
+                    setattr(req, attr_name, str(total_value * float(str(value).strip("%")) * 0.01) + suffix)
+
         return self.requirement_manager.req_list
 
     def get_nof_ports(self):
@@ -1224,6 +1250,18 @@ def get_cpu_isolation_for_node_from_cluster_info(
                 lcores_eal_args=node["cpu_isolation"].get("lcores_eal_args", ""),
             )
     return None
+
+
+def get_compute_resources_for_node_from_cluster_info(
+    k_server: Kubernetes, node_name: str
+) -> Dict[str, RequirementDefinition]:
+    """
+    Get compute-resources for node
+    """
+    for node in k_server.get_cluster_configuration()["nodes"]:
+        if node["name"] == node_name and "compute-resources" in node:
+            return node.get("compute-resources", {})
+    return {}
 
 
 def get_nodelist_status(node_list: List[Node]) -> str:
