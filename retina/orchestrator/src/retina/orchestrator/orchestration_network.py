@@ -443,11 +443,7 @@ class OrchestratorManager:
             extra_ports=extra_ports_number_array,
             privileged=True,
             timeout=int(timeout_handler.get_remaining_timeout()),
-            taint_list=(
-                request_reservation.taints
-                if request_reservation.taints
-                else request_reservation.get_taints(k_server=self.k_server)
-            ),
+            taint_list=request_reservation.get_taints(k_server=self.k_server),
             label_list=request_reservation.get_labels(),
             request_list=request_reservation.get_requirements(k_server=self.k_server),
             node_name=request_reservation.get_node_name(k_server=self.k_server),

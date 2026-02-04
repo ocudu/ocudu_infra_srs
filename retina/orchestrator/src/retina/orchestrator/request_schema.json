@@ -11,7 +11,17 @@
                 "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"
             },
             "type": {
-                "type": "string"
+                "type": "string",
+                "enum": [
+                    "ue",
+                    "gnb",
+                    "cu",
+                    "du",
+                    "5gc",
+                    "ric",
+                    "channel-emulator",
+                    "generic"
+                ]
             },
             "force_external_ip": {
                 "type": "boolean"
@@ -32,12 +42,6 @@
             },
             "host_network": {
                 "type": "string"
-            },
-            "taints": {
-                "type": "array",
-                "items": {
-                    "type": "string"
-                }
             },
             "labels": {
                 "type": "array",
@@ -108,10 +112,16 @@
                         "type": "object",
                         "properties": {
                             "requests": {
-                                "type": ["string", "number"]
+                                "type": [
+                                    "string",
+                                    "number"
+                                ]
                             },
                             "limits": {
-                                "type": ["string", "number"]
+                                "type": [
+                                    "string",
+                                    "number"
+                                ]
                             }
                         },
                         "required": [

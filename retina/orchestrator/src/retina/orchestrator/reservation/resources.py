@@ -849,7 +849,6 @@ class RequestReservation:
         type_r: str,
         image: str,
         nof_ports: int,
-        taints: List[TaintDefinition],
         labels: List[str],
         resources: ResourceList,
         requirement_manager: RequirementManager,
@@ -867,7 +866,6 @@ class RequestReservation:
         self.type_r = type_r
         self.image = image
         self.nof_ports = nof_ports
-        self.taints = taints
         self.labels = labels
         self.resources = resources
         self.requirement_manager = requirement_manager

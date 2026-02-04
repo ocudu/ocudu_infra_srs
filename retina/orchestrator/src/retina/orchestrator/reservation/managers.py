@@ -99,8 +99,8 @@ class PoolRequestReservation:
         cluster_resources = []
         for request_reservation in self.request_reservation_list:
             resource_list = request_reservation.get_resources().get_resources()
-            if request_reservation.taints or request_reservation.requirement_manager.label_list:
-                # If the user is requesting taints, we create a fake port to populate with the taints
+            if request_reservation.requirement_manager.label_list:
+                # If the user is requesting labels, we create a fake node to populate with the taints
                 for resource in resource_list:
                     resource.node = Node(
                         name="",
@@ -108,7 +108,7 @@ class PoolRequestReservation:
                         os_image="",
                         kernel_version="",
                         label_list=request_reservation.requirement_manager.label_list,
-                        taint_list=request_reservation.taints,
+                        taint_list=[],
                         ip_address="",
                         allocatable_cpu=0,
                         allocatable_memory="",
@@ -188,30 +188,11 @@ def get_pool_request_reservation_from_config(
                 )
             )
 
-        taint_list: List[rs.TaintDefinition] = []
-        for taint_inst in config_inst.get("taints", []):
-            try:
-                effect = taint_inst.split("=")[1].split(":")[1]
-            except IndexError:
-                effect = None
-
-            if len(taint_inst.split("=")) != 2:
-                raise RuntimeError("Taints must be in the format key=value:effect")
-
-            taint_list.append(
-                rs.TaintDefinition(
-                    key=taint_inst.split("=")[0],
-                    value=taint_inst.split("=")[1].split(":")[0],
-                    effect=effect,
-                )
-            )
-
         req = rs.RequestReservation(
             name=config_inst["name"],
             image=config_inst["image"],
             type_r=config_inst.get("type", ""),
             nof_ports=config_inst.get("nof_ports", 1),
-            taints=taint_list,
             labels=config_inst.get("labels", []),
             resources=rs.ResourceList(resource_list),
             requirement_manager=requirement_manager,

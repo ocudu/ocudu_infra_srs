@@ -45,7 +45,6 @@ The format is:
   - name `mandatory`: To identify it in the cluster, can be any string
   - image `mandatory`: Container image URI, from `registry.gitlab.com` or `hub.docker.com` (default docker registry).
   - type: `ue`, `gnb`, `5gc`. Ignore this field in development mode.
-  - taints: [list of taints](#custom-taints)
   - labels: [list of labels](#custom-labels)
   - requirements:
     - cpu `mandatory`
@@ -123,23 +122,4 @@ The label "kubernetes.io/hostname=my-pc" will be added to the Retina labels.
       limit: "3G"
   image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   labels: ["kubernetes.io/hostname=my-pc"]
-```
-
-## Custom taints
-
-It will override all the taints:
-
-```yml
-- name: mydev
-  type: 5gc
-  requirements:
-    cpu:
-      requests: 1
-    memory:
-      requests: "4G"
-    ephemeral-storage:
-      requests: "3G"
-      limit: "3G"
-  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
-  taints: ["my-custom-taint"]
 ```
