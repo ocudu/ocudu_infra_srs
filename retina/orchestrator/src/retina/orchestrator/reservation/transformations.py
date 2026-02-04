@@ -10,6 +10,7 @@
 Transformations for the reservation module
 """
 
+import copy
 import itertools
 from random import shuffle
 from typing import Dict, List
@@ -59,11 +60,12 @@ def get_match_resources(
     Get match resources
     """
 
-    # For each resource_inout (in input_resource_list) search list of all resources
+    # For each resource_input (in input_resource_list) search list of all resources
     # that matches for it
     matching_resource_dict: Dict[int, List] = {}
+    # pylint: disable=too-many-nested-blocks
     for index, resource_input in enumerate(input_resource_list.get_resources()):
-        matching_resource_dict[index] = []  # List of resources machine this resource_input
+        matching_resource_dict[index] = []  # List of resources matching this resource_input
         for resource_complete in complete_resource_list.get_resources():
             if resource_input == resource_complete and resource_complete.get_id() is None:
                 if resource_input.is_cluster_resource() or resource_input.node is None:
@@ -75,6 +77,9 @@ def get_match_resources(
                         not configured_taints
                         or (configured_taints == reserved_taints or configured_taints in reserved_taints)
                     ) and resource_complete.node.check_label_list(resource_input.node.label_list):
+                        if resource_input.capacity == 0:
+                            resource_complete = copy.deepcopy(resource_complete)
+                            resource_complete.capacity = 0
                         matching_resource_dict[index].append(resource_complete)
 
     # Create all combinations of matching resources, filtering the ones with duplicated items

@@ -26,7 +26,6 @@ from retina.orchestrator.elements import get_taint_list_as_string
 from retina.orchestrator.reservation.managers import get_pool_request_reservation_from_config
 from retina.orchestrator.reservation.resources import (
     BinaryDefinition,
-    NodeConfiguration,
     RequestReservation,
     ResourceList,
 )
@@ -219,8 +218,6 @@ class OrchestratorManager:
                         request_reservation=req_reservation,
                         orch_id=orch_id,
                         user_name=user_name,
-                        reserved_resources=req_reservation.get_reserved_resources(),
-                        node_configuration=req_reservation.get_node_configuration(self.k_server),
                         dev_mode=dev_mode,
                         timeout_handler=timeout_handler,
                         not_finite_execution=not_finite_execution,
@@ -364,8 +361,6 @@ class OrchestratorManager:
         request_reservation: RequestReservation,
         orch_id: str,
         user_name: str,
-        reserved_resources: ResourceList,
-        node_configuration: Optional[NodeConfiguration],
         dev_mode: bool,
         timeout_handler: TimeoutHandler,
         not_finite_execution: bool,
@@ -403,6 +398,7 @@ class OrchestratorManager:
         ########################################################################
         # Create configmap RS
         ########################################################################
+        node_configuration = request_reservation.get_node_configuration(self.k_server)
         node_resource = Node(
             use_node_ip=force_external_ip,
             port_array=list(extra_ports_number_array),
@@ -436,7 +432,7 @@ class OrchestratorManager:
                 *(
                     get_resource_data_configmap_name(resource)
                     for resource in request_reservation.get_reserved_resources().get_resources()
-                    if not resource.is_zmq_resource()
+                    if not resource.is_zmq_resource() and resource.capacity
                 ),
             ],
             retina_ports=retina_ports_number_array,
@@ -499,7 +495,9 @@ class OrchestratorManager:
             pod_name=pod_name,
             node_name=node_name,
             pod_ip=pod_ip,
-            resource=reserved_resources,
+            resource=ResourceList(
+                [r for r in request_reservation.get_reserved_resources().get_resources() if r.capacity]
+            ),
             node_resource=node_resource,
         )
         if dev_mode:

@@ -250,6 +250,9 @@ class ClusterResource(Resource):
         if self.name is None or self.index is None:
             raise RuntimeError("Resource name or index is None")
 
+        if self.capacity == 0:
+            return True
+
         for _ in range(0, num_of_retry):
             result = reserve_cluster_resource_configmap(
                 k_server=k_server,
@@ -443,6 +446,9 @@ class NodeResource(Resource):
         """
         Reserve resource
         """
+        if self.capacity == 0:
+            return True
+
         for _ in range(0, num_of_retry):
             result = create_resource_data_configmap(
                 k_server=k_server,
@@ -889,7 +895,7 @@ class RequestReservation:
         Get enable usb connection
         """
         for resource in self.reserved_resources.get_resources():
-            if not resource.is_cluster_resource():
+            if not resource.is_cluster_resource() and resource.capacity:
                 if resource.connection == ConnectionType.USB:
                     return True
         return False
@@ -899,7 +905,7 @@ class RequestReservation:
         Get enable usb connection
         """
         for resource in self.reserved_resources.get_resources():
-            if not resource.is_cluster_resource():
+            if not resource.is_cluster_resource() and resource.capacity:
                 if resource.connection == ConnectionType.PCI:
                     return True
         return False
@@ -911,7 +917,7 @@ class RequestReservation:
         if self.enable_host_network_force:
             return self.enable_host_network_force
         for resource in self.reserved_resources.get_resources():
-            if not resource.is_cluster_resource():
+            if not resource.is_cluster_resource() and resource.capacity:
                 if resource.connection in [ConnectionType.NETWORK, ConnectionType.PCI]:
                     return "InternalIP"
         return ""
@@ -1068,11 +1074,13 @@ def get_resource_from_config(config: Dict) -> ResourceType:
     if config["type"] == "sdr":
         return ResourceSDR(
             model=config["model"],
+            capacity=config.get("capacity", 1),
         )
 
     if config["type"] == "ru":
         return ResourceRU(
             model=config["model"],
+            capacity=config.get("capacity", 1),
             ru_network_interface=config.get("ru_network_interface", []),
             ru_du_mac_addr=config.get("ru_du_mac_addr", []),
             ru_ru_mac_addr=config.get("ru_ru_mac_addr", []),
@@ -1086,11 +1094,13 @@ def get_resource_from_config(config: Dict) -> ResourceType:
     if config["type"] == "emulator":
         return ResourceEmulator(
             model=config["model"],
+            capacity=config.get("capacity", 1),
         )
 
     if config["type"] == "accelerator":
         return ResourceAccelerator(
             model=config["model"],
+            capacity=config.get("capacity", 1),
             hwacc_type=config.get("hwacc_type", ""),
             accelerator_id=config.get("accelerator_id", 0),
             pdsch_enc_nof_hwacc=config.get("pdsch_enc_nof_hwacc", ""),
@@ -1102,13 +1112,16 @@ def get_resource_from_config(config: Dict) -> ResourceType:
 
     if config["type"] == "android":
         return ResourceAndroid(
-            model=config["model"],
+            model=config.get("model", ".*"),
+            capacity=config.get("capacity", 1),
         )
 
     if config["type"] == "zmq":
-        return ResourceZmq()
+        return ResourceZmq(
+            capacity=config.get("capacity", 1),
+        )
 
-    return ResourceLicense(model=config["model"])
+    return ResourceLicense(model=config["model"], capacity=config.get("capacity", 1))
 
 
 # pylint: disable=too-many-branches
