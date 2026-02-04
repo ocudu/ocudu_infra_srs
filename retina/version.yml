@@ -9,4 +9,4 @@
 # A modification of this file will force a rebuild of retina images and packages.
 
 variables:
-  RETINA_VERSION: "0.97.0"
+  RETINA_VERSION: "0.97.1"

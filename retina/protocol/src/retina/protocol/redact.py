@@ -13,7 +13,7 @@ Helpers to redact sensitive values from log messages
 import logging
 import os
 import re
-from typing import Optional
+from typing import Optional, Set
 
 
 class _SecretFilter(logging.Filter):
@@ -22,15 +22,21 @@ class _SecretFilter(logging.Filter):
     """
 
     _REGEX_PATTERN = re.compile(r"\b(?:[0-9A-Fa-f]{2}[:-]){5,7}[0-9A-Fa-f]{2}\b")
+    _NOT_REDACT_ARRAY = ["srs", "ocudu", "retina"]
 
     def __init__(self, mask: str = "[masked]"):
         super().__init__()
         self._mask = mask
-        self._secrets = set(secret for secret in os.getenv("RETINA_SECRETS", "").split(" ") if secret)
+        self._secrets: Set[str] = set()
+        for secret in os.getenv("RETINA_SECRETS", "").split(" "):
+            self.add_secret(secret)
 
-    def add_secret(self, secret: str) -> None:
+    def add_secret(self, secret: Optional[str]) -> None:
         """Add secrets used for redaction."""
-        if secret:
+        if secret is None:
+            return
+        secret = secret.strip()
+        if secret and secret not in self._NOT_REDACT_ARRAY:
             self._secrets.add(secret)
 
     def redact(self, value: Optional[str]) -> Optional[str]:
