@@ -63,6 +63,20 @@ tests:
       - missed incoming User-Plane PRACH messages
       - Tracing thread cannot keep up
 
+  - id: "1UE ideal UDP downlink"
+    campaign_filename: *campaign_filename
+    test_name: "1UE ideal UDP downlink"
+    test_timeout: *test_timeout
+    # Configuration
+    gnb_extra_config: *base_config
+    # Pass / Fail Criteria
+    expected_dl_bitrate: 1.2e+9
+    expected_ul_bitrate: 0
+    expected_max_late_harqs: 4
+    expected_nof_kos: 0
+    warning_as_errors: true
+    warning_allowlist: *base_warning_allowlist
+
   - id: "32UE ideal UDP bidirectional"
     campaign_filename: *campaign_filename
     test_name: "32UE ideal UDP bidirectional"
