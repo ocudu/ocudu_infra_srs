@@ -432,7 +432,7 @@ class OrchestratorManager:
                 *(
                     get_resource_data_configmap_name(resource)
                     for resource in request_reservation.get_reserved_resources().get_resources()
-                    if not resource.is_zmq_resource() and resource.capacity
+                    if not resource.is_zmq_resource() and resource.capacity > 0
                 ),
             ],
             retina_ports=retina_ports_number_array,
@@ -496,7 +496,11 @@ class OrchestratorManager:
             node_name=node_name,
             pod_ip=pod_ip,
             resource=ResourceList(
-                [r for r in request_reservation.get_reserved_resources().get_resources() if r.capacity]
+                [
+                    r
+                    for r in request_reservation.get_reserved_resources().get_resources()
+                    if not r.is_zmq_resource() and r.capacity > 0
+                ]
             ),
             node_resource=node_resource,
         )
@@ -545,7 +549,7 @@ Ochestration network ID = {orch_id}
 
             space = None
             for resource in pod.resource.get_resources():
-                if not resource.is_cluster_resource() and not resource.is_zmq_resource():
+                if not resource.is_cluster_resource():
                     space = resource.space
 
             msg += f"""- Name: {name}

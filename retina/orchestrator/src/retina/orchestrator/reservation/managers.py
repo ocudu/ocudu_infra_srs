@@ -55,43 +55,6 @@ class PoolRequestReservation:
         """
         return self.request_reservation_list
 
-    def is_virtual(self) -> bool:
-        """
-        Check if the reservation is zmq.
-        The pool request reservation is virtual when:
-            - One of the node resources is ZMQ.
-        The pool request reservation isn't virtual when:
-            - There isn't node resources.
-            - There isn't ZMQ node resources.
-        """
-        all_resources = self.get_all_resources()
-        node_resources = ts.get_node_resources(all_resources)
-
-        for resource in node_resources.get_resources():
-            if not resource.is_zmq_resource():
-                return False
-            return True
-        return False
-
-    def check_not_mixing_zmq_and_others(self):
-        """
-        Check if the reservation is mixing ZMQ with other node resources
-        """
-        all_resources = self.get_all_resources()
-        node_resources = ts.get_node_resources(all_resources)
-
-        with_zmq = False
-        with_other = False
-
-        for resource in node_resources.get_resources():
-            if resource.is_zmq_resource():
-                with_zmq = True
-            else:
-                with_other = True
-
-        if with_zmq and with_other:
-            raise RuntimeError("Cannot mix ZMQ with other node resources")
-
     def get_all_resources(self) -> rs.ResourceList:
         """
         Get cluster resources
@@ -136,19 +99,14 @@ class PoolRequestReservation:
         """
         Reserve node resources
         """
-        self.check_not_mixing_zmq_and_others()
         all_resources = self.get_all_resources()
-        # If only ZMQ node resources
-        if self.is_virtual():
-            result = ts.get_node_resources(all_resources)
-        else:
-            result = reserve_node_resources(
-                k_server=kubernetes,
-                input_request=all_resources,
-                orch_id=self.orch_id,
-                user_name=self.user_name,
-                timeout_handler=timeout_handler,
-            )
+        result = reserve_node_resources(
+            k_server=kubernetes,
+            input_request=all_resources,
+            orch_id=self.orch_id,
+            user_name=self.user_name,
+            timeout_handler=timeout_handler,
+        )
         # Assign the resources to the request reservation
         for request_reservation in self.request_reservation_list:
             reserved_resources_for_request = ts.get_resources_by_id(

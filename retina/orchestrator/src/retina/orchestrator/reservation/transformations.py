@@ -79,7 +79,7 @@ def get_match_resources(
                     ) and resource_complete.node.check_label_list(resource_input.node.label_list):
                         if resource_input.capacity == 0:
                             resource_complete = copy.deepcopy(resource_complete)
-                            resource_complete.capacity = 0
+                            resource_complete.capacity = -index
                         matching_resource_dict[index].append(resource_complete)
 
     # Create all combinations of matching resources, filtering the ones with duplicated items

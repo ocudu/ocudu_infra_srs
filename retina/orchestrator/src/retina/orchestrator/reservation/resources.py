@@ -239,7 +239,7 @@ class ClusterResource(Resource):
         return False
 
     def __hash__(self):
-        return hash((self.type_r, self.model, self.capacity, self.connection, self.index))
+        return hash((self.type_r, self.model, str(self.capacity), self.connection, str(self.index)))
 
     def reserve(
         self, k_server: Kubernetes, num_of_retry: int, num_seconds_per_retry, orch_id: str, user_name: str, timeout: int
@@ -250,7 +250,7 @@ class ClusterResource(Resource):
         if self.name is None or self.index is None:
             raise RuntimeError("Resource name or index is None")
 
-        if self.capacity == 0:
+        if self.capacity is None or self.capacity <= 0:
             return True
 
         for _ in range(0, num_of_retry):
@@ -310,7 +310,9 @@ class ResourceLicense(ClusterResource):
         self.args = args
 
     def __hash__(self):
-        return hash((self.type_r, self.model, self.capacity, self.args, self.connection, self.index, self.ip_address))
+        return hash(
+            (self.type_r, self.model, str(self.capacity), self.args, self.connection, str(self.index), self.ip_address)
+        )
 
     def get_resource_data(self) -> List:
         """
@@ -361,7 +363,7 @@ class ResourceEmulator(ClusterResource):
         self.tma_profile = tma_profile
 
     def __hash__(self):
-        return hash((self.type_r, self.model, self.capacity, self.connection, self.index))
+        return hash((self.type_r, self.model, str(self.capacity), self.connection, str(self.index)))
 
     def get_resource_data(self) -> List:
         """
@@ -438,7 +440,7 @@ class NodeResource(Resource):
         return False
 
     def __hash__(self):
-        return hash((self.type_r, self.model, self.capacity, self.connection, self.space))
+        return hash((self.type_r, self.model, str(self.capacity), self.connection, str(self.space)))
 
     def reserve(
         self, k_server: Kubernetes, num_of_retry: int, num_seconds_per_retry, orch_id: str, user_name: str, timeout: int
@@ -446,7 +448,7 @@ class NodeResource(Resource):
         """
         Reserve resource
         """
-        if self.capacity == 0:
+        if self.capacity is None or self.capacity <= 0:
             return True
 
         for _ in range(0, num_of_retry):
@@ -505,9 +507,9 @@ class ResourceSDR(NodeResource):
             (
                 self.type_r,
                 self.model,
-                self.capacity,
+                str(self.capacity),
                 self.connection,
-                self.space,
+                str(self.space),
                 self.args,
             )
         )
@@ -573,9 +575,9 @@ class ResourceRU(NodeResource):
             (
                 self.type_r,
                 self.model,
-                self.capacity,
+                str(self.capacity),
                 self.connection,
-                self.space,
+                str(self.space),
                 self.ip_address,
                 tuple(self.ru_network_interface) if self.ru_network_interface is not None else None,
                 tuple(self.ru_du_mac_addr) if self.ru_du_mac_addr is not None else None,
@@ -647,7 +649,7 @@ class ResourceAccelerator(NodeResource):
         self.extra_eal_args = extra_eal_args
 
     def __hash__(self):
-        return hash((self.type_r, self.model, self.capacity, self.connection, self.space))
+        return hash((self.type_r, self.model, str(self.capacity), self.connection, str(self.space)))
 
     def get_resource_data(self) -> List:
         """
@@ -706,7 +708,7 @@ class ResourceAndroid(NodeResource):
         self.adb_key = adb_key
 
     def __hash__(self):
-        return hash((self.type_r, self.model, self.capacity, self.connection, self.space, self.serial_id))
+        return hash((self.type_r, self.model, str(self.capacity), self.connection, str(self.space), self.serial_id))
 
     def get_resource_data(self) -> List:
         """
@@ -733,11 +735,13 @@ class ResourceZmq(NodeResource):
     # pylint: disable=too-many-arguments
     def __init__(
         self,
-        capacity: Optional[int] = None,
+        model: str = "zmq",
+        capacity: Optional[int] = 1,
+        space: Optional[int] = None,
         node: Optional[Node] = None,
         connection: Optional[ConnectionType] = None,
     ):
-        super().__init__(capacity=capacity, type_r="zmq", node=node, connection=connection, space=None, model="zmq")
+        super().__init__(capacity=capacity, type_r="zmq", node=node, connection=connection, space=space, model=model)
 
 
 ################################################################################
@@ -808,17 +812,6 @@ class ResourceList:
                 for resource in self.resources
             )
         )
-
-    def is_virtual(self) -> bool:
-        """
-        Check if the reservation is zmq
-        """
-        node_resources = [r for r in self.resources if not r.is_cluster_resource()]
-
-        for resource in node_resources:
-            if not resource.is_zmq_resource():
-                return False
-        return True
 
     def get_resource_data(self) -> List:
         """
@@ -895,29 +888,44 @@ class RequestReservation:
         Get enable usb connection
         """
         for resource in self.reserved_resources.get_resources():
-            if not resource.is_cluster_resource() and resource.capacity:
+            if (
+                not resource.is_cluster_resource()
+                and not resource.is_zmq_resource()
+                and resource.capacity is not None
+                and resource.capacity > 0
+            ):
                 if resource.connection == ConnectionType.USB:
                     return True
         return False
 
     def get_enable_pci_connection(self) -> bool:
         """
-        Get enable usb connection
+        Get enable pci connection
         """
         for resource in self.reserved_resources.get_resources():
-            if not resource.is_cluster_resource() and resource.capacity:
+            if (
+                not resource.is_cluster_resource()
+                and not resource.is_zmq_resource()
+                and resource.capacity is not None
+                and resource.capacity > 0
+            ):
                 if resource.connection == ConnectionType.PCI:
                     return True
         return False
 
     def get_enable_network_connection(self) -> str:
         """
-        Get enable usb connection
+        Get enable network connection
         """
         if self.enable_host_network_force:
             return self.enable_host_network_force
         for resource in self.reserved_resources.get_resources():
-            if not resource.is_cluster_resource() and resource.capacity:
+            if (
+                not resource.is_cluster_resource()
+                and not resource.is_zmq_resource()
+                and resource.capacity is not None
+                and resource.capacity > 0
+            ):
                 if resource.connection in [ConnectionType.NETWORK, ConnectionType.PCI]:
                     return "InternalIP"
         return ""
@@ -954,18 +962,14 @@ class RequestReservation:
                 if node_name in node_dict:
                     return node_dict[node_name]
 
-        reserved_node_resources = [
-            r
-            for r in self.reserved_resources.get_resources()
-            if not r.is_cluster_resource() and not r.is_zmq_resource()
-        ]
+        reserved_node_resources = [r for r in self.reserved_resources.get_resources() if not r.is_cluster_resource()]
         if len(reserved_node_resources) == 0:
             # No resources in the request search for general nodes
             for node in node_dict.values():
                 node_match_list.append(node)
         else:
             for reserved_resource in reserved_node_resources:
-                if not reserved_resource.is_cluster_resource() and not reserved_resource.is_zmq_resource():
+                if not reserved_resource.is_cluster_resource():
                     return reserved_resource.node  # type: ignore
 
         node_match_list_copy = node_match_list.copy()
@@ -1241,8 +1245,12 @@ def get_resource_from_cluster_info(cluster_info, node_dict: Dict[str, Node]) -> 
                         resource_list.add_resource(
                             ResourceZmq(
                                 capacity=capacity,
+                                model=resource.get("model", None),
+                                space=resource.get("space", None),
                                 node=node_in_cluster,
-                                connection=ConnectionType[resource["connection"]],
+                                connection=ConnectionType[
+                                    resource.get("connection", ConnectionType.NETWORK.name).upper()
+                                ],
                             )
                         )
     return resource_list

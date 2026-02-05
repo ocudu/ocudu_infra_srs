@@ -116,15 +116,14 @@ def print_table_resources(pod_list: Iterable[RetinaPod]):
     print_table_ok = False
     for pod in pod_list:
         for resource in pod.resource.get_resources():
-            if not resource.is_zmq_resource():
-                id_name = resource.id_name
-                model = resource.model if hasattr(resource, "id_name") else ""
-                ip_address = resource.ip_address if hasattr(resource, "ip_address") else ""
-                args = resource.args if hasattr(resource, "args") else ""
-                space = str(resource.space) if hasattr(resource, "space") else "None"
+            id_name = resource.id_name
+            model = resource.model if hasattr(resource, "id_name") else ""
+            ip_address = resource.ip_address if hasattr(resource, "ip_address") else ""
+            args = resource.args if hasattr(resource, "args") else ""
+            space = str(resource.space) if hasattr(resource, "space") else "None"
 
-                table.add_row(id_name, model, ip_address, args, space)
-                print_table_ok = True
+            table.add_row(id_name, model, ip_address, args, space)
+            print_table_ok = True
 
     if print_table_ok:
         console = Console()
