@@ -1,6 +1,10 @@
-# Orchestrator Request file
+# Retina Request File
 
-Orchestrator's main input is the request file. In that file we write down what we need to deploy in the cluster. It's content is similar to the following example:
+The Retina request file defines the testbed configuration for your test. It's a core input for tests (via `retina-launcher`) and the Retina orchestrator, specifying what resources to deploy in the Kubernetes cluster.
+
+## Overview
+
+A Retina request file is a YAML document describing an array of pods (containers) to deploy. Here's a complete example:
 
 ```yml
 - name: ocudu-gnb
@@ -28,6 +32,7 @@ Orchestrator's main input is the request file. In that file we write down what w
 
 - name: open5gs
   type: 5gc
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
       requests: 1
@@ -35,83 +40,152 @@ Orchestrator's main input is the request file. In that file we write down what w
       requests: "4G"
     ephemeral-storage:
       requests: "3G"
-      limit: "3G"
-  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+      limits: "3G"
 ```
 
-The format is:
+## Configuration Reference
 
-- Array of pods (AKA a containers in a cluster) we want to create:
-  - name `mandatory`: To identify it in the cluster, can be any string
-  - image `mandatory`: Container image URI, from `registry.gitlab.com` or `hub.docker.com` (default docker registry).
-  - type: `ue`, `gnb`, `5gc`. Ignore this field in development mode.
-  - labels: [list of labels](#custom-labels)
-  - requirements:
-    - cpu `mandatory`
-      - requests `mandatory`: See [Requests vs limits](#requirements) and [CPU](#cpu) sections below.
-      - limits: See [Requests vs limits](#requirements) and [CPU](#cpu) sections below.
-    - memory `mandatory`
-      - requests `mandatory`: See [Requests vs limits](#requirements) and [Memory](#memory) sections below.
-      - limits: See [Requests vs limits](#requirements) and [Memory](#memory) sections below.
-    - ephemeral-storage
-      - requests `mandatory`: See [Requests vs limits](#requirements) and [Ephemeral Storage](#ephemeral-storage) sections below.
-      - limits: See [Requests vs limits](#requirements) and [Ephemeral Storage](#ephemeral-storage) sections below.
-  - resources: array of resources we want to book. Each item of the array has two fields:
-    - type `mandatory`
-    - model
-  - shared_files: Array of items. Each shared path is **copied** into the container. Each item has following fields:
-    - local_path `mandatory`: absolute path in your PC
-    - remote_path `mandatory`: absolute path in the container.
-    - is_executable `mandatory`: `true`/`false`. If `true`, executable rights are given.
+Each pod in the array supports the following fields:
 
-## Requirements
+| Field | Required | Type | Description |
+|-------|----------|------|-------------|
+| `name` | ✓ | string | Unique identifier for the pod in the cluster |
+| `image` | ✓ | string | Container image URI (e.g., from `registry.gitlab.com` or `hub.docker.com`) |
+| `type` | ✓ | enum | Pod type: `ue`, `gnb`, `cu`, `du`, `5gc`, `ric`, `channel-emulator`, `generic` |
+| `labels` | | array | Custom Kubernetes labels (see [Custom Labels](#custom-labels)) |
+| `requirements` | ✓ | object | Resource requirements (see [Requirements](#requirements)) |
+| `resources` | | array | Hardware resources to book (see [Resources](#resources)) |
+| `environment` | | array | Environment variables for the container |
+| `shared_files` | | array | Files to copy into the container (see [Shared Files](#shared-files)) |
 
-In each requirement, the `requests` section defines the resource's quantity reserved exclusively for that pod. However, the pod can use more of that requirement (cpu, memory, etc) if available in the host. To limit the maximum quantity of a resource the pod can access to, you can set `limits`
+### Requirements
 
-[Read more at kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)
+Compute requirements define CPU, memory, and storage needs for each pod. All requirements are optional, so the user can require any compute resource and requests and/or limits.
 
-### CPU
+#### Structure
 
-- Field: `cpu`
-
-Requests for CPU resources are measured in cpu units. In Retina, 1 CPU unit is equivalent to 1 physical CPU core, or 1 virtual core, depending on whether the node is a physical host or a virtual machine running inside a physical machine.
-
-Fractional requests are allowed. When you define a container with `cpu` set to `0.5`, you are requesting half as much CPU time compared to if you asked for `1.0` CPU. For CPU resource units, the quantity expression `0.1` is equivalent to the expression 100m, which can be read as "one hundred millicpu". Some people say "one hundred millicores", and this is understood to mean the same thing.
-
-CPU resource is always specified as an absolute amount of resource, never as a relative amount. For example, `500m` CPU represents the roughly same amount of computing power whether that container runs on a single-core, dual-core, or 48-core machine.
-
-### Memory
-
-- Field: `memory`
-
-Limits and requests for memory are measured in bytes. You can express memory as a plain integer or as a fixed-point number using one of these quantity suffixes: E, P, T, G, M, k. You can also use the power-of-two equivalents: Ei, Pi, Ti, Gi, Mi, Ki. For example, the following represent roughly the same value:
-
-```txt
-128974848, 129e6, 129M,  128974848000m, 123Mi
+```yml
+requirements:
+  cpu:
+    requests: 6
+    limits: 6
+  memory:
+    requests: "26G"
+    limits: "26G"
+  ephemeral-storage:
+    requests: "15G"
+    limits: "15G"
+  hugepages-1Gi:
+    requests: "2Gi"
 ```
 
-Pay attention to the case of the suffixes. If you request `400m` of memory, this is a request for `0.4` bytes. Someone who types that probably meant to ask for 400 mebibytes (`400Mi`) or 400 megabytes (`400M`).
+#### Requests vs Limits
 
-### Ephemeral Storage
+- **`requests`**: Resources **reserved exclusively** for the pod. Guaranteed to be available.
+- **`limits`**: Maximum resources the pod can use. The pod can consume beyond requests up to this limit if available on the node.
 
-- Field: `ephemeral-storage`
+If limits are not specified, the pod can use all available resources on the node beyond its requests.
 
-Requests for ephemeral-storage are measured in byte quantities. You can express storage as a plain integer or as a fixed-point number using one of these suffixes: E, P, T, G, M, k. You can also use the power-of-two equivalents: Ei, Pi, Ti, Gi, Mi, Ki. For example, the following quantities all represent roughly the same value:
+[Learn more in Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)
 
-- `128974848`
-- `129e6`
-- `129M`
-- `123Mi`
+#### CPU
 
-Pay attention to the case of the suffixes. If you request `400m` of ephemeral-storage, this is a request for 0.4 bytes. Someone who types that probably meant to ask for 400 mebibytes (`400Mi`) or 400 megabytes (`400M`).
+CPU resources are measured in CPU units:
 
-## Custom labels
+- **1 CPU unit** = 1 physical core OR 1 virtual core
+- **Fractional values allowed**: `0.5` = half a CPU core
+- **Millicpu notation**: `100m` = `0.1` CPU = one hundred millicpu
 
-The label "kubernetes.io/hostname=my-pc" will be added to the Retina labels.
+Examples: `1`, `0.5`, `500m`, `2000m`
+
+CPU is always an absolute amount, regardless of the node's total capacity.
+
+#### Memory
+
+Memory is measured in bytes with the following suffixes:
+
+| Suffix | Type | Example | Equivalent |
+|--------|------|---------|------------|
+| `E, P, T, G, M, k` | Decimal | `400M` | 400 megabytes |
+| `Ei, Pi, Ti, Gi, Mi, Ki` | Binary | `400Mi` | 400 mebibytes |
+
+**Common mistake**: `400m` = 0.4 bytes (not megabytes). Use `400M` or `400Mi` instead.
+
+#### Ephemeral Storage
+
+Ephemeral storage uses the same byte notation as memory:
+
+| Suffix | Example | Meaning |
+|--------|---------|---------|
+| `G` | `15G` | 15 gigabytes |
+| `Gi` | `15Gi` | 15 gibibytes |
+| `M` | `500M` | 500 megabytes |
+| `Mi` | `500Mi` | 500 mebibytes |
+
+#### Hugepages
+
+Hugepages provide large memory pages for applications requiring high-performance memory access. Kubernetes supports hugepages as a schedulable resource.
+
+**Supported page sizes:**
+
+- `hugepages-2Mi`: 2 MiB hugepages
+- `hugepages-1Gi`: 1 GiB hugepages
+
+**Example configuration:**
+
+```yml
+requirements:
+  hugepages-1Gi:
+    requests: "2Gi"    # Requests 2 x 1GiB hugepages
+    limits: "2Gi"      # Optional: Maximum hugepages allowed
+  hugepages-2Mi:
+    requests: "512Mi"  # Requests 256 x 2MiB hugepages
+```
+
+**Important notes:**
+
+- Hugepages must be pre-allocated on the Kubernetes node
+- The node must have hugepages enabled in the kernel
+- Hugepages requests should equal limits (if both are specified)
+- Use binary suffixes (`Gi`, `Mi`) matching the page size
+
+[Learn more about hugepages in Kubernetes](https://kubernetes.io/docs/tasks/manage-hugepages/scheduling-hugepages/)
+
+### Resources
+
+Hardware resources to allocate to the pod:
+
+```yml
+resources:
+  - type: zmq           # Required: Resource type
+    model: b200         # Optional: Specific model/variant
+```
+
+Common resource types: `zmq`, `sdr`, `ru`, etc.
+
+### Shared Files
+
+Files to copy from the local system into the container:
+
+```yml
+shared_files:
+  - local_path: ${OCUDU_PATH}/build_retina/apps/gnb/gnb   # Required: Source path (absolute)
+    remote_path: /usr/local/bin/gnb                       # Required: Destination path (absolute)
+    is_executable: true                                   # Required: Grant execute permissions
+```
+
+**Note**: Files are **copied** into the container, not mounted.
+
+## Custom Labels
+
+Add Kubernetes labels to control pod placement. Labels are combined with Retina's default labels.
+
+Example:
 
 ```yml
 - name: mydev
   type: 5gc
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
       requests: 1
@@ -119,7 +193,15 @@ The label "kubernetes.io/hostname=my-pc" will be added to the Retina labels.
       requests: "4G"
     ephemeral-storage:
       requests: "3G"
-      limit: "3G"
-  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
-  labels: ["kubernetes.io/hostname=my-pc"]
+      limits: "3G"
+  labels:
+    - "kubernetes.io/hostname=my-specific-node"
 ```
+
+### Label Selection Priority
+
+Retina selects nodes using the following priority:
+
+1. **Hostname label** (`kubernetes.io/hostname`): If specified, forces pod to that specific node
+2. **Resources**: Selects nodes with available matching hardware resources
+3. **Other labels**: Uses any additional custom labels specified
