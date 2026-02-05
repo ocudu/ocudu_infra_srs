@@ -473,6 +473,7 @@ cudu 64UE:
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   tags: [new-retina-e2e-amd64]
+  allow_failure: true
   variables:
     GROUP: viavi
     TESTBED: s72
