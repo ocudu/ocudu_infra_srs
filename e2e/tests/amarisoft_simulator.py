@@ -22,7 +22,6 @@ from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.public import UInt32Value
 from retina.launcher.utils import configure_artifacts
-from retina.protocol.base_pb2 import Subscriber
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import GNBStub
 from retina.protocol.ue_pb2_grpc import UEStub
@@ -40,6 +39,7 @@ class AmarisoftSimTestDefinition:
     name: str
     ue_config: list[str]
     gnb_config: list[str]
+    core_config: list[str]
 
 
 def load_tests(template_name: str) -> Generator[AmarisoftSimTestDefinition, None, None]:
@@ -58,6 +58,7 @@ def load_tests(template_name: str) -> Generator[AmarisoftSimTestDefinition, None
                     name=test_id,
                     gnb_config=test_declaration.get("gnb_config", []),
                     ue_config=test_declaration.get("ue_config", []),
+                    core_config=test_declaration.get("core_config", []),
                 )
 
 
@@ -86,20 +87,8 @@ def test_gnb(
         retina_data=retina_data,
         ue_config_files=test_definition.ue_config,
         gnb_config_files=test_definition.gnb_config,
-        core_config_files=[],
+        core_config_files=test_definition.core_config,
     )
-
-    for i in range(4):
-        fivegc.AddUESubscriber(
-            Subscriber(
-                imsi=f"00101012345679{i}",
-                algo_str="milenage",
-                k="00112233445566778899aabbccddeeff",
-                opc="63bfa50ee6523365ff14c1f45f88737d",
-                amf="8000",
-                tel=9876543202 + i,
-            )
-        )
 
     start_network(
         ue_array=(ue,),
