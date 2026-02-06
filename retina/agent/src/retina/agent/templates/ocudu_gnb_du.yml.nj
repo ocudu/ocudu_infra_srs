@@ -293,7 +293,6 @@ cell_cfg:
   ta:
     ta_target: 0
   pucch:
-    sr_period_ms: 40
     nof_cell_sr_res: 30
   tdd_ul_dl_cfg:
     nof_dl_symbols: 8
