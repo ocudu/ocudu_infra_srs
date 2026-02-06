@@ -44,29 +44,57 @@ git clone https://gitlab.com/your_user_or_group/ocudu_infra_srs.git
 cd ocudu_infra_srs
 ```
 
-#### 1.1. Configure the Gitlab Project
+**Note:** If you also want to fork OCUDU itself, follow the [OCUDU fork setup guide](https://gitlab.com/ocudu/ocudu/-/blob/dev/.gitlab/README.md) or see the [OCUDU documentation](https://ocudu.gitlab.io/ocudu_docs).
+
+#### 1.1. Basic CI/CD Configuration
+
+This repository's CI/CD is configured to access OCUDU from a repository **in the same GitLab instance**. Cross-instance configuration (having `ocudu_infra_srs` in a different GitLab instance than `ocudu`) is not currently supported.
+
+**Default configuration:**
+
+- Expects OCUDU repository at path: `ocudu/ocudu`
+- Uses default branch references
+
+**To customize:**
+
+1. Edit [.gitlab-ci.yml](../.gitlab-ci.yml) and modify the `spec`/`inputs` section to change the default `ocudu_path` and `ocudu_ref`
+
+2. Configure `OCUDU_*` variables as GitLab CI/CD variables:
+   - These variables must be accessible from the `ocudu_infra_srs` repository
+   - Set them at the **Group level** (recommended for shared access) or in both projects
+   - See OCUDU's [CI/CD configuration guide](https://gitlab.com/ocudu/ocudu/-/blob/dev/.gitlab/README.md#21-configure-cicd-variables) for variable details
+
+#### 1.2. Configure the GitLab Project
 
 ##### GitOps
 
-`ocudu_infra_srs` repo is using a Terraform / Opentofu solution to configure the GitLab project itself, including project settings, pipeline schedules, protected branches, approval rules and more. If you want to use it, you just need to:
+This repository uses a Terraform/OpenTofu solution to configure the GitLab project itself, including project settings, pipeline schedules, protected branches, approval rules, and more.
 
-- Create a CI Variable called `GITLAB_TOKEN`. It must be a `Project Access Token` or a `Personal Access Token` with: `Maintainer` role, `api`, `read_user`, `read_repository`, and `write_repository` scopes.
-- Modify the file [.gitlab/main.tf](../.gitlab/main.tf) and change the values according to your needs. Commit it to main branch (using an MR or directly).
+**Setup:**
 
-Check the [terraform module](https://gitlab.com/ocudu/ocudu/-/blob/dev/.gitlab/ci-shared/gitlab_settings/README.md) for more information.
+1. Create a CI/CD variable called `GITLAB_TOKEN`:
+   - Type: Project Access Token or Personal Access Token
+   - Role: `Maintainer`
+   - Scopes: `api`, `read_user`, `read_repository`, `write_repository`
+
+2. Modify [.gitlab/main.tf](../.gitlab/main.tf) according to your needs
+
+3. Commit to main branch (via MR or directly)
+
+For more details, see the [Terraform module documentation](https://gitlab.com/ocudu/ocudu/-/blob/dev/.gitlab/ci-shared/gitlab_settings/README.md).
 
 ##### Manual
 
-If you don't create the CI variable `GITLAB_TOKEN`, the GitOps approach won't be used and you can keep your configuration manual.
+If you don't create the `GITLAB_TOKEN` CI variable, GitOps won't be used and you can manage configuration manually.
 
-In that case, check the scheduled pipelines defined at the end of the [.gitlab/main.tf](../.gitlab/main.tf) to replicate them manually in your project.
+Check the scheduled pipelines defined at the end of [.gitlab/main.tf](../.gitlab/main.tf) to replicate them manually in your project's **Settings → CI/CD → Schedules**.
 
-#### 1.2. Set up variables for E2E testing
+#### 1.3. E2E Testing Variables
 
 - [Amarisoft ZMQ Configuration](../e2e/README.md#prerequisites)
 - [FTP Server Configuration](../templates/README.md#ftp-server-configuration)
 
-#### 1.3. Retina CI/CD Configuration
+#### 1.4. Retina CI/CD Configuration
 
 The Retina framework runs in containers during test execution. When you modify Retina code in your fork, the CI/CD pipeline automatically:
 
@@ -137,7 +165,7 @@ If you want to build Retina but publish to external/custom registries instead of
 | Variable | Value | Example |
 |----------|-------|---------|
 | `RETINA_REGISTRY_URI` | Your custom container registry path | `myregistry.example.com/retina` |
-| `DOCKER_AUTH_CONFIG` | Authentication for your registry | See Option A. In this case you'll need write access to the registry.u |
+| `DOCKER_AUTH_CONFIG` | Authentication for your registry | See Option A. You'll need write access to the registry. |
 
 **Python Package Registry (PyPI) Configuration:**
 

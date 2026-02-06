@@ -195,7 +195,6 @@ include:
   - local: docs/.gitlab-ci.yml
 
 variables:
-  OCUDU_REGISTRY_URI: ${CI_TEMPLATE_REGISTRY_HOST}/$[[ inputs.ocudu_path ]]
   RETINA_REGISTRY_URI: ${CI_REGISTRY_IMAGE}/retina
   AMARISOFT_VERSION: "2025-09-19"
   # SKIP_RETINA_CI: "true" # Define this variable to any value to skip retina ci/cd (here or in project settings)

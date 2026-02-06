@@ -50,6 +50,8 @@ e2e dynamic tests validation:
     name: ${RETINA_REGISTRY_URI}/launcher:latest
     entrypoint: ["/bin/sh", "-c"]
   rules:
+    - if: $ON_MR_FORK
+      when: never
     - if: $ON_MR
       changes:
         - retina/launcher/**/*
@@ -71,6 +73,8 @@ e2e request validation:
     name: ${RETINA_REGISTRY_URI}/launcher:latest
     entrypoint: ["/bin/sh", "-c"]
   rules:
+    - if: $ON_MR_FORK
+      when: never
     - if: $ON_MR
       changes:
         - retina/orchestrator/**/*

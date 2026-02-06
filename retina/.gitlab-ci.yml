@@ -61,11 +61,22 @@ warning:
           - *images_changes
           - *orchestrator_changes
           - *launcher_changes
+    - if: $ON_MR_FORK && $ON_MR
+      changes:
+        paths:
+          - *version_changes
+          - *protocol_changes
+          - *client_changes
+          - *viavi_changes
+          - *agent_changes
+          - *images_changes
+          - *orchestrator_changes
+          - *launcher_changes
   image: alpine:3
   allow_failure: true
   script:
     - |
-      echo "WARNING: Retina code has been modified but CI/CD is skipped for this pipeline as SKIP_RETINA_CI is set."
+      echo "WARNING: Retina code has been modified but CI/CD is skipped for this pipeline."
       exit 1
   needs: []
 
@@ -73,6 +84,8 @@ version changed:
   stage: static
   rules:
     - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
       when: never
     - if: $ON_MR
       changes:
@@ -96,6 +109,8 @@ viavi-client:
   stage: ci
   rules:
     - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
       when: never
     - if: $ON_MR
       changes:
@@ -121,6 +136,8 @@ protocol:
   rules:
     - if: $SKIP_RETINA_CI
       when: never
+    - if: $ON_MR_FORK
+      when: never
     - if: $ON_MR
       changes:
         paths:
@@ -144,6 +161,8 @@ client:
   stage: ci
   rules:
     - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
       when: never
     - if: $ON_MR
       changes:
@@ -174,6 +193,8 @@ agent:
   rules:
     - if: $SKIP_RETINA_CI
       when: never
+    - if: $ON_MR_FORK
+      when: never
     - if: $ON_MR
       changes:
         paths:
@@ -203,6 +224,8 @@ amarisoftue image:
   stage: ci
   rules:
     - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
       when: never
     - if: $ON_MR
       changes:
@@ -241,6 +264,8 @@ amarisoftue remote image:
   rules:
     - if: $SKIP_RETINA_CI
       when: never
+    - if: $ON_MR_FORK
+      when: never
     - if: $ON_MR
       changes:
         <<: *agent_container_changes
@@ -277,6 +302,8 @@ amarisoft5gc remote image:
   stage: ci
   rules:
     - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
       when: never
     - if: $ON_MR
       changes:
@@ -315,6 +342,8 @@ android image:
   rules:
     - if: $SKIP_RETINA_CI
       when: never
+    - if: $ON_MR_FORK
+      when: never
     - if: $ON_MR
       changes:
         <<: *agent_container_changes
@@ -351,6 +380,8 @@ open5gs image:
   stage: ci
   rules:
     - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
       when: never
     - if: $ON_MR
       changes:
@@ -390,6 +421,8 @@ ocudu image:
   rules:
     - if: $SKIP_RETINA_CI
       when: never
+    - if: $ON_MR_FORK
+      when: never
     - if: $ON_MR
       changes:
         <<: *agent_container_changes
@@ -426,6 +459,8 @@ ocudu remote image:
   stage: ci
   rules:
     - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
       when: never
     - if: $ON_MR
       changes:
@@ -464,6 +499,8 @@ srsue image:
   rules:
     - if: $SKIP_RETINA_CI
       when: never
+    - if: $ON_MR_FORK
+      when: never
     - if: $ON_MR
       changes:
         <<: *agent_container_changes
@@ -500,6 +537,8 @@ flexric image:
   stage: ci
   rules:
     - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
       when: never
     - if: $ON_MR
       changes:
@@ -538,6 +577,8 @@ ntn-channel-emulator image:
   rules:
     - if: $SKIP_RETINA_CI
       when: never
+    - if: $ON_MR_FORK
+      when: never
     - if: $NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY && $ON_MR
       changes:
         <<: *agent_container_changes
@@ -575,6 +616,8 @@ orchestrator:
   rules:
     - if: $SKIP_RETINA_CI
       when: never
+    - if: $ON_MR_FORK
+      when: never
     - if: $ON_MR
       changes:
         paths:
@@ -603,6 +646,8 @@ launcher:
   stage: ci
   rules:
     - if: $SKIP_RETINA_CI
+      when: never
+    - if: $ON_MR_FORK
       when: never
     - if: $ON_MR
       changes:
