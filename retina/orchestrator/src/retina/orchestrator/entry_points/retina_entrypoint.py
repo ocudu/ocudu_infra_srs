@@ -36,7 +36,7 @@ from retina.orchestrator.entry_points.show_resources_utils import show_resources
 from retina.orchestrator.entry_points.utils import check_user_name, set_default_colored_logger
 from retina.orchestrator.license_utils.license_utils import display_license_info
 from retina.orchestrator.reservation.managers import get_resources_in_cluster
-from retina.orchestrator.reservation.resources import ResourceType
+from retina.orchestrator.reservation.resources import ClusterResource, NodeResource
 from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.orchestrator.utils import get_retina_user
 
@@ -45,14 +45,7 @@ TIMEOUT = 20
 set_default_colored_logger()
 
 
-def get_resource_id(name: str, index: str) -> str:
-    """
-    Get the resource id.
-    """
-    return f"{name}:{index}"
-
-
-def get_list_of_resources(in_cluster=False) -> tuple[List[ResourceType], List[ResourceType], Dict[str, Node]]:
+def get_list_of_resources(in_cluster=False) -> tuple[List[NodeResource], List[ClusterResource], Dict[str, Node]]:
     """
     Get the list of resources.
 
@@ -71,8 +64,8 @@ def get_list_of_resources(in_cluster=False) -> tuple[List[ResourceType], List[Re
 
 def resource_is_in_cluster(
     resource_id: str,
-    node_resources: List[ResourceType],
-    cluster_resources: List[ResourceType],
+    node_resources: List[NodeResource],
+    cluster_resources: List[ClusterResource],
     retina_node_dict: Dict[str, Node],
 ) -> bool:
     """
@@ -80,13 +73,12 @@ def resource_is_in_cluster(
     """
     # cluster resource
     for resource in cluster_resources:
-        if get_resource_id(resource.name, resource.index) == resource_id:
+        if resource.get_full_name() == resource_id:
             return True
 
     # node resource
     for resource in node_resources:
-        expected_id = f"{resource.model}:{resource.space}"
-        if expected_id == resource_id:
+        if resource.get_full_name() == resource_id:
             return True
 
     # node
@@ -95,8 +87,8 @@ def resource_is_in_cluster(
 
 def check_if_resource_id_exists(
     resource_id_list: List[str],
-    node_resources: List[ResourceType],
-    cluster_resources: List[ResourceType],
+    node_resources: List[NodeResource],
+    cluster_resources: List[ClusterResource],
     retina_node_dict: Dict[str, Node],
 ) -> bool:
     """

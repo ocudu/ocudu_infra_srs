@@ -79,6 +79,13 @@ def main():
 
         req = yaml.load(target_content, Loader=yaml.FullLoader)
         validate(req, testbed_schema)
+        # Validate that there are no duplicate type+model combinations in cluster_resource_list
+        seen = set()
+        for resource in req.get("cluster_resource_list", []):
+            key = (resource["type"], resource["model"])
+            if key in seen:
+                raise ValueError(f"Duplicate type+model combination: {key}")
+            seen.add(key)
 
     if not dry_run:
         k_server = Kubernetes(is_incluster=in_cluster)

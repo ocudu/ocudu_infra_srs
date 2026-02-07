@@ -163,7 +163,7 @@ class Remote:  # pylint: disable=too-few-public-methods
 
     address: str
     user: str
-    password: str  # Secret
+    password: str
     path: str
 
 
@@ -202,7 +202,7 @@ class Ue:  # pylint: disable=too-few-public-methods
     k: str
     amf: str
     opc: str
-    adb_key: str  # Secret
+    adb_key: str
 
 
 @resource

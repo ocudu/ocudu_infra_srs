@@ -23,13 +23,10 @@ def reserve_cluster_resource(k_server: Kubernetes, username: str, resource_id: s
     """
     Reserve a resource.
     """
-    resouce_name = resource_id.split(":")[0]
-    resource_number = resource_id.split(":")[1]
 
     return reserve_cluster_resource_configmap(
         k_server=k_server,
-        name=resouce_name,
-        capacity_number=resource_number,
+        name=resource_id,
         orch_id="",
         user_name=username,
         timeout=timeout,
@@ -40,10 +37,8 @@ def release_cluster_resource(k_server: Kubernetes, resource_id: str) -> bool:
     """
     Release a resource.
     """
-    resouce_name = resource_id.split(":")[0]
-    resource_number = resource_id.split(":")[1]
 
-    return unlock_cluster_resource(k_server=k_server, name=resouce_name, capacity_number=resource_number)
+    return unlock_cluster_resource(k_server=k_server, name=resource_id)
 
 
 def reserve_resource_space(k_server: Kubernetes, space: int, user_name: str, timeout) -> bool:

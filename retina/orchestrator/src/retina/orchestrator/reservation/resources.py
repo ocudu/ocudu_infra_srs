@@ -87,24 +87,6 @@ class BinaryDefinition:
     is_optional: bool
 
 
-@dataclass
-class CpuIsolationDefinition:
-    """
-    CPU isolation definition
-    """
-
-    lcores_eal_args: str = ""
-
-
-@dataclass
-class NodeConfiguration:
-    """
-    Node configuration
-    """
-
-    cpu_isolation: Union[None, CpuIsolationDefinition]
-
-
 ################################################################################
 # Global resource
 ################################################################################
@@ -118,7 +100,7 @@ class Resource(ABC):
         self,
         type_r: str,
         model: str,
-        capacity: Optional[int] = None,
+        capacity: int = 1,
         retina_resource_type: Optional[RetinaResourceType] = None,
         connection: Optional[ConnectionType] = None,
     ):
@@ -163,16 +145,12 @@ class Resource(ABC):
         """
         Reserve resource
         """
-        # pylint: disable=unnecessary-pass
-        pass
 
     @abstractmethod
     def is_available(self, kubernetes: Kubernetes) -> bool:
         """
         Check if the resource is available
         """
-        # pylint: disable=unnecessary-pass
-        pass
 
 
 ################################################################################
@@ -187,9 +165,7 @@ class ClusterResource(Resource):
     def __init__(
         self,
         model: str,
-        name: Optional[str] = None,
-        index: Optional[int] = None,
-        capacity: Optional[int] = None,
+        capacity: int = 1,
         type_r: str = License.__name__,
         connection: Optional[ConnectionType] = None,
     ):
@@ -200,28 +176,26 @@ class ClusterResource(Resource):
             model=model,
             connection=connection,
         )
-        self.name = name
-        self.index = index
-
-    def is_available(self, kubernetes: Kubernetes) -> bool:
-        """
-        Check if the resource is available
-        """
-        if kubernetes.config_map_exists(get_cluster_resource_name(self.name, self.index)):
-            return False
-        return True
 
     def get_full_name(self) -> str:
         """
         Get full name
         """
-        return f"{self.name}:{self.index}"
+        return f"{self.type_r}-{self.model}".lower()
+
+    def is_available(self, kubernetes: Kubernetes) -> bool:
+        """
+        Check if the resource is available
+        """
+        if kubernetes.config_map_exists(get_cluster_resource_name(self.get_full_name())):
+            return False
+        return True
 
     def get_user_name(self, kubernetes: Kubernetes) -> str:
         """
         Get user name
         """
-        return kubernetes.get_config_map(get_cluster_resource_name(self.name, self.index)).data.get("user_name", "")
+        return kubernetes.get_config_map(get_cluster_resource_name(self.get_full_name())).data.get("user_name", "")
 
     def __eq__(self, value) -> bool:
         """
@@ -239,7 +213,7 @@ class ClusterResource(Resource):
         return False
 
     def __hash__(self):
-        return hash((self.type_r, self.model, str(self.capacity), self.connection, str(self.index)))
+        return hash((self.type_r, self.model, str(self.capacity), self.connection))
 
     def reserve(
         self, k_server: Kubernetes, num_of_retry: int, num_seconds_per_retry, orch_id: str, user_name: str, timeout: int
@@ -247,8 +221,6 @@ class ClusterResource(Resource):
         """
         Reserve resource
         """
-        if self.name is None or self.index is None:
-            raise RuntimeError("Resource name or index is None")
 
         if self.capacity is None or self.capacity <= 0:
             return True
@@ -256,8 +228,7 @@ class ClusterResource(Resource):
         for _ in range(0, num_of_retry):
             result = reserve_cluster_resource_configmap(
                 k_server=k_server,
-                name=self.name,
-                capacity_number=self.index,
+                name=self.get_full_name(),
                 orch_id=orch_id,
                 user_name=user_name,
                 timeout=timeout,
@@ -291,15 +262,11 @@ class ResourceLicense(ClusterResource):
     def __init__(
         self,
         model: str,
-        name: Optional[str] = None,
-        index: Optional[int] = None,
-        capacity: Optional[int] = None,
+        capacity: int = 1,
         ip_address: Optional[str] = None,
         args: Optional[str] = None,
     ):
         super().__init__(
-            name=name,
-            index=index,
             capacity=capacity,
             type_r=License.__name__,
             model=model,
@@ -310,9 +277,7 @@ class ResourceLicense(ClusterResource):
         self.args = args
 
     def __hash__(self):
-        return hash(
-            (self.type_r, self.model, str(self.capacity), self.args, self.connection, str(self.index), self.ip_address)
-        )
+        return hash((self.type_r, self.model, str(self.capacity), self.args, self.connection, self.ip_address))
 
     def get_resource_data(self) -> List:
         """
@@ -331,9 +296,7 @@ class ResourceEmulator(ClusterResource):
     def __init__(
         self,
         model: str,
-        name: Optional[str] = None,
-        index: Optional[int] = None,
-        capacity: Optional[int] = None,
+        capacity: int = 1,
         user: Optional[str] = None,
         password: Optional[str] = None,
         api_address: Optional[str] = None,
@@ -344,8 +307,6 @@ class ResourceEmulator(ClusterResource):
         tma_profile: Optional[str] = None,
     ):
         super().__init__(
-            name=name,
-            index=index,
             capacity=capacity,
             type_r=Remote.__name__,
             model=model,
@@ -363,7 +324,7 @@ class ResourceEmulator(ClusterResource):
         self.tma_profile = tma_profile
 
     def __hash__(self):
-        return hash((self.type_r, self.model, str(self.capacity), self.connection, str(self.index)))
+        return hash((self.type_r, self.model, str(self.capacity), self.connection))
 
     def get_resource_data(self) -> List:
         """
@@ -394,7 +355,7 @@ class NodeResource(Resource):
         self,
         type_r: str,
         model: str,
-        capacity: Optional[int] = None,
+        capacity: int = 1,
         connection: Optional[ConnectionType] = None,
         space: Optional[int] = None,
         node: Optional[Node] = None,
@@ -408,6 +369,12 @@ class NodeResource(Resource):
         )
         self.space = space
         self.node = node
+
+    def get_full_name(self) -> str:
+        """
+        Get full name
+        """
+        return f"{self.type_r}-{self.model}:{self.space}".lower()
 
     def is_available(self, kubernetes: Kubernetes) -> bool:
         """
@@ -481,7 +448,7 @@ class ResourceSDR(NodeResource):
     def __init__(
         self,
         model: str,
-        capacity: Optional[int] = None,
+        capacity: int = 1,
         space: Optional[int] = None,
         node: Optional[Node] = None,
         connection: Optional[ConnectionType] = None,
@@ -539,18 +506,18 @@ class ResourceRU(NodeResource):
     def __init__(
         self,
         model: str,
-        capacity: Optional[int] = None,
+        capacity: int = 1,
         space: Optional[int] = None,
         node: Optional[Node] = None,
         ip_address: Optional[str] = None,
-        ru_network_interface: Optional[List[str]] = None,
-        ru_du_mac_addr: Optional[List[str]] = None,
-        ru_ru_mac_addr: Optional[List[str]] = None,
-        ru_vlan_tag_up: Optional[List[str]] = None,
-        ru_vlan_tag_cp: Optional[List[str]] = None,
-        ru_prach_port_id: Optional[str] = None,
-        ru_dl_port_id: Optional[str] = None,
-        ru_ul_port_id: Optional[str] = None,
+        network_interface: Optional[List[str]] = None,
+        du_mac_addr: Optional[List[str]] = None,
+        ru_mac_addr: Optional[List[str]] = None,
+        vlan_tag_up: Optional[List[str]] = None,
+        vlan_tag_cp: Optional[List[str]] = None,
+        prach_port_id: Optional[str] = None,
+        dl_port_id: Optional[str] = None,
+        ul_port_id: Optional[str] = None,
     ):
         super().__init__(
             capacity=capacity,
@@ -561,14 +528,14 @@ class ResourceRU(NodeResource):
             node=node,
         )
         self.ip_address = ip_address
-        self.ru_network_interface = ru_network_interface
-        self.ru_du_mac_addr = ru_du_mac_addr
-        self.ru_ru_mac_addr = ru_ru_mac_addr
-        self.ru_vlan_tag_up = ru_vlan_tag_up
-        self.ru_vlan_tag_cp = ru_vlan_tag_cp
-        self.ru_prach_port_id = ru_prach_port_id
-        self.ru_dl_port_id = ru_dl_port_id
-        self.ru_ul_port_id = ru_ul_port_id
+        self.network_interface = network_interface
+        self.du_mac_addr = du_mac_addr
+        self.ru_mac_addr = ru_mac_addr
+        self.vlan_tag_up = vlan_tag_up
+        self.vlan_tag_cp = vlan_tag_cp
+        self.prach_port_id = prach_port_id
+        self.dl_port_id = dl_port_id
+        self.ul_port_id = ul_port_id
 
     def __hash__(self):
         return hash(
@@ -579,14 +546,14 @@ class ResourceRU(NodeResource):
                 self.connection,
                 str(self.space),
                 self.ip_address,
-                tuple(self.ru_network_interface) if self.ru_network_interface is not None else None,
-                tuple(self.ru_du_mac_addr) if self.ru_du_mac_addr is not None else None,
-                tuple(self.ru_ru_mac_addr) if self.ru_ru_mac_addr is not None else None,
-                tuple(self.ru_vlan_tag_up) if self.ru_vlan_tag_up is not None else None,
-                tuple(self.ru_vlan_tag_cp) if self.ru_vlan_tag_cp is not None else None,
-                self.ru_prach_port_id,
-                self.ru_dl_port_id,
-                self.ru_ul_port_id,
+                tuple(self.network_interface) if self.network_interface is not None else None,
+                tuple(self.du_mac_addr) if self.du_mac_addr is not None else None,
+                tuple(self.ru_mac_addr) if self.ru_mac_addr is not None else None,
+                tuple(self.vlan_tag_up) if self.vlan_tag_up is not None else None,
+                tuple(self.vlan_tag_cp) if self.vlan_tag_cp is not None else None,
+                self.prach_port_id,
+                self.dl_port_id,
+                self.ul_port_id,
             )
         )
 
@@ -598,14 +565,14 @@ class ResourceRU(NodeResource):
             Ru(
                 model=self.model,
                 address=self.ip_address,
-                network_interface=self.ru_network_interface,
-                ru_mac_address=self.ru_ru_mac_addr,
-                du_mac_address=self.ru_du_mac_addr,
-                vlan_tag_up=self.ru_vlan_tag_up,
-                vlan_tag_cp=self.ru_vlan_tag_cp,
-                prach_port_id=self.ru_prach_port_id,
-                dl_port_id=self.ru_dl_port_id,
-                ul_port_id=self.ru_ul_port_id,
+                network_interface=self.network_interface,
+                ru_mac_address=self.ru_mac_addr,
+                du_mac_address=self.du_mac_addr,
+                vlan_tag_up=self.vlan_tag_up,
+                vlan_tag_cp=self.vlan_tag_cp,
+                prach_port_id=self.prach_port_id,
+                dl_port_id=self.dl_port_id,
+                ul_port_id=self.ul_port_id,
             )
         ]
 
@@ -620,7 +587,7 @@ class ResourceAccelerator(NodeResource):
     def __init__(
         self,
         model: str,
-        capacity: Optional[int] = None,
+        capacity: int = 1,
         space: Optional[int] = None,
         node: Optional[Node] = None,
         hwacc_type: Optional[str] = None,
@@ -679,7 +646,7 @@ class ResourceAndroid(NodeResource):
     def __init__(
         self,
         model: str,
-        capacity: Optional[int] = None,
+        capacity: int = 1,
         space: Optional[int] = None,
         node: Optional[Node] = None,
         connection: Optional[ConnectionType] = None,
@@ -692,7 +659,7 @@ class ResourceAndroid(NodeResource):
     ):
         super().__init__(
             capacity=capacity,
-            type_r=Ue.__name__,
+            type_r="android",
             model=model,
             connection=connection,
             space=space,
@@ -735,13 +702,14 @@ class ResourceZmq(NodeResource):
     # pylint: disable=too-many-arguments
     def __init__(
         self,
-        model: str = "zmq",
-        capacity: Optional[int] = 1,
+        model: str,
+        capacity: int = 1,
         space: Optional[int] = None,
         node: Optional[Node] = None,
-        connection: Optional[ConnectionType] = None,
     ):
-        super().__init__(capacity=capacity, type_r="zmq", node=node, connection=connection, space=space, model=model)
+        super().__init__(
+            capacity=capacity, type_r="zmq", node=node, connection=ConnectionType.NETWORK, space=space, model=model
+        )
 
 
 ################################################################################
@@ -888,14 +856,8 @@ class RequestReservation:
         Get enable usb connection
         """
         for resource in self.reserved_resources.get_resources():
-            if (
-                not resource.is_cluster_resource()
-                and not resource.is_zmq_resource()
-                and resource.capacity is not None
-                and resource.capacity > 0
-            ):
-                if resource.connection == ConnectionType.USB:
-                    return True
+            if resource.capacity > 0 and resource.connection == ConnectionType.USB:
+                return True
         return False
 
     def get_enable_pci_connection(self) -> bool:
@@ -903,14 +865,8 @@ class RequestReservation:
         Get enable pci connection
         """
         for resource in self.reserved_resources.get_resources():
-            if (
-                not resource.is_cluster_resource()
-                and not resource.is_zmq_resource()
-                and resource.capacity is not None
-                and resource.capacity > 0
-            ):
-                if resource.connection == ConnectionType.PCI:
-                    return True
+            if resource.capacity > 0 and resource.connection == ConnectionType.PCI:
+                return True
         return False
 
     def get_enable_network_connection(self) -> str:
@@ -919,15 +875,8 @@ class RequestReservation:
         """
         if self.enable_host_network_force:
             return self.enable_host_network_force
-        for resource in self.reserved_resources.get_resources():
-            if (
-                not resource.is_cluster_resource()
-                and not resource.is_zmq_resource()
-                and resource.capacity is not None
-                and resource.capacity > 0
-            ):
-                if resource.connection in [ConnectionType.NETWORK, ConnectionType.PCI]:
-                    return "InternalIP"
+        if self.get_enable_usb_connection() or self.get_enable_pci_connection():
+            return "InternalIP"
         return ""
 
     def get_node_name(self, k_server: Kubernetes) -> str:
@@ -936,12 +885,15 @@ class RequestReservation:
         """
         return self._get_node(k_server=k_server).name
 
-    def get_node_configuration(self, k_server: Kubernetes) -> NodeConfiguration:
+    def get_node_configuration(self, k_server: Kubernetes) -> str:
         """
         Get node configuration
         """
-        cpu_isolation = get_cpu_isolation_for_node_from_cluster_info(k_server, self.get_node_name(k_server=k_server))
-        return NodeConfiguration(cpu_isolation=cpu_isolation)
+        node_name = self.get_node_name(k_server=k_server)
+        for node in k_server.get_cluster_configuration()["nodes"]:
+            if node["name"] == node_name and "cpu_isolation" in node:
+                return node["cpu_isolation"].get("lcores_eal_args", "")
+        return ""
 
     def _get_node(self, k_server: Kubernetes) -> Node:
         if self._node is None:
@@ -1101,137 +1053,100 @@ def get_resource_from_cluster_info(cluster_info, node_dict: Dict[str, Node]) -> 
 
     cluster_resources = cluster_info["cluster_resource_list"]
     for resource in cluster_resources:
-        for i in range(0, resource["capacity"]):
-            name = f"{resource['name']}"
-            capacity = 1
-            if resource["type"] == "license":
-                resource_obj_i = ResourceLicense(
-                    name=name,
-                    index=i,
-                    capacity=capacity,
-                    model=resource["model"],
-                    ip_address=resource["ip"],
-                    args=resource["args"],
-                )
-                resource_list.add_resource(resource_obj_i)
-            if resource["type"] == "emulator":
-                resource_obj_j = ResourceEmulator(
-                    name=name,
-                    index=i,
-                    capacity=capacity,
-                    model=resource["model"],
-                    user=resource["user"],
-                    password=resource["password"],
-                    api_address=resource["api_address"],
-                    api_port=resource["api_port"],
-                    amf_address=resource.get("amf_address", None),
-                    amf_port=resource.get("amf_port", None),
-                    tma_path=resource.get("tma_path", None),
-                    tma_profile=resource.get("tma_profile", None),
-                )
-                resource_list.add_resource(resource_obj_j)
+        if resource["type"] == "license":
+            resource_obj_i = ResourceLicense(
+                model=resource["model"],
+                ip_address=resource["address"],
+                args=resource["args"],
+            )
+            resource_list.add_resource(resource_obj_i)
+        if resource["type"] == "emulator":
+            resource_obj_j = ResourceEmulator(
+                model=resource["model"],
+                user=resource["user"],
+                password=resource["password"],
+                api_address=resource["api_address"],
+                api_port=resource["api_port"],
+                amf_address=resource.get("amf_address", None),
+                amf_port=resource.get("amf_port", None),
+                tma_path=resource.get("tma_path", None),
+                tma_profile=resource.get("tma_profile", None),
+            )
+            resource_list.add_resource(resource_obj_j)
 
     for node in cluster_info["nodes"]:
-        for resource in node.get("resources", tuple()):
-            capacity = 1
-            for _ in range(0, resource["capacity"]):
-                node_name = node["name"]
-                node_in_cluster = node_dict.get(node_name, None)
-                if node_in_cluster is not None:
-                    if resource["type"] == "sdr":
-                        resource_list.add_resource(
-                            ResourceSDR(
-                                capacity=capacity,
-                                model=resource["model"],
-                                space=resource["space"],
-                                node=node_in_cluster,
-                                connection=ConnectionType[resource["connection"].upper()],
-                                args=resource["metadata"]["args"],
-                                sample_rate=resource["metadata"]["sample_rate"],
-                                tx_gain=resource["metadata"]["tx_gain"],
-                                rx_gain=resource["metadata"]["rx_gain"],
-                                sync=resource["metadata"]["sync"],
-                            )
+        node_name = node["name"]
+        node_in_cluster = node_dict.get(node_name, None)
+        if node_in_cluster is not None:
+            for resource in node.get("resources", tuple()):
+                if resource["type"] == "sdr":
+                    resource_list.add_resource(
+                        ResourceSDR(
+                            model=resource["model"],
+                            space=resource["space"],
+                            node=node_in_cluster,
+                            connection=ConnectionType[resource["connection"].upper()],
+                            args=resource["args"],
+                            sample_rate=resource["sample_rate"],
+                            tx_gain=resource["tx_gain"],
+                            rx_gain=resource["rx_gain"],
+                            sync=resource["sync"],
                         )
-                    elif resource["type"] == "android":
-                        resource_list.add_resource(
-                            ResourceAndroid(
-                                capacity=capacity,
-                                model=resource["model"],
-                                space=resource["space"],
-                                node=node_in_cluster,
-                                connection=ConnectionType[resource["connection"].upper()],
-                                serial_id=resource["metadata"]["serial_id"],
-                                imsi=resource["metadata"]["imsi"],
-                                k=resource["metadata"]["k"],
-                                amf=resource["metadata"]["amf"],
-                                opc=resource["metadata"]["opc"],
-                                adb_key=resource["metadata"]["adb_key"],
-                            )
+                    )
+                elif resource["type"] == "android":
+                    resource_list.add_resource(
+                        ResourceAndroid(
+                            model=resource["model"],
+                            space=resource["space"],
+                            node=node_in_cluster,
+                            connection=ConnectionType[resource["connection"].upper()],
+                            serial_id=resource["serial_id"],
+                            imsi=resource["imsi"],
+                            k=resource["k"],
+                            amf=resource["amf"],
+                            opc=resource["opc"],
+                            adb_key=resource["adb_key"],
                         )
-                    elif resource["type"] == "ru":
-                        resource_list.add_resource(
-                            ResourceRU(
-                                capacity=capacity,
-                                model=resource["model"],
-                                space=resource["space"],
-                                node=node_in_cluster,
-                                ip_address=resource["ip"],
-                                ru_network_interface=resource["ru_network_interface"],
-                                ru_du_mac_addr=resource["ru_du_mac_addr"],
-                                ru_ru_mac_addr=resource["ru_ru_mac_addr"],
-                                ru_vlan_tag_up=resource["ru_vlan_tag_up"],
-                                ru_vlan_tag_cp=resource["ru_vlan_tag_cp"],
-                                ru_prach_port_id=resource["ru_prach_port_id"],
-                                ru_dl_port_id=resource["ru_dl_port_id"],
-                                ru_ul_port_id=resource["ru_ul_port_id"],
-                            )
+                    )
+                elif resource["type"] == "ru":
+                    resource_list.add_resource(
+                        ResourceRU(
+                            model=resource["model"],
+                            space=resource["space"],
+                            node=node_in_cluster,
+                            ip_address=resource["address"],
+                            network_interface=resource["network_interface"],
+                            du_mac_addr=resource["du_mac_addr"],
+                            ru_mac_addr=resource["ru_mac_addr"],
+                            vlan_tag_up=resource["vlan_tag_up"],
+                            vlan_tag_cp=resource["vlan_tag_cp"],
+                            prach_port_id=resource["prach_port_id"],
+                            dl_port_id=resource["dl_port_id"],
+                            ul_port_id=resource["ul_port_id"],
                         )
+                    )
 
-                    elif resource["type"] == "accelerator":
-                        resource_list.add_resource(
-                            ResourceAccelerator(
-                                capacity=capacity,
-                                model=resource["model"],
-                                space=resource["space"],
-                                node=node_in_cluster,
-                                hwacc_type=resource["hwacc_type"],
-                                accelerator_id=resource["accelerator_id"],
-                                pdsch_enc_nof_hwacc=resource["pdsch_enc_nof_hwacc"],
-                                cb_mode=resource["cb_mode"],
-                                pusch_dec_nof_hwacc=resource["pusch_dec_nof_hwacc"],
-                                harq_context_size=resource["harq_context_size"],
-                                extra_eal_args=resource.get("extra_eal_args", ""),
-                            )
+                elif resource["type"] == "accelerator":
+                    resource_list.add_resource(
+                        ResourceAccelerator(
+                            model=resource["model"],
+                            space=resource["space"],
+                            node=node_in_cluster,
+                            hwacc_type=resource["hwacc_type"],
+                            accelerator_id=resource["accelerator_id"],
+                            pdsch_enc_nof_hwacc=resource["pdsch_enc_nof_hwacc"],
+                            cb_mode=resource["cb_mode"],
+                            pusch_dec_nof_hwacc=resource["pusch_dec_nof_hwacc"],
+                            harq_context_size=resource["harq_context_size"],
+                            extra_eal_args=resource.get("extra_eal_args", ""),
                         )
+                    )
 
-                    elif resource["type"] == "zmq":
-                        resource_list.add_resource(
-                            ResourceZmq(
-                                capacity=capacity,
-                                model=resource.get("model", None),
-                                space=resource.get("space", None),
-                                node=node_in_cluster,
-                                connection=ConnectionType[
-                                    resource.get("connection", ConnectionType.NETWORK.name).upper()
-                                ],
-                            )
-                        )
+                elif resource["type"] == "zmq":
+                    resource_list.add_resource(
+                        ResourceZmq(model=resource["model"], space=resource["space"], node=node_in_cluster)
+                    )
     return resource_list
-
-
-def get_cpu_isolation_for_node_from_cluster_info(
-    k_server: Kubernetes, node_name: str
-) -> Optional[CpuIsolationDefinition]:
-    """
-    Get cpu isolation for node
-    """
-    for node in k_server.get_cluster_configuration()["nodes"]:
-        if node["name"] == node_name and "cpu_isolation" in node:
-            return CpuIsolationDefinition(
-                lcores_eal_args=node["cpu_isolation"].get("lcores_eal_args", ""),
-            )
-    return None
 
 
 def get_compute_resources_for_node_from_cluster_info(

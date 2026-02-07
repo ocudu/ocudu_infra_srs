@@ -26,7 +26,7 @@ from retina.orchestrator.utils import get_current_time
 
 # pylint: disable=too-many-arguments, disable=too-many-positional-arguments
 def reserve_cluster_resource_configmap(
-    k_server: Kubernetes, name: str, capacity_number: int, orch_id: str, user_name: str, timeout: int
+    k_server: Kubernetes, name: str, orch_id: str, user_name: str, timeout: int
 ) -> bool:
     """
     Reserver cluster resource with configmap
@@ -37,7 +37,7 @@ def reserve_cluster_resource_configmap(
         user_name=user_name,
         timeout=timeout,
         data=data,
-        name=get_cluster_resource_name(name, capacity_number),
+        name=get_cluster_resource_name(name),
     )
 
     response = k_server.create_config_map(config_map_config)
@@ -47,11 +47,11 @@ def reserve_cluster_resource_configmap(
     return result
 
 
-def unlock_cluster_resource(k_server: Kubernetes, name: str, capacity_number: int) -> bool:
+def unlock_cluster_resource(k_server: Kubernetes, name: str) -> bool:
     """
     Unlock cluster resource
     """
-    config_map_name = get_cluster_resource_name(name, capacity_number)
+    config_map_name = get_cluster_resource_name(name)
     response = k_server.delete_config_map(config_map_name)
     result = False
     if response == ErrorCode.OK:
@@ -59,11 +59,11 @@ def unlock_cluster_resource(k_server: Kubernetes, name: str, capacity_number: in
     return result
 
 
-def get_cluster_resource_name(name: str, capacity_number: int):
+def get_cluster_resource_name(name: str):
     """
     Get cluster resource name for configmap
     """
-    return f"{const.CLUSTER_RESOURCE_SPACE_PREFIX}-{name}-{str(capacity_number)}"
+    return f"{const.CLUSTER_RESOURCE_SPACE_PREFIX}-{name}"
 
 
 def get_space_name(space):
@@ -192,13 +192,12 @@ def check_space_user_reservation(k_server: Kubernetes, space: int):
 def check_cluster_resource_user_reservation(
     k_server: Kubernetes,
     resource_name: str,
-    capacity_number: int,
 ):
     """
     Get user name cluster resource reservation
     """
     try:
-        configmap_data = k_server.get_config_map(get_cluster_resource_name(resource_name, capacity_number)).data
+        configmap_data = k_server.get_config_map(get_cluster_resource_name(resource_name)).data
         user_name = configmap_data["user_name"]  # type: ignore
         return user_name
     except Exception:  # pylint: disable=broad-except

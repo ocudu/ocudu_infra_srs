@@ -11,7 +11,7 @@ Entrypoint to show cluster resources.
 """
 
 import contextlib
-from typing import Dict
+from typing import Dict, List
 
 from rich.console import Console
 from rich.table import Table
@@ -25,7 +25,7 @@ from retina.orchestrator.entry_points.utils import (
     set_default_colored_logger,
 )
 from retina.orchestrator.reservation.managers import get_resources_in_cluster
-from retina.orchestrator.reservation.resources import ResourceType
+from retina.orchestrator.reservation.resources import ClusterResource, NodeResource
 from retina.orchestrator.reservation.utils import check_cluster_resource_user_reservation, check_space_user_reservation
 from retina.orchestrator.retina_kubernetes import DEFAULT_NAMESPACE, Kubernetes, PodStatus
 
@@ -72,7 +72,7 @@ def print_info(cluster_info, verbose):
     console.print(table)
 
 
-def print_cluster_resources(cluster_resource_list: ResourceType, k_server: Kubernetes):
+def print_cluster_resources(cluster_resource_list: List[ClusterResource], k_server: Kubernetes):
     """
     Print resource table
     """
@@ -84,13 +84,11 @@ def print_cluster_resources(cluster_resource_list: ResourceType, k_server: Kuber
     table.add_column("Resource model", style="magenta")
 
     for resource in cluster_resource_list:
-        name = f"{resource.name}:{resource.index}"
         resource_type = resource.type_r
         resource_model = resource.model
+        name = resource.get_full_name()
 
-        resource_reservation_user = check_cluster_resource_user_reservation(
-            k_server=k_server, resource_name=resource.name, capacity_number=resource.index
-        )
+        resource_reservation_user = check_cluster_resource_user_reservation(k_server=k_server, resource_name=name)
         table.add_row(
             name,
             resource_reservation_user,
@@ -102,7 +100,7 @@ def print_cluster_resources(cluster_resource_list: ResourceType, k_server: Kuber
     console.print(table)
 
 
-def print_node_resources(resource_list, k_server: Kubernetes):
+def print_node_resources(resource_list: List[NodeResource], k_server: Kubernetes):
     """
     Print resource table
     """
@@ -122,10 +120,9 @@ def print_node_resources(resource_list, k_server: Kubernetes):
             arguments = ""
 
         resource_space = str(resource.space)
-        resource_id = f"{resource.model}:{resource_space}"
         resource_reservation_user = check_space_user_reservation(k_server=k_server, space=resource.space)
         table.add_row(
-            resource_id,
+            resource.get_full_name(),
             node_name,
             str(resource_reservation_user),
             resource_space,

@@ -398,15 +398,10 @@ class OrchestratorManager:
         ########################################################################
         # Create configmap RS
         ########################################################################
-        node_configuration = request_reservation.get_node_configuration(self.k_server)
         node_resource = Node(
             use_node_ip=force_external_ip,
             port_array=list(extra_ports_number_array),
-            lcores_eal=(
-                node_configuration.cpu_isolation.lcores_eal_args
-                if node_configuration is not None and node_configuration.cpu_isolation is not None
-                else ""
-            ),
+            lcores_eal=request_reservation.get_node_configuration(self.k_server),
         )
         create_resource_data_configmap(
             k_server=self.k_server,

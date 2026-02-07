@@ -1,145 +1,351 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "properties": {
-      "global": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "networking-mode": {
-            "type": "string"
-          },
-          "version": {
-            "type": "string"
-          },
-          "dnsPolicy": {
-            "type": "string",
-            "enum": ["Default", "ClusterFirst", "ClusterFirstWithHostNet", "None"]
-          }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
         },
-        "required": ["name", "networking-mode", "version"]
-      },
-      "cluster_resource_list": {
-        "type": "array",
-        "items": {
-          "$ref": "#/definitions/cluster_resource"
+        "networking-mode": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "dnsPolicy": {
+          "type": "string",
+          "enum": [
+            "Default",
+            "ClusterFirst",
+            "ClusterFirstWithHostNet",
+            "None"
+          ]
         }
       },
-      "nodes": {
-        "type": "array",
-        "items": {
-          "$ref": "#/definitions/node"
-        }
-      }
+      "required": [
+        "name",
+        "networking-mode",
+        "version"
+      ]
     },
-    "required": ["global", "cluster_resource_list", "nodes"],
-    "definitions": {
-      "node_resource": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string"
-          },
-          "model": {
-            "type": "string"
-          },
-          "capacity": {
-            "type": "integer"
-          },
-          "space": {
-            "type": "integer"
-          }
-        },
-        "required": ["type", "model", "capacity", "space"]
+    "cluster_resource_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/cluster_resource"
       },
-      "cluster_resource": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string"
-          },
-          "model": {
-            "type": "string"
-          },
-          "capacity": {
-            "type": "integer"
-          }
+      "description": "List of cluster resources. Each combination of 'type' and 'model' must be unique across all items."
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/node"
+      }
+    }
+  },
+  "required": [
+    "global",
+    "cluster_resource_list",
+    "nodes"
+  ],
+  "definitions": {
+    "cluster_resource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
         },
-        "required": ["name", "type", "model", "capacity"]
-      },
-      "node": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "compute-resources": {
-            "type": "object",
-            "properties": {
-              "cpu": {
-                "type": "integer"
-              },
-              "memory": {
-                "type": "string"
-              },
-              "ephemeral-storage": {
-                "type": "string"
-              },
-              "hugepages-1Gi": {
-                "type": "string"
-              }
-            }
-          },
-          "model": {
-            "type": "string"
-          },
-          "cpu_isolation": {
-            "$ref": "#/definitions/cpu_isolation"
-          },
-          "runner_list": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/runner_definition"
-            }
-          },
-          "resources": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/node_resource"
-              }
-          }
-        },
-        "required": ["name", "type", "compute-resources"]
-      },
-      "cpu_isolation": {
-        "type": "object",
-        "properties": {
-          "lcores_eal_args": {
-            "type": "string"
-          }
+        "model": {
+          "type": "string"
         }
       },
-      "runner_definition": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "disable_when": {
-            "type": "array",
-            "items": {
+      "required": [
+        "type",
+        "model"
+      ]
+    },
+    "node": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "compute-resources": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "integer"
+            },
+            "memory": {
+              "type": "string"
+            },
+            "ephemeral-storage": {
+              "type": "string"
+            },
+            "hugepages-1Gi": {
               "type": "string"
             }
           }
         },
-        "required": ["id"],
-        "additionalProperties": true
+        "model": {
+          "type": "string"
+        },
+        "cpu_isolation": {
+          "$ref": "#/definitions/cpu_isolation"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/node_resource"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "compute-resources"
+      ]
+    },
+    "cpu_isolation": {
+      "type": "object",
+      "properties": {
+        "lcores_eal_args": {
+          "type": "string"
+        }
       }
+    },
+    "node_resource": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/android_resource"
+        },
+        {
+          "$ref": "#/definitions/sdr_resource"
+        },
+        {
+          "$ref": "#/definitions/ru_resource"
+        },
+        {
+          "$ref": "#/definitions/accelerator_resource"
+        }
+      ]
+    },
+    "android_resource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "android"
+        },
+        "model": {
+          "type": "string"
+        },
+        "space": {
+          "type": "integer"
+        },
+        "serial_id": {
+          "type": "string"
+        },
+        "imsi": {
+          "type": "string"
+        },
+        "k": {
+          "type": "string"
+        },
+        "amf": {
+          "type": "string"
+        },
+        "opc": {
+          "type": "string"
+        },
+        "adb_key": {
+          "type": "string"
+        },
+        "connection": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "model",
+        "space",
+        "serial_id",
+        "imsi",
+        "k",
+        "amf",
+        "opc",
+        "adb_key"
+      ],
+      "additionalProperties": false
+    },
+    "sdr_resource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "sdr"
+        },
+        "model": {
+          "type": "string"
+        },
+        "space": {
+          "type": "integer"
+        },
+        "args": {
+          "type": "string"
+        },
+        "sample_rate": {
+          "type": "integer"
+        },
+        "tx_gain": {
+          "type": "integer"
+        },
+        "rx_gain": {
+          "type": "integer"
+        },
+        "sync": {
+          "type": "string"
+        },
+        "connection": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "model",
+        "space",
+        "args",
+        "sample_rate",
+        "tx_gain",
+        "rx_gain",
+        "sync"
+      ],
+      "additionalProperties": false
+    },
+    "ru_resource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "ru"
+        },
+        "model": {
+          "type": "string"
+        },
+        "space": {
+          "type": "integer"
+        },
+        "address": {
+          "type": "string"
+        },
+        "network_interface": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ru_mac_address": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "du_mac_address": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vlan_tag_up": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vlan_tag_cp": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prach_port_id": {
+          "type": "string"
+        },
+        "dl_port_id": {
+          "type": "string"
+        },
+        "ul_port_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "model",
+        "space",
+        "address",
+        "network_interface",
+        "ru_mac_address",
+        "du_mac_address",
+        "vlan_tag_up",
+        "vlan_tag_cp",
+        "prach_port_id",
+        "dl_port_id",
+        "ul_port_id"
+      ],
+      "additionalProperties": false
+    },
+    "accelerator_resource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "accelerator"
+        },
+        "model": {
+          "type": "string"
+        },
+        "space": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "cb_mode": {
+          "type": "boolean"
+        },
+        "hwacc_type": {
+          "type": "string"
+        },
+        "pdsch_enc_nof_hwacc": {
+          "type": "integer"
+        },
+        "pusch_dec_nof_hwacc": {
+          "type": "integer"
+        },
+        "harq_context_size": {
+          "type": "integer"
+        },
+        "args": {
+          "type": "string"
+        },
+        "connection": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "model",
+        "space",
+        "id",
+        "cb_mode",
+        "hwacc_type",
+        "pdsch_enc_nof_hwacc",
+        "pusch_dec_nof_hwacc",
+        "harq_context_size",
+        "args"
+      ],
+      "additionalProperties": false
     }
   }
-  
+}
