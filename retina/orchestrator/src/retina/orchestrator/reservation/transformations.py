@@ -23,7 +23,7 @@ def get_cluster_resources(resource_list: rs.ResourceList) -> rs.ResourceList:
     """
     Get cluster resources
     """
-    new_list = [r for r in resource_list.get_resources() if r.is_cluster_resource()]
+    new_list = [r for r in resource_list.get_resources() if isinstance(r, rs.ClusterResource)]
     return rs.ResourceList(new_list)
 
 
@@ -31,7 +31,7 @@ def get_node_resources(resource_list: rs.ResourceList) -> rs.ResourceList:
     """
     Get node resources
     """
-    new_list = [r for r in resource_list.get_resources() if not r.is_cluster_resource()]
+    new_list = [r for r in resource_list.get_resources() if isinstance(r, rs.NodeResource)]
     return rs.ResourceList(new_list)
 
 
@@ -68,7 +68,7 @@ def get_match_resources(
         matching_resource_dict[index] = []  # List of resources matching this resource_input
         for resource_complete in complete_resource_list.get_resources():
             if resource_input == resource_complete and resource_complete.get_id() is None:
-                if resource_input.is_cluster_resource() or resource_input.node is None:
+                if isinstance(resource_input, rs.ClusterResource) or resource_input.node is None:
                     matching_resource_dict[index].append(resource_complete)
                 else:
                     configured_taints = tuple(sorted(resource_input.node.get_taint_list_as_string()))

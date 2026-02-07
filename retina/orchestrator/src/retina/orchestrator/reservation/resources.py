@@ -56,15 +56,6 @@ from retina.orchestrator.retina_kubernetes import Kubernetes
 ################################################################################
 
 
-class RetinaResourceType(Enum):
-    """
-    Retina resource group
-    """
-
-    NODE = "nodeResource"
-    CLUSTER = "clusterResource"
-
-
 class ConnectionType(Enum):
     """
     Connection type
@@ -90,7 +81,7 @@ class BinaryDefinition:
 ################################################################################
 # Global resource
 ################################################################################
-class Resource(ABC):
+class ResourceType(ABC):
     """
     Resource manager
     """
@@ -101,11 +92,9 @@ class Resource(ABC):
         type_r: str,
         model: str,
         capacity: int = 1,
-        retina_resource_type: Optional[RetinaResourceType] = None,
         connection: Optional[ConnectionType] = None,
     ):
         self.capacity = capacity
-        self.retina_resource_type = retina_resource_type
         self.type_r = type_r
         self.model = model
         self.connection = connection
@@ -122,18 +111,6 @@ class Resource(ABC):
         Get id_name
         """
         return self.id_name
-
-    def is_cluster_resource(self):
-        """
-        Returns true if the resource is a cluster resource
-        """
-        return self.retina_resource_type == RetinaResourceType.CLUSTER
-
-    def is_zmq_resource(self):
-        """
-        Returns true if the resource is a zmq resource
-        """
-        return self.type_r == "zmq"
 
     def __contains__(self, element):
         return self.__eq__(element)
@@ -152,11 +129,17 @@ class Resource(ABC):
         Check if the resource is available
         """
 
+    @abstractmethod
+    def get_resource_data(self) -> List:
+        """
+        Get resource data
+        """
+
 
 ################################################################################
 # Cluster resource
 ################################################################################
-class ClusterResource(Resource):
+class ClusterResource(ResourceType):
     """
     Cluster resource manager
     """
@@ -171,7 +154,6 @@ class ClusterResource(Resource):
     ):
         super().__init__(
             capacity=capacity,
-            retina_resource_type=RetinaResourceType.CLUSTER,
             type_r=type_r,
             model=model,
             connection=connection,
@@ -202,11 +184,7 @@ class ClusterResource(Resource):
         Equal
         """
         try:
-            if (
-                self.retina_resource_type == value.retina_resource_type
-                and self.type_r == value.type_r
-                and re.match(f"^{self.model}$", value.model) is not None
-            ):
+            if self.type_r == value.type_r and re.match(f"^{self.model}$", value.model) is not None:
                 return True
         except AttributeError:
             return False
@@ -246,12 +224,6 @@ class ClusterResource(Resource):
                 )
         return False
 
-    def get_resource_data(self) -> List:
-        """
-        Get resource data
-        """
-        return []
-
 
 class ResourceLicense(ClusterResource):
     """
@@ -277,7 +249,7 @@ class ResourceLicense(ClusterResource):
         self.args = args
 
     def __hash__(self):
-        return hash((self.type_r, self.model, str(self.capacity), self.args, self.connection, self.ip_address))
+        return hash((self.type_r, self.model, str(self.capacity), self.connection, self.ip_address, self.args))
 
     def get_resource_data(self) -> List:
         """
@@ -403,7 +375,7 @@ class ResourceCore(ClusterResource):
 ################################################################################
 # Cluster resource
 ################################################################################
-class NodeResource(Resource):
+class NodeResource(ResourceType):
     """
     Node resource manager
     """
@@ -420,7 +392,6 @@ class NodeResource(Resource):
     ):
         super().__init__(
             capacity=capacity,
-            retina_resource_type=RetinaResourceType.NODE,
             type_r=type_r,
             model=model,
             connection=connection,
@@ -454,11 +425,7 @@ class NodeResource(Resource):
 
     def __eq__(self, value) -> bool:
         try:
-            if (
-                self.retina_resource_type == value.retina_resource_type
-                and self.type_r == value.type_r
-                and re.match(f"^{self.model}$", value.model) is not None
-            ):
+            if self.type_r == value.type_r and re.match(f"^{self.model}$", value.model) is not None:
                 return True
         except AttributeError:
             return False
@@ -489,12 +456,6 @@ class NodeResource(Resource):
                 return True
             sleep(num_seconds_per_retry)
         return False
-
-    def get_resource_data(self) -> List:
-        """
-        Get resource data
-        """
-        return []
 
 
 class ResourceSDR(NodeResource):
@@ -770,15 +731,16 @@ class ResourceZmq(NodeResource):
             capacity=capacity, type_r="zmq", node=node, connection=ConnectionType.NETWORK, space=space, model=model
         )
 
+    def get_resource_data(self) -> List:
+        """
+        Get resource data
+        """
+        return []
+
 
 ################################################################################
 # Common
 ################################################################################
-ResourceType = Union[
-    ResourceLicense, ResourceSDR, ResourceAndroid, ResourceZmq, ResourceRU, ResourceEmulator, ResourceAccelerator
-]
-
-
 class ResourceList:
     """
     Resource list
@@ -915,7 +877,12 @@ class RequestReservation:
         Get enable usb connection
         """
         for resource in self.reserved_resources.get_resources():
-            if resource.capacity > 0 and resource.connection == ConnectionType.USB:
+            if (
+                isinstance(resource, NodeResource)
+                and not isinstance(resource, ResourceZmq)
+                and resource.capacity > 0
+                and resource.connection == ConnectionType.USB
+            ):
                 return True
         return False
 
@@ -924,7 +891,12 @@ class RequestReservation:
         Get enable pci connection
         """
         for resource in self.reserved_resources.get_resources():
-            if resource.capacity > 0 and resource.connection == ConnectionType.PCI:
+            if (
+                isinstance(resource, NodeResource)
+                and not isinstance(resource, ResourceZmq)
+                and resource.capacity > 0
+                and resource.connection == ConnectionType.PCI
+            ):
                 return True
         return False
 
@@ -934,8 +906,14 @@ class RequestReservation:
         """
         if self.enable_host_network_force:
             return self.enable_host_network_force
-        if self.get_enable_usb_connection() or self.get_enable_pci_connection():
-            return "InternalIP"
+        for resource in self.reserved_resources.get_resources():
+            if (
+                isinstance(resource, NodeResource)
+                and not isinstance(resource, ResourceZmq)
+                and resource.capacity > 0
+                and resource.connection in [ConnectionType.NETWORK, ConnectionType.PCI]
+            ):
+                return "InternalIP"
         return ""
 
     def get_node_name(self, k_server: Kubernetes) -> str:
@@ -973,14 +951,14 @@ class RequestReservation:
                 if node_name in node_dict:
                     return node_dict[node_name]
 
-        reserved_node_resources = [r for r in self.reserved_resources.get_resources() if not r.is_cluster_resource()]
+        reserved_node_resources = [r for r in self.reserved_resources.get_resources() if isinstance(r, NodeResource)]
         if len(reserved_node_resources) == 0:
             # No resources in the request search for general nodes
             for node in node_dict.values():
                 node_match_list.append(node)
         else:
             for reserved_resource in reserved_node_resources:
-                if not reserved_resource.is_cluster_resource():
+                if isinstance(reserved_resource, NodeResource):
                     return reserved_resource.node  # type: ignore
 
         node_match_list_copy = node_match_list.copy()

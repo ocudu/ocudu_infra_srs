@@ -26,8 +26,10 @@ from retina.orchestrator.elements import get_taint_list_as_string
 from retina.orchestrator.reservation.managers import get_pool_request_reservation_from_config
 from retina.orchestrator.reservation.resources import (
     BinaryDefinition,
+    NodeResource,
     RequestReservation,
     ResourceList,
+    ResourceZmq,
 )
 from retina.orchestrator.reservation.utils import create_resource_data_configmap, get_resource_data_configmap_name
 from retina.orchestrator.retina_kubernetes import DEFAULT_NAMESPACE, ErrorCode, Kubernetes
@@ -427,7 +429,7 @@ class OrchestratorManager:
                 *(
                     get_resource_data_configmap_name(resource)
                     for resource in request_reservation.get_reserved_resources().get_resources()
-                    if not resource.is_zmq_resource() and resource.capacity > 0
+                    if not isinstance(resource, ResourceZmq) and resource.capacity > 0
                 ),
             ],
             retina_ports=retina_ports_number_array,
@@ -494,7 +496,7 @@ class OrchestratorManager:
                 [
                     r
                     for r in request_reservation.get_reserved_resources().get_resources()
-                    if not r.is_zmq_resource() and r.capacity > 0
+                    if not isinstance(r, ResourceZmq) and r.capacity > 0
                 ]
             ),
             node_resource=node_resource,
@@ -544,7 +546,7 @@ Ochestration network ID = {orch_id}
 
             space = None
             for resource in pod.resource.get_resources():
-                if not resource.is_cluster_resource():
+                if isinstance(resource, NodeResource):
                     space = resource.space
 
             msg += f"""- Name: {name}
