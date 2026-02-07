@@ -23,7 +23,7 @@
     - type: license
       model: amarisoft-ue.*
     - type: ru
-      model: fr2-ue-ru
+      model: s72-fr2-ue
 
 - name: ocudu-gnb
   type: gnb
@@ -42,7 +42,7 @@
       requests: 15G
   resources:
     - type: ru
-      model: fr2-ru
+      model: s72-fr2-ocudu
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb_split_7_2
     - LD_LIBRARY_PATH: /opt/rohc/lib/:/opt/dpdk/${DPDK_VERSION}/lib/x86_64-linux-gnu/
@@ -65,5 +65,5 @@
       requests: 6G
   resources:
     - type: ru
-      model: fr2-ru
+      model: s72-fr2-ocudu
       dummy: true

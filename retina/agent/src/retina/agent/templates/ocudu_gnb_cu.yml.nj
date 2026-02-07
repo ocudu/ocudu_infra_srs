@@ -163,7 +163,7 @@ cu_cp:
 {###################################################}
 {# Special configuration for Viavi RU #}
 {###################################################}
-{% if type == "ru" and model == "viavi-ru"%}
+{% if type == "ru" and model == "viavi"%}
 cu_up:
   ngu:
     gtpu:

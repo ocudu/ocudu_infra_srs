@@ -30,5 +30,5 @@
       is_executable: true
   resources:
     - type: ru
-      model: viavi-ru
+      model: viavi
       dummy: true

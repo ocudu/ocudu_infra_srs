@@ -42,7 +42,7 @@ hal:
 {###################################################}
 {# Special configuration for Viavi RU #}
 {###################################################}
-{% if type == "ru" and model == "viavi-ru"%}
+{% if type == "ru" and model == "viavi"%}
 ru_ofh:
   t1a_max_cp_dl: 500
   t1a_min_cp_dl: 268
@@ -78,7 +78,7 @@ ru_ofh:
 expert_phy:
   max_proc_delay: 4
 {% endif %}
-{% if type == "ru" and model == "s72-ru"%}
+{% if type == "ru" and model == "s72-ocudu"%}
 {###################################################}
 {# Special configuration for Amarisoft UE running in split 7.2 mode #}
 {###################################################}
@@ -116,7 +116,7 @@ ru_ofh:
 expert_phy:
   max_request_headroom_slots: 3
 {% endif %}
-{% if type == "ru" and model == "fr2-ru"%}
+{% if type == "ru" and model == "s72-fr2-ocudu"%}
 {###################################################}
 {# Special configuration for Amarisoft UE running in split 7.2 mode for FR2 testing #}
 {###################################################}

@@ -262,7 +262,7 @@ cell_cfg:
 {###################################################}
 {# Special configuration for Viavi RU #}
 {###################################################}
-{% if type == "ru" and model == "viavi-ru" %}
+{% if type == "ru" and model == "viavi" %}
 cell_cfg:
   sib:
     t301: 2000

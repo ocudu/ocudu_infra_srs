@@ -29,7 +29,7 @@
     - type: core
       model: viavi
     - type: ru
-      model: viavi-ru
+      model: viavi
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb_split_7_2
     - LD_LIBRARY_PATH: /opt/rohc/lib/:/opt/dpdk/${DPDK_VERSION}/lib/x86_64-linux-gnu/
