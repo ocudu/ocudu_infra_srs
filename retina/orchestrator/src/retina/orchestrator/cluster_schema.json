@@ -51,19 +51,132 @@
   ],
   "definitions": {
     "cluster_resource": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/remote_resource"
+        },
+        {
+          "$ref": "#/definitions/license_resource"
+        },
+        {
+          "$ref": "#/definitions/api_resource"
+        },
+        {
+          "$ref": "#/definitions/core_resource"
+        }
+      ]
+    },
+    "remote_resource": {
       "type": "object",
       "properties": {
         "type": {
-          "type": "string"
+          "type": "string",
+          "const": "remote"
         },
         "model": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "path": {
           "type": "string"
         }
       },
       "required": [
         "type",
-        "model"
-      ]
+        "model",
+        "address",
+        "user",
+        "password",
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "license_resource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "license"
+        },
+        "model": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "args": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "model",
+        "address",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    "api_resource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "api"
+        },
+        "model": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "model",
+        "address",
+        "port"
+      ],
+      "additionalProperties": false
+    },
+    "core_resource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "core"
+        },
+        "model": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "mask": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "model",
+        "address",
+        "port",
+        "mask"
+      ],
+      "additionalProperties": false
     },
     "node": {
       "type": "object",
@@ -118,6 +231,9 @@
     "node_resource": {
       "oneOf": [
         {
+          "$ref": "#/definitions/zmq_resource"
+        },
+        {
           "$ref": "#/definitions/android_resource"
         },
         {
@@ -131,6 +247,28 @@
         }
       ]
     },
+    "zmq_resource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "zmq"
+        },
+        "model": {
+          "type": "string"
+        },
+        "space": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "type",
+        "model",
+        "space"
+      ],
+      "additionalProperties": false
+    },
     "android_resource": {
       "type": "object",
       "properties": {
@@ -142,7 +280,8 @@
           "type": "string"
         },
         "space": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 1
         },
         "serial_id": {
           "type": "string"
@@ -190,7 +329,8 @@
           "type": "string"
         },
         "space": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 1
         },
         "args": {
           "type": "string"
@@ -234,7 +374,8 @@
           "type": "string"
         },
         "space": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 1
         },
         "address": {
           "type": "string"
@@ -245,13 +386,13 @@
             "type": "string"
           }
         },
-        "ru_mac_address": {
+        "ru_mac_addr": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "du_mac_address": {
+        "du_mac_addr": {
           "type": "array",
           "items": {
             "type": "string"
@@ -285,8 +426,8 @@
         "space",
         "address",
         "network_interface",
-        "ru_mac_address",
-        "du_mac_address",
+        "ru_mac_addr",
+        "du_mac_addr",
         "vlan_tag_up",
         "vlan_tag_cp",
         "prach_port_id",
@@ -306,7 +447,8 @@
           "type": "string"
         },
         "space": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 1
         },
         "id": {
           "type": "integer"

@@ -162,7 +162,7 @@ resources:
 ```
 
 - Available resource types:
-  - Cluster resources: `license` and `emulator`.
+  - Cluster resources: `license`, `remote`, `api` and `core`.
   - Node / Hardware resources: `android`, `zmq`, `sdr`, `ru` and `accelerator`.
   - Check [cluster definition documentation](../_docs/02_cluster_setup.md#cluster-definition) for more details.
 - Regex can be used in `model`. Retina will search for any model that matches `^{model}$`. If the model field is not specified, it will use `.*` and select any model from that type (and resource space).

@@ -95,7 +95,9 @@
                             "type": "string",
                             "enum": [
                                 "license",
-                                "emulator",
+                                "remote",
+                                "api",
+                                "core",
                                 "android",
                                 "zmq",
                                 "sdr",

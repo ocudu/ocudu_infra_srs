@@ -22,7 +22,11 @@
     ephemeral-storage:
       requests: "15G"
   resources:
-    - type: emulator
+    - type: remote
+      model: viavi
+    - type: api
+      model: viavi
+    - type: core
       model: viavi
     - type: ru
       model: viavi-ru

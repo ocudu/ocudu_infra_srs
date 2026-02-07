@@ -286,10 +286,9 @@ class ResourceLicense(ClusterResource):
         return [License(address=self.ip_address, args=self.args)]
 
 
-# pylint: disable=too-many-instance-attributes
-class ResourceEmulator(ClusterResource):
+class ResourceRemote(ClusterResource):
     """
-    Resource emulator manager
+    Resource remote manager
     """
 
     # pylint: disable=too-many-arguments
@@ -297,14 +296,10 @@ class ResourceEmulator(ClusterResource):
         self,
         model: str,
         capacity: int = 1,
+        address: Optional[str] = None,
         user: Optional[str] = None,
         password: Optional[str] = None,
-        api_address: Optional[str] = None,
-        api_port: Optional[int] = None,
-        amf_address: Optional[str] = None,
-        amf_port: Optional[int] = None,
-        tma_path: Optional[str] = None,
-        tma_profile: Optional[str] = None,
+        path: Optional[str] = None,
     ):
         super().__init__(
             capacity=capacity,
@@ -316,30 +311,93 @@ class ResourceEmulator(ClusterResource):
         self.user = user
         add_log_secret(password)
         self.password = password
-        self.api_address = api_address
-        self.api_port = api_port
-        self.amf_address = amf_address
-        self.amf_port = amf_port
-        self.tma_path = tma_path
-        self.tma_profile = tma_profile
+        self.address = address
+        self.path = path
 
     def __hash__(self):
-        return hash((self.type_r, self.model, str(self.capacity), self.connection))
+        return hash(
+            (
+                self.type_r,
+                self.model,
+                str(self.capacity),
+                self.connection,
+                self.user,
+                self.password,
+                self.address,
+                self.path,
+            )
+        )
 
     def get_resource_data(self) -> List:
         """
         Get resource data
         """
-        return [
-            Remote(
-                address=self.api_address,
-                user=self.user,
-                password=self.password,
-                path=self.tma_path,
-            ),
-            API(address=self.api_address, port=self.api_port),
-            Core(address=self.amf_address, port=self.amf_port, mask=24),
-        ]
+        return [Remote(address=self.address, user=self.user, password=self.password, path=self.path)]
+
+
+class ResourceAPI(ClusterResource):
+    """
+    Resource API manager
+    """
+
+    def __init__(
+        self,
+        model: str,
+        capacity: int = 1,
+        address: Optional[str] = None,
+        port: Optional[int] = None,
+    ):
+        super().__init__(
+            capacity=capacity,
+            type_r=API.__name__,
+            model=model,
+            connection=ConnectionType.NETWORK,
+        )
+        self.address = address
+        self.port = port
+
+    def __hash__(self):
+        return hash((self.type_r, self.model, str(self.capacity), self.connection, self.address, self.port))
+
+    def get_resource_data(self) -> List:
+        """
+        Get resource data
+        """
+        return [API(address=self.address, port=self.port)]
+
+
+class ResourceCore(ClusterResource):
+    """
+    Resource core manager
+    """
+
+    # pylint: disable=too-many-arguments
+    def __init__(
+        self,
+        model: str,
+        capacity: int = 1,
+        address: Optional[str] = None,
+        port: Optional[int] = None,
+        mask: Optional[int] = None,
+    ):
+        super().__init__(
+            capacity=capacity,
+            type_r=Core.__name__,
+            model=model,
+            connection=ConnectionType.NETWORK,
+        )
+        self.address = address
+        self.port = port
+        self.mask = mask
+
+    def __hash__(self):
+        return hash((self.type_r, self.model, str(self.capacity), self.connection, self.address, self.port, self.mask))
+
+    def get_resource_data(self) -> List:
+        """
+        Get resource data
+        """
+        return [Core(address=self.address, port=self.port, mask=self.mask)]
 
 
 ################################################################################
@@ -497,6 +555,7 @@ class ResourceSDR(NodeResource):
         ]
 
 
+# pylint: disable=too-many-instance-attributes
 class ResourceRU(NodeResource):
     """
     RU resource manager
@@ -1034,7 +1093,9 @@ def get_resource_from_config(config: Dict) -> ResourceType:
     return {
         # Cluster resources
         "license": ResourceLicense,
-        "emulator": ResourceEmulator,
+        "remote": ResourceRemote,
+        "api": ResourceAPI,
+        "core": ResourceCore,
         # Most common node resources
         "sdr": ResourceSDR,
         "ru": ResourceRU,
@@ -1060,19 +1121,30 @@ def get_resource_from_cluster_info(cluster_info, node_dict: Dict[str, Node]) -> 
                 args=resource["args"],
             )
             resource_list.add_resource(resource_obj_i)
-        if resource["type"] == "emulator":
-            resource_obj_j = ResourceEmulator(
+        if resource["type"] == "remote":
+            resource_obj_j = ResourceRemote(
                 model=resource["model"],
                 user=resource["user"],
                 password=resource["password"],
-                api_address=resource["api_address"],
-                api_port=resource["api_port"],
-                amf_address=resource.get("amf_address", None),
-                amf_port=resource.get("amf_port", None),
-                tma_path=resource.get("tma_path", None),
-                tma_profile=resource.get("tma_profile", None),
+                address=resource["address"],
+                path=resource["path"],
             )
             resource_list.add_resource(resource_obj_j)
+        if resource["type"] == "api":
+            resource_obj_k = ResourceAPI(
+                model=resource["model"],
+                address=resource["address"],
+                port=resource["port"],
+            )
+            resource_list.add_resource(resource_obj_k)
+        if resource["type"] == "core":
+            resource_obj_l = ResourceCore(
+                model=resource["model"],
+                address=resource["address"],
+                port=resource["port"],
+                mask=resource["mask"],
+            )
+            resource_list.add_resource(resource_obj_l)
 
     for node in cluster_info["nodes"]:
         node_name = node["name"]
@@ -1125,7 +1197,6 @@ def get_resource_from_cluster_info(cluster_info, node_dict: Dict[str, Node]) -> 
                             ul_port_id=resource["ul_port_id"],
                         )
                     )
-
                 elif resource["type"] == "accelerator":
                     resource_list.add_resource(
                         ResourceAccelerator(
@@ -1141,11 +1212,11 @@ def get_resource_from_cluster_info(cluster_info, node_dict: Dict[str, Node]) -> 
                             extra_eal_args=resource.get("extra_eal_args", ""),
                         )
                     )
-
                 elif resource["type"] == "zmq":
                     resource_list.add_resource(
                         ResourceZmq(model=resource["model"], space=resource["space"], node=node_in_cluster)
                     )
+
     return resource_list
 
 

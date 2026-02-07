@@ -54,7 +54,11 @@
     ephemeral-storage:
       requests: 6G
   resources:
-    - type: emulator
+    - type: remote
+      model: callbox
+    - type: api
+      model: callbox
+    - type: core
       model: callbox
     - type: android
       dummy: true
