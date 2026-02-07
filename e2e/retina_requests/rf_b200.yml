@@ -57,4 +57,4 @@
   resources:
     - type: sdr
       model: b200
-      capacity: 0
+      dummy: true

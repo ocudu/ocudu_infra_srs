@@ -92,13 +92,22 @@
                     "type": "object",
                     "properties": {
                         "type": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "license",
+                                "emulator",
+                                "android",
+                                "zmq",
+                                "sdr",
+                                "ru",
+                                "accelerator"
+                            ]
                         },
                         "model": {
                             "type": "string"
                         },
-                        "capacity": {
-                            "type": "integer"
+                        "dummy": {
+                            "type": "boolean"
                         }
                     },
                     "required": [

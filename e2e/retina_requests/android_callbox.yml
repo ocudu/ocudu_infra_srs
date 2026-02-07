@@ -57,4 +57,4 @@
     - type: emulator
       model: callbox
     - type: android
-      capacity: 0
+      dummy: true

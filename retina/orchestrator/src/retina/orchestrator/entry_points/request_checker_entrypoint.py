@@ -18,7 +18,7 @@ from retina.orchestrator.utils import parse_request
 
 def main():
     """
-    Entrypoint to resource cluster reservation.
+    Entrypoint to validate retina requests
     """
     parser = argparse.ArgumentParser(description="Retina request YAML validator.")
     parser.add_argument("--input", help="File path to validate.")

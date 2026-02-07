@@ -42,4 +42,4 @@
       requests: 6G
   resources:
     - type: zmq
-      capacity: 0
+      dummy: true

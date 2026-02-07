@@ -31,4 +31,4 @@
   resources:
     - type: ru
       model: viavi-ru
-      capacity: 0
+      dummy: true

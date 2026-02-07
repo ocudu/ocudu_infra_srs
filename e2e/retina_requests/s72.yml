@@ -66,4 +66,4 @@
   resources:
     - type: ru
       model: s72-ru
-      capacity: 0
+      dummy: true

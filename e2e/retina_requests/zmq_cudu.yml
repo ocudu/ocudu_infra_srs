@@ -42,7 +42,7 @@
       requests: 6G
   resources:
     - type: zmq
-      capacity: 0
+      dummy: true
   environment:
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/cu:${OCUDU_PATH}/build_retina/apps/du
     - LD_LIBRARY_PATH: /opt/rohc/lib/
@@ -68,4 +68,4 @@
       requests: 6G
   resources:
     - type: zmq
-      capacity: 0
+      dummy: true

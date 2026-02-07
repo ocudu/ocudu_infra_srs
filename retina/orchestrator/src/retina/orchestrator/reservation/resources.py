@@ -1075,57 +1075,21 @@ def get_resource_from_config(config: Dict) -> ResourceType:
     """
     Get resource from config
     """
-    if config["type"] == "sdr":
-        return ResourceSDR(
-            model=config["model"],
-            capacity=config.get("capacity", 1),
-        )
+    config_type = config["type"]  # mandatory
+    config_model = config.get("model", ".*")
+    config_capacity = int(not config.get("dummy", False))
 
-    if config["type"] == "ru":
-        return ResourceRU(
-            model=config["model"],
-            capacity=config.get("capacity", 1),
-            ru_network_interface=config.get("ru_network_interface", []),
-            ru_du_mac_addr=config.get("ru_du_mac_addr", []),
-            ru_ru_mac_addr=config.get("ru_ru_mac_addr", []),
-            ru_vlan_tag_up=config.get("ru_vlan_tag_up", []),
-            ru_vlan_tag_cp=config.get("ru_vlan_tag_cp", []),
-            ru_prach_port_id=config.get("ru_prach_port_id", ""),
-            ru_dl_port_id=config.get("ru_dl_port_id", ""),
-            ru_ul_port_id=config.get("ru_ul_port_id", ""),
-        )
-
-    if config["type"] == "emulator":
-        return ResourceEmulator(
-            model=config["model"],
-            capacity=config.get("capacity", 1),
-        )
-
-    if config["type"] == "accelerator":
-        return ResourceAccelerator(
-            model=config["model"],
-            capacity=config.get("capacity", 1),
-            hwacc_type=config.get("hwacc_type", ""),
-            accelerator_id=config.get("accelerator_id", 0),
-            pdsch_enc_nof_hwacc=config.get("pdsch_enc_nof_hwacc", ""),
-            cb_mode=config.get("cb_mode", False),
-            pusch_dec_nof_hwacc=config.get("pusch_dec_nof_hwacc", 0),
-            harq_context_size=config.get("harq_context_size", 0),
-            extra_eal_args=config.get("extra_eal_args", ""),
-        )
-
-    if config["type"] == "android":
-        return ResourceAndroid(
-            model=config.get("model", ".*"),
-            capacity=config.get("capacity", 1),
-        )
-
-    if config["type"] == "zmq":
-        return ResourceZmq(
-            capacity=config.get("capacity", 1),
-        )
-
-    return ResourceLicense(model=config["model"], capacity=config.get("capacity", 1))
+    return {
+        # Cluster resources
+        "license": ResourceLicense,
+        "emulator": ResourceEmulator,
+        # Most common node resources
+        "sdr": ResourceSDR,
+        "ru": ResourceRU,
+        "accelerator": ResourceAccelerator,
+        "android": ResourceAndroid,
+        "zmq": ResourceZmq,
+    }[config_type](model=config_model, capacity=config_capacity)
 
 
 # pylint: disable=too-many-branches

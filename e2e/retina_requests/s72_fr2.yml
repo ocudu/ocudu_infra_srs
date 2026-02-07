@@ -66,4 +66,4 @@
   resources:
     - type: ru
       model: fr2-ru
-      capacity: 0
+      dummy: true
