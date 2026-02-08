@@ -52,11 +52,7 @@ def unlock_cluster_resource(k_server: Kubernetes, name: str) -> bool:
     Unlock cluster resource
     """
     config_map_name = get_cluster_resource_name(name)
-    response = k_server.delete_config_map(config_map_name)
-    result = False
-    if response == ErrorCode.OK:
-        result = True
-    return result
+    return k_server.delete_config_map(config_map_name) == ErrorCode.OK
 
 
 def get_cluster_resource_name(name: str):
@@ -89,16 +85,12 @@ def reserve_space_configmap(k_server: Kubernetes, space: str, orch_id: str, user
     return result
 
 
-def unlock_resource_space(k_server: Kubernetes, number: int):
+def unlock_resource_space(k_server: Kubernetes, number: int) -> bool:
     """
     Unlock cluster resource
     """
     config_map_name = get_space_name(number)
-    response = k_server.delete_config_map(config_map_name)
-    result = False
-    if response == ErrorCode.OK:
-        result = True
-    return result
+    return k_server.delete_config_map(config_map_name) == ErrorCode.OK
 
 
 def get_resource_data_configmap_name(obj: Any):

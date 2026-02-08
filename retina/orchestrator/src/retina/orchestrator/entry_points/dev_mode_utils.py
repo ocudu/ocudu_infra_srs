@@ -34,7 +34,7 @@ from retina.orchestrator.orchestration_network import OrchestratorManager
 from retina.orchestrator.retina_kubernetes import DEFAULT_NAMESPACE, Kubernetes, PodStatus
 from retina.orchestrator.utils import get_retina_user
 
-DEFAULT_TIMEOUT = 30 * 60
+DEFAULT_TIMEOUT = 5 * 60
 DEFAULT_DOCKER_IMAGE = "docker/desktop-kubernetes-pause:3.10"
 
 

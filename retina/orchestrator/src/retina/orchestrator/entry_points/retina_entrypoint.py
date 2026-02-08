@@ -37,6 +37,7 @@ from retina.orchestrator.entry_points.utils import check_user_name, set_default_
 from retina.orchestrator.license_utils.license_utils import display_license_info
 from retina.orchestrator.reservation.managers import get_resources_in_cluster
 from retina.orchestrator.reservation.resources import ClusterResource, NodeResource
+from retina.orchestrator.reservation.utils import check_cluster_resource_user_reservation, check_space_user_reservation
 from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.orchestrator.utils import get_retina_user
 
@@ -155,19 +156,26 @@ def reserve(
     # check if all the resources exist
     check_if_resource_id_exists(resource_list_to_reserve, node_resources, cluster_resources, retina_node_dict)
 
-    reserved_resource_space = []
-
     for resource_inst in resource_list_to_reserve:
         result = False
 
         # node resource
         if resource_is_in_cluster(resource_inst, node_resources, [], {}):
             resource_space_to_reserve = resource_inst.split(":")[1]
-            if not resource_space_to_reserve in reserved_resource_space:
+            current_username = check_space_user_reservation(k_server, int(resource_space_to_reserve))
+            if current_username:
+                result = current_username == username
+            else:
                 result = reserve_resource_space(k_server, int(resource_space_to_reserve), username, TIMEOUT)
+
         # cluster resource
         elif resource_is_in_cluster(resource_inst, [], cluster_resources, {}):
-            result = reserve_cluster_resource(k_server, username, resource_inst, TIMEOUT)
+            current_username = check_cluster_resource_user_reservation(k_server, resource_inst)
+            if current_username:
+                result = current_username == username
+            else:
+                result = reserve_cluster_resource(k_server, username, resource_inst, TIMEOUT)
+
         # node
         elif resource_is_in_cluster(resource_inst, [], [], retina_node_dict):
             logging.info("⏰ It may take up to %s minutes, please be patient...", DEFAULT_TIMEOUT // 60)
@@ -177,6 +185,7 @@ def reserve(
             logging.info("✅ Resource %s successfully reserved.", resource_inst)
         else:
             logging.error("❌ Resource %s not reserved.", resource_inst)
+            ctx.exit(1)
 
 
 @retina.command()
@@ -220,6 +229,7 @@ def release(ctx, username, resource):
                 logging.info("✅ Resource %s successfully released.", resource_inst)
             else:
                 logging.error("❌ Resource %s not released.", resource_inst)
+                ctx.exit(1)
 
     if username:
         delete_orchestration_network_by_username(username, is_incluster=in_cluster)

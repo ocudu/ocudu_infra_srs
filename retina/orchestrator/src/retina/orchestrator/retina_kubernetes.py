@@ -202,11 +202,11 @@ class Kubernetes(KubernetesManager):
                     if not dryrun:
                         self._delete_config_map(config_map.metadata.name, namespace)
 
-    def delete_config_map(self, config_map_name: str, namespace: str = DEFAULT_NAMESPACE) -> None:
+    def delete_config_map(self, config_map_name: str, namespace: str = DEFAULT_NAMESPACE) -> ErrorCode:
         """
         Delete config map by name
         """
-        self._delete_config_map(config_map_name, namespace)
+        return self._delete_config_map(config_map_name, namespace)
 
     def get_config_map(self, config_map_name: str, namespace: str = DEFAULT_NAMESPACE) -> V1ConfigMap:
         """

@@ -83,7 +83,7 @@ def print_cluster_resources(cluster_resource_list: List[ClusterResource], k_serv
     table.add_column("Resource type", style="magenta")
     table.add_column("Resource model", style="magenta")
 
-    for resource in cluster_resource_list:
+    for resource in sorted(cluster_resource_list, key=lambda x: x.get_full_name()):
         resource_type = resource.type_r
         resource_model = resource.model
         name = resource.get_full_name()
@@ -112,7 +112,7 @@ def print_node_resources(resource_list: List[NodeResource], k_server: Kubernetes
     table.add_column("R.Space", style="magenta")
     table.add_column("Arguments", style="magenta")
 
-    for resource in resource_list:
+    for resource in sorted(resource_list, key=lambda x: (x.space, x.get_full_name())):
         node_name = resource.node.name
         try:
             arguments = resource.args
