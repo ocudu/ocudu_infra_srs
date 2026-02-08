@@ -151,10 +151,7 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
                         variable_dict.update(_extract_variables_from_job(project, job.id))
                         if not variable_dict:
                             continue  # If the variable dict is empty, keep searching
-                        if "LAUNCHER_ARGS" in variable_dict:
-                            # e2e job found
-                            variable_dict["E2E_TAGS"] = job.tag_list
-                        else:
+                        if "LAUNCHER_ARGS" not in variable_dict:
                             # Build job found
                             variable_dict["BUILD_TAGS"] = job.tag_list
                         return variable_dict

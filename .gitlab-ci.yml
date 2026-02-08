@@ -50,10 +50,6 @@ spec:
       default: none
       description: "Run ctest selecting tests with labels matching regular expression. `none` wont run any test at all."
     # E2E job configuration for web and api triggered pipelines
-    e2e_tags:
-      type: array
-      default: [new-retina-e2e-amd64]
-      description: "Tags to use for the e2e job."
     group:
       type: string
       default: zmq
@@ -174,7 +170,6 @@ include:
           when: never
         - if: $ON_WEB
         - if: $ON_API
-      tags: $[[ inputs.e2e_tags ]]
       group: $[[ inputs.group ]]
       testbed: $[[ inputs.testbed ]]
       markers: $[[ inputs.markers ]]

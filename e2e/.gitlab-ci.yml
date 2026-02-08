@@ -204,7 +204,6 @@ dpdk rtsan avx512:
   stage: test mode
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: zmq
     TESTBED: test_mode_ue
@@ -228,7 +227,6 @@ test ue asan:
   stage: test mode
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: viavi
     TESTBED: test_mode_ru
@@ -272,7 +270,6 @@ ru dummy test many ues:
   stage: srsue
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: zmq
     RETINA_ARGS: ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
@@ -298,7 +295,6 @@ ric:
   stage: amarisoft zmq
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: zmq
     TESTBED: zmq
@@ -476,7 +472,6 @@ cudu 64UE:
   stage: amarisoft s72
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  tags: [new-retina-e2e-amd64]
   allow_failure: true
   variables:
     GROUP: viavi
@@ -511,7 +506,6 @@ gnb 1UE s72 FR2:
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   timeout: 8h
-  tags: [new-retina-e2e-amd64]
   variables:
     GROUP: viavi
     TESTBED: viavi
@@ -579,7 +573,6 @@ gnb 1UE s72 FR2:
   stage: amarisoft sdr
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
-  tags: [retina-e2e-amd64]
   variables:
     GROUP: rf
     TESTBED: rf_b200
@@ -606,7 +599,6 @@ validate b200 config:
   stage: android
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
-  tags: [retina-e2e-amd64]
   variables:
     GROUP: rf
     MARKERS: android

@@ -24,10 +24,6 @@ spec:
       type: string
       default: 3 hours
       description: "Timeout for the job."
-    tags:
-      type: array
-      default: [new-retina-e2e-amd64]
-      description: "Tags to use for the job."
     group:
       type: string
       default: zmq
@@ -86,7 +82,9 @@ spec:
   stage: $[[ inputs.stage ]]
   rules: $[[ inputs.rules ]]
   timeout: $[[ inputs.timeout ]]
-  tags: $[[ inputs.tags ]]
+  tags:
+    - retina
+    - ${GROUP}
   image:
     name: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
     entrypoint: ["/bin/sh", "-c"]

@@ -200,7 +200,6 @@ def _run_test(args_definition: _ArgsDefinition, test_definition: _TestDefinition
         "dpdk_version": build_definition.dpdk_version,
         "uhd_version": build_definition.uhd_version,
         "test_mode": "none",
-        "e2e_tags": ["new-retina-e2e-amd64"],
         "group": "viavi",
         "testbed": "viavi",
         "markers": "viavi_manual",
