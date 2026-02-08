@@ -13,10 +13,8 @@
   requirements:
     cpu:
       requests: 20%
-      limits: 20%
     memory:
       requests: 20%
-      limits: 20%
     ephemeral-storage:
       requests: 6G
   resources:
@@ -33,11 +31,9 @@
   image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 6
-      limits: 6
+      requests: 20%
     memory:
       requests: 20%
-      limits: 20%
     ephemeral-storage:
       requests: 6G
   resources:
@@ -57,10 +53,8 @@
   requirements:
     cpu:
       requests: 10%
-      limits: 10%
     memory:
       requests: 10%
-      limits: 10%
     ephemeral-storage:
       requests: 6G
   resources:

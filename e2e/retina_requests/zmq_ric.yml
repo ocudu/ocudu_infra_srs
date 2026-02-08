@@ -12,10 +12,8 @@
   requirements:
     cpu:
       requests: 15%
-      limits: 15%
     memory:
       requests: 15%
-      limits: 15%
     ephemeral-storage:
       requests: "6G"
   resources:
@@ -27,10 +25,8 @@
   requirements:
     cpu:
       requests: 15%
-      limits: 15%
     memory:
       requests: 15%
-      limits: 15%
     ephemeral-storage:
       requests: "6G"
   resources:
@@ -50,10 +46,8 @@
   requirements:
     cpu:
       requests: 10%
-      limits: 10%
     memory:
       requests: 10%
-      limits: 10%
     ephemeral-storage:
       requests: "6G"
   resources:
@@ -66,10 +60,8 @@
   requirements:
     cpu:
       requests: 10%
-      limits: 10%
     memory:
       requests: 10%
-      limits: 10%
     ephemeral-storage:
       requests: "6G"
   resources:
