@@ -17,6 +17,17 @@ kubectl -n retina create secret docker-registry registry-credentials \
 
 For GitLab Container Registry, you can create a `Deploy Token` with `read_registry` scope.
 
+- Create the `retina-e2e-priority` PriorityClass for test pod scheduling:
+
+```yaml
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: retina-e2e-priority
+value: 1000000
+description: "This priority class should be used for retina service pods only!"
+```
+
 - Generate a .kube/config file.
 
 ## Cluster Definition
