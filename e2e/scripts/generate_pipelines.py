@@ -73,6 +73,14 @@ class Job:
   stage: {self.stage}
   extends: .amarisoft_zmq
   rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{self.pipeline_name}/
   variables:
     KEYWORDS: {self.pipeline_name}::{self.stage}::{self.name}

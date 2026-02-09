@@ -95,7 +95,8 @@ e2e request validation:
 dynamically generated pipeline validation:
   extends: .static
   rules:
-    - if: $ON_MR
+    - &on_mr_suites_changed
+      if: $ON_MR
       changes:
         - e2e/tests/suites/**/*
         - e2e/scripts/generate_pipelines.py
@@ -114,6 +115,9 @@ zmq driver:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - <<: *on_mr_suites_changed
+      when: manual
+      allow_failure: true
 
 release with deb info:
   extends: build
@@ -124,6 +128,9 @@ release with deb info:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - <<: *on_mr_suites_changed
+      when: manual
+      allow_failure: true
   variables:
     OS: ubuntu-24.04
     OCUDU_TARGET: ocu odu gnb
