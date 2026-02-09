@@ -1,0 +1,15 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: gitlab-glr-priority
+value: 500000
+globalDefault: true
+description: "This priority class should be used for retina service pods only!"

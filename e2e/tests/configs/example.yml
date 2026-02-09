@@ -9,7 +9,7 @@
 gnb_id: 411
 
 cu_up:
-  warn_on_drop: False
+  warn_on_drop: false
 
 cell_cfg:
   nof_antennas_dl: 1

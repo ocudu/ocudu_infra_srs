@@ -1,0 +1,76 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-defrag
+  namespace: kube-system
+spec:
+  schedule: "0 3 * * 0"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - k8s-master-0
+                          - k8s-master-1
+                          - k8s-master-2
+          containers:
+            - name: etcd-defrag
+              image: ghcr.io/ahrtr/etcd-defrag:v0.18.0
+              args:
+                - --endpoints=https://10.11.1.50:2379,https://10.11.1.51:2379,https://10.11.1.52:2379
+                - --cacert=/ca.pem
+                - --cert=/client.pem
+                - --key=/client-key.pem
+                - --cluster
+                - --defrag-rule
+                - "dbQuotaUsage > 0.8 || dbSize - dbSizeInUse > 200*1024*1024"
+              volumeMounts:
+                - mountPath: /ca.pem
+                  name: ca-crt
+                  readOnly: true
+                - mountPath: /client.pem
+                  name: client-crt
+                  readOnly: true
+                - mountPath: /client-key.pem
+                  name: client-key
+                  readOnly: true
+          volumes:
+            - name: ca-crt
+              hostPath:
+                path: /etc/ssl/etcd/ssl/ca.pem
+                type: File
+            - name: client-crt
+              hostPath:
+                path: /etc/ssl/etcd/ssl/admin-k8s-master-0.pem
+                type: File
+            - name: client-key
+              hostPath:
+                path: /etc/ssl/etcd/ssl/admin-k8s-master-0-key.pem
+                type: File
+          restartPolicy: OnFailure
+          securityContext:
+            runAsUser: 0
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
+            - key: node-role.kubernetes.io/master
+              operator: Exists
+              effect: NoSchedule
+            - operator: Exists
+              effect: NoExecute

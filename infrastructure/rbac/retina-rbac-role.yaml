@@ -1,0 +1,23 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: retina-role
+  namespace: retina
+rules:
+  - apiGroups: ["", "extensions", "apps"]
+    resources: ["configmaps", "services", "deployments", "pods"]
+    verbs: ["get", "create", "delete", "list", "update", "watch"]
+  - apiGroups: ["", "extensions", "apps"]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+  - apiGroups: ["", "extensions", "apps"]
+    resources: ["secrets"]
+    verbs: ["list", "get"]

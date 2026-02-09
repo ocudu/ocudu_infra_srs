@@ -1,0 +1,220 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+include:
+  - project: ocudu/ocudu
+    file: .gitlab/ci-shared/workflow.yml
+    ref: dev
+  - project: ocudu/ocudu
+    file: .gitlab/ci-shared/docker.yml
+    ref: dev
+  - local: infrastructure/base/terraform.yml
+
+stages:
+  - static
+  - test
+  - publish
+  - deploy
+
+variables:
+  CONTAINER_VERSION: "2.7.0"
+  OCUDU_BRANCH: main
+  BUILDKIT_CLI_VERSION: "0.23.2"  # Override cached version from docker.yml
+
+.retina-runner-setup: &setup-retina-runner-files
+  # Clone ocudu_infra_srs to get the TF files and manifests
+  - apk add --no-cache git
+  - git clone --depth 1 --branch ${OCUDU_BRANCH} https://gitlab.com/ocudu/ocudu_infra_srs.git /tmp/ocudu_infra_srs
+  - mkdir -p infrastructure/retina-runner
+  - cp -r /tmp/ocudu_infra_srs/infrastructure/retina-runner/tf infrastructure/retina-runner/
+  - cp -r /tmp/ocudu_infra_srs/infrastructure/retina-runner/manifests infrastructure/retina-runner/
+
+.docker-builder-retina-runner:
+  extends: .docker-builder
+  image: registry.gitlab.com/ocudu/ocudu/buildkit-cli:0.23.2
+  before_script:
+    - apt update && apt install -y git
+    - git clone --depth 1 --branch ${OCUDU_BRANCH} https://gitlab.com/ocudu/ocudu_infra_srs.git /tmp/ocudu_infra_srs
+    - mkdir -p infrastructure/retina-runner
+    - cp -r /tmp/ocudu_infra_srs/infrastructure/retina-runner/image infrastructure/retina-runner/
+  variables:
+    NAME: retina-runner
+    VERSION: ${CONTAINER_VERSION}
+    CONTEXT: infrastructure/retina-runner/image
+    REGISTRY_URI: ${GITLAB_REGISTRY_URI}
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};CR_REGISTRY_URI=${GITLAB_REGISTRY_URI}
+    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "75G"
+    KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "75G"
+
+.version changed:
+  stage: static
+  image: python:3-alpine # sh entrypoint
+  before_script:
+    - apk add git yq
+    - pip install semver
+  variables:
+    DIR: ""
+    OCUDU_REPO: "https://gitlab.com/ocudu/ocudu_infra_srs.git"
+    OCUDU_BRANCH: "update_infra"  # TODO: change to main after testing complete
+  script:
+    # Clone ocudu_infra_srs to check version changes there
+    - git clone --depth 20 --branch $OCUDU_BRANCH $OCUDU_REPO /tmp/ocudu_infra_srs
+    - cd /tmp/ocudu_infra_srs
+    - NEW_VERSION=$(yq '.variables.CONTAINER_VERSION' ${DIR}/.gitlab-ci.yml)
+    - export NEW_VERSION
+    # Get the previous commit to compare
+    - git fetch origin $OCUDU_BRANCH --depth 20
+    - |
+      if git rev-parse HEAD~1 >/dev/null 2>&1; then
+        git checkout HEAD~1
+        if [ -e "${DIR}/.gitlab-ci.yml" ]; then
+          OLD_VERSION=$(yq '.variables.CONTAINER_VERSION' ${DIR}/.gitlab-ci.yml)
+        else
+          echo "No previous version found, assuming first version"
+          exit 0
+        fi
+      else
+        echo "No previous commit found, assuming first version"
+        exit 0
+      fi
+    - export OLD_VERSION
+    - |
+      echo "OLD version: $OLD_VERSION -- NEW version: $NEW_VERSION"
+    - python3 -c "import semver; import os; exit(0) if (semver.compare(os.environ['NEW_VERSION'], os.environ['OLD_VERSION']) > 0) else exit(1)"
+
+cronjob container version changed:
+  extends: .version changed
+  variables:
+    DIR: infrastructure/retina-runner
+    OCUDU_BRANCH: update_infra  # TODO: change to main after merge
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - infrastructure/retina-runner/image/Dockerfile
+          - infrastructure/retina-runner/image/**/*.py
+          - infrastructure/retina-runner/image/**/*.sh
+
+only build base:
+  stage: test
+  extends: .docker-builder-retina-runner
+  rules:
+    - if: $ON_MR
+  variables:
+    MODE: test
+
+check-format:
+  extends: .terraform-base
+  variables:
+    TF_DIR: "infrastructure/retina-runner/tf"
+  stage: test
+  tags:
+    - ${RUNNER_TAGS}
+  before_script:
+    - *setup-retina-runner-files
+    - |
+      eval KUBECONFIG_PATH="\$$KUBECONFIG_VAR_NAME"
+      mkdir -p ~/.kube/
+      cp $KUBECONFIG_PATH ~/.kube/config
+      chmod 600 ~/.kube/config
+    - cd $TF_DIR
+    - terraform init --backend-config=backend.tfbackend --backend-config=username=$CODEBOT_USERNAME --backend-config=password=$CODEBOT_TOKEN --backend-config="address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}" --backend-config="lock_address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}/lock" --backend-config="unlock_address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}/lock"
+  rules:
+    - if: $ON_MR
+  script:
+    - terraform fmt -check
+
+validate:
+  extends: .terraform-base
+  stage: test
+  variables:
+    TF_DIR: "infrastructure/retina-runner/tf"
+  tags:
+    - ${RUNNER_TAGS}
+  before_script:
+    - *setup-retina-runner-files
+    - |
+      eval KUBECONFIG_PATH="\$$KUBECONFIG_VAR_NAME"
+      mkdir -p ~/.kube/
+      cp $KUBECONFIG_PATH ~/.kube/config
+      chmod 600 ~/.kube/config
+    - cd $TF_DIR
+    - terraform init --backend-config=backend.tfbackend --backend-config=username=$CODEBOT_USERNAME --backend-config=password=$CODEBOT_TOKEN --backend-config="address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}" --backend-config="lock_address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}/lock" --backend-config="unlock_address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}/lock"
+  rules:
+    - if: $ON_MR
+  script:
+    - terraform validate
+
+build and publish final:
+  stage: publish
+  extends: .docker-builder-retina-runner
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+  retry: 2
+  variables:
+    MODE: publish
+
+##############################################
+## Generic Retina Runner CronJob Deployment ##
+##############################################
+# This is a generic template job that accepts all cluster-specific
+# parameters from the calling pipeline (private repo).
+#
+# Required variables (must be provided by parent pipeline):
+#   KUBECONFIG_VAR_NAME: Name of the CI/CD variable containing kubeconfig path
+#   NAMESPACE: Kubernetes namespace for deployment
+#   TF_STATE_NAME: Terraform state name
+#   ORGANIZATION_NAME: Organization identifier for resources
+#   GROUP_ID: GitLab group ID
+#   RUNNERS_FILE_PATH: Path to runners definition file
+#   ENABLED_CRONJOBS: JSON array of enabled cronjobs
+#   RUNNER_TAGS: GitLab runner tags (comma-separated or array)
+
+deploy cronjob:
+  extends: .terraform-base
+  stage: deploy
+  before_script:
+    - *setup-retina-runner-files
+    - mkdir -p ~/.kube/
+    - |
+      eval K_PATH="\$$KUBECONFIG_VAR_NAME"
+      cp $K_PATH ~/.kube/config
+    - chmod 600 ~/.kube/config
+    - cd $TF_DIR
+    - terraform init --backend-config=backend.tfbackend --backend-config=username=$CODEBOT_USERNAME --backend-config=password=$CODEBOT_TOKEN --backend-config="address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}" --backend-config="lock_address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}/lock" --backend-config="unlock_address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}/lock"
+  tags:
+    - ${RUNNER_TAGS}
+  needs:
+    - job: build and publish final
+      artifacts: false
+  dependencies: []
+  variables:
+    TF_DIR: "infrastructure/retina-runner/tf"
+    TAINT_KEY: "purpose"
+    TAINT_VALUE: "retina-e2e"
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+  script:
+    - |
+      eval KUBECONFIG_PATH="\$$KUBECONFIG_VAR_NAME"
+      terraform apply -auto-approve \
+        -var="kubeconfig=$KUBECONFIG_PATH" \
+        -var="namespace=$NAMESPACE" \
+        -var="container_version=$CONTAINER_VERSION" \
+        -var="taint_key=$TAINT_KEY" \
+        -var="taint_value=$TAINT_VALUE" \
+        -var="gitlab_group_id=$GROUP_ID" \
+        -var="organization_name=$ORGANIZATION_NAME" \
+        -var="enabled_cronjobs=$ENABLED_CRONJOBS" \
+        -var='runners_file=["'"${CI_PROJECT_DIR}/${RUNNERS_FILE_PATH}"'"]'

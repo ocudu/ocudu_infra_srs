@@ -1,0 +1,121 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+include:
+  - project: ocudu/ocudu
+    file: .gitlab/ci-shared/workflow.yml
+    ref: dev
+  - project: ocudu/ocudu
+    file: .gitlab/ci-shared/docker.yml
+    ref: dev
+  - local: infrastructure/base/terraform.yml
+  - component: gitlab.com/components/opentofu/job-templates@3.11.0
+    inputs:
+      root_dir: "infrastructure/retina-runner/tf-registry-credentials"
+      state_name: "${GITLAB_TOFU_STATE_NAME}"
+      auto_define_backend: true
+
+stages:
+  - fmt
+  - validate
+  - plan
+  - apply
+
+###################################
+## Registry credentials base job ##
+###################################
+
+.setup-files: &setup-files
+  # Clone ocudu_infra_srs to get the TF files and Helm chart
+  - apk add --no-cache git
+  - git clone --depth 1 --branch ${OCUDU_BRANCH:-main} https://gitlab.com/ocudu/ocudu_infra_srs.git /tmp/ocudu_infra_srs
+  - mkdir -p infrastructure/retina-cronjobs
+  - cp -r /tmp/ocudu_infra_srs/infrastructure/retina-cronjobs/tf-registry-credentials infrastructure/retina-cronjobs/
+  - cp -r /tmp/ocudu_infra_srs/infrastructure/retina-cronjobs/registry-credentials infrastructure/retina-cronjobs/
+
+.rc-base:
+  tags:
+    - ${RUNNER_TAGS}
+  rules:
+    - if: $ON_MR
+  variables:
+    TF_VAR_authToken: "$REGISTRY_AUTH"
+    OCUDU_BRANCH: main
+    GITLAB_TOFU_ROOT_DIR: "infrastructure/retina-cronjobs/tf-registry-credentials"
+  before_script:
+    - *setup-files
+    - |
+      eval K_PATH="\$$KUBECONFIG_VAR_NAME"
+      export TF_VAR_kubeconfig=$K_PATH
+      export TF_VAR_namespaces="$NAMESPACES"
+  retry: 2
+
+###############################################
+## Format registry credentials with OpenTofu ##
+###############################################
+
+tofu-fmt registry-credentials:
+  stage: fmt
+  extends:
+    - .rc-base
+    - .opentofu:fmt
+  before_script:
+    - *setup-files
+
+#################################################
+## Validate registry credentials with OpenTofu ##
+#################################################
+
+tofu-validate registry-credentials:
+  stage: validate
+  extends:
+    - .rc-base
+    - .opentofu:validate
+  before_script:
+    - *setup-files
+  cache: []
+
+#############################################
+## Plan registry credentials with OpenTofu ##
+#############################################
+
+tofu-plan registry-credentials:
+  stage: plan
+  extends:
+    - .rc-base
+    - .opentofu:plan
+  before_script:
+    - *setup-files
+    - |
+      eval K_PATH="\$$KUBECONFIG_VAR_NAME"
+      export TF_VAR_kubeconfig=$K_PATH
+      export TF_VAR_namespaces="$NAMESPACES"
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+
+###############################################
+## Retina registry credentials with OpenTofu ##
+###############################################
+
+tofu-apply registry-credentials:
+  stage: apply
+  extends:
+    - .rc-base
+    - .opentofu:apply
+  before_script:
+    - *setup-files
+    - |
+      eval K_PATH="\$$KUBECONFIG_VAR_NAME"
+      export TF_VAR_kubeconfig=$K_PATH
+      export TF_VAR_namespaces="$NAMESPACES"
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: true

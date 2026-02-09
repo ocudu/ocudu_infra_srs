@@ -22,3 +22,4 @@ rules:
 ignore: |
   e2e/tests/test_mode/
   docs/node_modules/
+  infrastructure/retina-runner/registry-credentials/templates/

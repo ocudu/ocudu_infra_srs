@@ -1,0 +1,42 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+variables:
+  TERRAFORM_VERSION: "1.12.1"
+
+#
+# Base Terraform job templates
+#
+
+.terraform-base:
+  image:
+    name: ${GITLAB_REGISTRY_URI}/ci/infrastructure/terraform:${TERRAFORM_VERSION}
+    entrypoint: ["/bin/sh", "-c"]
+  # Note: tags and other cluster-specific values should be set in the specific CI files
+  # KUBECONFIG_VAR_NAME can be set to dynamically resolve the kubeconfig path
+  before_script:
+    - cd $TF_DIR
+    - |
+      terraform init \
+        --backend-config=backend.tfbackend \
+        --backend-config=username=$CODEBOT_USERNAME \
+        --backend-config=password=$CODEBOT_TOKEN \
+        --backend-config="address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}" \
+        --backend-config="lock_address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}/lock" \
+        --backend-config="unlock_address=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/terraform-${TF_STATE_NAME}/lock"
+    - |
+      if [ -n "$KUBECONFIG_VAR_NAME" ]; then
+        eval KUBECONFIG_PATH="\$$KUBECONFIG_VAR_NAME"
+        export KUBECONFIG=$KUBECONFIG_PATH
+        if [ -f "$KUBECONFIG_PATH" ]; then
+          mkdir -p ~/.kube/
+          cp $KUBECONFIG_PATH ~/.kube/config
+          chmod 600 ~/.kube/config
+        fi
+      fi
+  retry: 2

@@ -1,0 +1,44 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+variable "kubeconfig" {
+  type    = string
+  default = "~/.kube/config"
+}
+variable "namespace" { type = string }
+variable "container_version" { type = string }
+variable "taint_key" { type = string }
+variable "taint_value" { type = string }
+variable "gitlab_group_id" { type = string }
+#
+# Retina runner Terraform variables
+#
+
+variable "organization_name" { type = string }
+
+variable "runners_file" {
+  type        = list(string)
+  description = "List of paths to <cluster>_runners.yaml files used to populate the dedicated runners ConfigMap (namespace: retina). Supports multiple files to allow cross-cluster organization deployments. Paths are relative to the parent repo (e.g., infrastructure repo)."
+  default     = []
+
+  validation {
+    condition     = length(var.runners_file) > 0 && alltrue([for f in var.runners_file : fileexists(pathexpand(f))])
+    error_message = "runners_file must be a non-empty list and all files must exist. Files should be in your private repo, e.g., [\"cluster_definition/lab_cluster_runners.yaml\"]"
+  }
+}
+
+variable "enabled_cronjobs" {
+  type        = list(string)
+  description = "List of cronjob keys to enable. Valid values: cluster-cleanup, runner-manager, amarisoft-license, infrastructure-issues-notifier"
+  default     = []
+}
+
+variable "image_repository" {
+  type    = string
+  default = "registry.gitlab.com/softwareradiosystems/ci/infrastructure/retina-runner"
+}

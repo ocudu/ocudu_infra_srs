@@ -1,0 +1,264 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+# Example .gitlab-ci.yml for your private infrastructure repository
+#
+# This file demonstrates how to use the generic CI templates from ocudu_infra_srs
+# in your private infrastructure repository.
+#
+# Copy this file to your private repo and customize the variables for your clusters.
+
+include:
+  - project: ocudu/ocudu
+    file: .gitlab/ci-shared/workflow.yml
+    ref: dev
+
+stages:
+  - child
+  - deployer
+
+################################
+## GitLab Runner Deployment ##
+################################
+
+# Deploy GitLab runners using the generator-based workflow
+deploy-gitlab-runners your-cluster:
+  stage: child
+  variables:
+    CLUSTER_DEF: cluster_definition/your_cluster.yaml          # Main cluster definition
+    CLUSTER_TYPE: your-cluster                                 # Cluster type filter
+    OUTPUT_DIR: gitlab-runner/your-cluster                     # Output directory for artifacts
+    TF_STATE_NAME: helm-your-cluster                           # Terraform state name
+    RUNNER_UPDATE_TOKEN_VAR: $YOUR_RUNNER_TOKEN               # Runner token variable
+    RUNNERS_DEF: cluster_definition/your_cluster_runners.yaml  # Runner definitions
+    RUNNER_TAGS: terraform                                     # Tags for CI runner
+  trigger:
+    include:
+      - project: ocudu/ocudu_infra_srs
+        ref: main
+        file: infrastructure/gitlab-runner/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - if: $ON_MR
+    - if: $ON_DEFAULT_BRANCH
+
+#############################
+## Retina Runner Deployment ##
+#############################
+
+# Deploy retina-runner cronjobs to your cluster
+retina-runner deploy your-cluster:
+  stage: child
+  variables:
+    # Cluster-specific configuration
+    KUBECONFIG_VAR_NAME: "YOUR_KUBECONFIG_VAR"           # Name of CI/CD variable with kubeconfig
+    NAMESPACE: "infrastructure"                           # Kubernetes namespace
+    TF_STATE_NAME: "retina-runner-cronjob-your-cluster"  # Terraform state name
+    ORGANIZATION_NAME: "your-org"                         # Your organization identifier
+    GROUP_ID: "YOUR_GITLAB_GROUP_ID"                      # GitLab group ID
+    RUNNERS_FILE_PATH: "cluster_definition/your_runners.yaml"
+    ENABLED_CRONJOBS: '["cluster-cleanup","runner-manager"]'
+    RUNNER_TAGS: "terraform"                              # GitLab runner tags
+  trigger:
+    include:
+      - project: ocudu/ocudu_infra_srs
+        ref: main
+        file: infrastructure/retina-runner/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - if: $ON_MR
+    - if: $ON_DEFAULT_BRANCH
+
+###################################
+## Registry Credentials Deployment ##
+###################################
+
+# Deploy Docker registry credentials to your cluster
+registry-credentials your-cluster:
+  stage: deployer
+  variables:
+    KUBECONFIG_VAR_NAME: "YOUR_KUBECONFIG_VAR"
+    GITLAB_TOFU_STATE_NAME: "registry-credentials-your-cluster"
+    NAMESPACES: '["infrastructure", "retina"]'           # Namespaces to deploy credentials
+    REGISTRY_AUTH: $REGISTRY_AUTH                        # Forward project-level variable
+    RUNNER_TAGS: "terraform"
+  trigger:
+    include:
+      - project: ocudu/ocudu_infra_srs
+        ref: main
+        file: infrastructure/retina-runner/tf-registry-credentials/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - if: $ON_MR
+      when: manual
+    - if: $ON_DEFAULT_BRANCH
+
+###################
+## RBAC Deployment ##
+###################
+
+# Deploy Kubernetes RBAC configuration
+k8s-rbac your-cluster:
+  stage: deployer
+  variables:
+    RUNNER_TAGS: "terraform"
+    KUBECONFIG_VAR_NAME: "YOUR_KUBECONFIG_VAR"
+    TF_STATE_NAME: "rbac-your-cluster"
+  trigger:
+    include:
+      - project: ocudu/ocudu_infra_srs
+        ref: main
+        file: infrastructure/k8s/rbac/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - if: $ON_MR
+    - if: $ON_DEFAULT_BRANCH
+
+##############################
+## Core K8s Resources Deployment ##
+##############################
+
+# Deploy core Kubernetes resources (coredump cleanup, etcd defrag)
+k8s-core your-cluster:
+  stage: deployer
+  variables:
+    RUNNER_TAGS: "terraform"
+    KUBECONFIG_VAR_NAME: "YOUR_KUBECONFIG_VAR"
+    TF_STATE_NAME: "k8s-core-your-cluster"
+    RESOURCE: "kubernetes_manifest.coredump_cleanup"  # Or kubernetes_manifest.etcd_defrag
+  trigger:
+    include:
+      - project: ocudu/ocudu_infra_srs
+        ref: main
+        file: infrastructure/k8s/core/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - if: $ON_MR
+      when: manual
+    - if: $ON_DEFAULT_BRANCH
+
+#########################
+## Helm Services Deployment ##
+#########################
+
+# Deploy tuned service
+deploy-tuned your-cluster:
+  stage: deployer
+  variables:
+    CLUSTER_DEF: cluster_definition/your_cluster.yaml
+    CLUSTER_TYPE: your-cluster
+    OUTPUT_DIR: k8s/Helm/tuned/generated
+    SERVICE_DEF: cluster_definition/your_cluster_services.yaml
+    RUNNER_TAGS: "terraform"
+    KUBECONFIG_VAR_NAME: "YOUR_KUBECONFIG_VAR"
+    TF_STATE_NAME: "tuned-your-cluster"
+  trigger:
+    include:
+      - project: ocudu/ocudu_infra_srs
+        ref: main
+        file: infrastructure/k8s/Helm/tuned/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - cluster_definition/your_cluster.yaml
+          - cluster_definition/your_cluster_services.yaml
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - cluster_definition/your_cluster.yaml
+          - cluster_definition/your_cluster_services.yaml
+
+# Deploy linuxptp service
+deploy-linuxptp your-cluster:
+  stage: deployer
+  variables:
+    CLUSTER_DEF: cluster_definition/your_cluster.yaml
+    CLUSTER_TYPE: your-cluster
+    OUTPUT_DIR: k8s/Helm/linuxptp/generated
+    SERVICE_DEF: cluster_definition/your_cluster_services.yaml
+    RUNNER_TAGS: "terraform"
+    KUBECONFIG_VAR_NAME: "YOUR_KUBECONFIG_VAR"
+    TF_STATE_NAME: "linuxptp-your-cluster"
+  trigger:
+    include:
+      - project: ocudu/ocudu_infra_srs
+        ref: main
+        file: infrastructure/k8s/Helm/linuxptp/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - cluster_definition/your_cluster.yaml
+          - cluster_definition/your_cluster_services.yaml
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        paths:
+          - cluster_definition/your_cluster.yaml
+          - cluster_definition/your_cluster_services.yaml
+
+#############################
+## Multi-Cluster Example ##
+#############################
+
+# Example: Deploy GitLab runners to multiple clusters using parallel matrix
+# Uncomment and customize for your clusters
+
+# deploy-gitlab-runners multi:
+#   stage: child
+#   parallel:
+#     matrix:
+#       - CLUSTER_NAME: prod
+#         KUBECONFIG_VAR_NAME: "PROD_KUBECONFIG"
+#         CLUSTER_TYPE: "prod-cluster"
+#         TF_STATE_NAME: "helm-prod"
+#       - CLUSTER_NAME: staging
+#         KUBECONFIG_VAR_NAME: "STAGING_KUBECONFIG"
+#         CLUSTER_TYPE: "staging-cluster"
+#         TF_STATE_NAME: "helm-staging"
+#   variables:
+#     CLUSTER_DEF: cluster_definition/${CLUSTER_NAME}_cluster.yaml
+#     OUTPUT_DIR: gitlab-runner/${CLUSTER_NAME}
+#     RUNNER_UPDATE_TOKEN_VAR: $YOUR_RUNNER_TOKEN
+#     RUNNERS_DEF: cluster_definition/${CLUSTER_NAME}_runners.yaml
+#     RUNNER_TAGS: "terraform"
+#   trigger:
+#     include:
+#       - project: ocudu/ocudu_infra_srs
+#         ref: main
+#         file: infrastructure/gitlab-runner/.gitlab-ci.yml
+#     strategy: depend
+#   rules:
+#     - if: $ON_DEFAULT_BRANCH
+
+# Example: Deploy registry credentials to multiple clusters
+# registry-credentials multi:
+#   stage: deployer
+#   parallel:
+#     matrix:
+#       - CLUSTER_NAME: lab
+#         KUBECONFIG_VAR_NAME: "KUBECONFIG_LAB"
+#         NAMESPACES: '["infrastructure", "retina"]'
+#         TF_STATE_NAME: "registry-credentials-lab"
+#       - CLUSTER_NAME: datacenter
+#         KUBECONFIG_VAR_NAME: "KUBECONFIG_DC"
+#         NAMESPACES: '["infra", "retina"]'
+#         TF_STATE_NAME: "registry-credentials-dc"
+#   variables:
+#     REGISTRY_AUTH: $REGISTRY_AUTH
+#     RUNNER_TAGS: "terraform"
+#   trigger:
+#     include:
+#       - project: ocudu/ocudu_infra_srs
+#         ref: main
+#         file: infrastructure/retina-runner/tf-registry-credentials/.gitlab-ci.yml
+#     strategy: depend
+#   rules:
+#     - if: $ON_DEFAULT_BRANCH

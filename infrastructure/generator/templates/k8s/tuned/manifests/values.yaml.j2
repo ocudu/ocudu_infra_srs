@@ -1,0 +1,101 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+image:
+  repository: {{ image_repository }}
+  tag: "{{ image_tag }}"
+  pullPolicy: {{ image_pull_policy }}
+
+profileName: {{ profile_name }}
+
+profileContent: |
+{{ profile_content | indent(2) }}
+
+startupScriptContent: |-
+{{ startup_script_content | indent(2) }}
+
+affinity:
+{% if affinity %}
+{% if affinity.nodeAffinity %}
+  nodeAffinity:
+{% if affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution %}
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ node_name }}
+{% endif %}
+{% endif %}
+{% else %}
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ node_name }}
+{% endif %}
+
+tolerations:
+{% for toleration in tolerations %}
+  - key: "{{ toleration.key }}"
+    operator: "{{ toleration.operator }}"
+{% if toleration.value %}
+    value: "{{ toleration.value }}"
+{% endif %}
+    effect: "{{ toleration.effect }}"
+{% endfor %}
+
+hostPathTuned: {{ host_path_tuned }}
+
+nodeSelector: {{ node_selector | tojson }}
+{% if node_selector == {} %}
+  # kubernetes.io/hostname: {{ node_name }}
+{% endif %}
+
+securityContext:
+{% if security_context %}
+{% for key, value in security_context.items() %}
+  {{ key }}: {{ value | lower if value is sameas true or value is sameas false else value }}
+{% endfor %}
+{% else %}
+  privileged: true
+{% endif %}
+
+resources: {{ resources | tojson }}
+
+annotations: {{ annotations | tojson }}
+
+restartOnConfigChange: {{ restart_on_config_change | lower }}
+
+reboot:
+{% if reboot %}
+{% if reboot.enabled is defined %}
+  enabled: {{ reboot.enabled | lower }}
+{% else %}
+  enabled: true
+{% endif %}
+{% if reboot.cmd %}
+  cmd: "{{ reboot.cmd }}"
+{% else %}
+  cmd: "/sbin/shutdown -r +1 'tuned profile applied by helm'"
+{% endif %}
+{% if reboot.markerDir %}
+  markerDir: {{ reboot.markerDir }}
+{% else %}
+  markerDir: /var/lib/tuned-helm
+{% endif %}
+{% else %}
+  enabled: true
+  cmd: "/sbin/shutdown -r +1 'tuned profile applied by helm'"
+  markerDir: /var/lib/tuned-helm
+{% endif %}
+

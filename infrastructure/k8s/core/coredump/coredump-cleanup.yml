@@ -1,0 +1,46 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: coredump-cleanup
+  namespace: infrastructure
+spec:
+  selector:
+    matchLabels:
+      app: coredump-cleanup
+  template:
+    metadata:
+      labels:
+        app: coredump-cleanup
+    spec:
+      nodeSelector:
+        cleanup: "true"
+      containers:
+        - name: cleanup
+          image: alpine:3.19
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                echo "===== Cleanup run at $(date) ====="
+                find /mnt/coredump -xdev -type f -mtime +7 -print -delete
+                echo "===== Disk usage after cleanup ====="
+                df -h /mnt/coredump
+                echo "===================================="
+                sleep 24h
+              done
+          volumeMounts:
+            - name: coredump-dir
+              mountPath: /mnt/coredump
+      volumes:
+        - name: coredump-dir
+          hostPath:
+            path: /mnt/coredump
