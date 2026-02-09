@@ -11,33 +11,53 @@ Entrypoint to deploy cluster.
 """
 
 import argparse
+import base64
 import json
 import os
+import sys
+import time
 from pathlib import Path
-from typing import Optional
+from typing import Dict
 
 import yaml
 
-from retina.orchestrator.reservation.utils import deploy_server
+from retina.orchestrator import configs
+from retina.orchestrator.const import CLUSTER_CONFIGURATION_CONFIGMAP_NAME
 from retina.orchestrator.retina_kubernetes import Kubernetes
-from retina.orchestrator.utils import validate
+from retina.orchestrator.utils import get_current_time, validate
 
 
-def _infer_runners_file(input_path: Path) -> Optional[Path]:
-    """
-    Infer a sibling runners file for a given cluster definition input.
+def _build_data(config_path: Path) -> Dict:
+    with open(str(config_path), encoding="UTF-8") as file:
+        conf = yaml.load(file, Loader=yaml.FullLoader)
 
-    Example:
-      lab_cluster.yaml -> lab_cluster_runners.yaml
-      def_high_performance.yml -> def_high_performance_runners.yaml
-    """
-    base_dir = input_path.parent
-    base_name = input_path.stem
-    for suffix in ("yaml", "yml"):
-        candidate = base_dir / f"{base_name}_runners.{suffix}"
-        if candidate.exists():
-            return candidate
-    return None
+    current_date = get_current_time()
+    resource_list = base64.b64encode(json.dumps(conf["nodes"]).encode("ascii")).decode("ascii")
+    cluster_resource_list = base64.b64encode(json.dumps(conf["cluster_resource_list"]).encode("ascii")).decode("ascii")
+
+    return {
+        "update-time": current_date,
+        "version": conf["global"]["version"],
+        "networking-mode": conf["global"]["networking-mode"],
+        "dnsPolicy": conf["global"]["dnsPolicy"],
+        "resource": resource_list,
+        "cluster_resource_list": cluster_resource_list,
+    }
+
+
+def _deploy_config_map(k_server: Kubernetes, config_map_data: Dict):
+    k_server.delete_config_map(CLUSTER_CONFIGURATION_CONFIGMAP_NAME)
+    while k_server.config_map_exists(CLUSTER_CONFIGURATION_CONFIGMAP_NAME):
+        time.sleep(1)
+    k_server.create_config_map(
+        configs.ConfigmapConfig(
+            orch_id="retinaadmin",
+            user_name="retinaadmin",
+            timeout=None,
+            data=config_map_data,
+            name=CLUSTER_CONFIGURATION_CONFIGMAP_NAME,
+        )
+    )
 
 
 def main():
@@ -50,11 +70,6 @@ def main():
         default="../../../../tests/helpers/cluster.yml",
         help="YAML file with the resources.",
     )
-    parser.add_argument(
-        "--runners-file",
-        default="",
-        help="Optional runners YAML file (e.g. lab_cluster_runners.yaml). If omitted, it is inferred from --input.",
-    )
     parser.add_argument("--in-cluster", action="store_true", help="Running inside a cluster.")
     parser.add_argument("--dry-run", action="store_true", help="Dry run.")
     args = parser.parse_args()
@@ -62,9 +77,6 @@ def main():
     dry_run = args.dry_run
 
     i_path: Path = Path(args.input).resolve()
-    runners_path: Optional[Path] = (
-        Path(args.runners_file).resolve() if args.runners_file else _infer_runners_file(i_path)
-    )
 
     # Validate input yaml with jsonschema
     with open(
@@ -87,9 +99,13 @@ def main():
                 raise ValueError(f"Duplicate type+model combination: {key}")
             seen.add(key)
 
-    if not dry_run:
-        k_server = Kubernetes(is_incluster=in_cluster)
-        deploy_server(config_path=i_path, k_server=k_server, runners_path=runners_path)
+    data = _build_data(config_path=i_path)
+    if dry_run:
+        json.dump(data, sys.stdout)
+        return
+
+    k_server = Kubernetes(is_incluster=in_cluster)
+    _deploy_config_map(k_server, data)
 
 
 if __name__ == "__main__":
