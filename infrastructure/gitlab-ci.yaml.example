@@ -51,14 +51,14 @@ deploy-gitlab-runners your-cluster:
 ## Retina Runner Deployment ##
 #############################
 
-# Deploy retina-runner cronjobs to your cluster
-retina-runner deploy your-cluster:
+# Deploy retina-cronjobs cronjobs to your cluster
+retina-cronjobs deploy your-cluster:
   stage: child
   variables:
     # Cluster-specific configuration
     KUBECONFIG_VAR_NAME: "YOUR_KUBECONFIG_VAR"           # Name of CI/CD variable with kubeconfig
     NAMESPACE: "infrastructure"                           # Kubernetes namespace
-    TF_STATE_NAME: "retina-runner-cronjob-your-cluster"  # Terraform state name
+    TF_STATE_NAME: "retina-cronjobs-cronjob-your-cluster"  # Terraform state name
     ORGANIZATION_NAME: "your-org"                         # Your organization identifier
     GROUP_ID: "YOUR_GITLAB_GROUP_ID"                      # GitLab group ID
     RUNNERS_FILE_PATH: "cluster_definition/your_runners.yaml"
@@ -68,7 +68,7 @@ retina-runner deploy your-cluster:
     include:
       - project: ocudu/ocudu_infra_srs
         ref: main
-        file: infrastructure/retina-runner/.gitlab-ci.yml
+        file: infrastructure/retina-cronjobs/.gitlab-ci.yml
     strategy: depend
   rules:
     - if: $ON_MR
@@ -91,7 +91,7 @@ registry-credentials your-cluster:
     include:
       - project: ocudu/ocudu_infra_srs
         ref: main
-        file: infrastructure/retina-runner/tf-registry-credentials/.gitlab-ci.yml
+        file: infrastructure/retina-cronjobs/tf-registry-credentials/.gitlab-ci.yml
     strategy: depend
   rules:
     - if: $ON_MR
@@ -258,7 +258,7 @@ deploy-linuxptp your-cluster:
 #     include:
 #       - project: ocudu/ocudu_infra_srs
 #         ref: main
-#         file: infrastructure/retina-runner/tf-registry-credentials/.gitlab-ci.yml
+#         file: infrastructure/retina-cronjobs/tf-registry-credentials/.gitlab-ci.yml
 #     strategy: depend
 #   rules:
 #     - if: $ON_DEFAULT_BRANCH

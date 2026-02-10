@@ -9,12 +9,11 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: amarisoft-license-${organization_name}
+  name: infrastructure-issues-notifier-${organization_name}
   namespace: ${namespace}
 spec:
-  schedule: "* * * * *"  # Every minute
-  timeZone: "Europe/Madrid"
-  concurrencyPolicy: Replace
+  schedule: "*/10 * * * *"
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: 50
@@ -23,17 +22,17 @@ spec:
           annotations:
             retinaRunnerJob: "true"
         spec:
-          serviceAccountName: retina-runner-sa-${organization_name}
+          serviceAccountName: retina-cronjobs-sa-${organization_name}
           containers:
-            - name: amarisoft-license-script
+            - name: infrastructure-issues-notifier-script
               image: ${image_repository}:${image_tag}
               imagePullPolicy: IfNotPresent
-              command: ["/bin/sh"]
-              args:
-                - "-c"
+              command:
+                - /bin/sh
+                - -c
                 - |
                   set -euo pipefail
-                  python3 /usr/local/bin/amarisoft_license.py --incluster
+                  python3 /usr/local/bin/gitlab_checker.py --check-before 1200 --group-id "${gitlab_group_id}"
               env:
                 - name: GITLAB_TOKEN
                   valueFrom:

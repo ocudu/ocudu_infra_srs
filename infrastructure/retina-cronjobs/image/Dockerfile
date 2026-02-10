@@ -7,9 +7,9 @@
 #
 
 ARG RETINA_VERSION=""
-ARG CR_REGISTRY_URI=""
+ARG RETINA_REGISTRY_URI=""
 
-FROM ${CR_REGISTRY_URI}/ocudu_infra_srs/retina/launcher:${RETINA_VERSION}
+FROM ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
 
 COPY amarisoft_license.py deletePods.sh gitlab_checker.py retina_runner.py reserve_resource.sh /usr/local/bin/
 

@@ -9,23 +9,22 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: runner-manager-${organization_name}
+  name: cluster-cleanup-${organization_name}
   namespace: ${namespace}
 spec:
-  schedule: "*/1 7-19 * * 1-5"  # 7:00 to 19:59
-  timeZone: "Europe/Madrid"
-  concurrencyPolicy: Replace
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
-      ttlSecondsAfterFinished: 50
+      ttlSecondsAfterFinished: 60
       template:
         metadata:
           annotations:
             retinaRunnerJob: "true"
         spec:
-          serviceAccountName: retina-runner-sa-${organization_name}
+          serviceAccountName: retina-cronjobs-sa-${organization_name}
           containers:
-            - name: runner-manager-script
+            - name: cluster-cleanup-script
               image: ${image_repository}:${image_tag}
               imagePullPolicy: IfNotPresent
               command: ["/bin/sh"]
@@ -33,15 +32,7 @@ spec:
                 - "-c"
                 - |
                   set -euo pipefail
-                  python3 /usr/local/bin/retina_runner.py --incluster
-              env:
-                - name: RETINA_RUNNERS_CONFIGMAP
-                  value: retina-runners-${organization_name}
-                - name: GITLAB_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: gitlabtoken-${organization_name}
-                      key: GITLAB_TOKEN
+                  /bin/sh /usr/local/bin/deletePods.sh ${taint_key}=${taint_value}
           imagePullSecrets:
             - name: registry-credentials
           tolerations:

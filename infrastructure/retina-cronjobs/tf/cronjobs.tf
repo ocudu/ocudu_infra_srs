@@ -7,7 +7,7 @@
 #
 
 locals {
-  image_tag = var.container_version
+  image_tag = var.retina_cronjobs_version
 
   cronjobs = {
     "amarisoft-license" = {

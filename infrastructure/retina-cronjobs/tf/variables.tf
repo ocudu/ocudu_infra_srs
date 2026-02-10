@@ -11,7 +11,7 @@ variable "kubeconfig" {
   default = "~/.kube/config"
 }
 variable "namespace" { type = string }
-variable "container_version" { type = string }
+variable "retina_cronjobs_version" { type = string }
 variable "taint_key" { type = string }
 variable "taint_value" { type = string }
 variable "gitlab_group_id" { type = string }
@@ -40,5 +40,5 @@ variable "enabled_cronjobs" {
 
 variable "image_repository" {
   type    = string
-  default = "registry.gitlab.com/softwareradiosystems/ci/infrastructure/retina-runner"
+  default = "registry.gitlab.com/softwareradiosystems/ci/infrastructure/retina-cronjobs"
 }

@@ -8,7 +8,7 @@
 
 locals {
   # Read the token file from private repo's cluster_definition/secrets/ directory
-  # Path from CI workspace: infrastructure/retina-runner/tf/ -> ../../../cluster_definition/secrets/
+  # Path from CI workspace: infrastructure/retina-cronjobs/tf/ -> ../../../cluster_definition/secrets/
   token_file_path = "${path.module}/../../../cluster_definition/secrets/gitlab-tokens-${var.organization_name}.yaml"
   token_file      = yamldecode(file(local.token_file_path))
 }

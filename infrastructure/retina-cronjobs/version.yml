@@ -6,8 +6,5 @@
 # the distribution.
 #
 
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: retina-runner-sa-${organization_name}
-  namespace: ${namespace}
+variables:
+  RETINA_CRONJOBS_VERSION: "2.7.0"

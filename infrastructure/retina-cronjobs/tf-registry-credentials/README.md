@@ -69,7 +69,7 @@ opentofu deploy registry-credentials lab:
     include:
       - project: ocudu/ocudu
         ref: dev
-        file: infrastructure/retina-runner/tf-registry-credentials/.gitlab-ci.yml
+        file: infrastructure/retina-cronjobs/tf-registry-credentials/.gitlab-ci.yml
     strategy: depend
   rules:
     - if: $ON_MR
@@ -219,14 +219,14 @@ include:
     inputs:
       opentofu_version: 1.10.6
       state_name: ${GITLAB_TOFU_STATE_NAME}
-      working_directory: infrastructure/retina-runner/tf-registry-credentials
+      working_directory: infrastructure/retina-cronjobs/tf-registry-credentials
       tf_var_files: []
 
 before_script:
   - git clone --depth 1 --branch ${OCUDU_BRANCH:-main} https://gitlab.com/ocudu/ocudu.git /tmp/ocudu_infra_srs
-  - mkdir -p infrastructure/retina-runner
-  - cp -r /tmp/ocudu_infra_srs/infrastructure/retina-runner/tf-registry-credentials infrastructure/retina-runner/
-  - cp -r /tmp/ocudu_infra_srs/infrastructure/retina-runner/registry-credentials infrastructure/retina-runner/
+  - mkdir -p infrastructure/retina-cronjobs
+  - cp -r /tmp/ocudu_infra_srs/infrastructure/retina-cronjobs/tf-registry-credentials infrastructure/retina-cronjobs/
+  - cp -r /tmp/ocudu_infra_srs/infrastructure/retina-cronjobs/registry-credentials infrastructure/retina-cronjobs/
   - export TF_VAR_authToken="${REGISTRY_AUTH}"
   - eval K_PATH="\$$KUBECONFIG_VAR_NAME"
   - export TF_VAR_kubeconfig="${K_PATH}"
@@ -251,7 +251,7 @@ opentofu deploy registry-credentials lab:
     include:
       - project: ocudu/ocudu
         ref: dev
-        file: infrastructure/retina-runner/tf-registry-credentials/.gitlab-ci.yml
+        file: infrastructure/retina-cronjobs/tf-registry-credentials/.gitlab-ci.yml
     strategy: depend
 ```
 
@@ -269,7 +269,7 @@ opentofu deploy registry-credentials dc:
     include:
       - project: ocudu/ocudu
         ref: dev
-        file: infrastructure/retina-runner/tf-registry-credentials/.gitlab-ci.yml
+        file: infrastructure/retina-cronjobs/tf-registry-credentials/.gitlab-ci.yml
     strategy: depend
 ```
 

@@ -1,0 +1,69 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/docker.yml
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/version_check.yml
+
+.docker-builder-retina-cronjobs:
+  extends: .docker-builder
+  variables:
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    NAME: retina-cronjobs
+    CONTEXT: infrastructure/retina-cronjobs/image
+    VERSION: ${RETINA_CRONJOBS_VERSION}
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
+
+cronjob container version changed:
+  stage: static
+  extends: .version increased
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - infrastructure/retina-cronjobs/image/Dockerfile
+          - infrastructure/retina-cronjobs/image/**/*.py
+          - infrastructure/retina-cronjobs/image/**/*.sh
+  variables:
+    FILE_PATH: infrastructure/retina-cronjobs/version.yml
+    VARIABLE_NAME: RETINA_CRONJOBS_VERSION
+
+only build base:
+  stage: ci
+  extends: .docker-builder-retina-cronjobs
+  rules:
+    - if: $ON_MR
+  variables:
+    MODE: test
+
+build and publish final:
+  stage: ci
+  extends: .docker-builder-retina-cronjobs
+  rules:
+    - if: $ON_DEFAULT_BRANCH
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+  retry: 2
+  variables:
+    MODE: publish

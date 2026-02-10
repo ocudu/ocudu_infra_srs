@@ -68,7 +68,7 @@ graph LR
 
 ## Index
 
-- [Infrastructure Setup](infra/README.md)
+- [Infrastructure Setup](infrastructure/README.md)
 - [Gitlab CI Components](templates/README.md)
 - [OCUDU E2E Testing](e2e/README.md)
 - [Retina Framework for E2E Testing](retina/README.md)

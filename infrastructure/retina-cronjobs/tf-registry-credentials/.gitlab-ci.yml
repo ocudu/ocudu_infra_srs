@@ -16,7 +16,7 @@ include:
   - local: infrastructure/base/terraform.yml
   - component: gitlab.com/components/opentofu/job-templates@3.11.0
     inputs:
-      root_dir: "infrastructure/retina-runner/tf-registry-credentials"
+      root_dir: "infrastructure/retina-cronjobs/tf-registry-credentials"
       state_name: "${GITLAB_TOFU_STATE_NAME}"
       auto_define_backend: true
 
