@@ -4,10 +4,12 @@ gnb_id_bit_length: {{gnb_id_bit_length}}
 
 gnb_du_id: {{gnb_du_id}}
 
+{% if type == "zmq" %}
 trace:
   filename: {{tracing_filename}}
   max_tracing_events_per_file: 1000000
   nof_tracing_events_after_severe: 500
+{% endif %}
 
 pcap:
   mac_filename: {{mac_filename}}

@@ -98,10 +98,10 @@ def test_s72_sequentially(
         bandwidth=50,
         noise_spd=0,
         sleep_between_movement_steps=1,
-        always_download_artifacts=False,
+        always_download_artifacts=True,
         nof_antennas_dl=4,
         prach_config_index=159,
-        warning_as_errors=False,
+        warning_as_errors=True,
         stop_gnb_first=True,
         verbose_cu_mac=False,
     )

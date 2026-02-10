@@ -576,7 +576,7 @@ def test_ping_s72_fr2(
         ue_stop_timeout=3,
         pdcch_log=True,
         always_download_artifacts=True,
-        warning_as_errors=False,
+        warning_as_errors=True,
     )
 
 
