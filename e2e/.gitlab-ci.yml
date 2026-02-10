@@ -606,25 +606,25 @@ validate b200 config:
   needs:
     - release with deb info
 
-xiaomi b200:
+android b200:
   extends: .android
   variables:
     TESTBED: android_b200
     KEYWORDS: "not ims"
 
-xiaomi b200 drx:
+android b200 drx:
   extends: .android
   variables:
     TESTBED: android_b200
     MARKERS: android_drx
 
-xiaomi x300:
+android x300:
   extends: .android
   variables:
     TESTBED: android_x300
     MARKERS: android_hp
 
-xiaomi x300 ims:
+android x300 ims:
   extends: .android
   variables:
     TESTBED: android_callbox
