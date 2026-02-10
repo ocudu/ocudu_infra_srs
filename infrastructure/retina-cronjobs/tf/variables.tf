@@ -40,5 +40,5 @@ variable "enabled_cronjobs" {
 
 variable "image_repository" {
   type    = string
-  default = "registry.gitlab.com/softwareradiosystems/ci/infrastructure/retina-cronjobs"
+  default = "registry.gitlab.com/ocudu/ocudu_infra_srs/retina/cronjobs"
 }

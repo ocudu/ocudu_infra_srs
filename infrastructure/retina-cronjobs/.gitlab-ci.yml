@@ -116,6 +116,7 @@ plan:
       terraform plan \
         -var="kubeconfig=$KUBECONFIG_PATH" \
         -var="namespace=$NAMESPACE" \
+        -var="image_repository=${RETINA_REGISTRY_URI}/cronjobs" \
         -var="retina_cronjobs_version=$RETINA_CRONJOBS_VERSION" \
         -var="taint_key=$TAINT_KEY" \
         -var="taint_value=$TAINT_VALUE" \
@@ -153,6 +154,7 @@ deploy cronjob:
       terraform apply -auto-approve \
         -var="kubeconfig=$KUBECONFIG_PATH" \
         -var="namespace=$NAMESPACE" \
+        -var="image_repository=${RETINA_REGISTRY_URI}/cronjobs" \
         -var="retina_cronjobs_version=$RETINA_CRONJOBS_VERSION" \
         -var="taint_key=$TAINT_KEY" \
         -var="taint_value=$TAINT_VALUE" \

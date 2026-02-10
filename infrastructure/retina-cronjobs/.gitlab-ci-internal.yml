@@ -24,12 +24,13 @@ include:
   - project: $[[ inputs.ocudu_path ]]
     ref: $[[ inputs.ocudu_ref ]]
     file: .gitlab/ci-shared/version_check.yml
+  - local: infrastructure/retina-cronjobs/version.yml
 
 .docker-builder-retina-cronjobs:
   extends: .docker-builder
   variables:
     REGISTRY_URI: ${RETINA_REGISTRY_URI}
-    NAME: retina-cronjobs
+    NAME: cronjobs
     CONTEXT: infrastructure/retina-cronjobs/image
     VERSION: ${RETINA_CRONJOBS_VERSION}
     BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
@@ -39,7 +40,7 @@ cronjob container version changed:
   extends: .version increased
   rules:
     - if: $ON_MR
-      changes:
+      changes: &retina_cronjobs_changes
         paths:
           - infrastructure/retina-cronjobs/image/Dockerfile
           - infrastructure/retina-cronjobs/image/**/*.py
@@ -53,6 +54,8 @@ only build base:
   extends: .docker-builder-retina-cronjobs
   rules:
     - if: $ON_MR
+      changes:
+        <<: *retina_cronjobs_changes
   variables:
     MODE: test
 
@@ -60,10 +63,15 @@ build and publish final:
   stage: ci
   extends: .docker-builder-retina-cronjobs
   rules:
-    - if: $ON_DEFAULT_BRANCH
     - if: $ON_MR
+      changes:
+        <<: *retina_cronjobs_changes
       when: manual
       allow_failure: true
+    - if: $ON_DEFAULT_BRANCH
+      changes:
+        <<: *retina_cronjobs_changes
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
   retry: 2
   variables:
     MODE: publish
