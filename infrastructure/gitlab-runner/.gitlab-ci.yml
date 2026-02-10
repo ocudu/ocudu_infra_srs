@@ -101,7 +101,7 @@ runner-quarantine-apply:
     RUNNER_UPDATE_TOKEN: ${RUNNER_UPDATE_TOKEN_VAR}
     RUNNERS_DEF: ${RUNNERS_DEF}
   needs:
-    - job: plan
+    - job: generate
       artifacts: true
   rules:
     - if: $ON_MR
@@ -110,6 +110,7 @@ runner-quarantine-apply:
     - if: $ON_DEFAULT_BRANCH
   script:
     - cd "$CI_PROJECT_DIR"
+    - echo "Processing $CI_PROJECT_DIR/$RUNNERS_DEF"
     - git clone --depth 1 --branch ${OCUDU_BRANCH:-main} https://gitlab.com/ocudu/ocudu_infra_srs.git /tmp/ocudu_infra_srs
     - chmod +x /tmp/ocudu_infra_srs/infrastructure/gitlab-runner/runner-quarantine-apply.sh
-    - /tmp/ocudu_infra_srs/infrastructure/gitlab-runner/runner-quarantine-apply.sh "${OUTPUT_DIR}/tf" "$RUNNERS_DEF" "$RUNNER_UPDATE_TOKEN"
+    - /tmp/ocudu_infra_srs/infrastructure/gitlab-runner/runner-quarantine-apply.sh "${OUTPUT_DIR}/tf" "$CI_PROJECT_DIR/$RUNNERS_DEF" "$RUNNER_UPDATE_TOKEN"

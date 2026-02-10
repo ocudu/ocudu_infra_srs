@@ -28,7 +28,7 @@ cd "$WORKDIR" || { echo "Failed to change directory to $WORKDIR"; exit 1; }
 echo after cd WORKDIR
 echo pwd: $(pwd)
 echo oldpwd: $OLDPWD
-SCRIPT_FOLDER=$OLDPWD
+SCRIPT_FOLDER=$(dirname "$(readlink -f "$0")")
 echo script folder: $SCRIPT_FOLDER
 
 terraform plan -out=tfplan
@@ -55,8 +55,8 @@ declare -A pid_to_runner
 
 # Launch all runner processes in parallel
 for runner_name in $RUNNERS; do
-   echo "Pausing runner $runner_name, waiting for its jobs to finish and, if timeout, cancelling them..."
-  ${SCRIPT_FOLDER}/runner_pause_wait_unpause.py --runner-name "$runner_name" --token "$RUNNER_UPDATE_TOKEN" --pause_wait --wait_minutes 1 --runners-def "$RUNNERS_DEF_PATH" &
+  echo "Pausing runner $runner_name, waiting for its jobs to finish and, if timeout, cancelling them..."
+  python ${SCRIPT_FOLDER}/runner_pause_wait_unpause.py --runner-name "$runner_name" --token "$RUNNER_UPDATE_TOKEN" --pause_wait --wait_minutes 1 --runners-def "$RUNNERS_DEF_PATH" &
   pid=$!
   pids+=("$pid")
   pid_to_runner["$pid"]="$runner_name"
@@ -77,7 +77,7 @@ for pid in "${pids[@]}"; do
     echo "Runner processes finished with errors. Unpausing runners..."
     for runner_name in $RUNNERS; do
       echo "Unpausing runner $runner_name..."
-      ${SCRIPT_FOLDER}/runner_pause_wait_unpause.py --runner-name "$runner_name" --token "$RUNNER_UPDATE_TOKEN" --unpause --runners-def "$RUNNERS_DEF_PATH" &
+      python ${SCRIPT_FOLDER}/runner_pause_wait_unpause.py --runner-name "$runner_name" --token "$RUNNER_UPDATE_TOKEN" --unpause --runners-def "$RUNNERS_DEF_PATH" &
     done
     wait
     echo "Runners unpaused. Exiting with error code 1..."
@@ -93,7 +93,7 @@ terraform apply -auto-approve tfplan
 for runner_name in $RUNNERS; do
   echo "Unpausing runner $runner_name..."
   # This (4) unpauses the runner.
-  ${SCRIPT_FOLDER}/runner_pause_wait_unpause.py --runner-name "$runner_name" --token "$RUNNER_UPDATE_TOKEN" --unpause --runners-def "$RUNNERS_DEF_PATH" &
+  python ${SCRIPT_FOLDER}/runner_pause_wait_unpause.py --runner-name "$runner_name" --token "$RUNNER_UPDATE_TOKEN" --unpause --runners-def "$RUNNERS_DEF_PATH" &
 done
 
 wait
