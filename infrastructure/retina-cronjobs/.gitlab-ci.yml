@@ -148,6 +148,7 @@ deploy cronjob:
     - if: $ON_MR
       when: manual
       allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   script:
     - |
       eval KUBECONFIG_PATH="\$$KUBECONFIG_VAR_NAME"

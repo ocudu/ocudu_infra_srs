@@ -7,7 +7,7 @@ This directory contains reusable CI/CD templates and configuration scripts for d
 The infrastructure automation provides **generic, reusable CI/CD templates** for:
 
 - **GitLab Runner deployment** - Automated deployment of GitLab runners for build, IAC, and E2E tests
-- **Kubernetes core resources** - Coredump cleanup and etcd defragmentation cronjobs
+- **Kubernetes core resources** - Coredump cleanup DaemonSet and etcd defragmentation CronJobs
 - **RBAC configuration** - Kubernetes role-based access control setup
 - **Helm services** - Tuned and LinuxPTP service deployments
 - **Retina runner management** - Automated runner scheduling and cleanup cronjobs
@@ -39,6 +39,13 @@ infrastructure/
 │   └── ...
 ├── k8s/
 │   ├── core/                        # Core k8s resources (coredump, etcd-defrag)
+│   │   ├── coredump/                # Coredump DaemonSet manifest template
+│   │   ├── etcd-defrag/             # etcd-defrag CronJob manifest template
+│   │   ├── tf/                      # Terraform configurations
+│   │   │   ├── coredump/            # Coredump Terraform module
+│   │   │   └── etcd-defrag/         # etcd-defrag Terraform module
+│   │   ├── .gitlab-ci-coredump.yml  # Generic coredump child pipeline
+│   │   └── .gitlab-ci-etcd-defrag.yml # Generic etcd-defrag child pipeline
 │   ├── rbac/                        # RBAC configuration
 │   └── Helm/
 │       ├── tuned/                   # Tuned Helm service

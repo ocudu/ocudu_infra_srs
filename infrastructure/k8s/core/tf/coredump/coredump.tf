@@ -8,7 +8,7 @@
 
 resource "kubernetes_manifest" "coredump_cleanup" {
   manifest = yamldecode(
-    templatefile("../coredump/coredump-cleanup.yml", {
+    templatefile("../../coredump/coredump-cleanup.yml", {
       namespace = var.namespace
     })
   )

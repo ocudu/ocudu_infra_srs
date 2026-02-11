@@ -8,13 +8,13 @@
 
 resource "kubernetes_manifest" "etcd_defrag" {
   manifest = yamldecode(
-    templatefile("../etcd-defrag/etcd-defrag-cronjob.yaml", {
+    templatefile("../../etcd-defrag/etcd-defrag-cronjob.yaml", {
       namespace        = var.namespace
-      master_nodes     = var.etcd_master_nodes
+      master_nodes     = var.master_nodes
       etcd_endpoints   = var.etcd_endpoints
-      ca_cert_path     = var.etcd_ca_cert_path
-      client_cert_path = var.etcd_client_cert_path
-      client_key_path  = var.etcd_client_key_path
+      ca_cert_path     = var.ca_cert_path
+      client_cert_path = var.client_cert_path
+      client_key_path  = var.client_key_path
     })
   )
 
@@ -24,5 +24,3 @@ resource "kubernetes_manifest" "etcd_defrag" {
   }
 
 }
-
-

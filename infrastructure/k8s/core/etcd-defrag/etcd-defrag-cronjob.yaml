@@ -10,7 +10,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: etcd-defrag
-  namespace: kube-system
+  namespace: ${namespace}
 spec:
   schedule: "0 3 * * 0"
   jobTemplate:
@@ -25,14 +25,14 @@ spec:
                       - key: kubernetes.io/hostname
                         operator: In
                         values:
-                          - k8s-master-0
-                          - k8s-master-1
-                          - k8s-master-2
+%{ for node in master_nodes ~}
+                          - ${node}
+%{ endfor ~}
           containers:
             - name: etcd-defrag
               image: ghcr.io/ahrtr/etcd-defrag:v0.18.0
               args:
-                - --endpoints=https://10.11.1.50:2379,https://10.11.1.51:2379,https://10.11.1.52:2379
+                - --endpoints=${etcd_endpoints}
                 - --cacert=/ca.pem
                 - --cert=/client.pem
                 - --key=/client-key.pem
@@ -52,15 +52,15 @@ spec:
           volumes:
             - name: ca-crt
               hostPath:
-                path: /etc/ssl/etcd/ssl/ca.pem
+                path: ${ca_cert_path}
                 type: File
             - name: client-crt
               hostPath:
-                path: /etc/ssl/etcd/ssl/admin-k8s-master-0.pem
+                path: ${client_cert_path}
                 type: File
             - name: client-key
               hostPath:
-                path: /etc/ssl/etcd/ssl/admin-k8s-master-0-key.pem
+                path: ${client_key_path}
                 type: File
           restartPolicy: OnFailure
           securityContext:

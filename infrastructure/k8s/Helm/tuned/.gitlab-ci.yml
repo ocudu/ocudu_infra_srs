@@ -43,6 +43,7 @@ generate:
   rules:
     - if: $ON_MR
     - if: $ON_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   artifacts:
     paths:
       - "${OUTPUT_DIR}/*.tf"
@@ -100,6 +101,7 @@ apply:
       when: manual
       allow_failure: true
     - if: $ON_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   needs:
     - job: generate
       artifacts: true

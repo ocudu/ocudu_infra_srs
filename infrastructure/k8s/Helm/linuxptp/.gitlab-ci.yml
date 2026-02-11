@@ -15,7 +15,7 @@ include:
 variables:
   OCUDU_BRANCH: main
   # Required variables (must be passed from parent pipeline):
-  # - RUNNER_TAGS: GitLab runner tags (e.g., "terraform", "terraform-dc")
+  # - RUNNER_TAGS: GitLab runner tags (e.g., "terraform")
   # - KUBECONFIG_VAR_NAME: Name of the variable containing kubeconfig path
   # - TF_STATE_NAME: Terraform state name (e.g., "linuxptp")
   # - CLUSTER_DEF: Path to cluster definition file
@@ -43,6 +43,7 @@ generate:
   rules:
     - if: $ON_MR
     - if: $ON_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   artifacts:
     paths:
       - "${OUTPUT_DIR}/*.tf"
@@ -122,6 +123,7 @@ apply:
       when: manual
       allow_failure: true
     - if: $ON_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   needs:
     - job: generate
       artifacts: true

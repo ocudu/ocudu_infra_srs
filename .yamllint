@@ -23,3 +23,4 @@ ignore: |
   e2e/tests/test_mode/
   docs/node_modules/
   infrastructure/retina-cronjobs/registry-credentials/templates/
+  infrastructure/k8s/core/etcd-defrag/

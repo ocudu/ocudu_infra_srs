@@ -33,6 +33,7 @@ generate:
   rules:
     - if: $ON_MR
     - if: $ON_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   artifacts:
     paths:
       - "${OUTPUT_DIR}/tf/*.tf"
@@ -54,6 +55,7 @@ check-format:
   rules:
     - if: $ON_MR
     - if: $ON_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   script:
     - terraform fmt -check -diff
 
@@ -71,6 +73,7 @@ validate:
   rules:
     - if: $ON_MR
     - if: $ON_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   script:
     - terraform validate
 
@@ -108,6 +111,7 @@ runner-quarantine-apply:
       when: manual
       allow_failure: true
     - if: $ON_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   script:
     - cd "$CI_PROJECT_DIR"
     - echo "Processing $CI_PROJECT_DIR/$RUNNERS_DEF"

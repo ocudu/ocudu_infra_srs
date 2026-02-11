@@ -10,7 +10,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: coredump-cleanup
-  namespace: infrastructure
+  namespace: ${namespace}
 spec:
   selector:
     matchLabels:

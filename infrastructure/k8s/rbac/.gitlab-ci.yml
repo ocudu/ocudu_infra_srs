@@ -102,5 +102,6 @@ apply-rbac:
       when: manual
       allow_failure: true
     - if: $ON_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
   script:
     - terraform apply -auto-approve
