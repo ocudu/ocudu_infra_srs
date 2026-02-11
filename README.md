@@ -38,11 +38,11 @@ graph LR
 
     retina --> gnb_server
     retina --> retina_ue_container
-    retina --> retina_mme_container
+    retina --> retina_5gc_container
 
-    subgraph amarisoft_server
-        lteue
-        ltemme
+    subgraph emulator_server
+        ue_emulator
+        5gc_emulator
     end
 
     subgraph "kubernetes cluster"
@@ -54,8 +54,8 @@ graph LR
         end
         subgraph controller
             e2e_runner
-            retina_ue_container -->|ssh| lteue
-            retina_mme_container -->|ssh| ltemme
+            retina_ue_container -->|ssh| ue_emulator
+            retina_5gc_container -->|ssh| 5gc_emulator
         end
     end
 ```

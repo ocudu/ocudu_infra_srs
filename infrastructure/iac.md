@@ -5,6 +5,7 @@ This directory contains reusable CI/CD templates and configuration scripts for d
 ## Overview
 
 The infrastructure automation provides **generic, reusable CI/CD templates** for:
+
 - **GitLab Runner deployment** - Automated deployment of GitLab runners for build, IAC, and E2E tests
 - **Kubernetes core resources** - Coredump cleanup and etcd defragmentation cronjobs
 - **RBAC configuration** - Kubernetes role-based access control setup
@@ -13,6 +14,7 @@ The infrastructure automation provides **generic, reusable CI/CD templates** for
 - **Configuration generation** - Python-based Jinja2 templating for cluster-specific configs
 
 **Key Design Principles:**
+
 - **100% Generic**: No hardcoded cluster names, IDs, or organization-specific values
 - **Public/Private Split**: Templates in public repo, secrets/configs in your private repo
 - **Parameterized**: All cluster-specific values passed as CI/CD variables
@@ -20,7 +22,7 @@ The infrastructure automation provides **generic, reusable CI/CD templates** for
 
 ## Architecture
 
-```
+```text
 infrastructure/
 ├── base/                            # Reusable CI/CD base definitions
 │   └── terraform.yml                # Terraform job template with GitLab state backend
@@ -64,13 +66,14 @@ git clone https://gitlab.com/ocudu/ocudu.git
 ### 2. Create Your Private Infrastructure Repository
 
 Create a private repository for your organization that will contain:
+
 - **Cluster definitions** (YAML files describing your infrastructure)
 - **Secrets** (tokens, credentials, kubeconfigs)
 - **.gitlab-ci.yml** that includes templates from `ocudu_infra_srs`
 
 Directory structure for your private repo:
 
-```
+```text
 your-private-infra-repo/
 ├── .gitlab-ci.yml                      # Triggers CI from ocudu_infra_srs
 ├── cluster_definition/
@@ -87,7 +90,7 @@ your-private-infra-repo/
 
 ### 3. Create Cluster Definition Files
 
-Cluster definitions are YAML files that describe your infrastructure. See the **[Cluster Definition Guide](CLUSTER_DEFINITION_GUIDE.md)** for comprehensive documentation with real examples.
+Cluster definitions are YAML files that describe your infrastructure.
 
 **Quick overview:**
 
@@ -115,8 +118,6 @@ runners:
       machine=worker-node: NoSchedule
 ```
 
-For complete examples and detailed field documentation, see [CLUSTER_DEFINITION_GUIDE.md](CLUSTER_DEFINITION_GUIDE.md).
-
 ### 4. Set Up GitLab CI/CD Variables
 
 In your private repository's CI/CD settings (Settings → CI/CD → Variables), add:
@@ -131,9 +132,11 @@ In your private repository's CI/CD settings (Settings → CI/CD → Variables), 
 | `GITLAB_REGISTRY_URI` | GitLab container registry URI (e.g., `registry.gitlab.com/your-org`) | ❌ | ❌ | Image builds |
 
 **Note on `REGISTRY_AUTH`**: This variable must contain a base64-encoded Docker config JSON in the format:
+
 ```json
 {"auths":{"registry.gitlab.com":{"username":"...","password":"...","auth":"..."}}}
 ```
+
 The variable must **not** be protected so it's available on feature branches during testing.
 
 ### 5. Configure Your .gitlab-ci.yml
@@ -175,6 +178,7 @@ deploy-gitlab-runners:
 ### 6. Push and Run
 
 Commit your changes and push to GitLab. The CI pipeline will:
+
 1. Clone `ocudu_infra_srs` for templates and scripts
 2. Generate cluster-specific Terraform and manifests
 3. Validate and plan Terraform changes
@@ -185,6 +189,7 @@ Commit your changes and push to GitLab. The CI pipeline will:
 ### Artifact-Based Workflow
 
 Generated files are created as CI artifacts and are NOT committed to the repository:
+
 - Terraform files: `*.tf`
 - Kubernetes manifests: `*.yaml`
 
@@ -206,6 +211,7 @@ parallel:
 ### Secrets Management
 
 All secrets remain in your private repository:
+
 - Kubeconfigs: Stored as CI/CD variables
 - GitLab tokens: Stored as CI/CD variables or in `secrets/` (gitignored)
 - Registry credentials: Deployed via Helm secrets
@@ -213,6 +219,7 @@ All secrets remain in your private repository:
 ### Terraform State
 
 Terraform state is stored in GitLab's HTTP backend:
+
 - Project-specific: State is stored in the running project (your private repo)
 - State name: Derived from `TF_STATE_NAME` variable
 - Locking: Automatic via GitLab API
@@ -231,6 +238,7 @@ python3 infrastructure/generator/generate.py \
 ```
 
 Templates are located in `infrastructure/generator/templates/`:
+
 - `runner.tf.j2` - GitLab runner Terraform
 - `helm_chart.tf.j2` - Helm chart deployments
 - `cronjob.yaml.j2` - Kubernetes cronjob manifests
@@ -240,6 +248,7 @@ Templates are located in `infrastructure/generator/templates/`:
 ### CI Testing
 
 Test CI pipelines on merge requests:
+
 1. Create a branch with changes to cluster definitions
 2. Open a merge request
 3. CI runs validation and plan stages
@@ -251,6 +260,7 @@ Test CI pipelines on merge requests:
 ### Pipeline Fails with "File not found"
 
 Ensure your cluster definition files exist in the private repo:
+
 ```bash
 cluster_definition/your_cluster.yaml
 cluster_definition/your_cluster_runners.yaml
@@ -259,6 +269,7 @@ cluster_definition/your_cluster_runners.yaml
 ### Runner Registration Fails
 
 Check that:
+
 1. `RUNNER_UPDATE_TOKEN_VAR` is set correctly
 2. Token has permissions to register runners
 3. Cluster can reach gitlab.com
@@ -266,6 +277,7 @@ Check that:
 ### Generated Files Not Found
 
 Verify:
+
 1. Generate job succeeded
 2. Artifacts were created
 3. Dependent jobs have `needs: [generate]`
@@ -286,5 +298,6 @@ This project is part of the OCUDU Infrastructure SRS repository.
 ## Support
 
 For issues or questions:
+
 - Open an issue in the `ocudu_infra_srs` project
 - Contact the infrastructure team
