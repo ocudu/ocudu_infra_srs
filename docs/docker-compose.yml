@@ -22,5 +22,6 @@ services:
       echo 'Starting Docusaurus server...' &&
       npm install &&
       npm run clear &&
-      NODE_ENV=development npm run start -- --host 0.0.0.0
+      npm run build &&
+      npm run serve
       "
