@@ -1,4 +1,4 @@
-# Gitlab Runners Setup
+# Manual Gitlab Runners Setup Guide
 
 ## Set Up a Build Runner
 

@@ -42,13 +42,36 @@ Check [the forking guide](./_docs/01_fork.md).
 
 Prepare the physical or virtual servers that will be used for testing so they can run OCUDU and other tools with good performance.
 
+#### Using IaC
+
+OCUDU Infra SRS project provides Terraform and CI files to help you to configure your servers by setting up:
+
+- [LinuxPTP](./k8s/Helm/linuxptp/main.tf)
+- [TuneD](./k8s/Helm/tuned/main.tf)
+
 ### 3. Set Up a Kubernetes Cluster
 
 Deploy a Kubernetes cluster for test orchestration.
 
 ### 4. Install Retina in the Cluster
 
+#### Manual Retina Setup
+
 Deploy the Retina framework components to your Kubernetes cluster by following [the instructions in the retina documentation](../retina/_docs/02_cluster_setup.md#configure-the-cluster-to-use-retina).
+
+#### IaC Retina Setup
+
+- [Registry credentials](./retina-cronjobs/tf-registry-credentials/README.md)
+- [PriorityClass](./k8s/rbac/tf/main.tf)
+
+#### Retina Auxiliary Cronjobs
+
+To make the experience with Retina inside your cluster better, we provide some cronjobs:
+
+- Amarisoft License Synchronization: Queries an Amarisoft License Server to found Licenses usage outside of Retina and reserves the resource in Retina. This way, Retina status will always reflect the real usage status even if the license is being used somewhere else.
+- Runner Manager: In case a node is shared between a Gitlab Runner and Retina, this job will take care of pausing / resuming the runners when a Retina test is using that server.
+
+[Check here for more info](./retina-cronjobs/tf/main.tf).
 
 ### 5. Save the Cluster Definition in Retina
 
@@ -56,7 +79,13 @@ Deploy the Retina framework components to your Kubernetes cluster by following [
 
 ### 6. Set Up a Build and a Retina Runner
 
-Check the [GitLab runners guide](./_docs/02_runners.md).
+#### Manual Gitlab Runners Setup
+
+Check the [Manual Gitlab Runners Setup guide](./_docs/02_runners.md).
+
+#### IaC Gitlab Runners Deploy
+
+[Read the instructions here](./gitlab-runner/README.md)
 
 ### 7. Test Your Setup
 
