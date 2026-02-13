@@ -10,14 +10,16 @@
 Test ping
 """
 
-import logging
+from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from time import sleep
 from typing import Generator
 
+import grpc
 import pytest
 import yaml
+from google.protobuf.empty_pb2 import Empty
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.public import UInt32Value
@@ -102,9 +104,11 @@ def test_gnb(
         fivegc=fivegc,
     )
 
-    logging.info("Setup Completed")
-
-    sleep(30)
+    # Wait until UE stops
+    with suppress(grpc.RpcError):
+        while True:
+            ue.GetMessages(Empty())
+            sleep(1)
 
     stop(
         ue_array=(ue,),
