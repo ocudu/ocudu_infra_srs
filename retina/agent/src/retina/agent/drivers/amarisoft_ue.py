@@ -260,6 +260,9 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                             ),
                         )
                     ),
+                    "subnet_prefix": str(
+                        ipaddress.ip_network(f"{request.fivegc_definition.tun_ip}/16", False).network_address
+                    ).replace(".0", ""),
                 },
             )
 

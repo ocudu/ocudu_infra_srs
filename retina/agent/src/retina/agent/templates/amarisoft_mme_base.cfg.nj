@@ -16,14 +16,7 @@
   },
   {% endif %}
 
-  /* bind address for GTP-U. Normally = address of the PC, here bound
-    on local interface to be able to run ltemme on the same PC as
-    lteenb. By default, the S1AP SCTP connection is bound on the same
-    address. */
-  //gtp_addr: "127.0.1.100",
-  //gtp_addr: "10.12.1.101",
-  gtp_addr: "{{amf_address}}",
-
+  gtp_addr: "{{ip}}",
   mme_group_id: 32769,
   mme_code: 1,
 

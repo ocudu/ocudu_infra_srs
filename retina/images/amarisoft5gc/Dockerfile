@@ -22,11 +22,12 @@ FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS ag
 FROM agent AS amarisoft_mme
 COPY --from=binary_setup /opt/ltemme /opt/ltemme
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get install -y --no-install-recommends iptables libsctp1 lksctp-tools \
+    && apt-get install -y --no-install-recommends iptables libsctp1 lksctp-tools iproute2 \
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 ENV PATH="${PATH}:/opt/ltemme"
 
 ADD amarisoft_mme_entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/amarisoft_mme_entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/amarisoft_mme_entrypoint.sh"]

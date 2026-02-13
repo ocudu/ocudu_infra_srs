@@ -48,7 +48,7 @@ if [ "$type" = "ipv4" ] ; then
     fi
 
     # IPv6 is always disabled after ipv4
-    echo '1' > /proc/sys/net/ipv6/conf/$ifname/disable_ipv6
+    echo '1' > /proc/sys/net/ipv6/conf/"$ifname"/disable_ipv6 2>/dev/null || sysctl -w net.ipv6.conf."$ifname".disable_ipv6=1 2>/dev/null || true
 else
 
     ll="$5"     # ipv6 link local address
@@ -59,7 +59,7 @@ else
 
     echo "*** Configuring IPv6 pdn '$apn' on ${ifname}, $addr0/$mask"
 
-    echo '0' > /proc/sys/net/ipv6/conf/$ifname/disable_ipv6
+    echo '0' > /proc/sys/net/ipv6/conf/"$ifname"/disable_ipv6 2>/dev/null || sysctl -w net.ipv6.conf."$ifname".disable_ipv6=0 2>/dev/null || true
 
     # Add link local address
     ifconfig ${ifname} inet6 add ${addr0}/${mask} up

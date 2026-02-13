@@ -448,14 +448,13 @@ services:
       RETINA_IP: &amari5gc_ip 172.20.0.12
       RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_MME_LICENSE_TAG}
     cap_add:
-      - SYS_NICE
-      - NET_ADMIN
-      - CAP_SYS_PTRACE
+      - NET_ADMIN # Required for TUN interface creation and iptables
     configs:
       - source: amari_mme_license.yml
         target: /etc/retina/resources/amarisoft_mme_license.yml
     sysctls:
-      - net.ipv6.conf.default.disable_ipv6=0
+      - net.ipv6.conf.default.disable_ipv6=1 # Prevent IPv6 issues
+      - net.ipv4.ip_forward=1 # Required for packet forwarding between UEs and network
     networks:
       retina:
         ipv4_address: *amari5gc_ip
