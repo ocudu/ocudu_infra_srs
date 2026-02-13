@@ -32,3 +32,4 @@ example:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: functional::stage::example
+    TESTBED: zmq_mme

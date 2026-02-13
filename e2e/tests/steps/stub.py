@@ -226,6 +226,7 @@ def start_network(
 
     with handle_start_error(name=f"5GC [{id(fivegc)}]"):
         # 5GC Start
+        fivegc.GetDefinition(Empty())
         fivegc.Start(
             FiveGCStartInfo(
                 plmn=plmn,
