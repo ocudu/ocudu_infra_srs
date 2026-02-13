@@ -22,7 +22,7 @@ class _SecretFilter(logging.Filter):
     """
 
     _REGEX_PATTERN = re.compile(r"\b(?:[0-9A-Fa-f]{2}[:-]){5,7}[0-9A-Fa-f]{2}\b")
-    _NOT_REDACT_ARRAY = ["srs", "ocudu", "retina"]
+    _NOT_REDACT_ARRAY = ["srs", "ocudu", "retina", "ue", "gnb", "cu", "du", "ru", "core", "mme", "lte"]
 
     def __init__(self, mask: str = "[masked]"):
         super().__init__()

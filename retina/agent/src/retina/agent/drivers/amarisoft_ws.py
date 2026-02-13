@@ -158,7 +158,15 @@ class AmarisoftWebSocket:
         return message_id
 
     def _read_message(self) -> Dict:
-        msg = json.loads(self._ws.recv())
+        raw = self._ws.recv()
+        try:
+            msg = json.loads(raw)
+        except json.JSONDecodeError:
+            if raw:
+                msg = {"raw": raw}
+            else:
+                msg = {}
+                self.close()
         logging.debug("[ WS <-- ] %s", json.dumps(msg))
         return msg
 
@@ -166,12 +174,10 @@ class AmarisoftWebSocket:
         while self._ws.connected:
             with suppress(websocket.WebSocketConnectionClosedException):
                 msg = self._read_message()
-                try:
-                    # Send msg to waiting queue, if exists
-                    self._queue_dict[int(msg["message_id"])].put(msg)
-                except KeyError:
-                    # If there's no one waiting for this message, it just logs it
-                    logging.info("Received msg via websocket: %s", msg)
+                if msg:
+                    with suppress(KeyError):
+                        # Send msg to waiting queue, if exists
+                        self._queue_dict[int(msg["message_id"])].put(msg)
 
     def _wait_response_with_id(self, message_id: int, timeout: Optional[float] = None) -> Dict:
         """
@@ -197,11 +203,14 @@ class AmarisoftWebSocket:
         """
         Send quit command and close the websocket
         """
-        with suppress(websocket.WebSocketConnectionClosedException):
-            logging.info("Sending quit command")
-            self.send_command_and_wait_response(message="stats", samples=True, rf=True)
-            self.send_command_and_wait_response(message="quit")
-            self.close()
+        if self._ws.connected:
+            with suppress(websocket.WebSocketConnectionClosedException):
+                logging.info("Sending quit command")
+                self.send_command_and_wait_response(message="stats", samples=True, rf=True)
+                self.send_command_and_wait_response(message="quit")
+                self.close()
+        else:
+            logging.info("Websocket connection already closed")
 
     def close(self) -> None:
         """

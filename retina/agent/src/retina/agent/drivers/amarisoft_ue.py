@@ -374,16 +374,24 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         return Empty()
 
     def GetMessages(self, request: Empty, context: grpc.ServicerContext) -> RrcMessages:
-        logging.info("Querying message counters")
-        if self._websocket is None:
-            raise ChildProcessError("Process has died")
+        if self._process is None or not self._is_alive or self._websocket is None:
+            if ue_defaults.ue_simulator_mode:
+                logging.info("Simulation Ended")
+                context.abort(grpc.StatusCode.ABORTED, "Simulation Ended")
+            else:
+                with notify_grpc_exception(context):
+                    raise ChildProcessError("Process has died")
 
-        for ue_info in self._ue_get(
-            context_peer=context.peer(),
-            update=False,
-            timeout=self.AMARISOFT_WAIT_BEFORE_STOP,
-        ):
-            return self._parse_messages(ue_info["counters"]["messages"])
+        with notify_grpc_exception(context):
+            if context.peer() in self._subscriber_client_dict:
+                logging.info("Querying message counters")
+                for ue_info in self._ue_get(
+                    context_peer=context.peer(),
+                    update=False,
+                    timeout=self.AMARISOFT_WAIT_BEFORE_STOP,
+                ):
+                    return self._parse_messages(ue_info["counters"]["messages"])
+            return RrcMessages()
 
     def _parse_messages(self, messages: Dict) -> RrcMessages:
         return RrcMessages(
