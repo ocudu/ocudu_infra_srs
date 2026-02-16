@@ -52,7 +52,7 @@ resource "kubernetes_manifest" "retina_runners_configmap" {
     apiVersion = "v1"
     kind       = "ConfigMap"
     metadata = {
-      name      = "retina-cronjobss-${var.organization_name}"
+      name      = "retina-runners-${var.organization_name}"
       namespace = "retina"
     }
     data = {

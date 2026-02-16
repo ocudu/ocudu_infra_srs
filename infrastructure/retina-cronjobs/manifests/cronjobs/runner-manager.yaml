@@ -36,7 +36,7 @@ spec:
                   python3 /usr/local/bin/retina_runner.py --incluster
               env:
                 - name: RETINA_RUNNERS_CONFIGMAP
-                  value: retina-cronjobss-${organization_name}
+                  value: retina-runners-${organization_name}
                 - name: GITLAB_TOKEN
                   valueFrom:
                     secretKeyRef:
