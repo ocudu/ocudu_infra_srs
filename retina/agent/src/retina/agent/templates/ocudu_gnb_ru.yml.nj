@@ -152,11 +152,6 @@ ru_ofh:
     ul_port_id: {{ ofh_cell.ul_port_id }}
   {% endfor %}
 
-trace:
-  layers:
-    phy_enable: true
-    du_high_enable: true
-
 expert_phy:
   max_proc_delay: 6
 {% endif %}
