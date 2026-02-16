@@ -12,7 +12,6 @@ Configuration related steps
 
 import contextlib
 import logging
-import socket
 import tempfile
 from collections import defaultdict
 from pathlib import Path
@@ -21,7 +20,6 @@ from typing import List, NamedTuple, Optional, Tuple, Union
 
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.public import MetricServerInfo
 from retina.protocol.channel_emulator_pb2 import EphemerisInfoType, NtnScenarioConfig, NtnScenarioType
 
 
@@ -323,15 +321,6 @@ def configure_test_parameters(
     if ntn_config is not None:
         configure_ntn_parameters(retina_data=retina_data, ntn_config=ntn_config)
 
-    for node_name in retina_manager.get_testbed_info().get("generic", {}).keys():
-        if "metrics-server" in node_name:
-            metrics_server_dict = retina_manager.get_testbed_info()["generic"][node_name]
-            metrics_server = MetricServerInfo(metrics_server_dict.metadata["ip"], metrics_server_dict.port)
-            logging.info(
-                "Metrics Server in %s:%s will be used for this test.", metrics_server.address, metrics_server.port
-            )
-            configure_metric_server_for_gnb(retina_manager=retina_manager, metrics_server=metrics_server)
-
     logging.info("Test config: \n%s", pformat(retina_data.test_config))
     retina_manager.parse_configuration(retina_data.test_config)
     retina_manager.push_all_config()
@@ -424,30 +413,6 @@ def get_minimum_sample_rate_for_bandwidth(bandwidth: int) -> int:
     f_s_list = [5.76, 7.68, 11.52, 15.36, 23.04, 30.72, 61.44, 122.88, 245.76]
     f_s_min = int(1e6 * min(filter(lambda f: f > bandwidth, f_s_list)))
     return f_s_min
-
-
-def configure_metric_server_for_gnb(
-    *, retina_manager: RetinaTestManager, metrics_server: MetricServerInfo  # The "*" enforces keyword-only arguments
-):
-    """
-    Report gnb ip and port to the metrics-server configuration
-    """
-    # Send a UDP packet to the metrics-server with the gnb's ip:port
-
-    for item in retina_manager.get_testbed_info().get("gnb", {}).values():
-        gnb_ip = item.address
-        break
-
-    message = f"{gnb_ip}:8001"
-
-    try:
-        # Create UDP socket and send message to metrics server
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(message.encode("utf-8"), (metrics_server.address, metrics_server.port))
-        sock.close()
-        logging.info("Sent gnb info '%s' to metrics server %s:%s", message, metrics_server.address, metrics_server.port)
-    except socket.error as e:
-        logging.error("Failed to send gnb info to metrics server: %s", e)
 
 
 class NrRasterParams(NamedTuple):

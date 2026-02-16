@@ -25,7 +25,6 @@ from google.protobuf.wrappers_pb2 import StringValue, UInt32Value
 from retina.client.exception import ErrorReportedByAgent
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.public import MetricsSummary
 from retina.launcher.utils import configure_artifacts
 from retina.protocol import RanStub
 from retina.protocol.base_pb2 import (
@@ -889,7 +888,6 @@ def multi_ue_mobility_iperf(
     ue_array: Sequence[UEStub],
     fivegc: FiveGCStub,
     gnb_array: Sequence[GNBStub],
-    metrics_summary: Optional[MetricsSummary],
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -1043,7 +1041,7 @@ def multi_ue_mobility_iperf(
             warning_as_errors=warning_as_errors,
         )
     finally:
-        get_kpis(du_or_gnb_array=gnb_array, ue_array=ue_array, metrics_summary=metrics_summary)
+        get_kpis(du_or_gnb_array=gnb_array, ue_array=ue_array)
 
 
 def ue_expect_handover(*, ue_stub: UEStub, timeout: int) -> grpc.Future:  # The "*" enforces keyword-only arguments

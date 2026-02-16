@@ -13,7 +13,6 @@ Handover Tests
 from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.public import MetricsSummary
 from retina.launcher.utils import param
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import CUStub, DUStub
@@ -40,7 +39,6 @@ def test_zmq_sequentially(
     fivegc: FiveGCStub,
     cu: CUStub,
     du_2: DUStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -58,7 +56,6 @@ def test_zmq_sequentially(
         fivegc=fivegc,
         cu=cu,
         du_array=du_2,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -76,7 +73,6 @@ def test_zmq_inter_freq_sequentially(
     fivegc: FiveGCStub,
     cu: CUStub,
     du_2: DUStub,
-    metrics_summary: MetricsSummary,
 ):
     """
     ZMQ Inter-DU Handover tests
@@ -90,7 +86,6 @@ def test_zmq_inter_freq_sequentially(
         fivegc=fivegc,
         cu=cu,
         du_array=du_2,
-        metrics_summary=metrics_summary,
         band=3,
         common_scs=15,
         bandwidth=50,

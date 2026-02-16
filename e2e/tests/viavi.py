@@ -15,7 +15,7 @@ import operator
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path, PureWindowsPath
-from typing import Callable, List, Optional
+from typing import Callable, List
 
 import pytest
 import yaml
@@ -23,7 +23,6 @@ from pytest import mark
 from requests import HTTPError
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.public import MetricServerInfo, MetricsSummary
 from retina.launcher.utils import configure_artifacts
 from retina.protocol.base_pb2 import FiveGCDefinition, PLMN, StartInfo
 from retina.protocol.gnb_pb2 import GNBStartInfo
@@ -32,7 +31,6 @@ from retina.viavi.client import CampaignStatusEnum, Viavi, ViaviKPIs
 from rich.console import Console
 from rich.table import Table
 
-from .steps.configuration import configure_metric_server_for_gnb
 from .steps.kpis import get_kpis, KPIs
 from .steps.stub import _stop_stub, GNB_STARTUP_TIMEOUT, handle_start_error, stop
 
@@ -166,7 +164,6 @@ def test_viavi_manual(
     # Clients
     gnb: GNBStub,
     viavi: Viavi,
-    metrics_server: MetricServerInfo,
     # Test info
     viavi_manual_campaign_filename: str,  # pylint: disable=redefined-outer-name
     viavi_manual_test_name: str,  # pylint: disable=redefined-outer-name
@@ -197,9 +194,7 @@ def test_viavi_manual(
         # Clients
         gnb=gnb,
         viavi=viavi,
-        metrics_server=metrics_server,
         # Test info
-        metrics_summary=None,
         test_declaration=test_declaration,
         # Test extra params
         always_download_artifacts=always_download_artifacts,
@@ -230,9 +225,7 @@ def test_viavi(
     # Clients
     gnb: GNBStub,
     viavi: Viavi,
-    metrics_server: MetricServerInfo,
     # Test info
-    metrics_summary: MetricsSummary,
     test_declaration: _ViaviConfiguration,
     # Test extra params
     always_download_artifacts: bool = True,
@@ -252,9 +245,7 @@ def test_viavi(
         # Clients
         gnb=gnb,
         viavi=viavi,
-        metrics_server=metrics_server,
         # Test info
-        metrics_summary=metrics_summary,
         test_declaration=test_declaration,
         # Test extra params
         always_download_artifacts=always_download_artifacts,
@@ -274,9 +265,7 @@ def _test_viavi(
     # Clients
     gnb: GNBStub,
     viavi: Viavi,
-    metrics_server: Optional[MetricServerInfo],
     # Test info
-    metrics_summary: Optional[MetricsSummary],
     test_declaration: _ViaviConfiguration,
     # Test extra params
     always_download_artifacts: bool = True,
@@ -315,8 +304,6 @@ def _test_viavi(
             },
         },
     }
-    if metrics_server is not None:
-        configure_metric_server_for_gnb(retina_manager=retina_manager, metrics_server=metrics_server)
 
     retina_manager.parse_configuration(retina_data.test_config)
     retina_manager.push_all_config()
@@ -400,7 +387,6 @@ def _test_viavi(
                 test_configuration=test_declaration,
                 gnb=gnb,
                 viavi=viavi,
-                metrics_summary=metrics_summary,
                 capsys=capsys,
                 gnb_error_count=gnb_error_count,
                 warning_as_errors=test_declaration.warning_as_errors,
@@ -417,7 +403,6 @@ def check_metrics_criteria(
     test_configuration: _ViaviConfiguration,
     gnb: GNBStub,
     viavi: Viavi,
-    metrics_summary: Optional[MetricsSummary],
     capsys: pytest.CaptureFixture[str],
     gnb_error_count: int,
     warning_as_errors: bool,
@@ -429,7 +414,7 @@ def check_metrics_criteria(
     # Check metrics
     viavi_kpis: ViaviKPIs = viavi.get_test_kpis()
     viavi_kpis.print_procedure_failures(_OMIT_VIAVI_FAILURE_LIST)
-    kpis: KPIs = get_kpis(du_or_gnb_array=[gnb], viavi_kpis=viavi_kpis, metrics_summary=metrics_summary)
+    kpis: KPIs = get_kpis(du_or_gnb_array=[gnb], viavi_kpis=viavi_kpis)
 
     criteria_result = [
         _create_viavi_result(

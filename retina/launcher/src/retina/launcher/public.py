@@ -10,12 +10,8 @@
 Fixtures to use from tests
 """
 
-import csv
 import logging
-import os
 from contextlib import suppress
-from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from typing import Callable, Dict, Generator, Optional, Tuple
 
@@ -38,7 +34,6 @@ from retina.protocol.ue_pb2_grpc import UEStub
 from retina.viavi.client import CampaignStatusEnum, Viavi
 
 from retina.launcher.artifacts import RetinaTestData, TEST_SUCCESS_FIELD
-from retina.launcher.cmd_args import PYTEST_SUITE_SEPARATOR
 from retina.launcher.reporter import create_report
 
 
@@ -351,31 +346,6 @@ def _log_metrics(
         logging.error("%s metrics couldn't be recovered.", name)
 
 
-@dataclass(frozen=True)
-class MetricServerInfo:
-    """
-    Metrics-server info
-    """
-
-    address: str
-    port: int
-
-
-@pytest.fixture
-def metrics_server(retina_manager: RetinaTestManager) -> MetricServerInfo:
-    """
-    Return a metrics-server info
-    """
-
-    for node_info in retina_manager.get_testbed_info().get("generic", {}).values():
-        metrics_server = MetricServerInfo(node_info.address, node_info.port)
-        logging.info("Metrics Server in %s:%s will be used for this test.", metrics_server.address, metrics_server.port)
-        return metrics_server
-
-    logging.warning("Metrics server not found in testbed info")
-    return MetricServerInfo("127.0.0.1", 55555)
-
-
 @pytest.fixture
 def viavi(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Generator[Viavi, None, None]:
     """
@@ -428,47 +398,3 @@ def viavi(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Gen
                 logging.error("Viavi last campaign failed")
         with suppress(HTTPError):
             viavi_client.delete_tma()
-
-
-class MetricsSummary:
-    """
-    Manager to write a summary for test's metrics
-    """
-
-    def __init__(self, csv_file_path: Path, suite: str, test: str) -> None:
-        self._suite = suite.replace(",", "_")
-        self._test = test.replace(",", "_")
-        self._fd = csv_file_path.open("w", encoding="utf-8")  # pylint: disable=consider-using-with
-        self._fd.write("#datatype measurement,tag,tag,double,dateTime:RFC3339" + os.linesep)
-        self._fd.flush()
-        self._writer = csv.DictWriter(self._fd, fieldnames=("m", "suite", "test", "value", "time"))
-        self._writer.writeheader()
-
-    def write_metric(self, name: str, value: float) -> None:
-        """
-        Save a metric value
-        """
-        self._writer.writerow(
-            {
-                "m": name,
-                "suite": self._suite,
-                "test": self._test,
-                "value": value,
-                "time": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-            }
-        )
-
-    def __del__(self):
-        self._fd.flush()
-        self._fd.close()
-
-
-@pytest.fixture
-def metrics_summary(request: pytest.FixtureRequest, test_log_folder: str) -> MetricsSummary:
-    """
-    Return a manager to write a summary for test's metrics
-    """
-    *suite_tuple, test_name = request.node.nodeid.split(PYTEST_SUITE_SEPARATOR)
-    return MetricsSummary(
-        Path(test_log_folder).joinpath("test_metrics.csv"), suite="/".join(suite_tuple), test=test_name
-    )

@@ -15,7 +15,6 @@ import logging
 from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.public import MetricsSummary
 from retina.launcher.utils import param
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import GNBStub
@@ -43,7 +42,6 @@ def test_zmq_sequentially(
     ue_8: UEStub,
     fivegc: FiveGCStub,
     gnb_2: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -60,7 +58,6 @@ def test_zmq_sequentially(
         ue_array=ue_8,
         fivegc=fivegc,
         gnb_array=gnb_2,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -91,7 +88,6 @@ def test_zmq_handover_iperf(
     ue: UEStub,
     fivegc: FiveGCStub,
     gnb_2: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -108,7 +104,6 @@ def test_zmq_handover_iperf(
         ue_array=[ue],
         gnb_array=gnb_2,
         fivegc=fivegc,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,

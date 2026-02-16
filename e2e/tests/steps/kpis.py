@@ -10,12 +10,11 @@
 KPI related logic
 """
 
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from statistics import mean
 from typing import List, Optional, Sequence
 
 from google.protobuf.empty_pb2 import Empty
-from retina.launcher.public import MetricsSummary
 from retina.protocol import RanStub
 from retina.protocol.base_pb2 import Metrics
 from retina.viavi.client import ViaviKPIs
@@ -52,7 +51,6 @@ def get_kpis(
     du_or_gnb_array: Sequence[RanStub] = (),
     ue_array: Sequence[RanStub] = (),
     viavi_kpis: Optional[ViaviKPIs] = None,
-    metrics_summary: Optional[MetricsSummary] = None,
 ) -> KPIs:
     """
     Get KPIs from gnb, ue and viavi
@@ -96,11 +94,5 @@ def get_kpis(
         nof_failure = viavi_kpis.get_nof_procedure_failure_by_group("EMM_PROCEDURE", "attach")
         if nof_failure:
             kpis.nof_attach_failures += nof_failure
-
-    # Save KPIs
-    if metrics_summary is not None:
-        for field in fields(kpis):
-            field_value = getattr(kpis, field.name)
-            metrics_summary.write_metric(field.name, field_value)
 
     return kpis

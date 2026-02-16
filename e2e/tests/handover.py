@@ -20,7 +20,6 @@ from google.protobuf.wrappers_pb2 import UInt32Value
 from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.public import MetricsSummary
 from retina.launcher.utils import configure_artifacts, param
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import CUStub, DUStub, GNBStub
@@ -64,7 +63,6 @@ def test_smoke_sequentially(
         ue_array=ue_2,
         fivegc=fivegc,
         gnb_array=[gnb],
-        metrics_summary=None,
         band=41,
         common_scs=30,
         bandwidth=50,
@@ -92,7 +90,6 @@ def test_s72_sequentially(
         ue_array=ue_2,
         fivegc=fivegc,
         gnb_array=[gnb],
-        metrics_summary=None,
         band=41,
         common_scs=30,
         bandwidth=50,
@@ -122,7 +119,6 @@ def test_zmq_handover_sequentially(
     ue_8: UEStub,
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -137,7 +133,6 @@ def test_zmq_handover_sequentially(
         ue_array=ue_8,
         fivegc=fivegc,
         gnb_array=[gnb],
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -161,7 +156,6 @@ def _handover_sequentially(
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
     du_array: Optional[Sequence[DUStub]] = None,
-    metrics_summary: Optional[MetricsSummary] = None,
     always_download_artifacts: bool = True,
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     nof_antennas_dl: int = 1,
@@ -198,7 +192,6 @@ def _handover_sequentially(
         cu=cu,
         du_array=du_array,
         fivegc=fivegc,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -255,7 +248,6 @@ def test_zmq_handover_parallel(
     ue_32: UEStub,
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -272,7 +264,6 @@ def test_zmq_handover_parallel(
         ue_array=ue_32,
         gnb_array=[gnb],
         fivegc=fivegc,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -323,7 +314,6 @@ def _handover_multi_ues(
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
     du_array: Optional[Sequence[DUStub]] = None,
-    metrics_summary: Optional[MetricsSummary] = None,
     nof_antennas_dl: int = 1,
     prach_config_index: int = -1,
     warning_as_errors: bool = True,
@@ -444,9 +434,9 @@ def _handover_multi_ues(
         )
     finally:
         if gnb_array:
-            get_kpis(du_or_gnb_array=gnb_array, ue_array=ue_array, metrics_summary=metrics_summary)
+            get_kpis(du_or_gnb_array=gnb_array, ue_array=ue_array)
         if du_array:
-            get_kpis(du_or_gnb_array=du_array, ue_array=ue_array, metrics_summary=metrics_summary)
+            get_kpis(du_or_gnb_array=du_array, ue_array=ue_array)
 
 
 @mark.parametrize(
@@ -471,7 +461,6 @@ def test_zmq_handover_iperf(
     ue: UEStub,
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -488,7 +477,6 @@ def test_zmq_handover_iperf(
         ue_array=[ue],
         gnb_array=[gnb],
         fivegc=fivegc,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -543,7 +531,6 @@ def test_zmq_handover_noise(
     ue: UEStub,
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -560,7 +547,6 @@ def test_zmq_handover_noise(
         ue_array=[ue],
         gnb_array=[gnb],
         fivegc=fivegc,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,

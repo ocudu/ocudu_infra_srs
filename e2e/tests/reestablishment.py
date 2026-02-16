@@ -20,7 +20,6 @@ from google.protobuf.wrappers_pb2 import UInt32Value
 from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.public import MetricsSummary
 from retina.launcher.utils import configure_artifacts, param
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import GNBStub
@@ -66,7 +65,6 @@ def test_smoke_sequentially(
         ue_array=ue_2,
         fivegc=fivegc,
         gnb=gnb,
-        metrics_summary=None,
         band=41,
         common_scs=30,
         bandwidth=50,
@@ -93,7 +91,6 @@ def test_zmq_sequentially(
     ue_8: Tuple[UEStub, ...],
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -108,7 +105,6 @@ def test_zmq_sequentially(
         ue_array=ue_8,
         fivegc=fivegc,
         gnb=gnb,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -124,7 +120,6 @@ def _reestablishment_sequentially_ping(
     ue_array: Tuple[UEStub, ...],
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: Optional[MetricsSummary],
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -144,7 +139,6 @@ def _reestablishment_sequentially_ping(
         ue_array=ue_array,
         fivegc=fivegc,
         gnb=gnb,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -196,7 +190,6 @@ def test_zmq_sequentially_full_rate(
     ue_8: Tuple[UEStub, ...],
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -216,7 +209,6 @@ def test_zmq_sequentially_full_rate(
         ue_array=ue_8,
         fivegc=fivegc,
         gnb=gnb,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -264,7 +256,6 @@ def test_zmq_sequentially_full_rate_verify_bitrate(
     ue: Tuple[UEStub, ...],
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
 ):
     """
     ZMQ IPerf + Reestablishment + Check Bitrate
@@ -282,7 +273,6 @@ def test_zmq_sequentially_full_rate_verify_bitrate(
         retina_data=retina_data,
         ue_array=[ue],
         fivegc=fivegc,
-        metrics_summary=metrics_summary,
         gnb=gnb,
         band=3,
         common_scs=15,
@@ -362,7 +352,6 @@ def test_zmq_parallel(
     ue_8: Tuple[UEStub, ...],
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -380,7 +369,6 @@ def test_zmq_parallel(
         ue_array=ue_8,
         fivegc=fivegc,
         gnb=gnb,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -431,7 +419,6 @@ def test_zmq_parallel_full_rate(
     ue_8: Tuple[UEStub, ...],
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -451,7 +438,6 @@ def test_zmq_parallel_full_rate(
         ue_array=ue_8,
         fivegc=fivegc,
         gnb=gnb,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
@@ -509,7 +495,6 @@ def _iterator_over_attached_ues(
     ue_array: Sequence[UEStub],
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: Optional[MetricsSummary],
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -528,7 +513,6 @@ def _iterator_over_attached_ues(
         retina_data=retina_data,
         ue_array=ue_array,
         fivegc=fivegc,
-        metrics_summary=metrics_summary,
         gnb=gnb,
         band=band,
         common_scs=common_scs,
@@ -569,7 +553,6 @@ def _test_reestablishments(
     ue_array: Sequence[UEStub],
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: Optional[MetricsSummary],
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -637,7 +620,7 @@ def _test_reestablishments(
         )
 
     finally:
-        get_kpis(du_or_gnb_array=[gnb], ue_array=ue_array, metrics_summary=metrics_summary)
+        get_kpis(du_or_gnb_array=[gnb], ue_array=ue_array)
 
 
 HIGH_BITRATE = int(15e6)
@@ -665,7 +648,6 @@ def test_zmq_mobility_noise_reestablishment(
     ue: UEStub,
     fivegc: FiveGCStub,
     gnb: GNBStub,
-    metrics_summary: MetricsSummary,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -682,7 +664,6 @@ def test_zmq_mobility_noise_reestablishment(
         ue_array=[ue],
         gnb_array=[gnb],
         fivegc=fivegc,
-        metrics_summary=metrics_summary,
         band=band,
         common_scs=common_scs,
         bandwidth=bandwidth,
