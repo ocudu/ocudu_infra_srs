@@ -7,4 +7,4 @@
 #
 
 variables:
-  RETINA_CRONJOBS_VERSION: "2.7.0"
+  RETINA_CRONJOBS_VERSION: "2.7.1"
