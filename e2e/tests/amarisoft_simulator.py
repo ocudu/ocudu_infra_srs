@@ -14,7 +14,7 @@ from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from time import sleep
-from typing import Generator
+from typing import Dict, Generator
 
 import grpc
 import pytest
@@ -22,6 +22,7 @@ import yaml
 from google.protobuf.empty_pb2 import Empty
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
+from retina.launcher.criteria import Criteria
 from retina.launcher.public import UInt32Value
 from retina.launcher.utils import configure_artifacts
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
@@ -42,6 +43,7 @@ class AmarisoftSimTestDefinition:
     ue_config: list[str]
     gnb_config: list[str]
     core_config: list[str]
+    criteria: Dict[str, float]
 
 
 def load_tests(template_name: str) -> Generator[AmarisoftSimTestDefinition, None, None]:
@@ -61,6 +63,7 @@ def load_tests(template_name: str) -> Generator[AmarisoftSimTestDefinition, None
                     gnb_config=test_declaration.get("gnb_config", []),
                     ue_config=test_declaration.get("ue_config", []),
                     core_config=test_declaration.get("core_config", []),
+                    criteria=test_declaration.get("criteria", {}),
                 )
 
 
@@ -72,6 +75,7 @@ def load_tests(template_name: str) -> Generator[AmarisoftSimTestDefinition, None
 def test_gnb(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
+    criteria: Criteria,
     ue: UEStub,
     gnb: GNBStub,
     fivegc: FiveGCStub,
@@ -92,6 +96,9 @@ def test_gnb(
         core_config_files=test_definition.core_config,
     )
 
+    for criteria_id, criteria_expected_value in test_definition.criteria.items():
+        criteria.add_criteria(criteria_id, criteria_expected_value)
+
     start_network(
         ue_array=(ue,),
         gnb_array=(gnb,),
@@ -110,10 +117,13 @@ def test_gnb(
             ue.GetMessages(Empty())
             sleep(1)
 
-    stop(
-        ue_array=(ue,),
-        gnb_array=(gnb,),
-        fivegc=fivegc,
-        retina_data=retina_data,
-        warning_as_errors=True,
-    )
+    try:
+        stop(
+            ue_array=(ue,),
+            gnb_array=(gnb,),
+            fivegc=fivegc,
+            retina_data=retina_data,
+            warning_as_errors=False,
+        )
+    finally:
+        criteria.validate()

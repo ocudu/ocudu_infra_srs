@@ -27,7 +27,6 @@ from retina.protocol.ue_pb2 import IPerfDir, IPerfProto, UEAttachedInfo
 from retina.protocol.ue_pb2_grpc import UEStub
 
 from .steps.configuration import configure_test_parameters
-from .steps.kpis import get_kpis
 from .steps.stub import (
     iperf_parallel,
     iperf_sequentially,
@@ -620,7 +619,7 @@ def _test_reestablishments(
         )
 
     finally:
-        get_kpis(du_or_gnb_array=[gnb], ue_array=ue_array)
+        pass
 
 
 HIGH_BITRATE = int(15e6)

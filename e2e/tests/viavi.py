@@ -11,11 +11,9 @@ Launch tests in Viavi
 """
 
 import logging
-import operator
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path, PureWindowsPath
-from typing import Callable, List
+from typing import List
 
 import pytest
 import yaml
@@ -23,18 +21,15 @@ from pytest import mark
 from requests import HTTPError
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
+from retina.launcher.criteria import Criteria
 from retina.launcher.utils import configure_artifacts
 from retina.protocol.base_pb2 import FiveGCDefinition, PLMN, StartInfo
 from retina.protocol.gnb_pb2 import GNBStartInfo
 from retina.protocol.gnb_pb2_grpc import GNBStub
-from retina.viavi.client import CampaignStatusEnum, Viavi, ViaviKPIs
-from rich.console import Console
-from rich.table import Table
+from retina.viavi.client import CampaignStatusEnum, Viavi
 
-from .steps.kpis import get_kpis, KPIs
 from .steps.stub import _stop_stub, GNB_STARTUP_TIMEOUT, handle_start_error, stop
 
-_OMIT_VIAVI_FAILURE_LIST = ["authentication"]
 _GNB_STOP_TIMEOUT = 15  # When timeout reached, retina gets GDB backtrace and sends sigkill. 0 means no timeout
 
 
@@ -58,20 +53,6 @@ class _ViaviConfiguration:
     expected_max_late_harqs: int = 0
     warning_as_errors: bool = True
     warning_allowlist: List[str] = field(default_factory=list)
-
-
-# pylint: disable=too-many-instance-attributes
-@dataclass
-class _ViaviResult:
-    """
-    Viavi result
-    """
-
-    criteria_name: str
-    current: float
-    expected_operator: str
-    expected: float
-    is_ok: bool
 
 
 def load_yaml_config(config_filename: str) -> List[_ViaviConfiguration]:
@@ -156,11 +137,11 @@ def viavi_manual_gnb_arguments(request):
 @mark.viavi_manual
 # pylint: disable=too-many-arguments,too-many-positional-arguments, too-many-locals
 def test_viavi_manual(
-    capsys: pytest.CaptureFixture[str],
     # Retina
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     test_log_folder: str,
+    criteria: Criteria,
     # Clients
     gnb: GNBStub,
     viavi: Viavi,
@@ -186,11 +167,11 @@ def test_viavi_manual(
     )
 
     _test_viavi(
-        capsys=capsys,
         # Retina
         retina_manager=retina_manager,
         retina_data=retina_data,
         test_log_folder=test_log_folder,
+        criteria=criteria,
         # Clients
         gnb=gnb,
         viavi=viavi,
@@ -217,11 +198,11 @@ def test_viavi_manual(
 @mark.viavi
 # pylint: disable=too-many-arguments,too-many-positional-arguments, too-many-locals
 def test_viavi(
-    capsys: pytest.CaptureFixture[str],
     # Retina
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     test_log_folder: str,
+    criteria: Criteria,
     # Clients
     gnb: GNBStub,
     viavi: Viavi,
@@ -237,11 +218,11 @@ def test_viavi(
     Runs a test using Viavi
     """
     _test_viavi(
-        capsys=capsys,
         # Retina
         retina_manager=retina_manager,
         retina_data=retina_data,
         test_log_folder=test_log_folder,
+        criteria=criteria,
         # Clients
         gnb=gnb,
         viavi=viavi,
@@ -257,11 +238,11 @@ def test_viavi(
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments, too-many-locals
 def _test_viavi(
-    capsys: pytest.CaptureFixture[str],
     # Retina
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     test_log_folder: str,
+    criteria: Criteria,
     # Clients
     gnb: GNBStub,
     viavi: Viavi,
@@ -312,6 +293,21 @@ def _test_viavi(
         retina_data=retina_data,
         always_download_artifacts=always_download_artifacts,
     )
+
+    # Criteria
+    criteria.add_criteria("dl_bitrate", test_declaration.expected_dl_bitrate)
+    criteria.add_criteria("ul_bitrate", test_declaration.expected_ul_bitrate)
+    criteria.add_criteria("nof_ko_dl", test_declaration.expected_nof_kos)
+    criteria.add_criteria("viavi_nof_ko_dl", test_declaration.expected_nof_kos)
+    criteria.add_criteria("nof_ko_ul", test_declaration.expected_nof_kos)
+    criteria.add_criteria("viavi_nof_ko_ul", test_declaration.expected_nof_kos)
+    criteria.add_criteria("max_late_dl_harqs", test_declaration.expected_max_late_harqs)
+    criteria.add_criteria("max_late_ul_harqs", test_declaration.expected_max_late_harqs)
+    criteria.add_criteria("nof_error_indications", 0)
+    criteria.add_criteria("errors", 0)
+    criteria.add_criteria("warnings", 0 if test_declaration.warning_as_errors else float("inf"))
+    criteria.add_criteria("viavi_warnings", float("inf"))
+    criteria.add_criteria("viavi_procedure_table", 0)
 
     # Start the GNB
     amf_ip, amf_port = viavi.get_core_definition()
@@ -375,7 +371,7 @@ def _test_viavi(
             logging.info("Folder with Viavi report: %s", report_folder)
             logging.info("Downloading Viavi report")
             viavi.download_directory(report_folder, Path(test_log_folder).joinpath("viavi"))
-            _, gnb_error_count = _stop_stub(
+            _stop_stub(
                 stub=gnb,
                 name="GNB",
                 retina_data=retina_data,
@@ -383,14 +379,7 @@ def _test_viavi(
                 log_search=log_search,
                 warning_as_errors=test_declaration.warning_as_errors,
             )
-            check_metrics_criteria(
-                test_configuration=test_declaration,
-                gnb=gnb,
-                viavi=viavi,
-                capsys=capsys,
-                gnb_error_count=gnb_error_count,
-                warning_as_errors=test_declaration.warning_as_errors,
-            )
+            criteria.validate()
         except HTTPError:
             logging.error("Viavi Reports could not be downloaded")
 
@@ -398,196 +387,6 @@ def _test_viavi(
 ################################################################################
 # Helper functions
 ################################################################################
-def check_metrics_criteria(
-    *,  # This enforces keyword-only arguments
-    test_configuration: _ViaviConfiguration,
-    gnb: GNBStub,
-    viavi: Viavi,
-    capsys: pytest.CaptureFixture[str],
-    gnb_error_count: int,
-    warning_as_errors: bool,
-):
-    """
-    Check pass/fail criteria
-    """
-
-    # Check metrics
-    viavi_kpis: ViaviKPIs = viavi.get_test_kpis()
-    viavi_kpis.print_procedure_failures(_OMIT_VIAVI_FAILURE_LIST)
-    kpis: KPIs = get_kpis(du_or_gnb_array=[gnb], viavi_kpis=viavi_kpis)
-
-    criteria_result = [
-        _create_viavi_result(
-            criteria_name="DL bitrate",
-            current=kpis.dl_brate_aggregate,
-            operator_method=operator.gt,
-            expected=test_configuration.expected_dl_bitrate,
-        ),
-        _create_viavi_result(
-            criteria_name="UL bitrate",
-            current=kpis.ul_brate_aggregate,
-            operator_method=operator.gt,
-            expected=test_configuration.expected_ul_bitrate,
-        ),
-        _create_viavi_result(
-            criteria_name="DL KOs (gnb)",
-            current=kpis.nof_ko_dl,
-            operator_method=operator.le,
-            expected=test_configuration.expected_nof_kos,
-        ),
-        _create_viavi_result(
-            criteria_name="DL KOs (viavi)",
-            current=viavi_kpis.dl_data.num_tbs_errors if viavi_kpis.dl_data.num_tbs_errors is not None else 0,
-            operator_method=operator.le,
-            expected=test_configuration.expected_nof_kos,
-        ),
-        _create_viavi_result(
-            criteria_name="UL KOs (gnb)",
-            current=kpis.nof_ko_ul,
-            operator_method=operator.le,
-            expected=test_configuration.expected_nof_kos,
-        ),
-        _create_viavi_result(
-            criteria_name="UL KOs (viavi)",
-            current=viavi_kpis.ul_data.num_tbs_nack if viavi_kpis.ul_data.num_tbs_nack is not None else 0,
-            operator_method=operator.le,
-            expected=test_configuration.expected_nof_kos,
-        ),
-        _create_viavi_result(
-            criteria_name="Late DL HARQs (gnb)",
-            current=kpis.max_late_dl_harqs,
-            operator_method=operator.le,
-            expected=test_configuration.expected_max_late_harqs,
-        ),
-        _create_viavi_result(
-            criteria_name="Late UL HARQs (gnb)",
-            current=kpis.max_late_ul_harqs,
-            operator_method=operator.le,
-            expected=test_configuration.expected_max_late_harqs,
-        ),
-        _create_viavi_result(
-            criteria_name="Error Indications",
-            current=kpis.nof_error_indications,
-            operator_method=operator.eq,
-            expected=0,
-        ),
-        _create_viavi_result(
-            criteria_name="Errors" + (" & warnings" if warning_as_errors else ""),
-            current=gnb_error_count,
-            operator_method=operator.eq,
-            expected=0,
-        ),
-        _create_viavi_result(
-            criteria_name="Viavi Warnings",
-            current=len(viavi_kpis.warning_array),
-            operator_method=operator.lt,
-            expected=float("inf"),
-        ),
-        _create_viavi_result(
-            criteria_name="Procedure table",
-            current=viavi_kpis.get_number_of_procedure_failures(_OMIT_VIAVI_FAILURE_LIST),
-            operator_method=operator.eq,
-            expected=0,
-        ),
-    ]
-
-    create_table(criteria_result, capsys)
-    criteria_errors_str = []
-    for criteria in criteria_result:
-        if not criteria.is_ok:
-            criteria_errors_str.append(criteria.criteria_name)
-    if sys.exc_info()[0] is None and criteria_errors_str:
-        pytest.fail("Test didn't pass the following criteria: " + ", ".join(criteria_errors_str))
-
-
-def _create_viavi_result(
-    *,  # This enforces keyword-only arguments
-    criteria_name: str,
-    current: float,
-    operator_method: Callable,
-    expected: float,
-) -> _ViaviResult:
-
-    is_ok = operator_method(current, expected)
-
-    return _ViaviResult(
-        criteria_name=criteria_name,
-        current=current,
-        expected_operator={
-            operator.lt: "<",
-            operator.le: "<=",
-            operator.eq: "==",
-            operator.ne: "!=",
-            operator.gt: ">",
-            operator.ge: ">=",
-        }.get(operator_method, "?"),
-        expected=expected,
-        is_ok=is_ok,
-    )
-
-
-def create_table(results: List[_ViaviResult], capsys):
-    """
-    Create a table with the results
-    """
-    table = Table(title="Viavi Results")
-
-    table.add_column("Criteria Name", justify="left", style="cyan", no_wrap=True)
-    table.add_column("Result", justify="right", style="magenta")
-    table.add_column("Expected", justify="right", style="magenta")
-    table.add_column("Pass", justify="center", style="magenta")
-
-    for result in results:
-        row_style = "green" if result.is_ok else "red"
-        table.add_row(
-            result.criteria_name,
-            f"{get_str_number_criteria(result.current)}",
-            f"{result.expected_operator} {get_str_number_criteria(result.expected)}",
-            "✅" if result.is_ok else "❌",
-            style=row_style,
-        )
-
-    console = Console()
-    # Capture the table to print it in the console
-    with console.capture() as capture:
-        console.print(table)
-    output = "\n" + capture.get()
-
-    # Disable temporarily the capsys to print the table
-    with capsys.disabled():
-        logging.info(output)
-
-
-def check_criteria(
-    *,  # This enforces keyword-only arguments
-    current: float,
-    expected: float,
-    operator_method: Callable[[float, float], bool],
-) -> bool:
-    """
-    Check criteria
-    """
-    is_ok = operator_method(current, expected)
-    return is_ok
-
-
-def get_str_number_criteria(number_criteria: float) -> str:
-    """
-    Get string number criteria
-    """
-    if number_criteria == float("inf"):
-        return "∞"
-    if number_criteria == float("-inf"):
-        return "-∞"
-    if number_criteria >= 1_000_000_000:
-        return f"{number_criteria / 1_000_000_000:.1f}G"
-    if number_criteria >= 1_000_000:
-        return f"{number_criteria / 1_000_000:.1f}M"
-    if number_criteria >= 1_000:
-        return f"{number_criteria / 1_000:.1f}K"
-    return str(number_criteria)
-
-
 def get_viavi_configuration_from_testname(
     *, campaign_filename: str, test_name: str, timeout: int, gnb_arguments=""  # The "*" enforces keyword-only arguments
 ) -> _ViaviConfiguration:

@@ -11,9 +11,11 @@ Fixtures to use from tests
 """
 
 import logging
+import operator
 from contextlib import suppress
 from pathlib import Path
-from typing import Callable, Dict, Generator, Optional, Tuple
+from statistics import mean
+from typing import Callable, Dict, Generator, Optional, Sequence, Tuple
 
 import grpc
 import pytest
@@ -34,6 +36,7 @@ from retina.protocol.ue_pb2_grpc import UEStub
 from retina.viavi.client import CampaignStatusEnum, Viavi
 
 from retina.launcher.artifacts import RetinaTestData, TEST_SUCCESS_FIELD
+from retina.launcher.criteria import Criteria
 from retina.launcher.reporter import create_report
 
 
@@ -121,12 +124,15 @@ def retina_data(
 
 @pytest.fixture
 # pylint: disable=invalid-name
-def ue(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Generator[UEStub, None, None]:
+def ue(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+) -> Generator[UEStub, None, None]:
     """
     Return an UE
     """
     try:
         ue_stub = retina_manager.get_ue()
+        _register_ue_criteria(criteria, (ue_stub,))
         yield ue_stub
     finally:
         with suppress(NameError, UnboundLocalError):
@@ -137,13 +143,14 @@ def _generate_ue_fixture(number_of_ues: int) -> Callable:
     @pytest.fixture
     # pylint: disable=invalid-name
     def ue_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData
+        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
     ) -> Generator[Tuple[UEStub, ...], None, None]:
         """
         Return multiple UEs
         """
         try:
             ue_stub_array = tuple(retina_manager.get_ue(index) for index in range(number_of_ues))
+            _register_ue_criteria(criteria, ue_stub_array)
             yield ue_stub_array
         finally:
             with suppress(NameError, UnboundLocalError):
@@ -157,17 +164,39 @@ for n in range(1, 1000 + 1):
     globals()[f"ue_{n}"] = _generate_ue_fixture(n)
 
 
+def _register_ue_criteria(criteria: Criteria, ue_stub_array: Sequence[UEStub]):  # pylint: disable=redefined-outer-name
+    criteria.register_available_criteria(
+        "nof_reestablishments",
+        "Reestablishments",
+        lambda: sum(
+            ue_info.nof_reestablishments
+            for ue_stub in ue_stub_array
+            for ue_info in ue_stub.GetMetrics(Empty()).ue_array
+        ),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "nof_handovers",
+        "Handovers",
+        lambda: sum(
+            ue_info.nof_handovers for ue_stub in ue_stub_array for ue_info in ue_stub.GetMetrics(Empty()).ue_array
+        ),
+        operator.eq,
+    )
+
+
 def _generate_gnb_fixture(number_of_gnbs: int) -> Callable:
     @pytest.fixture
     # pylint: disable=invalid-name
     def gnb_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData
+        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
     ) -> Generator[Tuple[GNBStub, ...], None, None]:
         """
         Return multiple GNBs
         """
         try:
             gnb_stub_array = tuple(retina_manager.get_gnb(index) for index in range(number_of_gnbs))
+            _register_du_criteria(criteria, gnb_stub_array)
             yield gnb_stub_array
         finally:
             with suppress(NameError, UnboundLocalError):
@@ -182,12 +211,15 @@ for n in range(1, 64 + 1):
 
 
 @pytest.fixture
-def gnb(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Generator[GNBStub, None, None]:
+def gnb(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+) -> Generator[GNBStub, None, None]:
     """
     Return a GNB
     """
     try:
         gnb_stub = retina_manager.get_gnb()
+        _register_du_criteria(criteria, (gnb_stub,))
         yield gnb_stub
     finally:
         with suppress(NameError, UnboundLocalError):
@@ -209,12 +241,15 @@ def cu(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Genera
 
 @pytest.fixture
 # pylint: disable=invalid-name
-def du(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Generator[DUStub, None, None]:
+def du(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+) -> Generator[DUStub, None, None]:
     """
     Return an DU
     """
     try:
         du_stub = retina_manager.get_du()
+        _register_du_criteria(criteria, (du_stub,))
         yield du_stub
     finally:
         with suppress(NameError, UnboundLocalError):
@@ -225,13 +260,14 @@ def _generate_du_fixture(number_of_dus: int) -> Callable:
     @pytest.fixture
     # pylint: disable=invalid-name
     def du_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData
+        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
     ) -> Generator[Tuple[DUStub, ...], None, None]:
         """
         Return multiple DUs
         """
         try:
             du_stub_array = tuple(retina_manager.get_du(index) for index in range(number_of_dus))
+            _register_du_criteria(criteria, du_stub_array)
             yield du_stub_array
         finally:
             with suppress(NameError, UnboundLocalError):
@@ -243,6 +279,69 @@ def _generate_du_fixture(number_of_dus: int) -> Callable:
 
 for n in range(1, 64 + 1):
     globals()[f"du_{n}"] = _generate_du_fixture(n)
+
+
+def _register_du_criteria(
+    criteria: Criteria, du_or_gnb_array: Sequence[RanStub]
+):  # pylint: disable=redefined-outer-name
+    criteria.register_available_criteria(
+        "dl_bitrate",
+        "DL bitrate",
+        lambda: mean(gnb_stub.GetMetrics(Empty()).total.dl_bitrate for gnb_stub in du_or_gnb_array),
+        operator.gt,
+    )
+    criteria.register_available_criteria(
+        "ul_bitrate",
+        "UL bitrate",
+        lambda: mean(gnb_stub.GetMetrics(Empty()).total.ul_bitrate for gnb_stub in du_or_gnb_array),
+        operator.gt,
+    )
+    criteria.register_available_criteria(
+        "nof_ko_dl",
+        "DL KOs",
+        lambda: sum(gnb_stub.GetMetrics(Empty()).total.dl_nof_ko for gnb_stub in du_or_gnb_array),
+        operator.le,
+    )
+    criteria.register_available_criteria(
+        "nof_ko_ul",
+        "UL KOs",
+        lambda: sum(gnb_stub.GetMetrics(Empty()).total.ul_nof_ko for gnb_stub in du_or_gnb_array),
+        operator.le,
+    )
+    criteria.register_available_criteria(
+        "max_late_dl_harqs",
+        "Late DL HARQs",
+        lambda: sum(gnb_stub.GetMetrics(Empty()).cell.max_late_dl_harqs for gnb_stub in du_or_gnb_array),
+        operator.le,
+    )
+    criteria.register_available_criteria(
+        "max_late_ul_harqs",
+        "Late UL HARQs",
+        lambda: sum(gnb_stub.GetMetrics(Empty()).cell.max_late_ul_harqs for gnb_stub in du_or_gnb_array),
+        operator.le,
+    )
+    criteria.register_available_criteria(
+        "nof_error_indications",
+        "Error Indications",
+        lambda: sum(gnb_stub.GetMetrics(Empty()).cell.error_indication_cnt for gnb_stub in du_or_gnb_array),
+        operator.le,
+    )
+    criteria.register_available_criteria(
+        "errors",
+        "Errors",
+        lambda: sum(
+            gnb_stub.Stop.with_call(UInt32Value(value=15), timeout=15)[0].error_count for gnb_stub in du_or_gnb_array
+        ),
+        operator.le,
+    )
+    criteria.register_available_criteria(
+        "warnings",
+        "Warnings",
+        lambda: sum(
+            gnb_stub.Stop.with_call(UInt32Value(value=15), timeout=15)[0].warning_count for gnb_stub in du_or_gnb_array
+        ),
+        operator.le,
+    )
 
 
 @pytest.fixture
@@ -347,7 +446,9 @@ def _log_metrics(
 
 
 @pytest.fixture
-def viavi(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Generator[Viavi, None, None]:
+def viavi(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+) -> Generator[Viavi, None, None]:  # pylint: disable=too-many-nested-blocks
     """
     Return a Viavi Controller
     """
@@ -387,6 +488,33 @@ def viavi(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Gen
         with suppress(HTTPError):
             viavi_client.delete_tma()
         viavi_client.create_tma()
+
+        # Register pass fail criteria
+        criteria.register_available_criteria(
+            "viavi_nof_ko_dl",
+            "DL KOs (viavi)",
+            lambda: viavi_client.get_test_kpis().dl_data.num_tbs_errors,
+            operator.le,
+        )
+        criteria.register_available_criteria(
+            "viavi_nof_ko_ul",
+            "UL KOs (viavi)",
+            lambda: viavi_client.get_test_kpis().ul_data.num_tbs_nack,
+            operator.le,
+        )
+        criteria.register_available_criteria(
+            "viavi_warnings",
+            "Viavi Warnings",
+            lambda: len(viavi_client.get_test_kpis().warning_array),
+            operator.lt,
+        )
+        criteria.register_available_criteria(
+            "viavi_procedure_table",
+            "Procedure table",
+            lambda: viavi_client.get_test_kpis().get_number_of_procedure_failures(["authentication"]),
+            operator.eq,
+        )
+
         yield viavi_client
     finally:
         # Stop running campaign
@@ -398,3 +526,11 @@ def viavi(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Gen
                 logging.error("Viavi last campaign failed")
         with suppress(HTTPError):
             viavi_client.delete_tma()
+
+
+@pytest.fixture
+def criteria(capsys: pytest.CaptureFixture[str]) -> Generator[Criteria, None, None]:
+    """
+    Return a Criteria instance for managing test pass/fail criteria.
+    """
+    yield Criteria(capsys=capsys)

@@ -27,7 +27,6 @@ from retina.protocol.ue_pb2 import IPerfDir, IPerfProto, UEAttachedInfo
 from retina.protocol.ue_pb2_grpc import UEStub
 
 from .steps.configuration import configure_test_parameters
-from .steps.kpis import get_kpis
 from .steps.stub import (
     multi_ue_mobility_iperf,
     ping_start,
@@ -399,44 +398,38 @@ def _handover_multi_ues(
         ue_array=ue_array, du_definition=du_definition, fivegc=fivegc, ue_startup_timeout=ue_startup_timeout
     )
 
-    try:
-        # HO while pings
-        movement_duration = (movement_steps + 1) * sleep_between_movement_steps
-        movements: Tuple[Tuple[Tuple[float, float, float], Tuple[float, float, float], int, int], ...] = (
-            (original_position, cell_position_offset, movement_steps, sleep_between_movement_steps),
-            (cell_position_offset, original_position, movement_steps, sleep_between_movement_steps),
-            (original_position, cell_position_offset, movement_steps, sleep_between_movement_steps),
-            (cell_position_offset, original_position, movement_steps, sleep_between_movement_steps),
-        )
-        traffic_seconds = (len(movements) * movement_duration) + len(ue_array)
+    # HO while pings
+    movement_duration = (movement_steps + 1) * sleep_between_movement_steps
+    movements: Tuple[Tuple[Tuple[float, float, float], Tuple[float, float, float], int, int], ...] = (
+        (original_position, cell_position_offset, movement_steps, sleep_between_movement_steps),
+        (cell_position_offset, original_position, movement_steps, sleep_between_movement_steps),
+        (original_position, cell_position_offset, movement_steps, sleep_between_movement_steps),
+        (cell_position_offset, original_position, movement_steps, sleep_between_movement_steps),
+    )
+    traffic_seconds = (len(movements) * movement_duration) + len(ue_array)
 
-        yield ue_attach_info_dict, movements, traffic_seconds
+    yield ue_attach_info_dict, movements, traffic_seconds
 
-        # Pings after handover
-        logging.info("Starting Pings after all HO have been completed")
-        ping_wait_until_finish(
-            ping_start(ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=movement_duration)
-        )
+    # Pings after handover
+    logging.info("Starting Pings after all HO have been completed")
+    ping_wait_until_finish(
+        ping_start(ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=movement_duration)
+    )
 
-        for ue_stub in ue_array:
-            ue_validate_no_reattaches(ue_stub)
+    for ue_stub in ue_array:
+        ue_validate_no_reattaches(ue_stub)
 
-        stop(
-            ue_array=ue_array,
-            gnb_array=gnb_array,
-            cu=cu,
-            du_array=du_array,
-            fivegc=fivegc,
-            retina_data=retina_data,
-            ue_stop_timeout=16,
-            warning_as_errors=warning_as_errors,
-            stop_gnb_first=stop_gnb_first,
-        )
-    finally:
-        if gnb_array:
-            get_kpis(du_or_gnb_array=gnb_array, ue_array=ue_array)
-        if du_array:
-            get_kpis(du_or_gnb_array=du_array, ue_array=ue_array)
+    stop(
+        ue_array=ue_array,
+        gnb_array=gnb_array,
+        cu=cu,
+        du_array=du_array,
+        fivegc=fivegc,
+        retina_data=retina_data,
+        ue_stop_timeout=16,
+        warning_as_errors=warning_as_errors,
+        stop_gnb_first=stop_gnb_first,
+    )
 
 
 @mark.parametrize(

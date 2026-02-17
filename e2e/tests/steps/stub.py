@@ -61,7 +61,6 @@ from retina.protocol.ue_pb2 import (
 from retina.protocol.ue_pb2_grpc import UEStub
 
 from .configuration import configure_test_parameters
-from .kpis import get_kpis
 
 BITRATE_THRESHOLD: float = 0.1
 RF_MAX_TIMEOUT: int = 5 * 60  # Time enough in RF when loading a new image in the sdr
@@ -982,66 +981,63 @@ def multi_ue_mobility_iperf(
         fivegc=fivegc,
     )
 
-    try:
-        # HO while iPerf
-        movement_duration = (movement_steps + 1) * sleep_between_movement_steps
-        movements: Tuple[Tuple[Tuple[float, float, float], Tuple[float, float, float], int, int], ...] = (
-            (original_position, cell_position_offset, movement_steps, sleep_between_movement_steps),
-            (cell_position_offset, original_position, movement_steps, sleep_between_movement_steps),
-        ) * nof_movements
+    # HO while iPerf
+    movement_duration = (movement_steps + 1) * sleep_between_movement_steps
+    movements: Tuple[Tuple[Tuple[float, float, float], Tuple[float, float, float], int, int], ...] = (
+        (original_position, cell_position_offset, movement_steps, sleep_between_movement_steps),
+        (cell_position_offset, original_position, movement_steps, sleep_between_movement_steps),
+    ) * nof_movements
 
-        traffic_seconds = (len(movements) * movement_duration) + len(ue_array)
+    traffic_seconds = (len(movements) * movement_duration) + len(ue_array)
 
-        # Starting iperf in the UEs
-        iperf_array = []
-        for ue_stub in ue_array:
-            iperf_array.append(
-                (
-                    ue_attach_info_dict[ue_stub],
-                    *iperf_start(
-                        ue_stub=ue_stub,
-                        ue_attached_info=ue_attach_info_dict[ue_stub],
-                        fivegc=fivegc,
-                        protocol=protocol,
-                        direction=direction,
-                        duration=traffic_seconds,
-                        bitrate=bitrate,
-                    ),
-                )
+    # Starting iperf in the UEs
+    iperf_array = []
+    for ue_stub in ue_array:
+        iperf_array.append(
+            (
+                ue_attach_info_dict[ue_stub],
+                *iperf_start(
+                    ue_stub=ue_stub,
+                    ue_attached_info=ue_attach_info_dict[ue_stub],
+                    fivegc=fivegc,
+                    protocol=protocol,
+                    direction=direction,
+                    duration=traffic_seconds,
+                    bitrate=bitrate,
+                ),
             )
-
-        yield ue_attach_info_dict, movements, traffic_seconds
-
-        # Stop and validate iperfs.
-        if allow_failure:
-            # The BITRATE_THRESHOLD is reduced because of noise and possible handover failures
-            bitrate_threshold = BITRATE_THRESHOLD * 0.05
-        else:
-            bitrate_threshold = BITRATE_THRESHOLD
-
-        for ue_attached_info, task, iperf_request in iperf_array:
-            iperf_wait_until_finish(
-                ue_attached_info=ue_attached_info,
-                fivegc=fivegc,
-                task=task,
-                iperf_request=iperf_request,
-                bitrate_threshold_ratio=bitrate_threshold,
-            )
-
-        if not allow_failure:
-            for ue_stub in ue_array:
-                ue_validate_no_reattaches(ue_stub)
-
-        stop(
-            ue_array=ue_array,
-            gnb_array=gnb_array,
-            fivegc=fivegc,
-            retina_data=retina_data,
-            ue_stop_timeout=16,
-            warning_as_errors=warning_as_errors,
         )
-    finally:
-        get_kpis(du_or_gnb_array=gnb_array, ue_array=ue_array)
+
+    yield ue_attach_info_dict, movements, traffic_seconds
+
+    # Stop and validate iperfs.
+    if allow_failure:
+        # The BITRATE_THRESHOLD is reduced because of noise and possible handover failures
+        bitrate_threshold = BITRATE_THRESHOLD * 0.05
+    else:
+        bitrate_threshold = BITRATE_THRESHOLD
+
+    for ue_attached_info, task, iperf_request in iperf_array:
+        iperf_wait_until_finish(
+            ue_attached_info=ue_attached_info,
+            fivegc=fivegc,
+            task=task,
+            iperf_request=iperf_request,
+            bitrate_threshold_ratio=bitrate_threshold,
+        )
+
+    if not allow_failure:
+        for ue_stub in ue_array:
+            ue_validate_no_reattaches(ue_stub)
+
+    stop(
+        ue_array=ue_array,
+        gnb_array=gnb_array,
+        fivegc=fivegc,
+        retina_data=retina_data,
+        ue_stop_timeout=16,
+        warning_as_errors=warning_as_errors,
+    )
 
 
 def ue_expect_handover(*, ue_stub: UEStub, timeout: int) -> grpc.Future:  # The "*" enforces keyword-only arguments
