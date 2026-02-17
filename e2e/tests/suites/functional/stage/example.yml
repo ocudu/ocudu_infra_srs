@@ -11,3 +11,15 @@ my example test:
   ue_config: [example.cfg]
   gnb_config: [example.yml]
   core_config: [example.cfg]
+  criteria:
+    dl_bitrate: 10.0e+3
+    ul_bitrate: 10.0e+3
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments: 0
+    nof_handovers: 0
+    max_late_dl_harqs: 0
+    max_late_ul_harqs: 0
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
