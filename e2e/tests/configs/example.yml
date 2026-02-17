@@ -11,6 +11,15 @@ gnb_id: 411
 cu_up:
   warn_on_drop: false
 
+cu_cp:
+  amf:
+    supported_tracking_areas:
+      - tac: 7
+        plmn_list:
+          - plmn: "00101"
+            tai_slice_support_list:
+              - sst: 1
+
 cell_cfg:
   nof_antennas_dl: 1
   nof_antennas_ul: 1

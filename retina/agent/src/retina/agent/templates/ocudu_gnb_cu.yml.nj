@@ -31,6 +31,19 @@ metrics:
 cu_up:
   warn_on_drop: {{ warn_on_drop }}
 
+cu_cp:
+  amf:
+    supported_tracking_areas:
+      - tac: {{tac}}
+        plmn_list:
+          - plmn: "{{mcc}}{{mnc}}"
+            tai_slice_support_list:
+              - sst: 1
+              {% for slice in slices %}
+              - sst: 1
+                sd: {{ slice.sd }}
+              {% endfor %}
+
 {% if cell_array|length > 1 %}
 cu_cp:
   mobility:

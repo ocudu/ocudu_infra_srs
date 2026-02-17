@@ -5,13 +5,3 @@ cu_cp:
     addrs: {{fivegc_ip}}
     port: {{fivegc_port}}
     bind_addrs: {{ip}}
-    supported_tracking_areas:
-      - tac: {{tac}}
-        plmn_list:
-          - plmn: "{{mcc}}{{mnc}}"
-            tai_slice_support_list:
-              - sst: 1
-              {% for slice in slices %}
-              - sst: 1
-                sd: {{ slice.sd }}
-              {% endfor %}
