@@ -7,26 +7,31 @@
 ```bash
 # Setup following env variables
 
-# your gnb repo
-export OCUDU_PATH=~/workspace/ocudu
-# your unpacked amarisoft folder
+# your ocudu, retina and amarisoft folders
+export OCUDU_PATH=/builds/ocudu/ocudu
+export RETINA_PATH=/builds/ocudu/ocudu_infra_srs/retina
 export AMARISOFT_PATH=~/workspace/amarisoft/2025-09-19/
-export AMARISOFT_LICENSE_IP=your_license_server_ip
-export AMARISOFT_LICENSE_TAG=your_tag
-# profile: testbed to start. Look at "launcher" service inside "docker-compose.yml" to see all available profiles
-export RETINA_PROFILE=zmq_amariue
 
-# Download the repo and go to this folder
-# cd retina/_scripts
+# Amarisoft variables
+export AMARISOFT_LICENSE_IP=your_license_server_ip
+export AMARISOFT_UE_LICENSE_TAG=your_ue_tag
+export AMARISOFT_MME_LICENSE_TAG=your_mme_tag
+
+# profile: testbed to start. Look at "launcher" service inside "docker-compose.yml" to see all available profiles
+export RETINA_PROFILE=zmq_amariue_mme
 
 # Generate variables from retina code (call it when you change retina repo and first time)
+cd $RETINA_PATH/_scripts
 python3 generate_env.py --ocudu-path ${OCUDU_PATH} --amari-path ${AMARISOFT_PATH}
+
 # Build gnb and zmq driver (call it when you change gnb code and first time)
 docker compose --profile builders up
+
 # Create testbed (call it when you change the profile and first time)
 python3 generate_testbed.py --profile ${RETINA_PROFILE}
+
 # Run agents
-docker compose --profile ${RETINA_PROFILE} up --remove-orphans
+docker compose --profile ${RETINA_PROFILE} up --timestamps
 ```
 
 ### Terminal 2 - Run the test
