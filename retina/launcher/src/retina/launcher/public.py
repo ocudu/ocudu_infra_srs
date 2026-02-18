@@ -124,15 +124,12 @@ def retina_data(
 
 @pytest.fixture
 # pylint: disable=invalid-name
-def ue(
-    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
-) -> Generator[UEStub, None, None]:
+def ue(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Generator[UEStub, None, None]:
     """
     Return an UE
     """
     try:
         ue_stub = retina_manager.get_ue()
-        _register_ue_criteria(criteria, (ue_stub,))
         yield ue_stub
     finally:
         with suppress(NameError, UnboundLocalError):
@@ -143,14 +140,13 @@ def _generate_ue_fixture(number_of_ues: int) -> Callable:
     @pytest.fixture
     # pylint: disable=invalid-name
     def ue_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+        retina_manager: RetinaTestManager, retina_data: RetinaTestData
     ) -> Generator[Tuple[UEStub, ...], None, None]:
         """
         Return multiple UEs
         """
         try:
             ue_stub_array = tuple(retina_manager.get_ue(index) for index in range(number_of_ues))
-            _register_ue_criteria(criteria, ue_stub_array)
             yield ue_stub_array
         finally:
             with suppress(NameError, UnboundLocalError):
@@ -162,27 +158,6 @@ def _generate_ue_fixture(number_of_ues: int) -> Callable:
 
 for n in range(1, 1000 + 1):
     globals()[f"ue_{n}"] = _generate_ue_fixture(n)
-
-
-def _register_ue_criteria(criteria: Criteria, ue_stub_array: Sequence[UEStub]):  # pylint: disable=redefined-outer-name
-    criteria.register_available_criteria(
-        "nof_reestablishments",
-        "Reestablishments",
-        lambda: sum(
-            ue_info.nof_reestablishments
-            for ue_stub in ue_stub_array
-            for ue_info in ue_stub.GetMetrics(Empty()).ue_array
-        ),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "nof_handovers",
-        "Handovers",
-        lambda: sum(
-            ue_info.nof_handovers for ue_stub in ue_stub_array for ue_info in ue_stub.GetMetrics(Empty()).ue_array
-        ),
-        operator.eq,
-    )
 
 
 def _generate_gnb_fixture(number_of_gnbs: int) -> Callable:
@@ -325,6 +300,18 @@ def _register_du_criteria(
         "Error Indications",
         lambda: sum(gnb_stub.GetMetrics(Empty()).cell.error_indication_cnt for gnb_stub in du_or_gnb_array),
         operator.le,
+    )
+    criteria.register_available_criteria(
+        "nof_reestablishments",
+        "Reestablishments",
+        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_reestablishments for gnb_stub in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "nof_handovers",
+        "Handovers",
+        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_handovers for gnb_stub in du_or_gnb_array),
+        operator.eq,
     )
     criteria.register_available_criteria(
         "errors",

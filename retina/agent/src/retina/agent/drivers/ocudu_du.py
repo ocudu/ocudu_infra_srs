@@ -41,6 +41,8 @@ from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.gnb import DUDriver
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.gnb_report import transform_metrics
+from retina.agent.features.pcap.analyzer import run_analyzers
+from retina.agent.features.pcap.mac import HandoverAnalyzer, ReestablishmentAnalyzer
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
@@ -142,6 +144,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         self._metrics_thread = Thread(target=self._metrics_listener)
         self._metrics_thread_stopper = Event()
         self._metrics_dict: Dict[int, Dict[int, UeMetrics]] = {}
+        self._pcap_parsing_done = True
         self._reports_since_last_ue_event: Dict[int, int] = {}
         self._prev_ue_list: List = []
         # Moving average for DL/UL bitrate, max 50 samples, for the aggregate nd UE metrics, respectively
@@ -272,6 +275,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                             raise err from None
 
                 self.start_listening_metrics()
+                self.set_ready_to_parse_pcaps()
 
         return Empty()
 
@@ -533,9 +537,36 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
             metrics_json_path = self.get_filepath_in_report_folder(gnb_defaults.metrics_filename_json)
         return metrics_json_path
 
+    def set_ready_to_parse_pcaps(self) -> None:
+        """
+        Binary has started a new pcaps will be generated
+        """
+        self._pcap_parsing_done = False
+
+    def get_pcap_parsing_arguments(self) -> Tuple[str, ...]:
+        """
+        Get Arguments for Pcap parsing. Needs to be called before stop
+        """
+        if self._pcap_parsing_done:
+            return tuple()
+        return (self.get_filepath_in_report_folder(gnb_defaults.mac_filename),)
+
+    def extract_metrics_from_pcaps(self, *args):
+        """
+        Extract Metrics from PCAP files
+        """
+        if not self._pcap_parsing_done:
+            (mac_pcap_filename,) = args
+            mac_result = run_analyzers(mac_pcap_filename, (ReestablishmentAnalyzer(), HandoverAnalyzer()))
+            self._aggregate_metrics.nof_handovers = int(mac_result["handover_count"])
+            self._aggregate_metrics.nof_reestablishments = int(mac_result["reestablishment_completion_count"])
+            self._pcap_parsing_done = True
+
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
         metrics_json_path = self.stop_listening_metrics()
+        pcap_args = self.get_pcap_parsing_arguments()
         response = super().Stop(request, context)
+        self.extract_metrics_from_pcaps(*pcap_args)
         transform_metrics(metrics_json_path)
         return response
 

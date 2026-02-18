@@ -51,17 +51,21 @@ FROM ubuntu:$AGENT_OS_VERSION
 ARG PIP_EXTRA_INDEX_URL=""
 
 # Copy wheels
-COPY --from=builder /src/wheelhouse /app/ 
+COPY --from=builder /src/wheelhouse /app/
 COPY --from=iperf_builder /opt/iperf /opt/iperf
 
 ENV PYTHONBUFFERED=1
 ENV PATH="${PATH}:/opt/iperf/bin"
 
-# OS dependencies
+# OS dependencies + tshark from the Wireshark stable PPA
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
+    software-properties-common \
+    && add-apt-repository -y ppa:wireshark-dev/stable \
+    && apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     net-tools netcat-openbsd iproute2 iputils-ping \
     htop nano \
+    tshark \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install the generated wheels

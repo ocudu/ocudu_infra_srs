@@ -33,7 +33,8 @@ dependencies = [
   "jinja2 < 4",
   "pymongo < 5",
   "websocket-client < 2",
-  "paramiko < 4", 
+  "paramiko < 4",
+  "pyshark < 1",
 ]
 description = "Retina Software Agent"
 dynamic = ["version"]
