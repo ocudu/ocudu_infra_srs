@@ -138,14 +138,14 @@ nodes:
 - **`sdr`**: Software Defined Radio (e.g., USRP B200, X300)
   - Required: `type`, `model`, `space`, `args`, `sample_rate`, `tx_gain`, `rx_gain`, `sync`
   - Optional: `connection`: `usb` or `network`.
-  
+
 - **`ru`**: Radio Unit
   - Required: `type`, `model`, `space`, `address`, `network_interface`, `ru_mac_address`, `du_mac_address`, `vlan_tag_up`, `vlan_tag_cp`, `prach_port_id`, `dl_port_id`, `ul_port_id`
-  
+
 - **`android`**: COTS UE devices
   - Required: `type`, `model`, `space`, `serial_id`, `imsi`, `k`, `amf`, `opc`, `adb_key`
   - Optional: `connection`: `usb`.
-  
+
 - **`accelerator`**: Hardware accelerators (e.g., FPGA, ACC100)
   - Required: `type`, `model`, `space`, `id`, `cb_mode`, `hwacc_type`, `pdsch_enc_nof_hwacc`, `pusch_dec_nof_hwacc`, `harq_context_size`, `args`
   - Optional: `connection`: `pci`.
