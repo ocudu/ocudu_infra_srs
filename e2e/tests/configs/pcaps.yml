@@ -1,0 +1,4 @@
+pcap:
+  mac_enable: true
+  mac_type: dlt
+  mac_filename: {{mac_filename}}

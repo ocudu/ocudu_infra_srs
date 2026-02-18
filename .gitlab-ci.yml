@@ -201,6 +201,8 @@ variables:
 
 headers:
   extends: .headers
+  variables:
+    IGNORE_PATH: e2e/tests/configs
 
 yaml lint:
   stage: static

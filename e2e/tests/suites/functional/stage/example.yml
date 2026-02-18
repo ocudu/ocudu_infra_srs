@@ -9,7 +9,7 @@
 my example test:
   template: amarisoft_simulator
   ue_config: [example.cfg]
-  gnb_config: [example.yml]
+  gnb_config: [example.yml, pcaps.yml]
   core_config: [example.cfg]
   criteria:
     dl_bitrate: 10.0e+3
