@@ -15,6 +15,7 @@ import os
 import queue
 import shutil
 import signal
+import sys
 import warnings
 from abc import ABCMeta, abstractmethod
 from asyncio import subprocess
@@ -199,13 +200,16 @@ class LocalExecutor(Executor, metaclass=ABCMeta):
         Creates a process and returns it.
         """
         binary_name, *binary_params = cmd
-        return psutil.Popen(
+        process = psutil.Popen(
             (self.find_in_path(binary_name), *binary_params),
             stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE if logfile is None else logfile,
+            stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
+        if logfile is not None:
+            Thread(target=_tee_output, args=(process.stdout, logfile, sys.stdout), daemon=True).start()
+        return process
 
     def find_in_path(self, binary_name: str) -> str:
         if Path(binary_name).is_absolute() and Path(binary_name).exists():
@@ -332,6 +336,13 @@ def _enqueue_output(process_stdout, queue_obj):
     for line in iter(process_stdout.readline, ""):
         queue_obj.put(line)
     # When process is dead, iterator also ends and this method stops
+
+
+def _tee_output(source, *targets):
+    for line in iter(source.readline, ""):
+        for target in targets:
+            target.write(line)
+            target.flush()
 
 
 def _remove_non_printable(my_string: str) -> str:
