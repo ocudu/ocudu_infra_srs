@@ -197,7 +197,10 @@ class AmarisoftWebSocket:
         """
         if kwargs.get("timeout", None) is not None and response_timeout < kwargs["timeout"]:
             response_timeout = kwargs["timeout"] + 1
-        return self._wait_response_with_id(self._send_command(**kwargs), timeout=response_timeout)
+        if self._ws.connected:
+            return self._wait_response_with_id(self._send_command(**kwargs), timeout=response_timeout)
+        logging.warning("WS already closed")
+        return {}
 
     def quit(self) -> None:
         """
