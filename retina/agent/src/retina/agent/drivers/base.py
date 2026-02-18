@@ -73,7 +73,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         Save the current resources to the testbed.py file.
         This is a temporal method until we remove testbed and use resources only.
         """
-        # pylint: disable=too-many-statements
+        # pylint: disable=too-many-statements,too-many-branches
         available_resources = ResourceManager.get_resources()
 
         set_parameter("testbed.type", "zmq")
@@ -169,6 +169,15 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
                 "testbed.accelerator_pusch_dec_nof_hwacc", available_resources.accelerator.pusch_dec_nof_hwacc
             )
             set_parameter("testbed.accelerator_harq_context_size", available_resources.accelerator.harq_context_size)
+
+        # ZMQ
+        if available_resources.sdr is None and available_resources.ru is None:
+            # In ZMQ, set sample rate and antennas to the max possible by the driver
+            set_parameter("testbed.sample_rate", 122880000)
+            set_parameter("ue.nof_antennas_dl", 4)
+            set_parameter("ue.nof_antennas_ul", 4)
+            set_parameter("gnb.nof_antennas_dl", 4)
+            set_parameter("gnb.nof_antennas_ul", 4)
 
     ###########################
     # Folder and report logic #
