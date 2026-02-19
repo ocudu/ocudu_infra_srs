@@ -68,5 +68,5 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
     def report(self) -> Dict[str, int]:
         return {
             "reestablishment_request_count": self._request_count,
-            "reestablishment_completion_count": self._completion_count,
+            "reestablishment_complete_count": self._completion_count,
         }

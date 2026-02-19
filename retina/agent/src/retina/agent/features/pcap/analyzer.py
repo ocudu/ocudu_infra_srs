@@ -55,39 +55,35 @@ def run_analyzers(pcap_file: str, analyzers: List[PcapAnalyzer]) -> Dict[str, An
     Returns a list of results in the same order as *analyzers*.
     """
 
-    if not Path(pcap_file).exists():
-        logging.warning("[Pcap Parsing] file not found: %s", pcap_file)
-        return {}
+    if Path(pcap_file).exists():
+        logging.info("[Pcap Parsing] %s", pcap_file)
 
-    analyzers_by_display_filter: Dict[str, List[PcapAnalyzer]] = {}
-    for a in analyzers:
-        if a.display_filter not in analyzers_by_display_filter:
-            analyzers_by_display_filter[a.display_filter] = []
-        analyzers_by_display_filter[a.display_filter].append(a)
+        analyzers_by_display_filter: Dict[str, List[PcapAnalyzer]] = {}
+        for a in analyzers:
+            if a.display_filter not in analyzers_by_display_filter:
+                analyzers_by_display_filter[a.display_filter] = []
+            analyzers_by_display_filter[a.display_filter].append(a)
+
+        for display_filter, analyzer_with_same_filter_array in analyzers_by_display_filter.items():
+            try:
+                with pyshark.FileCapture(pcap_file, keep_packets=False, display_filter=display_filter) as capture:
+                    for packet in capture:
+                        for analyzer in analyzer_with_same_filter_array:
+                            try:
+                                analyzer.process(packet)
+                            except Exception:  # pylint: disable=broad-except
+                                logging.exception("Error in %s while processing packet", type(analyzer).__name__)
+            except Exception as err:  # pylint: disable=broad-except
+                logging.exception(err)
+
+    else:
+        logging.warning("[Pcap Parsing] file not found: %s", pcap_file)
 
     result = {}
-    for display_filter, analyzer_array in analyzers_by_display_filter.items():
-        logging.info(
-            "[Pcap Parsing] %s [%s] with analyzers: %s",
-            pcap_file,
-            display_filter,
-            ", ".join(type(a).__name__ for a in analyzer_array),
-        )
-        try:
-            with pyshark.FileCapture(pcap_file, keep_packets=False, display_filter=display_filter) as capture:
-                for packet in capture:
-                    for analyzer in analyzer_array:
-                        try:
-                            analyzer.process(packet)
-                        except Exception:  # pylint: disable=broad-except
-                            logging.exception("Error in %s while processing packet", type(analyzer).__name__)
-        except Exception as err:  # pylint: disable=broad-except
-            logging.exception(err)
-        finally:
-            for analyzer in analyzer_array:
-                report = analyzer.report()
-                logging.info("[Pcap Parsing] Output: %s", str(report))
-                result.update(report)
+    for analyzer in analyzers:
+        report = analyzer.report()
+        logging.info("[Pcap Parsing] %s Output: %s", type(analyzer).__name__, str(report))
+        result.update(report)
 
     return result
 

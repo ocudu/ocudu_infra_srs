@@ -165,15 +165,16 @@ message UeMetrics {
   double                    ul_bitrate                     = 10;
   double                    ul_bitrate_min                 = 11;
   double                    ul_bitrate_max                 = 12;
-  uint32                    nof_reestablishments           = 13;
-  uint32                    nof_handovers                  = 14;
-  uint32                    nof_pucch_f0f1_invalid_harqs   = 15;
-  uint32                    nof_pucch_f2f3f4_invalid_harqs = 16;
-  uint32                    nof_pucch_f2f3f4_invalid_csis  = 17;
-  BitratePeakAverage        dl_bitrate_peak_av             = 18;
-  BitratePeakAverage        ul_bitrate_peak_av             = 19;
-  google.protobuf.Timestamp time_first                     = 20;
-  google.protobuf.Timestamp time_last                      = 21;
+  uint32                    nof_reestablishments_request   = 13;
+  uint32                    nof_reestablishments_complete  = 14;
+  uint32                    nof_handovers                  = 15;
+  uint32                    nof_pucch_f0f1_invalid_harqs   = 16;
+  uint32                    nof_pucch_f2f3f4_invalid_harqs = 17;
+  uint32                    nof_pucch_f2f3f4_invalid_csis  = 18;
+  BitratePeakAverage        dl_bitrate_peak_av             = 19;
+  BitratePeakAverage        ul_bitrate_peak_av             = 20;
+  google.protobuf.Timestamp time_first                     = 21;
+  google.protobuf.Timestamp time_last                      = 22;
 };
 
 message SystemMetrics {

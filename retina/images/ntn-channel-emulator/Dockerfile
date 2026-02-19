@@ -23,7 +23,7 @@ RUN apt-get update && \
 
 # Install the required Python packages using pip
 RUN pip3 config set global.break-system-packages true
-RUN pip3 install --no-cache-dir pyzmq skyfield numpy numba asn1tools pyyaml
+RUN pip3 install  --ignore-installed --no-cache-dir pyzmq skyfield numpy numba asn1tools pyyaml
 
 COPY ntn-channel-emulator /ntn-channel-emulator
 

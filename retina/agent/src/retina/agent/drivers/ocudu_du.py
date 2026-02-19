@@ -559,7 +559,8 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
             (mac_pcap_filename,) = args
             mac_result = run_analyzers(mac_pcap_filename, (ReestablishmentAnalyzer(), HandoverAnalyzer()))
             self._aggregate_metrics.nof_handovers = int(mac_result["handover_count"])
-            self._aggregate_metrics.nof_reestablishments = int(mac_result["reestablishment_completion_count"])
+            self._aggregate_metrics.nof_reestablishments_request = int(mac_result["reestablishment_request_count"])
+            self._aggregate_metrics.nof_reestablishments_complete = int(mac_result["reestablishment_complete_count"])
             self._pcap_parsing_done = True
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:

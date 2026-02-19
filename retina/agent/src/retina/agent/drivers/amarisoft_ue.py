@@ -787,7 +787,10 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                         ul_bitrate=ue_info["ul_bitrate"],
                         ul_bitrate_min=ue_info["ul_bitrate"],
                         ul_bitrate_max=ue_info["ul_bitrate"],
-                        nof_reestablishments=ue_info["counters"]["messages"].get("nr_rrc_reestablishment_complete", 0),
+                        nof_reestablishments_request=ue_info["counters"]["messages"].get("nr_rrc_reconfiguration", 0),
+                        nof_reestablishments_complete=ue_info["counters"]["messages"].get(
+                            "nr_rrc_reconfiguration_complete", 0
+                        ),
                         time_first=Timestamp(seconds=timestamp.seconds, nanos=timestamp.nanos),
                         time_last=Timestamp(seconds=timestamp.seconds, nanos=timestamp.nanos),
                     )
@@ -821,8 +824,11 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     ue_metric.time_last.seconds = timestamp.seconds
                     ue_metric.time_last.nanos = timestamp.nanos
 
-                    ue_metric.nof_reestablishments = ue_info["counters"]["messages"].get(
-                        "nr_rrc_reestablishment_complete", 0
+                    ue_metric.nof_reestablishments_request = ue_info["counters"]["messages"].get(
+                        "nr_rrc_reconfiguration", 0
+                    )
+                    ue_metric.nof_reestablishments_complete = ue_info["counters"]["messages"].get(
+                        "nr_rrc_reconfiguration_complete", 0
                     )
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:

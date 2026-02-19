@@ -69,7 +69,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install the generated wheels
-RUN python3 -m pip install --break-system-packages /app/*.whl py-spy
+RUN python3 -m pip install --break-system-packages --ignore-installed /app/*.whl py-spy
 
 WORKDIR /var/log/retina
 

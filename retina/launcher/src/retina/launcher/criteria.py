@@ -80,7 +80,7 @@ class _CriteriaDefinition:
             return f"{value / 1_000_000:.1f}M"
         if value >= 1_000:
             return f"{value / 1_000:.1f}K"
-        return str(value)
+        return f"{value:.1f}"
 
 
 class Criteria:

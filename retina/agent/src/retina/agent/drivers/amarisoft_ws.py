@@ -172,7 +172,7 @@ class AmarisoftWebSocket:
 
     def _read(self) -> None:
         while self._ws.connected:
-            with suppress(websocket.WebSocketConnectionClosedException):
+            with suppress(websocket.WebSocketConnectionClosedException, OSError):
                 msg = self._read_message()
                 if msg:
                     with suppress(KeyError):

@@ -304,7 +304,7 @@ def _register_du_criteria(
     criteria.register_available_criteria(
         "nof_reestablishments",
         "Reestablishments",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_reestablishments for gnb_stub in du_or_gnb_array),
+        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_reestablishments_complete for gnb_stub in du_or_gnb_array),
         operator.eq,
     )
     criteria.register_available_criteria(

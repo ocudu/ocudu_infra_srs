@@ -3,7 +3,7 @@
 isort:skip_file
 
 
-Copyright 2021-2025 Software Radio Systems Limited
+Copyright 2021-2026 Software Radio Systems Limited
 
 By using this file, you agree to the terms and conditions set
 forth in the LICENSE file which can be found at the top level of
@@ -474,7 +474,8 @@ class UeMetrics(google.protobuf.message.Message):
     UL_BITRATE_FIELD_NUMBER: builtins.int
     UL_BITRATE_MIN_FIELD_NUMBER: builtins.int
     UL_BITRATE_MAX_FIELD_NUMBER: builtins.int
-    NOF_REESTABLISHMENTS_FIELD_NUMBER: builtins.int
+    NOF_REESTABLISHMENTS_REQUEST_FIELD_NUMBER: builtins.int
+    NOF_REESTABLISHMENTS_COMPLETE_FIELD_NUMBER: builtins.int
     NOF_HANDOVERS_FIELD_NUMBER: builtins.int
     NOF_PUCCH_F0F1_INVALID_HARQS_FIELD_NUMBER: builtins.int
     NOF_PUCCH_F2F3F4_INVALID_HARQS_FIELD_NUMBER: builtins.int
@@ -495,7 +496,8 @@ class UeMetrics(google.protobuf.message.Message):
     ul_bitrate: builtins.float
     ul_bitrate_min: builtins.float
     ul_bitrate_max: builtins.float
-    nof_reestablishments: builtins.int
+    nof_reestablishments_request: builtins.int
+    nof_reestablishments_complete: builtins.int
     nof_handovers: builtins.int
     nof_pucch_f0f1_invalid_harqs: builtins.int
     nof_pucch_f2f3f4_invalid_harqs: builtins.int
@@ -523,7 +525,8 @@ class UeMetrics(google.protobuf.message.Message):
         ul_bitrate: builtins.float = ...,
         ul_bitrate_min: builtins.float = ...,
         ul_bitrate_max: builtins.float = ...,
-        nof_reestablishments: builtins.int = ...,
+        nof_reestablishments_request: builtins.int = ...,
+        nof_reestablishments_complete: builtins.int = ...,
         nof_handovers: builtins.int = ...,
         nof_pucch_f0f1_invalid_harqs: builtins.int = ...,
         nof_pucch_f2f3f4_invalid_harqs: builtins.int = ...,
@@ -534,7 +537,7 @@ class UeMetrics(google.protobuf.message.Message):
         time_last: google.protobuf.timestamp_pb2.Timestamp | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["dl_bitrate_peak_av", b"dl_bitrate_peak_av", "time_first", b"time_first", "time_last", b"time_last", "ul_bitrate_peak_av", b"ul_bitrate_peak_av"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["dl_bitrate", b"dl_bitrate", "dl_bitrate_max", b"dl_bitrate_max", "dl_bitrate_min", b"dl_bitrate_min", "dl_bitrate_peak_av", b"dl_bitrate_peak_av", "dl_nof_ko", b"dl_nof_ko", "dl_nof_ok", b"dl_nof_ok", "nof_handovers", b"nof_handovers", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments", b"nof_reestablishments", "pci", b"pci", "rnti", b"rnti", "time_first", b"time_first", "time_last", b"time_last", "ul_bitrate", b"ul_bitrate", "ul_bitrate_max", b"ul_bitrate_max", "ul_bitrate_min", b"ul_bitrate_min", "ul_bitrate_peak_av", b"ul_bitrate_peak_av", "ul_nof_ko", b"ul_nof_ko", "ul_nof_ok", b"ul_nof_ok"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["dl_bitrate", b"dl_bitrate", "dl_bitrate_max", b"dl_bitrate_max", "dl_bitrate_min", b"dl_bitrate_min", "dl_bitrate_peak_av", b"dl_bitrate_peak_av", "dl_nof_ko", b"dl_nof_ko", "dl_nof_ok", b"dl_nof_ok", "nof_handovers", b"nof_handovers", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "pci", b"pci", "rnti", b"rnti", "time_first", b"time_first", "time_last", b"time_last", "ul_bitrate", b"ul_bitrate", "ul_bitrate_max", b"ul_bitrate_max", "ul_bitrate_min", b"ul_bitrate_min", "ul_bitrate_peak_av", b"ul_bitrate_peak_av", "ul_nof_ko", b"ul_nof_ko", "ul_nof_ok", b"ul_nof_ok"]) -> None: ...
 
 Global___UeMetrics: typing_extensions.TypeAlias = UeMetrics
 
