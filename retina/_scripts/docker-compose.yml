@@ -116,6 +116,12 @@ services:
     volumes:
       - ~/.kube:/home/$USER/.kube
       - ../..:/workdir
+      # Following lines overwrite the retina code inside the container with your current code
+      - ../protocol/src/retina/protocol:/usr/local/lib/python3.12/site-packages/retina/protocol
+      - ../client/src/retina/client:/usr/local/lib/python3.12/site-packages/retina/client
+      - ../orchestrator/src/retina/orchestrator:/usr/local/lib/python3.12/site-packages/retina/orchestrator
+      - ../viavi/src/retina/viavi:/usr/local/lib/python3.12/site-packages/retina/viavi
+      - ../launcher/src/retina/launcher:/usr/local/lib/python3.12/site-packages/retina/launcher
     working_dir: /workdir/e2e
     networks:
       retina:
@@ -174,9 +180,12 @@ services:
       - CAP_SYS_PTRACE
     sysctls:
       - net.ipv6.conf.default.disable_ipv6=0
-    volumes:
+    volumes: &agent_volumes
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
       - ${OCUDU_PATH}/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so:/opt/lteue/trx_ocudu.so
-      # - ../agent/src/retina/agent/templates/amarisoft_ue_tun.sh:/usr/local/lib/python3.12/dist-packages/retina/agent/templates/amarisoft_ue_tun.sh
+      # Following lines overwrite the retina code inside the container with your current code
+      - ../protocol/src/retina/protocol:/usr/local/lib/python3.12/dist-packages/retina/protocol
+      - ../agent/src/retina/agent:/usr/local/lib/python3.12/dist-packages/retina/agent
     networks:
       retina:
         ipv4_address: *amariue_ip
@@ -202,9 +211,7 @@ services:
     configs:
       - source: amari_remote_ue.yml
         target: /etc/retina/resources/amari_remote_ue.yml
-    volumes:
-      - ${OCUDU_PATH}:/builds/ocudu/ocudu
-      - ${OCUDU_PATH}/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so:/opt/lteue/trx_ocudu.so
+    volumes: *agent_volumes
     networks:
       retina:
         ipv4_address: *amariue_remote_ip
@@ -234,6 +241,7 @@ services:
     networks:
       retina:
         ipv4_address: *srsue_ip
+    volumes: *agent_volumes
     devices:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
@@ -278,8 +286,7 @@ services:
     cap_add:
       - SYS_NICE
       - CAP_SYS_PTRACE
-    volumes:
-      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+    volumes: *agent_volumes
     environment:
       RETINA_IP: &gnb0_ip 172.20.0.5
       PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
@@ -381,8 +388,7 @@ services:
         <<: *variables
       additional_contexts:
         agent: "service:agent-image"
-    volumes:
-      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+    volumes: *agent_volumes
     configs:
       - source: gnb_remote.yml
         target: /etc/retina/resources/gnb_remote.yml
@@ -422,6 +428,7 @@ services:
     networks:
       retina:
         ipv4_address: *open5gs_ip
+    volumes: *agent_volumes
     devices:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
@@ -453,8 +460,7 @@ services:
     networks:
       retina:
         ipv4_address: *amari5gc_ip
-    # volumes:
-    #   - ../agent/src/retina/agent/templates/amarisoft_mme_tun.sh:/usr/local/lib/python3.12/dist-packages/retina/agent/templates/amarisoft_mme_tun.sh
+    volumes: *agent_volumes
     devices:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
