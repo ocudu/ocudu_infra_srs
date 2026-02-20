@@ -44,14 +44,17 @@ e2e tests tox:
   before_script:
     - apk add build-base
 
-e2e dynamic tests validation:
+.e2e validation:
   stage: static
   image:
-    name: ${RETINA_REGISTRY_URI}/launcher:latest
+    name: python:3.12-alpine
     entrypoint: ["/bin/sh", "-c"]
+  before_script:
+    - pip install retina/launcher/ retina/protocol/ retina/client/ retina/orchestrator/ retina/viavi/
+
+e2e dynamic tests validation:
+  extends: .e2e validation
   rules:
-    - if: $ON_MR_FORK
-      when: never
     - if: $ON_MR
       changes:
         - retina/launcher/**/*
@@ -62,19 +65,10 @@ e2e dynamic tests validation:
     - |
       cd ${CI_PROJECT_DIR}/e2e
       retina-launcher --collect-only
-  needs:
-    - job: launcher
-      artifacts: false
-      optional: true
 
 e2e request validation:
-  stage: static
-  image:
-    name: ${RETINA_REGISTRY_URI}/launcher:latest
-    entrypoint: ["/bin/sh", "-c"]
+  extends: .e2e validation
   rules:
-    - if: $ON_MR_FORK
-      when: never
     - if: $ON_MR
       changes:
         - retina/orchestrator/**/*
@@ -87,10 +81,6 @@ e2e request validation:
       for f in $file_list; do
           retina-request-checker --input $f
       done
-  needs:
-    - job: launcher
-      artifacts: false
-      optional: true
 
 dynamically generated pipeline validation:
   extends: .static
