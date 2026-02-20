@@ -34,8 +34,10 @@ echo script folder: $SCRIPT_FOLDER
 terraform plan -out=tfplan
 terraform show -json tfplan > tfplan.json
 
-RUNNERS=$(jq -r '
+# Runners being created or updated — these exist in the YAML and need pause/unpause
+RUNNERS_TO_PAUSE=$(jq -r '
 .resource_changes[]
+| select(.change.actions != ["delete"])
 | select(.change.actions | index("create") or index("update") or index("delete"))
 | .address
 | split(".")
@@ -43,9 +45,26 @@ RUNNERS=$(jq -r '
 ' tfplan.json
 )
 
-if [ -z "$RUNNERS" ]; then
+# Runners being destroyed only — no longer in the YAML, skip pause/unpause
+RUNNERS_TO_DESTROY=$(jq -r '
+.resource_changes[]
+| select(.change.actions == ["delete"])
+| .address
+| split(".")
+| .[1]
+' tfplan.json
+)
+
+if [ -z "$RUNNERS_TO_PAUSE" ] && [ -z "$RUNNERS_TO_DESTROY" ]; then
   echo "No RUNNERS to be modified. Exiting normally..."
   exit 0
+fi
+
+if [ -n "$RUNNERS_TO_DESTROY" ]; then
+  echo "Runners being destroyed (skipping pause/unpause — no longer in runners definition):"
+  for runner_name in $RUNNERS_TO_DESTROY; do
+    echo "  - $runner_name"
+  done
 fi
 
 export PYTHONUNBUFFERED=1 # so Python prints happen immediately in the job log
@@ -53,8 +72,8 @@ export PYTHONUNBUFFERED=1 # so Python prints happen immediately in the job log
 pids=()
 declare -A pid_to_runner
 
-# Launch all runner processes in parallel
-for runner_name in $RUNNERS; do
+# Launch pause processes only for runners that are still in the YAML (create/update)
+for runner_name in $RUNNERS_TO_PAUSE; do
   echo "Pausing runner $runner_name, waiting for its jobs to finish and, if timeout, cancelling them..."
   python ${SCRIPT_FOLDER}/runner_pause_wait_unpause.py --runner-name "$runner_name" --token "$RUNNER_UPDATE_TOKEN" --pause_wait --wait_minutes 1 --runners-def "$RUNNERS_DEF_PATH" &
   pid=$!
@@ -75,7 +94,7 @@ for pid in "${pids[@]}"; do
       fi
     done
     echo "Runner processes finished with errors. Unpausing runners..."
-    for runner_name in $RUNNERS; do
+    for runner_name in $RUNNERS_TO_PAUSE; do
       echo "Unpausing runner $runner_name..."
       python ${SCRIPT_FOLDER}/runner_pause_wait_unpause.py --runner-name "$runner_name" --token "$RUNNER_UPDATE_TOKEN" --unpause --runners-def "$RUNNERS_DEF_PATH" &
     done
@@ -87,12 +106,12 @@ done
 
 echo "All runner processes finished successfully."
 
-# This (3) applies the changes (for all the affected runners)
+# Apply all changes (creates, updates, AND destroys)
 terraform apply -auto-approve tfplan
 
-for runner_name in $RUNNERS; do
+# Unpause only runners that are still in the YAML (not destroyed ones)
+for runner_name in $RUNNERS_TO_PAUSE; do
   echo "Unpausing runner $runner_name..."
-  # This (4) unpauses the runner.
   python ${SCRIPT_FOLDER}/runner_pause_wait_unpause.py --runner-name "$runner_name" --token "$RUNNER_UPDATE_TOKEN" --unpause --runners-def "$RUNNERS_DEF_PATH" &
 done
 
