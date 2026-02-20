@@ -9,13 +9,18 @@
 """
 Pytest configuration
 """
-import pytest
+
 import os
 from collections import OrderedDict
+
+import pytest
 from pytest_metadata.plugin import metadata_key
 
 
 def pytest_configure(config):
+    """
+    Add custom variables to the report
+    """
     md = config.stash[metadata_key]
     md.clear()
     md.update(

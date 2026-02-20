@@ -113,8 +113,8 @@ deps =
   black
   isort
 commands =
-  black --check --diff --color tests scripts
-  isort --check tests scripts
+  black --check --diff --color tests scripts conftest.py
+  isort --check tests scripts conftest.py
 
 [testenv:format_apply]
 skip_install = true
@@ -122,20 +122,20 @@ deps =
   black
   isort
 commands =
-  black tests scripts
-  isort tests scripts
+  black tests scripts conftest.py
+  isort tests scripts conftest.py
 
 [testenv:lint]
 skip_install = true
 deps =
   pylint
 commands =
-  pylint tests scripts
+  pylint tests scripts conftest.py
 
 [testenv:type]
 skip_install = true
 deps =
   mypy
 commands =
-  mypy tests scripts
+  mypy tests scripts conftest.py
 """
