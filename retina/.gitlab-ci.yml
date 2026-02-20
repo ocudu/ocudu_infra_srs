@@ -129,7 +129,7 @@ viavi-client:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   needs: []
 
 protocol:
@@ -155,7 +155,7 @@ protocol:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   needs: []
 
 client:
@@ -183,7 +183,7 @@ client:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   needs:
     - job: protocol
       optional: true
@@ -215,7 +215,7 @@ agent:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   needs:
     - job: protocol
       optional: true
@@ -249,7 +249,7 @@ amarisoftue image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables: &images_variables
     AGENT_OS_VERSION: "24.04"
   needs:
@@ -288,7 +288,7 @@ amarisoftue remote image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -327,7 +327,7 @@ amarisoft5gc image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -366,7 +366,7 @@ amarisoft5gc remote image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -405,7 +405,7 @@ android image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -445,7 +445,7 @@ open5gs image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -484,7 +484,7 @@ ocudu image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -523,7 +523,7 @@ ocudu remote image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -562,7 +562,7 @@ srsue image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -601,7 +601,7 @@ flexric image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -640,7 +640,7 @@ ntn-channel-emulator image:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   variables:
     <<: *images_variables
   needs:
@@ -676,7 +676,7 @@ orchestrator:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   needs:
     - job: protocol
       optional: true
@@ -713,7 +713,7 @@ launcher:
         inputs:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
           ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: depend
+    strategy: mirror
   needs:
     - job: protocol
       optional: true
