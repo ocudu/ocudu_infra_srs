@@ -128,9 +128,6 @@ release with deb info:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - <<: *on_mr_suites_changed
-      when: manual
-      allow_failure: true
   variables:
     OS: ubuntu-24.04
     OCUDU_TARGET: ocu odu gnb
@@ -139,6 +136,17 @@ release with deb info:
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMARCH=x86-64-v3
       -DASSERT_LEVEL=PARANOID
     TEST_MODE: none
+
+release with deb info cached:
+  extends: release with deb info
+  rules:
+    - <<: *on_mr_suites_changed
+      when: manual
+      allow_failure: true
+  cache:
+    - key: $OS-$COMPILER-$BUILD_ARGS
+      paths: [ocudu/ccache]
+      policy: pull-push
 
 debug:
   extends: build
@@ -311,7 +319,12 @@ ric:
       ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
   needs:
     - zmq driver
-    - release with deb info
+    - job: release with deb info
+      artifacts: true
+      optional: true
+    - job: release with deb info cached
+      artifacts: true
+      optional: true
 
 smoke zmq:
   extends: .amarisoft_zmq
