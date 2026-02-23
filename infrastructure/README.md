@@ -61,8 +61,7 @@ Deploy the Retina framework components to your Kubernetes cluster by following [
 
 #### IaC Retina Setup
 
-- [Registry credentials](./retina-cronjobs/tf-registry-credentials/README.md)
-- [PriorityClass](./k8s/rbac/tf/main.tf)
+[Terraform + GitLab CI IaC Solution](./retina-cluster-setup/README.md).
 
 #### Retina Auxiliary Cronjobs
 

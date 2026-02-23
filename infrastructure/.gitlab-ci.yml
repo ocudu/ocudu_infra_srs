@@ -1,0 +1,94 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+
+spec:
+  inputs:
+    infra_srs_path:
+      type: string
+      description: "ocudu_infra_srs repository path (namespace/project, e.g. ocudu/ocudu_infra_srs)."
+      default: $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+    infra_srs_ref:
+      type: string
+      description: "ocudu_infra_srs branch or tag."
+      default: $CI_COMMIT_REF_NAME
+    kubeconfig_var:
+      type: string
+      description: "Name of the file-type CI/CD variable containing the kubeconfig (e.g. MY_KUBECONFIG)."
+    runner_tags:
+      type: array
+      default: [saas-linux-small-amd64]
+      description: "Runner tags for jobs that need access to the cluster."
+    state_name:
+      type: string
+      default: retina-cluster-setup
+      description: "Terraform state name. Use a unique name per cluster (e.g. retina-cluster-setup)."
+    root_dir:
+      type: string
+      default: infrastructure/retina-cluster-setup
+      description: "Directory containing the consumer's main.tf."
+---
+variables:
+  KUBECONFIG_VAR: $[[ inputs.kubeconfig_var ]]
+  TF_VAR_infra_srs_path: $CI_SERVER_HOST/$[[ inputs.infra_srs_path ]]
+  TF_VAR_infra_srs_ref: $[[ inputs.infra_srs_ref ]]
+
+include:
+  - component: gitlab.com/components/opentofu/job-templates@3.11.0
+    inputs:
+      root_dir: $[[ inputs.root_dir ]]
+      state_name: $[[ inputs.state_name ]]
+      auto_define_backend: true
+
+stages:
+  - fmt
+  - validate
+  - plan
+  - apply
+
+.cluster-base:
+  tags: $[[ inputs.runner_tags ]]
+  retry: 2
+  before_script:
+    - eval "export KUBE_CONFIG_PATH=\${$KUBECONFIG_VAR}"
+
+fmt:
+  stage: fmt
+  extends:
+    - .cluster-base
+    - .opentofu:fmt
+  rules:
+    - if: $ON_MR
+      allow_failure: false
+
+validate:
+  stage: validate
+  extends:
+    - .cluster-base
+    - .opentofu:validate
+  rules:
+    - if: $ON_MR
+
+plan:
+  stage: plan
+  extends:
+    - .cluster-base
+    - .opentofu:plan
+  rules:
+    - if: $ON_MR
+    - if: $ON_DEFAULT_BRANCH
+
+apply:
+  stage: apply
+  extends:
+    - .cluster-base
+    - .opentofu:apply
+  rules:
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+    - if: $ON_DEFAULT_BRANCH

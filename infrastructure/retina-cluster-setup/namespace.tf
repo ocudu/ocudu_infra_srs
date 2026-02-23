@@ -1,7 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-lock_method    = "POST"
-unlock_method  = "DELETE"
-retry_wait_min = 5
-
+resource "kubernetes_namespace_v1" "retina" {
+  metadata {
+    name = var.namespace
+  }
+}
