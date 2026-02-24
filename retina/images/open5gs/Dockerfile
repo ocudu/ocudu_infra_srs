@@ -56,7 +56,7 @@ RUN cp /usr/bin/true /usr/sbin/telinit && \
     cmake \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG OPEN5GS_VERSION=v2.7.0
+ARG OPEN5GS_VERSION=v2.7.6
 
 # open5gs
 ADD retina.patch /tmp/retina.patch

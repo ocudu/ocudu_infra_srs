@@ -27,7 +27,7 @@ stages:
   - publish
 
 variables:
-  OPEN5GS_VERSION: "2.7.0"
+  OPEN5GS_VERSION: "2.7.6"
 
 .docker-builder-open5gs:
   extends: .docker-builder
