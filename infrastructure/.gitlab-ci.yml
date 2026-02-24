@@ -16,6 +16,10 @@ spec:
       type: string
       description: "ocudu_infra_srs branch or tag."
       default: $CI_COMMIT_REF_NAME
+    retina_pypi_index:
+      type: string
+      description: "retina pypi repository url"
+      default: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
     kubeconfig_var:
       type: string
       description: "Name of the file-type CI/CD variable containing the kubeconfig (e.g. MY_KUBECONFIG)."
@@ -53,8 +57,12 @@ stages:
 .cluster-base:
   tags: $[[ inputs.runner_tags ]]
   retry: 2
+  variables:
+    TWINE_REPO: $[[ inputs.retina_pypi_index ]]
   before_script:
     - eval "export KUBE_CONFIG_PATH=\${$KUBECONFIG_VAR}"
+    - apk add --no-cache py3-pip
+    - pip install --break-system-packages --extra-index-url $TWINE_REPO retina-orchestrator
 
 fmt:
   stage: fmt

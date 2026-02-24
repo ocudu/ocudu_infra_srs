@@ -76,6 +76,8 @@ To make the experience with Retina inside your cluster better, we provide some c
 
 [Follow the instructions about Cluster Definition in the retina documentation](../retina/_docs/02_cluster_setup.md#cluster-definition).
 
+You can deploy it using the [terraform + GitLab CI IaC Solution](./retina-cluster-definition/README.md).
+
 ### 6. Set Up a Build and a Retina Runner
 
 #### Manual Gitlab Runners Setup

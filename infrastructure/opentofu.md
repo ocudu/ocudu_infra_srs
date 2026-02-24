@@ -17,6 +17,7 @@
 | --- | --- | --- |
 | `infra_srs_path` | `$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME` | `infra_srs` repo path (e.g. `ocudu/ocudu_infra_srs`) |
 | `infra_srs_ref` | `$CI_COMMIT_REF_NAME` | Branch or tag to source the module from |
+| `retina_pypi_index` | `${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi` | Retina pypi index |
 | `kubeconfig_var` | required | Name of the **file-type** CI/CD variable holding the kubeconfig |
 | `runner_tags` | `[saas-linux-small-amd64]` | Runner tags with cluster access |
 | `state_name` | `retina-cluster-setup` | Terraform state name — unique per deployment |
@@ -34,6 +35,7 @@ iac:
         inputs:
           infra_srs_path: *infra_srs_path
           infra_srs_ref: *infra_srs_ref
+          retina_pypi_index: https://gitlab.com/api/v4/projects/78028160/packages/pypi/simple
           kubeconfig_var: MY_KUBECONFIG   # name of the file-type CI/CD variable
           runner_tags: [my-runner-tag]    # runners with cluster access
           state_name: my-iac
