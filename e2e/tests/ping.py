@@ -12,7 +12,7 @@ Test ping
 
 import logging
 from contextlib import suppress
-from typing import Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union
 
 import grpc
 from _pytest.outcomes import Failed
@@ -578,6 +578,9 @@ def test_ping_s72_fr2(
         always_download_artifacts=True,
         warning_as_errors=True,
         post_command=("", "expert_execution threads ofh --enable_busy_waiting=true"),
+        warning_allowlist=[
+            "missed incoming User-Plane PRACH messages",
+        ],
     )
 
 
@@ -716,6 +719,7 @@ def _ping(
     ul_noise_spd: int = 0,
     rx_to_tx_latency: int = -1,
     pdcch_log: bool = False,
+    warning_allowlist: Optional[List[str]] = None,
 ):
     logging.info("Ping Test")
 
@@ -751,6 +755,7 @@ def _ping(
         ul_noise_spd=ul_noise_spd,
         rx_to_tx_latency=rx_to_tx_latency,
         pdcch_log=pdcch_log,
+        warning_allowlist=warning_allowlist,
     )
     configure_artifacts(
         retina_data=retina_data,
