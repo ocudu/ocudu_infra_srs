@@ -21,6 +21,11 @@ from typing import Any, Dict, List
 
 import pyshark
 
+_DISSECTOR_PARAMS = {
+    "mac": [],
+    "rlc": ["--enable-heuristic", "rlc_nr_udp"],
+}
+
 
 class PcapAnalyzer(ABC):
     """
@@ -46,14 +51,19 @@ class PcapAnalyzer(ABC):
         """Called once when the capture ends. Return the analysis result."""
 
 
-def run_analyzers(pcap_file: str, analyzers: List[PcapAnalyzer]) -> Dict[str, Any]:
+def run_analyzers(pcap_file: str, analyzers: List[PcapAnalyzer], dissector: str = "rlc") -> Dict[str, Any]:
     """
     All analyzer display filters are OR-combined into a single tshark filter so
     only one tshark process is spawned. Calls `report()` on every analyzer when
     the loop ends, regardless of reason.
 
+    *dissector* selects the pcap format: "mac" for MAC-NR pcaps, "rlc" for RLC-NR
+    pcaps (enables the rlc_nr_udp heuristic dissector in tshark).
+
     Returns a list of results in the same order as *analyzers*.
     """
+    if dissector not in _DISSECTOR_PARAMS:
+        raise ValueError(f"Unknown dissector '{dissector}': expected one of {list(_DISSECTOR_PARAMS)}")
 
     if Path(pcap_file).exists():
         logging.info("[Pcap Parsing] %s", pcap_file)
@@ -66,7 +76,12 @@ def run_analyzers(pcap_file: str, analyzers: List[PcapAnalyzer]) -> Dict[str, An
 
         for display_filter, analyzer_with_same_filter_array in analyzers_by_display_filter.items():
             try:
-                with pyshark.FileCapture(pcap_file, keep_packets=False, display_filter=display_filter) as capture:
+                with pyshark.FileCapture(
+                    pcap_file,
+                    keep_packets=False,
+                    display_filter=display_filter,
+                    custom_parameters=_DISSECTOR_PARAMS[dissector],
+                ) as capture:
                     for packet in capture:
                         for analyzer in analyzer_with_same_filter_array:
                             try:
@@ -134,14 +149,20 @@ def _main():
     parser = argparse.ArgumentParser(
         description="Run pcap analyzers on a capture file and print results.",
         epilog="Example: python -m retina.agent.features.pcap.analyzer "
-        "mac.pcap mac.HandoverAnalyzer mac.ReestablishmentAnalyzer",
+        "rlc.pcap rrc.HandoverAnalyzer rrc.ReestablishmentAnalyzer",
     )
     parser.add_argument("pcap_file", help="Path to the pcap/pcapng file")
     parser.add_argument(
         "analyzers",
         nargs="+",
         metavar="module.ClassName",
-        help='Analyzer specs relative to this package, e.g. "mac.HandoverAnalyzer"',
+        help='Analyzer specs relative to this package, e.g. "rrc.HandoverAnalyzer"',
+    )
+    parser.add_argument(
+        "--dissector",
+        choices=list(_DISSECTOR_PARAMS),
+        default="rlc",
+        help="Pcap format: 'mac' for MAC-NR, 'rlc' for RLC-NR (default: rlc)",
     )
     args = parser.parse_args()
 
@@ -153,7 +174,7 @@ def _main():
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)
 
-    results = run_analyzers(args.pcap_file, instances)
+    results = run_analyzers(args.pcap_file, instances, dissector=args.dissector)
     logging.info(json.dumps(results, indent=2))
 
 

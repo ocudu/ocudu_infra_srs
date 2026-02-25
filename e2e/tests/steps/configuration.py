@@ -507,12 +507,20 @@ def set_config_files(
             "ue": {
                 "parameters": {
                     "ue_simulator_mode": True,
+                    "sample_rate": 122880000,
+                    "nof_antennas_dl": 4,
+                    "nof_antennas_ul": 4,
                 },
                 "templates": {
                     "ue": ue_tmp_file.name,
                 },
             },
             "gnb": {
+                "parameters": {
+                    "sample_rate": 122880000,
+                    "nof_antennas_dl": 4,
+                    "nof_antennas_ul": 4,
+                },
                 "templates": {
                     "cu": gnb_tmp_file.name,
                     "du": tmp_file.name,

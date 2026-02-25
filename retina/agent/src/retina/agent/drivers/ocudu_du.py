@@ -42,7 +42,7 @@ from retina.agent.drivers.gnb import DUDriver
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.gnb_report import transform_metrics
 from retina.agent.features.pcap.analyzer import run_analyzers
-from retina.agent.features.pcap.mac import HandoverAnalyzer, ReestablishmentAnalyzer
+from retina.agent.features.pcap.rrc import HandoverAnalyzer, ReestablishmentAnalyzer
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
@@ -549,18 +549,20 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         """
         if self._pcap_parsing_done:
             return tuple()
-        return (self.get_filepath_in_report_folder(gnb_defaults.mac_filename),)
+        return (self.get_filepath_in_report_folder(gnb_defaults.rlc_filename),)
 
     def extract_metrics_from_pcaps(self, *args):
         """
         Extract Metrics from PCAP files
         """
         if not self._pcap_parsing_done:
-            (mac_pcap_filename,) = args
-            mac_result = run_analyzers(mac_pcap_filename, (ReestablishmentAnalyzer(), HandoverAnalyzer()))
-            self._aggregate_metrics.nof_handovers = int(mac_result["handover_count"])
-            self._aggregate_metrics.nof_reestablishments_request = int(mac_result["reestablishment_request_count"])
-            self._aggregate_metrics.nof_reestablishments_complete = int(mac_result["reestablishment_complete_count"])
+            (rlc_pcap_filename,) = args
+            rlc_result = run_analyzers(
+                rlc_pcap_filename, (ReestablishmentAnalyzer(), HandoverAnalyzer()), dissector="rlc"
+            )
+            self._aggregate_metrics.nof_handovers = int(rlc_result["handover_count"])
+            self._aggregate_metrics.nof_reestablishments_request = int(rlc_result["reestablishment_request_count"])
+            self._aggregate_metrics.nof_reestablishments_complete = int(rlc_result["reestablishment_complete_count"])
             self._pcap_parsing_done = True
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:

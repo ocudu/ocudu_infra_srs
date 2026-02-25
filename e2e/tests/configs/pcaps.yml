@@ -1,4 +1,4 @@
 pcap:
-  mac_enable: true
-  mac_type: dlt
-  mac_filename: {{mac_filename}}
+  rlc_enable: true
+  rlc_rb_type: srb
+  rlc_filename: {{rlc_filename}}

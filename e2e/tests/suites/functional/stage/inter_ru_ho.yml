@@ -6,18 +6,23 @@
 # the distribution.
 #
 
-my example test:
+# inter-RU, intra-DU, intra-freq HO
+# test_id: tid1.2.6
+# test_case_id: tc1.9 (handover.cfg)
+# test_case_desc: 1 UE attaches to cell A, starts bidirectional UDP and moves to cell B, doing Handover
+baseline:
   template: amarisoft_simulator
-  ue_config: [example.cfg]
-  gnb_config: [example.yml, base_slice.yml, pcaps.yml]
+  ue_config: [2cell_2t2r_bw100_band78_chsim.cfg, handover.cfg]
+  gnb_config:
+    [2t2r_bw100_band78.yml, base_slice.yml, pcaps.yml, 2cell_intradu_ho.yml]
   core_config: [baseline.cfg]
   criteria:
-    dl_bitrate: 10.0e+3
-    ul_bitrate: 10.0e+3
+    dl_bitrate: 300.0e+6
+    ul_bitrate: 80.0e+6
     nof_ko_dl: 0
     nof_ko_ul: 0
     nof_reestablishments: 0
-    nof_handovers: 0
+    nof_handovers: 46
     max_late_dl_harqs: 0
     max_late_ul_harqs: 0
     nof_error_indications: 0

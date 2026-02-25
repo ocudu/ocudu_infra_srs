@@ -33,3 +33,20 @@ example:
   variables:
     KEYWORDS: functional::stage::example
     TESTBED: zmq_mme
+
+inter_ru_ho:
+  stage: stage
+  extends: .amarisoft_zmq
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional::stage::inter_ru_ho
+    TESTBED: zmq_mme

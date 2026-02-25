@@ -7,7 +7,7 @@
 #
 
 """
-5G NR MAC-layer pcap analyzers.
+5G NR RRC-layer pcap analyzers.
 """
 
 from typing import Dict

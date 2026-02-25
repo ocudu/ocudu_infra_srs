@@ -49,6 +49,10 @@ if [ "$type" = "ipv4" ] ; then
 
     # IPv6 is always disabled after ipv4
     echo '1' > /proc/sys/net/ipv6/conf/"$ifname"/disable_ipv6 2>/dev/null || sysctl -w net.ipv6.conf."$ifname".disable_ipv6=1 2>/dev/null || true
+
+    # run ltesim_server
+    echo "*** Running ltesim_server for $ifaddr:3000"
+    /opt/ltemme/ltesim_server -a $ifaddr:3000 &
 else
 
     ll="$5"     # ipv6 link local address

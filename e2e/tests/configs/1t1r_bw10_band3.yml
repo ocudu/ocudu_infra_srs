@@ -6,7 +6,10 @@
 # the distribution.
 #
 
-# A modification of this file will force a rebuild of retina images and packages.
-
-variables:
-  RETINA_VERSION: "0.99.12"
+cell_cfg:
+  nof_antennas_dl: 1
+  nof_antennas_ul: 1
+  dl_arfcn: 368500
+  band: 3
+  channel_bandwidth_MHz: 10
+  common_scs: 15
