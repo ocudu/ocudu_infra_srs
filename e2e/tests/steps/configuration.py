@@ -478,9 +478,7 @@ def set_config_files(
         # Create and populate gnb temp file
         ue_tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
         for ue_config_file in ue_config_files:
-            with (Path(__file__).parent.parent / "simulator_test_cases" / "amarisoft_ue" / ue_config_file).open(
-                "r", encoding="UTF-8"
-            ) as file:
+            with (Path(__file__).parent.parent / "configs" / "ue" / ue_config_file).open("r", encoding="UTF-8") as file:
                 ue_config_content = file.read()
             ue_tmp_file.write(ue_config_content + "\n")
         ue_tmp_file.flush()
@@ -488,7 +486,9 @@ def set_config_files(
         # Create and populate gnb temp file
         gnb_tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
         for gnb_config_file in gnb_config_files:
-            with (Path(__file__).parent.parent / "configs" / gnb_config_file).open("r", encoding="UTF-8") as file:
+            with (Path(__file__).parent.parent / "configs" / "gnb" / gnb_config_file).open(
+                "r", encoding="UTF-8"
+            ) as file:
                 gnb_config_content = file.read()
             gnb_tmp_file.write(gnb_config_content + "\n")
         gnb_tmp_file.flush()
@@ -496,7 +496,7 @@ def set_config_files(
         # Create and populate core temp file
         core_tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
         for core_config_file in core_config_files:
-            with (Path(__file__).parent.parent / "simulator_test_cases" / "amarisoft_mme" / core_config_file).open(
+            with (Path(__file__).parent.parent / "configs" / "core" / core_config_file).open(
                 "r", encoding="UTF-8"
             ) as file:
                 core_config_content = file.read()
