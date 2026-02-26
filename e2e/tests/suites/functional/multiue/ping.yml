@@ -7,7 +7,7 @@
 #
 
 baseline:
-  template: amarisoft_simulator
+  template: amarisoft_simulator.py
   ue_config: [ping_multiue.cfg]
   gnb_config: [1t1r_bw10_band3.yml, base_slice.yml, pcaps.yml]
   core_config: [baseline.cfg]

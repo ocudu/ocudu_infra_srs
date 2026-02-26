@@ -46,7 +46,7 @@ class AmarisoftSimTestDefinition:
     criteria: Dict[str, float]
 
 
-def load_tests(template_name: str) -> Generator[AmarisoftSimTestDefinition, None, None]:
+def load_tests(template_filename: str) -> Generator[AmarisoftSimTestDefinition, None, None]:
     """
     Load test definitions from YAML files
     """
@@ -55,7 +55,7 @@ def load_tests(template_name: str) -> Generator[AmarisoftSimTestDefinition, None
         with open(test_definition_file, "r", encoding="UTF-8") as file:
             test_definition_raw = yaml.safe_load(file)
         for test_name, test_declaration in test_definition_raw.items():
-            if test_declaration.get("template", "") == template_name:
+            if Path(test_declaration.get("template", "")).stem == Path(template_filename).stem:
                 file_path = test_definition_file.relative_to(suites_dir).with_suffix("")
                 test_id = f"{str(file_path).replace('/', '::')}::{test_name}"
                 yield AmarisoftSimTestDefinition(
@@ -69,7 +69,7 @@ def load_tests(template_name: str) -> Generator[AmarisoftSimTestDefinition, None
 
 @pytest.mark.parametrize(
     "test_definition",
-    [pytest.param(tdef, id=tdef.name) for tdef in load_tests(Path(__file__).stem)],
+    [pytest.param(tdef, id=tdef.name) for tdef in load_tests(__file__)],
 )
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_gnb(
