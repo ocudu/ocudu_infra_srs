@@ -34,7 +34,7 @@ inter_ru_ho:
     KEYWORDS: functional::mobility::inter_ru_ho
     TESTBED: zmq_mme
 
-example:
+ping:
   stage: multiue
   extends: .amarisoft_zmq
   rules:
@@ -48,5 +48,5 @@ example:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: functional::multiue::example
+    KEYWORDS: functional::multiue::ping
     TESTBED: zmq_mme
