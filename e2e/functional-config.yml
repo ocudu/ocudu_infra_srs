@@ -17,8 +17,8 @@ spec:
       default: dev
       description: "OCUDU reference branch or tag."
 ---
-example:
-  stage: stage
+inter_ru_ho:
+  stage: mobility
   extends: .amarisoft_zmq
   rules:
     - if: $ON_MR
@@ -31,11 +31,11 @@ example:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: functional::stage::example
+    KEYWORDS: functional::mobility::inter_ru_ho
     TESTBED: zmq_mme
 
-inter_ru_ho:
-  stage: stage
+example:
+  stage: multiue
   extends: .amarisoft_zmq
   rules:
     - if: $ON_MR
@@ -48,5 +48,5 @@ inter_ru_ho:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: functional::stage::inter_ru_ho
+    KEYWORDS: functional::multiue::example
     TESTBED: zmq_mme

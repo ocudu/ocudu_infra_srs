@@ -18,4 +18,5 @@ stages:
   - viavi
   - amarisoft sdr
   - android
-  - stage
+  - mobility
+  - multiue
