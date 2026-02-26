@@ -2,3 +2,7 @@ pcap:
   rlc_enable: true
   rlc_rb_type: srb
   rlc_filename: {{rlc_filename}}
+
+log:
+  rlc_level: warning
+  pdcp_level: warning

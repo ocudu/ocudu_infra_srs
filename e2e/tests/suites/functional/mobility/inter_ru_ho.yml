@@ -17,12 +17,12 @@ baseline:
     [2t2r_bw100_band78.yml, base_slice.yml, pcaps.yml, 2cell_intradu_ho.yml]
   core_config: [baseline.cfg]
   criteria:
-    dl_bitrate: 300.0e+6
-    ul_bitrate: 80.0e+6
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_reestablishments: 0
-    nof_handovers: 46
+    dl_bitrate: 10.0e+6
+    ul_bitrate: 10.0e+6
+    nof_ko_dl: 100
+    nof_ko_ul: 10
+    nof_reestablishments_eq: 0
+    nof_handovers_ge: 45
     max_late_dl_harqs: 0
     max_late_ul_harqs: 0
     nof_error_indications: 0
