@@ -31,7 +31,7 @@ inter_ru_ho:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: functional::mobility::inter_ru_ho
+    KEYWORDS: functional and mobility and inter_ru_ho
     TESTBED: zmq_mme
 
 ping:
@@ -48,5 +48,5 @@ ping:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: functional::multiue::ping
+    KEYWORDS: functional and multiue and ping
     TESTBED: zmq_mme
