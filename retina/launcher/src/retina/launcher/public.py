@@ -302,16 +302,28 @@ def _register_du_criteria(
         operator.le,
     )
     criteria.register_available_criteria(
-        "nof_reestablishments",
+        "nof_reestablishments_eq",
         "Reestablishments",
         lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_reestablishments_complete for gnb_stub in du_or_gnb_array),
         operator.eq,
     )
     criteria.register_available_criteria(
-        "nof_handovers",
+        "nof_reestablishments_ge",
+        "Reestablishments",
+        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_reestablishments_complete for gnb_stub in du_or_gnb_array),
+        operator.ge,
+    )
+    criteria.register_available_criteria(
+        "nof_handovers_eq",
         "Handovers",
         lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_handovers for gnb_stub in du_or_gnb_array),
         operator.eq,
+    )
+    criteria.register_available_criteria(
+        "nof_handovers_ge",
+        "Handovers",
+        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_handovers for gnb_stub in du_or_gnb_array),
+        operator.ge,
     )
     criteria.register_available_criteria(
         "errors",
