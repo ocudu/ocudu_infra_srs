@@ -70,7 +70,7 @@ To make the experience with Retina inside your cluster better, we provide some c
 - Amarisoft License Synchronization: Queries an Amarisoft License Server to found Licenses usage outside of Retina and reserves the resource in Retina. This way, Retina status will always reflect the real usage status even if the license is being used somewhere else.
 - Runner Manager: In case a node is shared between a Gitlab Runner and Retina, this job will take care of pausing / resuming the runners when a Retina test is using that server.
 
-[Check here for more info](./retina-cronjobs/tf/main.tf).
+[Check here for more info](./retina-cronjobs/README.md).
 
 ### 5. Save the Cluster Definition in Retina
 

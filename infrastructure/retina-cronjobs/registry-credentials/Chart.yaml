@@ -1,9 +1,0 @@
-# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
-# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
-
-apiVersion: v2
-name: registry-credentials
-description: Deploys registry-credentials Secret in multiple namespaces
-type: application
-version: 0.1.0
-appVersion: "1.0.0"

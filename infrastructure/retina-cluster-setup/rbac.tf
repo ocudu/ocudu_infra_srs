@@ -36,6 +36,12 @@ resource "kubernetes_cluster_role_v1" "retina" {
     resources  = ["priorityclasses"]
     verbs      = ["get", "list", "watch"]
   }
+
+  rule {
+    api_groups = [""]
+    resources  = ["configmaps"]
+    verbs      = ["get", "list", "watch"]
+  }
 }
 
 resource "kubernetes_cluster_role_binding_v1" "retina" {

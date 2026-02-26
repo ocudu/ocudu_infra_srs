@@ -4,11 +4,11 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: runner-manager-${organization_name}
+  name: ${name}-${suffix}
   namespace: ${namespace}
 spec:
-  schedule: "*/1 7-19 * * 1-5"  # 7:00 to 19:59
-  timeZone: "Europe/Madrid"
+  schedule: "${schedule}"
+  timeZone: "${timezone}"
   concurrencyPolicy: Replace
   jobTemplate:
     spec:
@@ -18,30 +18,36 @@ spec:
           annotations:
             retinaRunnerJob: "true"
         spec:
-          serviceAccountName: retina-cronjobs-sa-${organization_name}
+          serviceAccountName: retina-cronjobs-sa-${suffix}
+          volumes:
+            - name: scripts
+              configMap:
+                name: ${scripts_configmap}
+                defaultMode: 0o755
           containers:
             - name: runner-manager-script
-              image: ${image_repository}:${image_tag}
+              image: ${retina_registry_uri}/launcher:${retina_version}
               imagePullPolicy: IfNotPresent
               command: ["/bin/sh"]
               args:
                 - "-c"
                 - |
                   set -euo pipefail
-                  python3 /usr/local/bin/retina_runner.py --incluster
+                  pip3 install "python-gitlab<9"
+                  python3 /usr/local/bin/retina_runner.py --incluster ${join(" ", extra_args)}
               env:
                 - name: RETINA_RUNNERS_CONFIGMAP
-                  value: retina-runners-${organization_name}
+                  value: retina-runners-${suffix}
                 - name: GITLAB_TOKEN
                   valueFrom:
                     secretKeyRef:
-                      name: gitlabtoken-${organization_name}
+                      name: gitlabtoken-${suffix}
                       key: GITLAB_TOKEN
+              volumeMounts:
+                - name: scripts
+                  mountPath: /usr/local/bin/retina_runner.py
+                  subPath: retina_runner.py
           imagePullSecrets:
             - name: registry-credentials
-          tolerations:
-            - key: ${taint_key}
-              operator: "Equal"
-              value: ${taint_value}
-              effect: "NoSchedule"
+          tolerations: ${jsonencode(tolerations)}
           restartPolicy: Never

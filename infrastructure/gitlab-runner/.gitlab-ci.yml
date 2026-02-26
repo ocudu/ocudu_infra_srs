@@ -24,7 +24,7 @@ generate:
   script:
     - echo "Generating GitLab runner configuration..."
     - git clone --depth 1 --branch ${OCUDU_BRANCH:-main} https://gitlab.com/ocudu/ocudu_infra_srs.git /tmp/ocudu_infra_srs
-    - python3 /tmp/ocudu_infra_srs/infrastructure/generator/generate.py "$CLUSTER_DEF" "$CLUSTER_TYPE" "$OUTPUT_DIR/tf" --repo-root .
+    - python3 /tmp/ocudu_infra_srs/infrastructure/generator/generate.py "$CLUSTER_DEF" "$CLUSTER_TYPE" "$OUTPUT_DIR/tf" --repo-root . --runners-file $RUNNERS_DEF
   rules:
     - if: $ON_MR
     - if: $ON_DEFAULT_BRANCH

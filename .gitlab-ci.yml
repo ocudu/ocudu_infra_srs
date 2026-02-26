@@ -185,10 +185,6 @@ include:
       ocudu_ref: $[[ inputs.ocudu_ref ]]
   - local: .gitlab-ci-stages.yml
   - local: docs/.gitlab-ci.yml
-  - local: infrastructure/retina-cronjobs/.gitlab-ci-internal.yml
-    inputs:
-      ocudu_path: $[[ inputs.ocudu_path ]]
-      ocudu_ref: $[[ inputs.ocudu_ref ]]
 
 variables:
   RETINA_REGISTRY_URI: ${CI_REGISTRY_IMAGE}/retina

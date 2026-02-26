@@ -4,12 +4,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: retina-cronjobs-binding-${organization_name}
+  name: retina-cronjobs-binding-${suffix}
 subjects:
   - kind: ServiceAccount
-    name: retina-cronjobs-sa-${organization_name}
+    name: retina-cronjobs-sa-${suffix}
     namespace: ${namespace}
 roleRef:
   kind: ClusterRole
-  name: read-all-resources-${organization_name}
+  name: retina-cluster-role
   apiGroup: rbac.authorization.k8s.io

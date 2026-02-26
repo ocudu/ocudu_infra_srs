@@ -4,11 +4,11 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: amarisoft-license-${organization_name}
+  name: ${name}-${suffix}
   namespace: ${namespace}
 spec:
-  schedule: "* * * * *"  # Every minute
-  timeZone: "Europe/Madrid"
+  schedule: "${schedule}"
+  timeZone: "${timezone}"
   concurrencyPolicy: Replace
   jobTemplate:
     spec:
@@ -18,28 +18,33 @@ spec:
           annotations:
             retinaRunnerJob: "true"
         spec:
-          serviceAccountName: retina-cronjobs-sa-${organization_name}
+          serviceAccountName: retina-cronjobs-sa-${suffix}
+          volumes:
+            - name: scripts
+              configMap:
+                name: ${scripts_configmap}
+                defaultMode: 0o755
           containers:
             - name: amarisoft-license-script
-              image: ${image_repository}:${image_tag}
+              image: ${retina_registry_uri}/launcher:${retina_version}
               imagePullPolicy: IfNotPresent
               command: ["/bin/sh"]
               args:
                 - "-c"
                 - |
                   set -euo pipefail
-                  python3 /usr/local/bin/amarisoft_license.py --incluster
+                  python3 /usr/local/bin/amarisoft_license.py --incluster ${join(" ", extra_args)}
               env:
                 - name: GITLAB_TOKEN
                   valueFrom:
                     secretKeyRef:
-                      name: gitlabtoken-${organization_name}
+                      name: gitlabtoken-${suffix}
                       key: GITLAB_TOKEN
+              volumeMounts:
+                - name: scripts
+                  mountPath: /usr/local/bin/amarisoft_license.py
+                  subPath: amarisoft_license.py
           imagePullSecrets:
             - name: registry-credentials
-          tolerations:
-            - key: ${taint_key}
-              operator: "Equal"
-              value: ${taint_value}
-              effect: "NoSchedule"
+          tolerations: ${jsonencode(tolerations)}
           restartPolicy: Never
