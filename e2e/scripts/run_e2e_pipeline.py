@@ -240,7 +240,7 @@ def _main():
     # Replicate Job
     infra_project = _get_project(token=args.token, project=OCUDU_INFRA_PATH)
     ocudu_project = _get_project(
-        token=args.token, project=getattr(args, "ocudu_path", gitlab_input_dict.get("ocudu_path").default)
+        token=args.token, project=getattr(args, "ocudu_path", gitlab_input_dict["ocudu_path"].default)
     )
     if args.replicate:
         variables_dict = _search_job((infra_project, ocudu_project), args.replicate, args.timeout)

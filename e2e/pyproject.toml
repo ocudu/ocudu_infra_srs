@@ -137,5 +137,5 @@ skip_install = true
 deps =
   mypy
 commands =
-  mypy tests scripts conftest.py
+  mypy --check-untyped-defs tests scripts conftest.py
 """

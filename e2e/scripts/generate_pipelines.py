@@ -15,6 +15,7 @@ Generates dynamically the pipelines given by the project folder structure
 import argparse
 from dataclasses import dataclass
 from pathlib import Path
+from typing import List
 
 
 def generate_header():
@@ -236,7 +237,7 @@ def generate_pipelines_dynamically(input_path, pipelines_output_path, stages_out
     Generates the needed pipelines dynamically.
     """
 
-    pipelines = []
+    pipelines: List[Pipeline] = []
 
     iterate_ordered_hierarchy(input_path, pipelines)
 
