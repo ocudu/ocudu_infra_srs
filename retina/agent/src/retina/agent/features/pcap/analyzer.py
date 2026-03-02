@@ -12,7 +12,6 @@ Pcap analysis logic.
 
 import argparse
 import importlib
-import json
 import logging
 import sys
 from abc import ABC, abstractmethod
@@ -20,11 +19,8 @@ from pathlib import Path
 from typing import Dict, List, Sequence, Tuple
 
 import pyshark
-
-_DISSECTOR_PARAMS = {
-    "mac": [],
-    "rlc": ["--enable-heuristic", "rlc_nr_udp"],
-}
+from google.protobuf.text_format import MessageToString
+from retina.protocol.base_pb2 import Metrics
 
 
 class PcapAnalyzer(ABC):
@@ -54,11 +50,11 @@ class PcapAnalyzer(ABC):
         """Called for every packet that passes `display_filter`."""
 
     @abstractmethod
-    def report(self) -> Dict[str, Any]:
+    def report(self) -> Metrics:
         """Called once when the capture ends. Return the analysis result."""
 
 
-def run_analyzers(pcap_file: str, analyzers: Sequence[PcapAnalyzer]) -> Dict[str, Any]:
+def run_analyzers(pcap_file: str, analyzers: Sequence[PcapAnalyzer]) -> Metrics:
     """
     All analyzer display filters are OR-combined into a single tshark filter so
     only one tshark process is spawned. Calls `report()` on every analyzer when
@@ -69,8 +65,6 @@ def run_analyzers(pcap_file: str, analyzers: Sequence[PcapAnalyzer]) -> Dict[str
 
     Returns a list of results in the same order as *analyzers*.
     """
-    if dissector not in _DISSECTOR_PARAMS:
-        raise ValueError(f"Unknown dissector '{dissector}': expected one of {list(_DISSECTOR_PARAMS)}")
 
     if Path(pcap_file).exists():
         logging.info("[Pcap Parsing] %s", pcap_file)
@@ -104,11 +98,11 @@ def run_analyzers(pcap_file: str, analyzers: Sequence[PcapAnalyzer]) -> Dict[str
     else:
         logging.warning("[Pcap Parsing] file not found: %s", pcap_file)
 
-    result = {}
+    result = Metrics()
     for analyzer in analyzers:
         report = analyzer.report()
-        logging.info("[Pcap Parsing] %s Output: %s", type(analyzer).__name__, str(report))
-        result.update(report)
+        logging.info("[Pcap Parsing] %s Output: %s", type(analyzer).__name__, MessageToString(report, as_one_line=True))
+        result.MergeFrom(report)
 
     return result
 
@@ -179,7 +173,7 @@ def _main():
             sys.exit(1)
 
     results = run_analyzers(args.pcap_file, instances)
-    logging.info(json.dumps(results, indent=2))
+    logging.info("%s", MessageToString(results, as_one_line=True))
 
 
 if __name__ == "__main__":

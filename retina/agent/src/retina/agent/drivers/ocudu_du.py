@@ -10,30 +10,24 @@
 OCUDU DU Agent
 """
 
-import datetime
 import json
 import logging
 import os
-from collections import deque
 from dataclasses import dataclass, field
 from threading import Event, Thread
 from time import sleep
-from typing import Any, Deque, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import grpc
 import websocket
 from google.protobuf.empty_pb2 import Empty
-from google.protobuf.text_format import MessageToString
-from google.protobuf.timestamp_pb2 import Timestamp
 from google.protobuf.wrappers_pb2 import UInt32Value
 from retina.protocol.base_pb2 import (
-    CellMetrics,
     Metrics,
     NearRtRicDefinition,
     PLMN,
     StopResponse,
     UEDefinition,
-    UeMetrics,
 )
 from retina.protocol.gnb_pb2 import DUStartInfo
 
@@ -41,12 +35,17 @@ from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.gnb import DUDriver
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.gnb_report import transform_metrics
+from retina.agent.features.json_metrics.du_general import GeneralMetricsAnalyzer
+from retina.agent.features.json_metrics.du_peak_average import PerUePeakAverageAnalyzer
 from retina.agent.features.pcap.analyzer import run_analyzers
 from retina.agent.features.pcap.rrc import HandoverAnalyzer, ReestablishmentAnalyzer
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
 from retina.agent.tools.threading import join_thread
+
+_WS_ANALYZER_ARRAY = (GeneralMetricsAnalyzer, PerUePeakAverageAnalyzer)
+_RLC_PCAP_ANALYZER_ARRAY = (ReestablishmentAnalyzer, HandoverAnalyzer)
 
 
 @dataclass
@@ -74,39 +73,6 @@ def get_cell_array(*, num_cells: int, cell_offset: int) -> Tuple[_CellInfo, ...]
     for i, cell_info in enumerate(cell_array):
         cell_info.neighbor_array = [*cell_array[0:i], *cell_array[i + 1 : len(cell_array) + 1]]
     return cell_array
-
-
-class MovingAverage:
-    """
-    Implement a Moving Average Queue for N samples
-    """
-
-    def __init__(self, max_queue_length):
-        self.queue: Deque[int] = deque(maxlen=max_queue_length)
-
-    def get_average(self, nof_average_samples=None) -> float:
-        """
-        Return the average of the last K elements in the queue
-        """
-        if nof_average_samples is None:
-            nof_average_samples = self.queue.maxlen
-        elif nof_average_samples > self.queue.maxlen or nof_average_samples < 0:
-            raise ValueError("nof_average_samples is greater than the maximum length of the queue")
-        if len(self.queue) == 0:
-            return 0
-        last_k_values = list(self.queue)[-nof_average_samples:]
-        return sum(last_k_values) / len(last_k_values)
-
-    def add(self, *, value, nof_average_samples=None) -> float:
-        """
-        Add a new element to the queue
-        """
-        self.queue.append(value)
-        return self.get_average(nof_average_samples)
-
-    # pylint: disable=missing-function-docstring
-    def get_all(self) -> list[float]:
-        return list(self.queue)
 
 
 # pylint: disable=too-many-instance-attributes
@@ -139,19 +105,11 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
             on_close=self._on_ws_close,
             on_error=self._on_ws_error,
         )
-        self._aggregate_metrics = UeMetrics()
-        self._cell_agg_metrics = CellMetrics()
+        self._metrics = Metrics()
+        self._ws_analyzers = tuple(analyzer_cls() for analyzer_cls in _WS_ANALYZER_ARRAY)
         self._metrics_thread = Thread(target=self._metrics_listener)
         self._metrics_thread_stopper = Event()
-        self._metrics_dict: Dict[int, Dict[int, UeMetrics]] = {}
-        self._pcap_parsing_done = True
-        self._reports_since_last_ue_event: Dict[int, int] = {}
-        self._prev_ue_list: List = []
-        # Moving average for DL/UL bitrate, max 50 samples, for the aggregate nd UE metrics, respectively
-        self._dl_brate_mov_av = MovingAverage(50)
-        self._ul_brate_mov_av = MovingAverage(50)
-        self._ues_dl_brate_mov_av: Dict[int, Dict[int, MovingAverage]] = {}
-        self._ues_ul_brate_mov_av: Dict[int, Dict[int, MovingAverage]] = {}
+        self._metrics_parsing_done = True
 
     def _get_sut_version(self) -> str:
         output = tuple(
@@ -275,7 +233,6 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                             raise err from None
 
                 self.start_listening_metrics()
-                self.set_ready_to_parse_pcaps()
 
         return Empty()
 
@@ -283,9 +240,9 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         """
         Start listening metrics
         """
-        self._metrics_dict.clear()
-        self._aggregate_metrics = UeMetrics()
-        self._cell_agg_metrics = CellMetrics()
+        self._metrics = Metrics()
+        self._metrics_parsing_done = False
+        self._ws_analyzers = tuple(analyzer_cls() for analyzer_cls in _WS_ANALYZER_ARRAY)
         self._metrics_thread = Thread(target=self._metrics_listener)
         self._metrics_thread_stopper = Event()
         self._metrics_thread.start()
@@ -317,7 +274,12 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
     def _on_ws_message(self, _ws: websocket.WebSocketApp, message: str):
         try:
             metric_info = json.loads(message)
-            if "cmd" not in metric_info and self._parse_metrics(metric_info):
+            if "cmd" not in metric_info:
+                for analyzer in self._ws_analyzers:
+                    try:
+                        analyzer.process(metric_info)
+                    except Exception:  # pylint: disable=broad-except
+                        logging.exception("Error in %s while processing metric", type(analyzer).__name__)
                 with open(
                     self.get_filepath_in_report_folder(gnb_defaults.metrics_filename_json),
                     "a",
@@ -336,195 +298,6 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         if not isinstance(error, (websocket.WebSocketConnectionClosedException, ConnectionRefusedError)):
             logging.exception(error)
 
-    # pylint: disable=too-many-branches
-    def _parse_metrics(self, metric_info: Dict) -> bool:
-
-        parsed = False
-
-        timestamp = Timestamp()
-        timestamp.FromDatetime(datetime.datetime.fromisoformat(metric_info["timestamp"].strip()))
-
-        for cell_info in metric_info.get("cells", []):
-
-            if "cell_metrics" in cell_info and cell_info["cell_metrics"]:
-                # Total metrics: Initialize time in metric the first time
-                parsed = True
-
-                if self._cell_agg_metrics.time_first.seconds == 0:
-                    self._cell_agg_metrics.time_first.CopyFrom(timestamp)
-                else:
-                    # Filtering out first value
-                    self._cell_agg_metrics.error_indication_cnt += cell_info["cell_metrics"]["error_indication_count"]
-
-                self._cell_agg_metrics.av_latency += cell_info["cell_metrics"]["average_latency"]
-                self._cell_agg_metrics.max_latency = max(
-                    self._cell_agg_metrics.max_latency, cell_info["cell_metrics"]["max_latency"]
-                )
-                self._cell_agg_metrics.max_late_dl_harqs = max(
-                    self._cell_agg_metrics.max_late_dl_harqs, cell_info["cell_metrics"]["late_dl_harqs"]
-                )
-                self._cell_agg_metrics.max_late_ul_harqs = max(
-                    self._cell_agg_metrics.max_late_ul_harqs, cell_info["cell_metrics"]["late_ul_harqs"]
-                )
-
-                self._cell_agg_metrics.time_last.CopyFrom(timestamp)
-
-            # Ignore other metrics
-            if "ue_list" in cell_info:
-                # Total metrics: Initialize time in metric the first time
-                parsed = True
-
-                if self._aggregate_metrics.time_first.seconds == 0:
-                    if not cell_info["ue_list"]:
-                        return parsed
-                    self._aggregate_metrics.time_first.CopyFrom(timestamp)
-                    self._aggregate_metrics.time_last.CopyFrom(timestamp)
-
-                # Create dicts for the aggregate info of all UEs
-                total_info = {
-                    "dl_nof_ok": 0,
-                    "dl_nof_nok": 0,
-                    "ul_nof_ok": 0,
-                    "ul_nof_nok": 0,
-                    "dl_brate": 0,
-                    "ul_brate": 0,
-                }
-                prev_total_info = {
-                    "nof_pucch_f0f1_invalid_harqs": 0,
-                    "nof_pucch_f2f3f4_invalid_harqs": 0,
-                    "nof_pucch_f2f3f4_invalid_csis": 0,
-                }
-
-                self._handle_metric_events(cell_info)
-
-                for ue_info in cell_info["ue_list"]:
-                    pci, rnti = ue_info["pci"], ue_info["rnti"]
-
-                    # Initialize UE metric the first time
-                    if pci not in self._metrics_dict:
-                        self._metrics_dict[pci] = {}
-                        self._ues_dl_brate_mov_av[pci] = {}
-                        self._ues_ul_brate_mov_av[pci] = {}
-                    if rnti not in self._metrics_dict[pci]:
-                        self._metrics_dict[pci][rnti] = UeMetrics(
-                            pci=pci,
-                            rnti=rnti,
-                            time_first=Timestamp(seconds=timestamp.seconds, nanos=timestamp.nanos),
-                            time_last=Timestamp(seconds=timestamp.seconds, nanos=timestamp.nanos),
-                        )
-                        self._ues_dl_brate_mov_av[pci][rnti] = MovingAverage(50)
-                        self._ues_ul_brate_mov_av[pci][rnti] = MovingAverage(50)
-
-                    # Populate the metric
-                    self._populate_metric(timestamp, self._metrics_dict[pci][rnti], ue_info)
-                    self._populate_moving_av_metrics(self._metrics_dict[pci][rnti], ue_info, (pci, rnti))
-
-                    # Aggregate values
-                    for key in total_info:
-                        total_info[key] += ue_info[key]
-
-                # Update the metrics that are only counted if no recent UE events have been registered
-                # By recent we mean either in this report, the previous or the next one
-                for ue_info in self._prev_ue_list:
-                    pci, rnti = ue_info["pci"], ue_info["rnti"]
-
-                    if (
-                        rnti not in self._reports_since_last_ue_event
-                        and pci in self._metrics_dict
-                        and rnti in self._metrics_dict[pci]
-                    ):
-                        # Populate the metric
-                        self._populate_metric_prev(self._metrics_dict[pci][rnti], ue_info)
-
-                        # Aggregate values
-                        for key in prev_total_info:
-                            prev_total_info[key] += ue_info[key]
-
-                # Total metrics
-                self._populate_metric(timestamp, self._aggregate_metrics, total_info)
-                self._populate_moving_av_metrics(self._aggregate_metrics, total_info, None)
-                self._populate_metric_prev(self._aggregate_metrics, prev_total_info)
-                # Keep the list of UEs for the next iteration
-                self._prev_ue_list = cell_info["ue_list"]
-
-        return parsed
-
-    def _handle_metric_events(self, metric_info: Dict):
-        # Update the recent events dict
-        for rnti in list(self._reports_since_last_ue_event.keys()):
-            self._reports_since_last_ue_event[rnti] += 1
-            # No need to keep updating, just delete the entry
-            if self._reports_since_last_ue_event[rnti] > 1:
-                del self._reports_since_last_ue_event[rnti]
-
-        # Check for UE events
-        for event in metric_info.get("event_list", []):
-            if event["event_type"] in ("ue_create", "ue_reconf", "ue_rem"):
-                rnti = event["rnti"]
-                self._reports_since_last_ue_event[rnti] = 0
-
-    def _populate_metric(
-        self,
-        timestamp: Timestamp,
-        metric: UeMetrics,
-        info: Dict,
-    ):
-        metric.dl_nof_ok += info["dl_nof_ok"]
-        metric.dl_nof_ko += info["dl_nof_nok"]
-        metric.ul_nof_ok += info["ul_nof_ok"]
-        metric.ul_nof_ko += info["ul_nof_nok"]
-
-        metric.dl_bitrate_min = min(metric.dl_bitrate_min, info["dl_brate"])
-        metric.dl_bitrate_max = max(metric.dl_bitrate_max, info["dl_brate"])
-
-        metric.ul_bitrate_min = min(metric.ul_bitrate_min, info["ul_brate"])
-        metric.ul_bitrate_max = max(metric.ul_bitrate_max, info["ul_brate"])
-
-        t_old = (metric.time_last.ToDatetime() - metric.time_first.ToDatetime()).total_seconds()
-        t_new = (timestamp.ToDatetime() - metric.time_last.ToDatetime()).total_seconds()
-        t_beginning = (timestamp.ToDatetime() - metric.time_first.ToDatetime()).total_seconds()
-
-        if t_beginning == 0:
-            metric.dl_bitrate = info["dl_brate"]
-            metric.ul_bitrate = info["ul_brate"]
-        else:
-            metric.dl_bitrate = ((metric.dl_bitrate * t_old) + (info["dl_brate"] * t_new)) / t_beginning
-            metric.ul_bitrate = ((metric.ul_bitrate * t_old) + (info["ul_brate"] * t_new)) / t_beginning
-
-        metric.time_last.CopyFrom(timestamp)
-
-    def _populate_metric_prev(self, metric: UeMetrics, prev_info: Dict):
-        metric.nof_pucch_f0f1_invalid_harqs += prev_info["nof_pucch_f0f1_invalid_harqs"]
-        metric.nof_pucch_f2f3f4_invalid_harqs += prev_info["nof_pucch_f2f3f4_invalid_harqs"]
-        metric.nof_pucch_f2f3f4_invalid_csis += prev_info["nof_pucch_f2f3f4_invalid_csis"]
-
-    def _populate_moving_av_metrics(self, metric: UeMetrics, info: Dict, ue_pci_rnti: Optional[Tuple[int, int]]):
-        # Populates the moving average bitrates.
-
-        # Saves the peak (computed as max) average bitrates over N samples.
-        if ue_pci_rnti is None:
-            dl_brate_mov_av_5 = self._dl_brate_mov_av.add(value=info["dl_brate"], nof_average_samples=5)
-            dl_brate_mov_av_15 = self._dl_brate_mov_av.get_average(15)
-            dl_brate_mov_av_30 = self._dl_brate_mov_av.get_average(30)
-            ul_brate_mov_av_5 = self._ul_brate_mov_av.add(value=info["ul_brate"], nof_average_samples=5)
-            ul_brate_mov_av_15 = self._ul_brate_mov_av.get_average(15)
-            ul_brate_mov_av_30 = self._ul_brate_mov_av.get_average(30)
-        else:
-            pci, rnti = ue_pci_rnti
-            dl_brate_mov_av_5 = self._ues_dl_brate_mov_av[pci][rnti].add(value=info["dl_brate"], nof_average_samples=5)
-            dl_brate_mov_av_15 = self._ues_dl_brate_mov_av[pci][rnti].get_average(15)
-            dl_brate_mov_av_30 = self._ues_dl_brate_mov_av[pci][rnti].get_average(30)
-            ul_brate_mov_av_5 = self._ues_ul_brate_mov_av[pci][rnti].add(value=info["ul_brate"], nof_average_samples=5)
-            ul_brate_mov_av_15 = self._ues_ul_brate_mov_av[pci][rnti].get_average(15)
-            ul_brate_mov_av_30 = self._ues_ul_brate_mov_av[pci][rnti].get_average(30)
-
-        metric.dl_bitrate_peak_av.av_5_samples = max(metric.dl_bitrate_peak_av.av_5_samples, dl_brate_mov_av_5)
-        metric.dl_bitrate_peak_av.av_15_samples = max(metric.dl_bitrate_peak_av.av_15_samples, dl_brate_mov_av_15)
-        metric.dl_bitrate_peak_av.av_30_samples = max(metric.dl_bitrate_peak_av.av_30_samples, dl_brate_mov_av_30)
-        metric.ul_bitrate_peak_av.av_5_samples = max(metric.ul_bitrate_peak_av.av_5_samples, ul_brate_mov_av_5)
-        metric.ul_bitrate_peak_av.av_15_samples = max(metric.ul_bitrate_peak_av.av_15_samples, ul_brate_mov_av_15)
-        metric.ul_bitrate_peak_av.av_30_samples = max(metric.ul_bitrate_peak_av.av_30_samples, ul_brate_mov_av_30)
-
     def stop_listening_metrics(self) -> str:
         """
         Stop listening to metrics
@@ -537,39 +310,32 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
             metrics_json_path = self.get_filepath_in_report_folder(gnb_defaults.metrics_filename_json)
         return metrics_json_path
 
-    def set_ready_to_parse_pcaps(self) -> None:
+    def get_metrics_parsing_arguments(self) -> Tuple[str, ...]:
         """
-        Binary has started a new pcaps will be generated
+        Get Arguments for metrics parsing. Needs to be called before stop
         """
-        self._pcap_parsing_done = False
-
-    def get_pcap_parsing_arguments(self) -> Tuple[str, ...]:
-        """
-        Get Arguments for Pcap parsing. Needs to be called before stop
-        """
-        if self._pcap_parsing_done:
+        if self._metrics_parsing_done:
             return tuple()
         return (self.get_filepath_in_report_folder(gnb_defaults.rlc_filename),)
 
-    def extract_metrics_from_pcaps(self, *args):
+    def extract_metrics(self, *args):
         """
-        Extract Metrics from PCAP files
+        Extract Metrics
         """
-        if not self._pcap_parsing_done:
+        if not self._metrics_parsing_done:
             (rlc_pcap_filename,) = args
-            rlc_result = run_analyzers(
-                rlc_pcap_filename, (ReestablishmentAnalyzer(), HandoverAnalyzer()), dissector="rlc"
+            for ws_analyzer in self._ws_analyzers:
+                self._metrics.MergeFrom(ws_analyzer.report())
+            self._metrics.MergeFrom(
+                run_analyzers(rlc_pcap_filename, tuple(analyzer_cls() for analyzer_cls in _RLC_PCAP_ANALYZER_ARRAY))
             )
-            self._aggregate_metrics.nof_handovers = int(rlc_result["handover_count"])
-            self._aggregate_metrics.nof_reestablishments_request = int(rlc_result["reestablishment_request_count"])
-            self._aggregate_metrics.nof_reestablishments_complete = int(rlc_result["reestablishment_complete_count"])
-            self._pcap_parsing_done = True
+            self._metrics_parsing_done = True
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
         metrics_json_path = self.stop_listening_metrics()
-        pcap_args = self.get_pcap_parsing_arguments()
+        pcap_args = self.get_metrics_parsing_arguments()
         response = super().Stop(request, context)
-        self.extract_metrics_from_pcaps(*pcap_args)
+        self.extract_metrics(*pcap_args)
         transform_metrics(metrics_json_path)
         return response
 
@@ -583,12 +349,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         metrics = super().GetMetrics(request, context)
-        metrics.ue_array.extend(
-            [ue_metric for ue_dict in self._metrics_dict.values() for ue_metric in ue_dict.values()]
-        )
-        metrics.total.CopyFrom(self._aggregate_metrics)
-        metrics.cell.CopyFrom(self._cell_agg_metrics)
-        logging.info("Metrics: %s", MessageToString(metrics, as_one_line=True))
+        metrics.MergeFrom(self._metrics)
         return metrics
 
 

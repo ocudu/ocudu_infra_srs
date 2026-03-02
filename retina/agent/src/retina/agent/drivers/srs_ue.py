@@ -11,6 +11,7 @@ SRS UE Agent
 """
 
 import csv
+import datetime
 import ipaddress
 import logging
 from contextlib import suppress
@@ -21,10 +22,8 @@ from typing import Optional, Tuple
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
-from google.protobuf.text_format import MessageToString
-from google.protobuf.timestamp_pb2 import Timestamp
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition, UeMetrics
+from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition
 from retina.protocol.ue_pb2 import UEAttachedInfo, UEStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
@@ -37,7 +36,7 @@ from retina.agent.tools.threading import join_thread, kill_thread
 from retina.agent.tools.time import TimeoutHandler
 
 
-class SrsUe(UEDriver, BaseDriverSutHandler):
+class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instance-attributes
     """
     SRS UE Agent
     """
@@ -59,7 +58,9 @@ class SrsUe(UEDriver, BaseDriverSutHandler):
         self._attach_thread = Thread(target=self._validate_attach)
         self._attach_info: Optional[UEAttachedInfo] = None
         self._ue_metric_src_file: str = ""
-        self._ue_metric: Optional[UeMetrics] = None
+        self._ue_metric: Optional[Metrics] = None
+        self._ue_metric_time_first: Optional[datetime.datetime] = None
+        self._ue_metric_time_last: Optional[datetime.datetime] = None
 
     def _get_sut_version(self) -> str:
         output = tuple(
@@ -140,6 +141,8 @@ class SrsUe(UEDriver, BaseDriverSutHandler):
         self._attach_thread = Thread(target=self._validate_attach, args=(context.peer(),))
         self._attach_thread.start()
         self._ue_metric = None
+        self._ue_metric_time_first = None
+        self._ue_metric_time_last = None
         self._ue_metric_src_file = self.get_filepath_in_report_folder(ue_defaults.metrics_filename_csv)
 
         subscriber_id = self._subscriber_client.subscriber_id
@@ -208,48 +211,32 @@ class SrsUe(UEDriver, BaseDriverSutHandler):
 
     def _parse_metrics(self):
         if self._ue_metric_src_file and Path(self._ue_metric_src_file).exists() and self._ue_metric is None:
-            self._ue_metric = UeMetrics()
+            self._ue_metric = Metrics()
             with open(self._ue_metric_src_file, "r", encoding="utf-8") as fd:
                 reader = csv.DictReader(fd, delimiter=";")
                 for ue_info in reader:
                     if ue_info["time"] == "#eof":
                         break
-                    timestamp = Timestamp()
-                    timestamp.FromMilliseconds(int(ue_info["time"]))
-                    if self._ue_metric.time_first.seconds == 0 and self._ue_metric.time_first.nanos == 0:
-                        self._ue_metric = UeMetrics(
-                            pci=int(ue_info["pci"]),
-                            dl_nof_ok=100,
-                            dl_nof_ko=int(float(ue_info["dl_bler"])),
+                    timestamp = datetime.datetime.fromtimestamp(int(ue_info["time"]) / 1000, tz=datetime.timezone.utc)
+                    if self._ue_metric_time_first is None:
+                        self._ue_metric = Metrics(
+                            nof_ko_dl=int(float(ue_info["dl_bler"])),
                             dl_bitrate=float(ue_info["dl_brate"]),
-                            dl_bitrate_min=float(ue_info["dl_brate"]),
-                            dl_bitrate_max=float(ue_info["dl_brate"]),
-                            ul_nof_ok=100,
-                            ul_nof_ko=int(ue_info["ul_bler"]),
+                            nof_ko_ul=int(ue_info["ul_bler"]),
                             ul_bitrate=float(ue_info["ul_brate"]),
-                            ul_bitrate_min=float(ue_info["ul_brate"]),
-                            ul_bitrate_max=float(ue_info["ul_brate"]),
-                            time_first=Timestamp(seconds=timestamp.seconds, nanos=timestamp.nanos),
-                            time_last=Timestamp(seconds=timestamp.seconds, nanos=timestamp.nanos),
                         )
+                        self._ue_metric_time_first = timestamp
+                        self._ue_metric_time_last = timestamp
                     else:
-                        self._ue_metric.dl_nof_ok += 100
-                        self._ue_metric.dl_nof_ko += int(float(ue_info["dl_bler"]))
+                        self._ue_metric.nof_ko_dl += int(float(ue_info["dl_bler"]))
+                        self._ue_metric.nof_ko_ul += int(float(ue_info["ul_bler"]))
 
-                        self._ue_metric.ul_nof_ok += 100
-                        self._ue_metric.ul_nof_ko += int(float(ue_info["ul_bler"]))
+                        if self._ue_metric_time_last is None:
+                            self._ue_metric_time_last = self._ue_metric_time_first
 
-                        self._ue_metric.dl_bitrate_min = min(self._ue_metric.dl_bitrate_min, float(ue_info["dl_brate"]))
-                        self._ue_metric.dl_bitrate_max = max(self._ue_metric.dl_bitrate_max, float(ue_info["dl_brate"]))
-
-                        self._ue_metric.ul_bitrate_min = min(self._ue_metric.ul_bitrate_min, float(ue_info["ul_brate"]))
-                        self._ue_metric.ul_bitrate_max = max(self._ue_metric.ul_bitrate_max, float(ue_info["ul_brate"]))
-
-                        t_old = (
-                            self._ue_metric.time_last.ToDatetime() - self._ue_metric.time_first.ToDatetime()
-                        ).total_seconds()
-                        t_new = (timestamp.ToDatetime() - self._ue_metric.time_last.ToDatetime()).total_seconds()
-                        t_beginning = (timestamp.ToDatetime() - self._ue_metric.time_first.ToDatetime()).total_seconds()
+                        t_old = (self._ue_metric_time_last - self._ue_metric_time_first).total_seconds()
+                        t_new = (timestamp - self._ue_metric_time_last).total_seconds()
+                        t_beginning = (timestamp - self._ue_metric_time_first).total_seconds()
 
                         self._ue_metric.dl_bitrate = (
                             (self._ue_metric.dl_bitrate * t_old) + (float(ue_info["dl_brate"]) * t_new)
@@ -258,8 +245,7 @@ class SrsUe(UEDriver, BaseDriverSutHandler):
                             (self._ue_metric.ul_bitrate * t_old) + (float(ue_info["ul_brate"]) * t_new)
                         ) / t_beginning
 
-                        self._ue_metric.time_last.seconds = timestamp.seconds
-                        self._ue_metric.time_last.nanos = timestamp.nanos
+                        self._ue_metric_time_last = timestamp
 
     @property
     def _expected_exit_code_array(self) -> Tuple[int, ...]:
@@ -291,11 +277,7 @@ class SrsUe(UEDriver, BaseDriverSutHandler):
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         metrics = super().GetMetrics(request, context)
         if self._ue_metric is not None:
-            metrics.ue_array.extend((self._ue_metric,))
-            metrics.total.CopyFrom(self._ue_metric)
-            metrics.total.pci = 0
-            metrics.total.rnti = 0
-        logging.info("Metrics: %s", MessageToString(metrics, as_one_line=True))
+            metrics.MergeFrom(self._ue_metric)
         return metrics
 
     SRS_WARNING_HEADER: str = r"^.*\[.*\[W\]"

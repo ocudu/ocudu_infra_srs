@@ -200,15 +200,14 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
                             raise err from None
 
                 self._du.start_listening_metrics()
-                self._du.set_ready_to_parse_pcaps()
 
         return Empty()
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
         metrics_json_path = self._du.stop_listening_metrics()
-        pcap_args = self._du.get_pcap_parsing_arguments()
+        pcap_args = self._du.get_metrics_parsing_arguments()
         response = super().Stop(request, context)
-        self._du.extract_metrics_from_pcaps(*pcap_args)
+        self._du.extract_metrics(*pcap_args)
         transform_metrics(metrics_json_path)
         return response
 

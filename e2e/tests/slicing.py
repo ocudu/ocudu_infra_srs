@@ -109,8 +109,8 @@ def test_slicing(
             sd = "000001"
         else:
             sd = "000002"
-        dl_bitrate = ue_metrics.dl_bitrate_peak_av.av_30_samples
-        ul_bitrate = ue_metrics.ul_bitrate_peak_av.av_30_samples
+        dl_bitrate = ue_metrics.dl_av_30_samples
+        ul_bitrate = ue_metrics.ul_av_30_samples
         dl_brate_assessment_ok = dl_bitrate >= thresholds[sd]["dl"]
         ul_brate_assessment_ok = ul_bitrate >= thresholds[sd]["ul"]
         dl_pass_msg = "PASSED" if dl_brate_assessment_ok else "FAILED"

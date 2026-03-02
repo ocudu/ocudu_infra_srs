@@ -11,32 +11,12 @@ import TOCInline from '@theme/TOCInline';
 
 ### Messages
 
-#### BitratePeakAverage
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `av_5_samples` | `double` |||
-| `av_15_samples` | `double` |||
-| `av_30_samples` | `double` |||
-
 #### CUDefinition
 
 | Field | Type | Label | Description |
 |---|---|---|---|
 | `cu_ip` | `string` |||
 | `cu_port` | `uint32` |||
-
-#### CellMetrics
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `error_indication_cnt` | `uint32` |||
-| `av_latency` | `uint32` |||
-| `max_latency` | `uint32` |||
-| `max_late_dl_harqs` | `uint64` |||
-| `max_late_ul_harqs` | `uint64` |||
-| `time_first` | `google.protobuf.Timestamp` |||
-| `time_last` | `google.protobuf.Timestamp` |||
 
 #### ChannelEmulatorDefinition
 
@@ -74,10 +54,23 @@ import TOCInline from '@theme/TOCInline';
 
 | Field | Type | Label | Description |
 |---|---|---|---|
+| `dl_bitrate` | `double` |||
+| `ul_bitrate` | `double` |||
+| `nof_ko_dl` | `uint64` |||
+| `nof_ko_ul` | `uint64` |||
+| `nof_reestablishments_request` | `uint32` |||
+| `nof_reestablishments_complete` | `uint32` |||
+| `nof_handovers` | `uint32` |||
+| `nof_pucch_f0f1_invalid_harqs` | `uint32` |||
+| `nof_pucch_f2f3f4_invalid_harqs` | `uint32` |||
+| `nof_pucch_f2f3f4_invalid_csis` | `uint32` |||
+| `nof_error_indications` | `uint32` |||
+| `max_late_dl_harqs` | `uint64` |||
+| `max_late_ul_harqs` | `uint64` |||
+| `nof_lates` | `uint32` |||
+| `nof_under` | `uint32` |||
+| `nof_seq_err` | `uint32` |||
 | `ue_array` | `UeMetrics` |`repeated`||
-| `system` | `SystemMetrics` |||
-| `total` | `UeMetrics` |||
-| `cell` | `CellMetrics` |||
 
 #### NearRtRicDefinition
 
@@ -165,14 +158,6 @@ import TOCInline from '@theme/TOCInline';
 |---|---|---|---|
 | `value` | `Subscriber` |`repeated`||
 
-#### SystemMetrics
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `nof_lates` | `uint32` |||
-| `nof_under` | `uint32` |||
-| `nof_seq_err` | `uint32` |||
-
 #### UEDefinition
 
 | Field | Type | Label | Description |
@@ -185,28 +170,13 @@ import TOCInline from '@theme/TOCInline';
 
 | Field | Type | Label | Description |
 |---|---|---|---|
-| `pci` | `uint32` |||
 | `rnti` | `uint32` |||
-| `dl_nof_ok` | `uint64` |||
-| `dl_nof_ko` | `uint64` |||
-| `dl_bitrate` | `double` |||
-| `dl_bitrate_min` | `double` |||
-| `dl_bitrate_max` | `double` |||
-| `ul_nof_ok` | `uint64` |||
-| `ul_nof_ko` | `uint64` |||
-| `ul_bitrate` | `double` |||
-| `ul_bitrate_min` | `double` |||
-| `ul_bitrate_max` | `double` |||
-| `nof_reestablishments_request` | `uint32` |||
-| `nof_reestablishments_complete` | `uint32` |||
-| `nof_handovers` | `uint32` |||
-| `nof_pucch_f0f1_invalid_harqs` | `uint32` |||
-| `nof_pucch_f2f3f4_invalid_harqs` | `uint32` |||
-| `nof_pucch_f2f3f4_invalid_csis` | `uint32` |||
-| `dl_bitrate_peak_av` | `BitratePeakAverage` |||
-| `ul_bitrate_peak_av` | `BitratePeakAverage` |||
-| `time_first` | `google.protobuf.Timestamp` |||
-| `time_last` | `google.protobuf.Timestamp` |||
+| `dl_av_5_samples` | `double` |||
+| `dl_av_15_samples` | `double` |||
+| `dl_av_30_samples` | `double` |||
+| `ul_av_5_samples` | `double` |||
+| `ul_av_15_samples` | `double` |||
+| `ul_av_30_samples` | `double` |||
 
 ### Enums
 

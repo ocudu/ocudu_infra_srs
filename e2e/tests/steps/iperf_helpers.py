@@ -13,6 +13,7 @@ Test Iperf
 import logging
 from collections import defaultdict
 from enum import Enum
+from typing import Tuple
 
 import pytest
 from retina.protocol.base_pb2 import Metrics
@@ -193,16 +194,25 @@ def get_peak_average_bitrate(
     *,  # This enforces keyword-only arguments
     iperf_duration: int,
     metrics: Metrics,
-):
+) -> Tuple[float, float]:
     """
     Get the correct peak average bitrate reported metric based on the given iperf duration
     """
 
     if iperf_duration == TINY_DURATION:
-        return metrics.total.dl_bitrate_peak_av.av_5_samples, metrics.total.ul_bitrate_peak_av.av_5_samples
+        return (
+            sum(u.dl_av_5_samples for u in metrics.ue_array),
+            sum(u.ul_av_5_samples for u in metrics.ue_array),
+        )
     if iperf_duration == SHORT_DURATION:
-        return metrics.total.dl_bitrate_peak_av.av_15_samples, metrics.total.ul_bitrate_peak_av.av_15_samples
-    return metrics.total.dl_bitrate_peak_av.av_30_samples, metrics.total.ul_bitrate_peak_av.av_30_samples
+        return (
+            sum(u.dl_av_15_samples for u in metrics.ue_array),
+            sum(u.ul_av_15_samples for u in metrics.ue_array),
+        )
+    return (
+        sum(u.dl_av_30_samples for u in metrics.ue_array),
+        sum(u.ul_av_30_samples for u in metrics.ue_array),
+    )
 
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals

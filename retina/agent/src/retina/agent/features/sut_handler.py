@@ -26,7 +26,7 @@ import grpc
 import psutil
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import Metrics, StopResponse, SystemMetrics
+from retina.protocol.base_pb2 import Metrics, StopResponse
 from retina.protocol.exit_codes import exit_code_to_message
 
 from retina.agent.drivers.base import BaseDriver
@@ -63,7 +63,9 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         # Check alive and metrics measured in check alive thread
         self._check_alive_thread = Thread(target=self._check_alive)
         self._check_alive_event = Event()
-        self._system_metrics = SystemMetrics()
+        self._nof_lates: int = 0
+        self._nof_under: int = 0
+        self._nof_seq_err: int = 0
         # Process
         self._process: Optional[psutil.Process] = None
         # Logs
@@ -93,7 +95,7 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         cmd = tuple(filter(lambda item: item.strip(), cmd))
         logging.info("CMD executed: %s", " ".join(cmd))
         if not dryrun:
-            self._system_metrics = SystemMetrics()  # Start fresh metrics object
+            self._nof_lates = self._nof_under = self._nof_seq_err = 0
             self._start_binary(*cmd, logfile=logfile)
 
             self._check_alive_thread = Thread(target=self._check_alive)
@@ -231,9 +233,9 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
 
             # Extract system metrics from log
             (
-                self._system_metrics.nof_lates,
-                self._system_metrics.nof_under,
-                self._system_metrics.nof_seq_err,
+                self._nof_lates,
+                self._nof_under,
+                self._nof_seq_err,
             ) = _extract_uhd(self._last_log_array[0])
 
         return self._last_stop_result
@@ -317,7 +319,7 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         log_cgroups_warnings_and_errors()
-        return Metrics(system=self._system_metrics)
+        return Metrics(nof_lates=self._nof_lates, nof_under=self._nof_under, nof_seq_err=self._nof_seq_err)
 
 
 #########

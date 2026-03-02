@@ -16,7 +16,6 @@ import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
-import google.protobuf.timestamp_pb2
 import sys
 import typing
 
@@ -412,188 +411,95 @@ Global___StopResponse: typing_extensions.TypeAlias = StopResponse
 class Metrics(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    UE_ARRAY_FIELD_NUMBER: builtins.int
-    SYSTEM_FIELD_NUMBER: builtins.int
-    TOTAL_FIELD_NUMBER: builtins.int
-    CELL_FIELD_NUMBER: builtins.int
-    @property
-    def ue_array(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[Global___UeMetrics]: ...
-    @property
-    def system(self) -> Global___SystemMetrics: ...
-    @property
-    def total(self) -> Global___UeMetrics: ...
-    @property
-    def cell(self) -> Global___CellMetrics: ...
-    def __init__(
-        self,
-        *,
-        ue_array: collections.abc.Iterable[Global___UeMetrics] | None = ...,
-        system: Global___SystemMetrics | None = ...,
-        total: Global___UeMetrics | None = ...,
-        cell: Global___CellMetrics | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["cell", b"cell", "system", b"system", "total", b"total"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["cell", b"cell", "system", b"system", "total", b"total", "ue_array", b"ue_array"]) -> None: ...
-
-Global___Metrics: typing_extensions.TypeAlias = Metrics
-
-@typing.final
-class BitratePeakAverage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    AV_5_SAMPLES_FIELD_NUMBER: builtins.int
-    AV_15_SAMPLES_FIELD_NUMBER: builtins.int
-    AV_30_SAMPLES_FIELD_NUMBER: builtins.int
-    av_5_samples: builtins.float
-    av_15_samples: builtins.float
-    av_30_samples: builtins.float
-    def __init__(
-        self,
-        *,
-        av_5_samples: builtins.float = ...,
-        av_15_samples: builtins.float = ...,
-        av_30_samples: builtins.float = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["av_15_samples", b"av_15_samples", "av_30_samples", b"av_30_samples", "av_5_samples", b"av_5_samples"]) -> None: ...
-
-Global___BitratePeakAverage: typing_extensions.TypeAlias = BitratePeakAverage
-
-@typing.final
-class UeMetrics(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    PCI_FIELD_NUMBER: builtins.int
-    RNTI_FIELD_NUMBER: builtins.int
-    DL_NOF_OK_FIELD_NUMBER: builtins.int
-    DL_NOF_KO_FIELD_NUMBER: builtins.int
     DL_BITRATE_FIELD_NUMBER: builtins.int
-    DL_BITRATE_MIN_FIELD_NUMBER: builtins.int
-    DL_BITRATE_MAX_FIELD_NUMBER: builtins.int
-    UL_NOF_OK_FIELD_NUMBER: builtins.int
-    UL_NOF_KO_FIELD_NUMBER: builtins.int
     UL_BITRATE_FIELD_NUMBER: builtins.int
-    UL_BITRATE_MIN_FIELD_NUMBER: builtins.int
-    UL_BITRATE_MAX_FIELD_NUMBER: builtins.int
+    NOF_KO_DL_FIELD_NUMBER: builtins.int
+    NOF_KO_UL_FIELD_NUMBER: builtins.int
     NOF_REESTABLISHMENTS_REQUEST_FIELD_NUMBER: builtins.int
     NOF_REESTABLISHMENTS_COMPLETE_FIELD_NUMBER: builtins.int
     NOF_HANDOVERS_FIELD_NUMBER: builtins.int
     NOF_PUCCH_F0F1_INVALID_HARQS_FIELD_NUMBER: builtins.int
     NOF_PUCCH_F2F3F4_INVALID_HARQS_FIELD_NUMBER: builtins.int
     NOF_PUCCH_F2F3F4_INVALID_CSIS_FIELD_NUMBER: builtins.int
-    DL_BITRATE_PEAK_AV_FIELD_NUMBER: builtins.int
-    UL_BITRATE_PEAK_AV_FIELD_NUMBER: builtins.int
-    TIME_FIRST_FIELD_NUMBER: builtins.int
-    TIME_LAST_FIELD_NUMBER: builtins.int
-    pci: builtins.int
-    rnti: builtins.int
-    dl_nof_ok: builtins.int
-    dl_nof_ko: builtins.int
+    NOF_ERROR_INDICATIONS_FIELD_NUMBER: builtins.int
+    MAX_LATE_DL_HARQS_FIELD_NUMBER: builtins.int
+    MAX_LATE_UL_HARQS_FIELD_NUMBER: builtins.int
+    NOF_LATES_FIELD_NUMBER: builtins.int
+    NOF_UNDER_FIELD_NUMBER: builtins.int
+    NOF_SEQ_ERR_FIELD_NUMBER: builtins.int
+    UE_ARRAY_FIELD_NUMBER: builtins.int
     dl_bitrate: builtins.float
-    dl_bitrate_min: builtins.float
-    dl_bitrate_max: builtins.float
-    ul_nof_ok: builtins.int
-    ul_nof_ko: builtins.int
     ul_bitrate: builtins.float
-    ul_bitrate_min: builtins.float
-    ul_bitrate_max: builtins.float
+    nof_ko_dl: builtins.int
+    nof_ko_ul: builtins.int
     nof_reestablishments_request: builtins.int
     nof_reestablishments_complete: builtins.int
     nof_handovers: builtins.int
     nof_pucch_f0f1_invalid_harqs: builtins.int
     nof_pucch_f2f3f4_invalid_harqs: builtins.int
     nof_pucch_f2f3f4_invalid_csis: builtins.int
+    nof_error_indications: builtins.int
+    max_late_dl_harqs: builtins.int
+    max_late_ul_harqs: builtins.int
+    nof_lates: builtins.int
+    nof_under: builtins.int
+    nof_seq_err: builtins.int
     @property
-    def dl_bitrate_peak_av(self) -> Global___BitratePeakAverage: ...
-    @property
-    def ul_bitrate_peak_av(self) -> Global___BitratePeakAverage: ...
-    @property
-    def time_first(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
-    @property
-    def time_last(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    def ue_array(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[Global___UeMetrics]: ...
     def __init__(
         self,
         *,
-        pci: builtins.int = ...,
-        rnti: builtins.int = ...,
-        dl_nof_ok: builtins.int = ...,
-        dl_nof_ko: builtins.int = ...,
         dl_bitrate: builtins.float = ...,
-        dl_bitrate_min: builtins.float = ...,
-        dl_bitrate_max: builtins.float = ...,
-        ul_nof_ok: builtins.int = ...,
-        ul_nof_ko: builtins.int = ...,
         ul_bitrate: builtins.float = ...,
-        ul_bitrate_min: builtins.float = ...,
-        ul_bitrate_max: builtins.float = ...,
+        nof_ko_dl: builtins.int = ...,
+        nof_ko_ul: builtins.int = ...,
         nof_reestablishments_request: builtins.int = ...,
         nof_reestablishments_complete: builtins.int = ...,
         nof_handovers: builtins.int = ...,
         nof_pucch_f0f1_invalid_harqs: builtins.int = ...,
         nof_pucch_f2f3f4_invalid_harqs: builtins.int = ...,
         nof_pucch_f2f3f4_invalid_csis: builtins.int = ...,
-        dl_bitrate_peak_av: Global___BitratePeakAverage | None = ...,
-        ul_bitrate_peak_av: Global___BitratePeakAverage | None = ...,
-        time_first: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        time_last: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["dl_bitrate_peak_av", b"dl_bitrate_peak_av", "time_first", b"time_first", "time_last", b"time_last", "ul_bitrate_peak_av", b"ul_bitrate_peak_av"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["dl_bitrate", b"dl_bitrate", "dl_bitrate_max", b"dl_bitrate_max", "dl_bitrate_min", b"dl_bitrate_min", "dl_bitrate_peak_av", b"dl_bitrate_peak_av", "dl_nof_ko", b"dl_nof_ko", "dl_nof_ok", b"dl_nof_ok", "nof_handovers", b"nof_handovers", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "pci", b"pci", "rnti", b"rnti", "time_first", b"time_first", "time_last", b"time_last", "ul_bitrate", b"ul_bitrate", "ul_bitrate_max", b"ul_bitrate_max", "ul_bitrate_min", b"ul_bitrate_min", "ul_bitrate_peak_av", b"ul_bitrate_peak_av", "ul_nof_ko", b"ul_nof_ko", "ul_nof_ok", b"ul_nof_ok"]) -> None: ...
-
-Global___UeMetrics: typing_extensions.TypeAlias = UeMetrics
-
-@typing.final
-class SystemMetrics(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    NOF_LATES_FIELD_NUMBER: builtins.int
-    NOF_UNDER_FIELD_NUMBER: builtins.int
-    NOF_SEQ_ERR_FIELD_NUMBER: builtins.int
-    nof_lates: builtins.int
-    nof_under: builtins.int
-    nof_seq_err: builtins.int
-    def __init__(
-        self,
-        *,
+        nof_error_indications: builtins.int = ...,
+        max_late_dl_harqs: builtins.int = ...,
+        max_late_ul_harqs: builtins.int = ...,
         nof_lates: builtins.int = ...,
         nof_under: builtins.int = ...,
         nof_seq_err: builtins.int = ...,
+        ue_array: collections.abc.Iterable[Global___UeMetrics] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_lates", b"nof_lates", "nof_seq_err", b"nof_seq_err", "nof_under", b"nof_under"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["dl_bitrate", b"dl_bitrate", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_error_indications", b"nof_error_indications", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_lates", b"nof_lates", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_seq_err", b"nof_seq_err", "nof_under", b"nof_under", "ue_array", b"ue_array", "ul_bitrate", b"ul_bitrate"]) -> None: ...
 
-Global___SystemMetrics: typing_extensions.TypeAlias = SystemMetrics
+Global___Metrics: typing_extensions.TypeAlias = Metrics
 
 @typing.final
-class CellMetrics(google.protobuf.message.Message):
+class UeMetrics(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    ERROR_INDICATION_CNT_FIELD_NUMBER: builtins.int
-    AV_LATENCY_FIELD_NUMBER: builtins.int
-    MAX_LATENCY_FIELD_NUMBER: builtins.int
-    MAX_LATE_DL_HARQS_FIELD_NUMBER: builtins.int
-    MAX_LATE_UL_HARQS_FIELD_NUMBER: builtins.int
-    TIME_FIRST_FIELD_NUMBER: builtins.int
-    TIME_LAST_FIELD_NUMBER: builtins.int
-    error_indication_cnt: builtins.int
-    av_latency: builtins.int
-    max_latency: builtins.int
-    max_late_dl_harqs: builtins.int
-    max_late_ul_harqs: builtins.int
-    @property
-    def time_first(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
-    @property
-    def time_last(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    RNTI_FIELD_NUMBER: builtins.int
+    DL_AV_5_SAMPLES_FIELD_NUMBER: builtins.int
+    DL_AV_15_SAMPLES_FIELD_NUMBER: builtins.int
+    DL_AV_30_SAMPLES_FIELD_NUMBER: builtins.int
+    UL_AV_5_SAMPLES_FIELD_NUMBER: builtins.int
+    UL_AV_15_SAMPLES_FIELD_NUMBER: builtins.int
+    UL_AV_30_SAMPLES_FIELD_NUMBER: builtins.int
+    rnti: builtins.int
+    dl_av_5_samples: builtins.float
+    dl_av_15_samples: builtins.float
+    dl_av_30_samples: builtins.float
+    ul_av_5_samples: builtins.float
+    ul_av_15_samples: builtins.float
+    ul_av_30_samples: builtins.float
     def __init__(
         self,
         *,
-        error_indication_cnt: builtins.int = ...,
-        av_latency: builtins.int = ...,
-        max_latency: builtins.int = ...,
-        max_late_dl_harqs: builtins.int = ...,
-        max_late_ul_harqs: builtins.int = ...,
-        time_first: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        time_last: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        rnti: builtins.int = ...,
+        dl_av_5_samples: builtins.float = ...,
+        dl_av_15_samples: builtins.float = ...,
+        dl_av_30_samples: builtins.float = ...,
+        ul_av_5_samples: builtins.float = ...,
+        ul_av_15_samples: builtins.float = ...,
+        ul_av_30_samples: builtins.float = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["time_first", b"time_first", "time_last", b"time_last"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["av_latency", b"av_latency", "error_indication_cnt", b"error_indication_cnt", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "max_latency", b"max_latency", "time_first", b"time_first", "time_last", b"time_last"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["dl_av_15_samples", b"dl_av_15_samples", "dl_av_30_samples", b"dl_av_30_samples", "dl_av_5_samples", b"dl_av_5_samples", "rnti", b"rnti", "ul_av_15_samples", b"ul_av_15_samples", "ul_av_30_samples", b"ul_av_30_samples", "ul_av_5_samples", b"ul_av_5_samples"]) -> None: ...
 
-Global___CellMetrics: typing_extensions.TypeAlias = CellMetrics
+Global___UeMetrics: typing_extensions.TypeAlias = UeMetrics

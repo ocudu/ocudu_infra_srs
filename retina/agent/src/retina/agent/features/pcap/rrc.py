@@ -10,8 +10,9 @@
 5G NR RRC-layer pcap analyzers.
 """
 
-from typing import Dict, Tuple
+from typing import Tuple
 
+from retina.protocol.base_pb2 import Metrics
 
 from retina.agent.features.pcap.analyzer import PcapAnalyzer
 
@@ -38,8 +39,8 @@ class HandoverAnalyzer(PcapAnalyzer):
     def process(self, _) -> None:
         self._count += 1
 
-    def report(self) -> Dict[str, int]:
-        return {"handover_count": self._count}
+    def report(self) -> Metrics:
+        return Metrics(nof_handovers=self._count)
 
 
 class ReestablishmentAnalyzer(PcapAnalyzer):
@@ -74,8 +75,8 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
             # RRCReestablishmentComplete
             self._completion_count += 1
 
-    def report(self) -> Dict[str, int]:
-        return {
-            "reestablishment_request_count": self._request_count,
-            "reestablishment_complete_count": self._completion_count,
-        }
+    def report(self) -> Metrics:
+        return Metrics(
+            nof_reestablishments_request=self._request_count,
+            nof_reestablishments_complete=self._completion_count,
+        )

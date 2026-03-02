@@ -17,7 +17,7 @@ import math
 import os
 from contextlib import suppress
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from threading import Lock
 from time import sleep
 from typing import Dict, Generator, Optional, Tuple
@@ -25,10 +25,8 @@ from typing import Dict, Generator, Optional, Tuple
 import grpc
 import websocket
 from google.protobuf.empty_pb2 import Empty
-from google.protobuf.text_format import MessageToString
-from google.protobuf.timestamp_pb2 import Timestamp
 from google.protobuf.wrappers_pb2 import Int32Value, UInt32Value
-from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition, UeMetrics
+from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition
 from retina.protocol.ue_pb2 import HandoverInfo, Position, ReestablishmentInfo, RrcMessages, UEAttachedInfo, UEStartInfo
 
 from retina.agent.drivers.amarisoft_ws import AmarisoftBaseDriver, AmarisoftWebSocket
@@ -61,6 +59,14 @@ class _RFSplit72Info:
     du_mac_addr: str = ""
 
 
+@dataclass
+class _AmarisoftMetrics:
+    rnti: int
+    metrics: Metrics
+    time_first: datetime
+    time_last: datetime
+
+
 # pylint: disable=too-many-instance-attributes
 class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     """
@@ -91,7 +97,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         self._subscriber_count: int = 0
         self._amarisoft_lock: Lock = Lock()
         self._metrics_lock: Lock = Lock()
-        self._metrics_dict: Dict[str, Dict[int, UeMetrics]] = {}
+        self._metrics_dict: Dict[str, Dict[int, _AmarisoftMetrics]] = {}
 
     def _get_binary_name(self) -> str:
         return "lteue"
@@ -488,10 +494,11 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                 old_messages = self._parse_messages(ue_info["counters"]["messages"])
                 break
 
-            # Get current pci
-            old_cell_pci = tuple(
-                sorted(self._metrics_dict[context.peer()].values(), key=lambda ue_info: ue_info.time_last.ToDatetime())
-            )[-1].pci
+            # Get current pci (dict key is pci, sort by most recently updated)
+            old_cell_pci = max(
+                self._metrics_dict[context.peer()].items(),
+                key=lambda kv: kv[1].time_last,
+            )[0]
 
             # Wait until HO completed
             timeout_msg = f"Timeout reached. UE {subscriber_id} is still connected to cell pci={old_cell_pci}"
@@ -508,12 +515,10 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     diff_nof_reconfiguration_complete = (
                         new_messages.nof_reconfiguration_complete - old_messages.nof_reconfiguration_complete
                     )
-                    new_cell_pci = tuple(
-                        sorted(
-                            self._metrics_dict[context.peer()].values(),
-                            key=lambda ue_info: ue_info.time_last.ToDatetime(),
-                        )
-                    )[-1].pci
+                    new_cell_pci = max(
+                        self._metrics_dict[context.peer()].items(),
+                        key=lambda kv: kv[1].time_last,
+                    )[0]
 
                     # Validation
                     if new_cell_pci != old_cell_pci:
@@ -541,7 +546,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                         with self._metrics_lock:
                             for cell_info in ue_info["cells"]:
                                 ue_metric = self._metrics_dict[context.peer()][cell_info["pci"]]
-                                ue_metric.nof_handovers += 1
+                                ue_metric.metrics.nof_handovers += 1
                         logging.info(
                             "UE %s successfully HO from cell pci=%s to cell pci=%s (msg id %s)",
                             subscriber_id,
@@ -769,81 +774,69 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             timeout_handler.not_reached()
 
     def _parse_metrics(self, context_peer: str, metric_info: Dict):
-        timestamp = Timestamp()
-        timestamp.FromNanoseconds(int(metric_info["utc"] * 1e9))
+        timestamp = datetime.fromtimestamp(metric_info["utc"], tz=timezone.utc)
         for ue_info in metric_info["ue_list"]:
             for cell_info in ue_info["cells"]:
                 if cell_info["pci"] not in self._metrics_dict[context_peer]:
-                    self._metrics_dict[context_peer][cell_info["pci"]] = UeMetrics(
-                        pci=cell_info["pci"],
+                    self._metrics_dict[context_peer][cell_info["pci"]] = _AmarisoftMetrics(
                         rnti=ue_info.get("rnti", 0),
-                        dl_nof_ok=ue_info["dl_rx_count"],
-                        dl_nof_ko=ue_info["dl_err_count"] + ue_info["dl_retx_count"],
-                        dl_bitrate=ue_info["dl_bitrate"],
-                        dl_bitrate_min=ue_info["dl_bitrate"],
-                        dl_bitrate_max=ue_info["dl_bitrate"],
-                        ul_nof_ok=ue_info["ul_tx_count"],
-                        ul_nof_ko=ue_info["ul_retx_count"],
-                        ul_bitrate=ue_info["ul_bitrate"],
-                        ul_bitrate_min=ue_info["ul_bitrate"],
-                        ul_bitrate_max=ue_info["ul_bitrate"],
-                        nof_reestablishments_request=ue_info["counters"]["messages"].get("nr_rrc_reconfiguration", 0),
-                        nof_reestablishments_complete=ue_info["counters"]["messages"].get(
-                            "nr_rrc_reconfiguration_complete", 0
+                        metrics=Metrics(
+                            nof_ko_dl=ue_info["dl_err_count"] + ue_info["dl_retx_count"],
+                            dl_bitrate=ue_info["dl_bitrate"],
+                            nof_ko_ul=ue_info["ul_retx_count"],
+                            ul_bitrate=ue_info["ul_bitrate"],
+                            nof_reestablishments_request=ue_info["counters"]["messages"].get(
+                                "nr_rrc_reconfiguration", 0
+                            ),
+                            nof_reestablishments_complete=ue_info["counters"]["messages"].get(
+                                "nr_rrc_reconfiguration_complete", 0
+                            ),
                         ),
-                        time_first=Timestamp(seconds=timestamp.seconds, nanos=timestamp.nanos),
-                        time_last=Timestamp(seconds=timestamp.seconds, nanos=timestamp.nanos),
+                        time_first=timestamp,
+                        time_last=timestamp,
                     )
                 else:
                     ue_metric = self._metrics_dict[context_peer][cell_info["pci"]]
 
-                    ue_metric.dl_nof_ok += ue_info["dl_rx_count"]
-                    ue_metric.dl_nof_ko += ue_info["dl_err_count"] + ue_info["dl_retx_count"]
+                    ue_metric.metrics.nof_ko_dl += ue_info["dl_err_count"] + ue_info["dl_retx_count"]
+                    ue_metric.metrics.nof_ko_ul += ue_info["ul_retx_count"]
 
-                    ue_metric.ul_nof_ok += ue_info["ul_tx_count"]
-                    ue_metric.ul_nof_ko += ue_info["ul_retx_count"]
-
-                    ue_metric.dl_bitrate_min = min(ue_metric.dl_bitrate_min, ue_info["dl_bitrate"])
-                    ue_metric.dl_bitrate_max = max(ue_metric.dl_bitrate_max, ue_info["dl_bitrate"])
-
-                    ue_metric.ul_bitrate_min = min(ue_metric.ul_bitrate_min, ue_info["ul_bitrate"])
-                    ue_metric.ul_bitrate_max = max(ue_metric.ul_bitrate_max, ue_info["ul_bitrate"])
-
-                    t_old = (ue_metric.time_last.ToDatetime() - ue_metric.time_first.ToDatetime()).total_seconds()
-                    t_new = (timestamp.ToDatetime() - ue_metric.time_last.ToDatetime()).total_seconds()
-                    t_beginning = (timestamp.ToDatetime() - ue_metric.time_first.ToDatetime()).total_seconds()
+                    t_old = (ue_metric.time_last - ue_metric.time_first).total_seconds()
+                    t_new = (timestamp - ue_metric.time_last).total_seconds()
+                    t_beginning = (timestamp - ue_metric.time_first).total_seconds()
 
                     if t_beginning:
-                        ue_metric.dl_bitrate = (
-                            (ue_metric.dl_bitrate * t_old) + (ue_info["dl_bitrate"] * t_new)
+                        ue_metric.metrics.dl_bitrate = (
+                            (ue_metric.metrics.dl_bitrate * t_old) + (ue_info["dl_bitrate"] * t_new)
                         ) / t_beginning
-                        ue_metric.ul_bitrate = (
-                            (ue_metric.ul_bitrate * t_old) + (ue_info["ul_bitrate"] * t_new)
+                        ue_metric.metrics.ul_bitrate = (
+                            (ue_metric.metrics.ul_bitrate * t_old) + (ue_info["ul_bitrate"] * t_new)
                         ) / t_beginning
 
-                    ue_metric.time_last.seconds = timestamp.seconds
-                    ue_metric.time_last.nanos = timestamp.nanos
+                    ue_metric.time_last = timestamp
 
-                    ue_metric.nof_reestablishments_request = ue_info["counters"]["messages"].get(
+                    ue_metric.metrics.nof_reestablishments_request = ue_info["counters"]["messages"].get(
                         "nr_rrc_reconfiguration", 0
                     )
-                    ue_metric.nof_reestablishments_complete = ue_info["counters"]["messages"].get(
+                    ue_metric.metrics.nof_reestablishments_complete = ue_info["counters"]["messages"].get(
                         "nr_rrc_reconfiguration_complete", 0
                     )
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         metrics = super().GetMetrics(request, context)
-        if context.peer() in self._metrics_dict:
-            metrics.ue_array.extend(self._metrics_dict[context.peer()].values())
-        else:
-            metrics.ue_array.extend(
-                (ue_metric for ue_dict in self._metrics_dict.values() for ue_metric in ue_dict.values())
-            )
-        if len(metrics.ue_array) == 1:
-            metrics.total.CopyFrom(metrics.ue_array[0])
-            metrics.total.pci = 0
-            metrics.total.rnti = 0
-        logging.info("Metrics: %s", MessageToString(metrics, as_one_line=True))
+        ue_metrics_iter = (
+            self._metrics_dict[context.peer()].values()
+            if context.peer() in self._metrics_dict
+            else (ue_metric for ue_dict in self._metrics_dict.values() for ue_metric in ue_dict.values())
+        )
+        for ue_metric in ue_metrics_iter:
+            metrics.dl_bitrate += ue_metric.metrics.dl_bitrate
+            metrics.ul_bitrate += ue_metric.metrics.ul_bitrate
+            metrics.nof_ko_dl += ue_metric.metrics.nof_ko_dl
+            metrics.nof_ko_ul += ue_metric.metrics.nof_ko_ul
+            metrics.nof_handovers += ue_metric.metrics.nof_handovers
+            metrics.nof_reestablishments_request = ue_metric.metrics.nof_reestablishments_request
+            metrics.nof_reestablishments_complete = ue_metric.metrics.nof_reestablishments_complete
         return metrics
 
 

@@ -12,7 +12,6 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
-import "google/protobuf/timestamp.proto";
 
 // Base service provides health checking, version information, and common functionality
 service Base {
@@ -104,7 +103,7 @@ message PLMN {
 }
 
 message StartInfo {
-  bool            dryrun        = 1;    // Bool default value is False
+  bool            dryrun        = 1; // Bool default value is False
   uint32          timeout       = 2; // uint default value is 0
   repeated string pre_commands  = 3;
   repeated string post_commands = 4;
@@ -140,55 +139,36 @@ message StopResponse {
 };
 
 message Metrics {
-  repeated UeMetrics ue_array = 1;
-  SystemMetrics      system   = 2;
-  UeMetrics          total    = 3;
-  CellMetrics        cell     = 4;
-};
+  double dl_bitrate = 1;
+  double ul_bitrate = 2;
+  uint64 nof_ko_dl  = 3;
+  uint64 nof_ko_ul  = 4;
 
-message BitratePeakAverage {
-  double av_5_samples  = 1;
-  double av_15_samples = 2;
-  double av_30_samples = 3;
+  uint32 nof_reestablishments_request  = 5;
+  uint32 nof_reestablishments_complete = 6;
+  uint32 nof_handovers                 = 7;
+
+  uint32 nof_pucch_f0f1_invalid_harqs   = 8;
+  uint32 nof_pucch_f2f3f4_invalid_harqs = 9;
+  uint32 nof_pucch_f2f3f4_invalid_csis  = 10;
+
+  uint32 nof_error_indications = 11;
+  uint64 max_late_dl_harqs     = 12;
+  uint64 max_late_ul_harqs     = 13;
+
+  uint32 nof_lates   = 14;
+  uint32 nof_under   = 15;
+  uint32 nof_seq_err = 16;
+
+  repeated UeMetrics ue_array = 17;
 };
 
 message UeMetrics {
-  uint32                    pci                            = 1;
-  uint32                    rnti                           = 2;
-  uint64                    dl_nof_ok                      = 3;
-  uint64                    dl_nof_ko                      = 4;
-  double                    dl_bitrate                     = 5;
-  double                    dl_bitrate_min                 = 6;
-  double                    dl_bitrate_max                 = 7;
-  uint64                    ul_nof_ok                      = 8;
-  uint64                    ul_nof_ko                      = 9;
-  double                    ul_bitrate                     = 10;
-  double                    ul_bitrate_min                 = 11;
-  double                    ul_bitrate_max                 = 12;
-  uint32                    nof_reestablishments_request   = 13;
-  uint32                    nof_reestablishments_complete  = 14;
-  uint32                    nof_handovers                  = 15;
-  uint32                    nof_pucch_f0f1_invalid_harqs   = 16;
-  uint32                    nof_pucch_f2f3f4_invalid_harqs = 17;
-  uint32                    nof_pucch_f2f3f4_invalid_csis  = 18;
-  BitratePeakAverage        dl_bitrate_peak_av             = 19;
-  BitratePeakAverage        ul_bitrate_peak_av             = 20;
-  google.protobuf.Timestamp time_first                     = 21;
-  google.protobuf.Timestamp time_last                      = 22;
-};
-
-message SystemMetrics {
-  uint32 nof_lates   = 1;
-  uint32 nof_under   = 2;
-  uint32 nof_seq_err = 3;
-};
-
-message CellMetrics {
-  uint32                    error_indication_cnt = 1;
-  uint32                    av_latency           = 2;
-  uint32                    max_latency          = 3;
-  uint64                    max_late_dl_harqs    = 4;
-  uint64                    max_late_ul_harqs    = 5;
-  google.protobuf.Timestamp time_first           = 6;
-  google.protobuf.Timestamp time_last            = 7;
+  uint32 rnti             = 1;
+  double dl_av_5_samples  = 2;
+  double dl_av_15_samples = 3;
+  double dl_av_30_samples = 4;
+  double ul_av_5_samples  = 5;
+  double ul_av_15_samples = 6;
+  double ul_av_30_samples = 7;
 };

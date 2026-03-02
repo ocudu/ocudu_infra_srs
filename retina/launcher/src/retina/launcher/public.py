@@ -259,70 +259,46 @@ for n in range(1, 64 + 1):
 def _register_du_criteria(
     criteria: Criteria, du_or_gnb_array: Sequence[RanStub]
 ):  # pylint: disable=redefined-outer-name
-    criteria.register_available_criteria(
-        "dl_bitrate",
-        "DL bitrate",
-        lambda: mean(gnb_stub.GetMetrics(Empty()).total.dl_bitrate for gnb_stub in du_or_gnb_array),
-        operator.gt,
-    )
-    criteria.register_available_criteria(
-        "ul_bitrate",
-        "UL bitrate",
-        lambda: mean(gnb_stub.GetMetrics(Empty()).total.ul_bitrate for gnb_stub in du_or_gnb_array),
-        operator.gt,
-    )
-    criteria.register_available_criteria(
-        "nof_ko_dl",
-        "DL KOs",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).total.dl_nof_ko for gnb_stub in du_or_gnb_array),
-        operator.le,
-    )
-    criteria.register_available_criteria(
-        "nof_ko_ul",
-        "UL KOs",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).total.ul_nof_ko for gnb_stub in du_or_gnb_array),
-        operator.le,
-    )
-    criteria.register_available_criteria(
-        "max_late_dl_harqs",
-        "Late DL HARQs",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).cell.max_late_dl_harqs for gnb_stub in du_or_gnb_array),
-        operator.le,
-    )
-    criteria.register_available_criteria(
-        "max_late_ul_harqs",
-        "Late UL HARQs",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).cell.max_late_ul_harqs for gnb_stub in du_or_gnb_array),
-        operator.le,
-    )
-    criteria.register_available_criteria(
-        "nof_error_indications",
-        "Error Indications",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).cell.error_indication_cnt for gnb_stub in du_or_gnb_array),
-        operator.le,
-    )
+
+    for field, name, op, agg in (
+        ("dl_bitrate", "DL bitrate", operator.gt, mean),
+        ("ul_bitrate", "UL bitrate", operator.gt, mean),
+        ("nof_ko_dl", "DL KOs", operator.le, sum),
+        ("nof_ko_ul", "UL KOs", operator.le, sum),
+        ("max_late_dl_harqs", "Late DL HARQs", operator.le, sum),
+        ("max_late_ul_harqs", "Late UL HARQs", operator.le, sum),
+        ("nof_error_indications", "Error indications", operator.le, sum),
+        ("nof_pucch_f0f1_invalid_harqs", "PUCCH f0/f1 HARQs", operator.le, sum),
+    ):
+        criteria.register_available_criteria(
+            field,
+            name,
+            lambda f=field, a=agg: a(getattr(s.GetMetrics(Empty()), f) for s in du_or_gnb_array),
+            op,
+        )
+
     criteria.register_available_criteria(
         "nof_reestablishments_eq",
         "Reestablishments",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_reestablishments_complete for gnb_stub in du_or_gnb_array),
+        lambda: sum(gnb_stub.GetMetrics(Empty()).nof_reestablishments_complete for gnb_stub in du_or_gnb_array),
         operator.eq,
     )
     criteria.register_available_criteria(
         "nof_reestablishments_ge",
         "Reestablishments",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_reestablishments_complete for gnb_stub in du_or_gnb_array),
+        lambda: sum(gnb_stub.GetMetrics(Empty()).nof_reestablishments_complete for gnb_stub in du_or_gnb_array),
         operator.ge,
     )
     criteria.register_available_criteria(
         "nof_handovers_eq",
         "Handovers",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_handovers for gnb_stub in du_or_gnb_array),
+        lambda: sum(gnb_stub.GetMetrics(Empty()).nof_handovers for gnb_stub in du_or_gnb_array),
         operator.eq,
     )
     criteria.register_available_criteria(
         "nof_handovers_ge",
         "Handovers",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).total.nof_handovers for gnb_stub in du_or_gnb_array),
+        lambda: sum(gnb_stub.GetMetrics(Empty()).nof_handovers for gnb_stub in du_or_gnb_array),
         operator.ge,
     )
     criteria.register_available_criteria(
@@ -428,18 +404,12 @@ def _log_metrics(
 ) -> None:
     try:
         metrics: Metrics = stub.GetMetrics(Empty())
-        for ue_info in metrics.ue_array:
-            nof_kos = ue_info.dl_nof_ko + ue_info.ul_nof_ko
-            if nof_kos:
-                logging.warning(
-                    "%s: [UE pci: %s rnti: %s] has %s KOs / retrxs", name, ue_info.pci, ue_info.rnti, nof_kos
-                )
-        if metrics.system.nof_lates:
-            logging.warning("%s has %s UHD Lates", name, metrics.system.nof_lates)
-        if metrics.system.nof_under:
-            logging.warning("%s has %s UHD Underflows", name, metrics.system.nof_under)
-        if metrics.system.nof_seq_err:
-            logging.warning("%s has %s UHD Sequence errors", name, metrics.system.nof_seq_err)
+        if metrics.nof_lates:
+            logging.warning("%s has %s UHD Lates", name, metrics.nof_lates)
+        if metrics.nof_under:
+            logging.warning("%s has %s UHD Underflows", name, metrics.nof_under)
+        if metrics.nof_seq_err:
+            logging.warning("%s has %s UHD Sequence errors", name, metrics.nof_seq_err)
     except grpc.RpcError:
         logging.error("%s metrics couldn't be recovered.", name)
 
