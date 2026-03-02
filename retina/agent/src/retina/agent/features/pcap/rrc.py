@@ -10,7 +10,8 @@
 5G NR RRC-layer pcap analyzers.
 """
 
-from typing import Dict
+from typing import Dict, Tuple
+
 
 from retina.agent.features.pcap.analyzer import PcapAnalyzer
 
@@ -25,6 +26,10 @@ class HandoverAnalyzer(PcapAnalyzer):
 
     def __init__(self) -> None:
         self._count = 0
+
+    @property
+    def tshark_params(self) -> Tuple[str, ...]:
+        return "--enable-heuristic", "rlc_nr_udp"
 
     @property
     def display_filter(self) -> str:
@@ -51,6 +56,10 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
     def __init__(self) -> None:
         self._request_count = 0
         self._completion_count = 0
+
+    @property
+    def tshark_params(self) -> Tuple[str, ...]:
+        return "--enable-heuristic", "rlc_nr_udp"
 
     @property
     def display_filter(self) -> str:

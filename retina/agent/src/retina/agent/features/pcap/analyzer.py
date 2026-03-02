@@ -17,7 +17,7 @@ import logging
 import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List, Sequence, Tuple
 
 import pyshark
 
@@ -33,6 +33,13 @@ class PcapAnalyzer(ABC):
 
     Subclass this, implement `process` and `report`, and optionally override `display_filter`.
     """
+
+    @property
+    def tshark_params(self) -> Tuple[str, ...]:
+        """
+        custom parameters for tshark
+        """
+        return ()
 
     @property
     def display_filter(self) -> str:
@@ -51,7 +58,7 @@ class PcapAnalyzer(ABC):
         """Called once when the capture ends. Return the analysis result."""
 
 
-def run_analyzers(pcap_file: str, analyzers: List[PcapAnalyzer], dissector: str = "rlc") -> Dict[str, Any]:
+def run_analyzers(pcap_file: str, analyzers: Sequence[PcapAnalyzer]) -> Dict[str, Any]:
     """
     All analyzer display filters are OR-combined into a single tshark filter so
     only one tshark process is spawned. Calls `report()` on every analyzer when
@@ -68,28 +75,31 @@ def run_analyzers(pcap_file: str, analyzers: List[PcapAnalyzer], dissector: str 
     if Path(pcap_file).exists():
         logging.info("[Pcap Parsing] %s", pcap_file)
 
-        analyzers_by_display_filter: Dict[str, List[PcapAnalyzer]] = {}
+        analyzers_grouped: Dict[Tuple[str, ...], Dict[str, List[PcapAnalyzer]]] = {}
         for a in analyzers:
-            if a.display_filter not in analyzers_by_display_filter:
-                analyzers_by_display_filter[a.display_filter] = []
-            analyzers_by_display_filter[a.display_filter].append(a)
+            if a.tshark_params not in analyzers_grouped:
+                analyzers_grouped[a.tshark_params] = {}
+            if a.display_filter not in analyzers_grouped[a.tshark_params]:
+                analyzers_grouped[a.tshark_params][a.display_filter] = []
+            analyzers_grouped[a.tshark_params][a.display_filter].append(a)
 
-        for display_filter, analyzer_with_same_filter_array in analyzers_by_display_filter.items():
-            try:
-                with pyshark.FileCapture(
-                    pcap_file,
-                    keep_packets=False,
-                    display_filter=display_filter,
-                    custom_parameters=_DISSECTOR_PARAMS[dissector],
-                ) as capture:
-                    for packet in capture:
-                        for analyzer in analyzer_with_same_filter_array:
-                            try:
-                                analyzer.process(packet)
-                            except Exception:  # pylint: disable=broad-except
-                                logging.exception("Error in %s while processing packet", type(analyzer).__name__)
-            except Exception as err:  # pylint: disable=broad-except
-                logging.exception(err)
+        for tshark_params, analyzer_by_filter in analyzers_grouped.items():
+            for display_filter, analyzer_with_same_tshark_call in analyzer_by_filter.items():
+                try:
+                    with pyshark.FileCapture(
+                        pcap_file,
+                        keep_packets=False,
+                        display_filter=display_filter,
+                        custom_parameters=list(tshark_params),
+                    ) as capture:
+                        for packet in capture:
+                            for analyzer in analyzer_with_same_tshark_call:
+                                try:
+                                    analyzer.process(packet)
+                                except Exception:  # pylint: disable=broad-except
+                                    logging.exception("Error in %s while processing packet", type(analyzer).__name__)
+                except Exception as err:  # pylint: disable=broad-except
+                    logging.exception(err)
 
     else:
         logging.warning("[Pcap Parsing] file not found: %s", pcap_file)
@@ -149,7 +159,7 @@ def _main():
     parser = argparse.ArgumentParser(
         description="Run pcap analyzers on a capture file and print results.",
         epilog="Example: python -m retina.agent.features.pcap.analyzer "
-        "rlc.pcap rrc.HandoverAnalyzer rrc.ReestablishmentAnalyzer",
+        "rlc.pcap rrc.HandoverAnalyzer rrc.ReestablishmentAnalyzer ",
     )
     parser.add_argument("pcap_file", help="Path to the pcap/pcapng file")
     parser.add_argument(
@@ -157,12 +167,6 @@ def _main():
         nargs="+",
         metavar="module.ClassName",
         help='Analyzer specs relative to this package, e.g. "rrc.HandoverAnalyzer"',
-    )
-    parser.add_argument(
-        "--dissector",
-        choices=list(_DISSECTOR_PARAMS),
-        default="rlc",
-        help="Pcap format: 'mac' for MAC-NR, 'rlc' for RLC-NR (default: rlc)",
     )
     args = parser.parse_args()
 
@@ -174,7 +178,7 @@ def _main():
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)
 
-    results = run_analyzers(args.pcap_file, instances, dissector=args.dissector)
+    results = run_analyzers(args.pcap_file, instances)
     logging.info(json.dumps(results, indent=2))
 
 
