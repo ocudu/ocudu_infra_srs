@@ -14,7 +14,7 @@ build docs:
       changes: &doc_changes
         paths:
           - docs/**/*
-          - "**/*.md"
+          - "**/*.{md,mdx}"
       variables:
         BASE_URL: /-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/
   script:

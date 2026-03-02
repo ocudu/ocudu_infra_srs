@@ -17,7 +17,6 @@ We use retina in all e2e tests to: reserve and orchestrate the testbed, start an
 | OCUDU configs | Configuration files for OCUDU binaries. We'll use them (one or multiple) in the tests. |
 | Test Template | It defines a test skeleton that contains the steps the test will do. It's generic (use a generic ue, cu, etc). Multiple test cases (each one with a different setting and configuration) will use the same template. |
 | Test Step | Each one of the steps a test template can use. Those steps are reusable between test templates. |
-| Simulator Test | In Amarisoft and Viavi simulators, the test logic is defined in their own file format. |
 | Test Case | The final test case that runs by combining a test template (and a simulator test), ocudu configurations and testbed. |
 | Test Suite | A collection of test cases. In our structure: each file is a test suite and it's mapped to one CI job. Folder structure maps CI stages and pipelines. |
 
@@ -51,6 +50,7 @@ ocudu_infra_srs/e2e/tests/
 │   │   │   └── ...
 │   ├── performance/
 │   └── ...
+|── # Test Templates
 |── amarisoft_simulator.py
 |── viavi_simulator.py
 |── iperf.py
@@ -76,7 +76,7 @@ Located at `ocudu_infra_srs/e2e/tests/suites`:
 pipeline_name/stage_name/job_name.yml
 
 ```yml
-example:
+example: # Test Case
   # Selecting the test template
   template: amarisoft_simulator.py 
   # Mixing configs for each item
