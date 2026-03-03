@@ -1,6 +1,9 @@
-/* ltemme configuration file
- * Copyright (C) 2015-2021 Amarisoft
- */
+{#
+SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+SPDX-FileCopyrightText: Copyright (C) 2015-2021 Amarisoft
+SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+#}
+
 {
 
   {% if log_level == "debug" %}

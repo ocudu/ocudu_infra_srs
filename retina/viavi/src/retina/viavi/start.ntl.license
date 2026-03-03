@@ -1,11 +1,2 @@
-{#
 SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 SPDX-License-Identifier: BSD-3-Clause-Open-MPI
-#}
-
-metrics:
-  autostart_stdout_metrics: true
-  enable_json: true
-remote_control:
-  bind_addr: 0.0.0.0
-  enabled: true
