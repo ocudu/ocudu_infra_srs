@@ -34,7 +34,6 @@ stages:
     CONTEXT: retina/images/amarisoft5gc_remote
     VERSION: ${RETINA_VERSION}
     BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
-    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "10G"
 
 only-build:
   stage: test
