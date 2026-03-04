@@ -1,2 +1,5 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
 include src/retina/orchestrator/request_schema.json
 include src/retina/orchestrator/cluster_schema.json
