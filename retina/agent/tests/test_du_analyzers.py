@@ -22,6 +22,8 @@ _T1 = "2026-01-01T00:00:01.000"
 _T2 = "2026-01-01T00:00:02.000"
 _T3 = "2026-01-01T00:00:03.000"
 _T4 = "2026-01-01T00:00:04.000"
+_T5 = "2026-01-01T00:00:05.000"
+_T6 = "2026-01-01T00:00:06.000"
 
 
 # ── Record factory helpers ────────────────────────────────────────────────────
@@ -281,6 +283,37 @@ class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
             make_record(_T1, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=500.0)])])
         )
         self.assertAlmostEqual(self.a.report().dl_bitrate, 500.0)
+
+    def test_bitrate_empty_at_start_and_end(self):
+        # Empty metrics - this one is ignored
+        self.a.process(make_record(_T0, [make_cell(ue_list=[])]))
+        self.assertAlmostEqual(self.a.report().dl_bitrate, 0)
+
+        # Empty metrics - This will be the start time to calculate the bitrate (because the next report is not empty)
+        self.a.process(make_record(_T1, [make_cell(ue_list=[])]))
+        self.assertAlmostEqual(self.a.report().dl_bitrate, 0)
+
+        # First record with values - Start time to calculate the bitrate is previous report (T1)
+        self.a.process(
+            make_record(_T3, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=50.0)])])
+        )
+        self.assertAlmostEqual(self.a.report().dl_bitrate, 50.0)
+
+        # Second record - ((T3-T1)*50 + (T4-T3)*500) / (T4-T1) = 600/3 = 200
+        self.a.process(
+            make_record(_T4, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=500.0)])])
+        )
+        self.assertAlmostEqual(self.a.report().dl_bitrate, 200.0)
+
+        # Third record - ((T3-T1)*50 + (T4-T3) * 500) / (T5-T1) = 1200/4 = 300
+        self.a.process(
+            make_record(_T5, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=600.0)])])
+        )
+        self.assertAlmostEqual(self.a.report().dl_bitrate, 300.0)
+
+        # Empty record at the end - NOT ignored - ((T3-T1)*50 + (T4-T3) * 500) / (T6-T1) = 1200/5 = 240
+        self.a.process(make_record(_T6, [make_cell(ue_list=[])]))
+        self.assertAlmostEqual(self.a.report().dl_bitrate, 240.0)
 
     def test_bitrate_zero_when_only_cell_metrics_no_ue_list(self):
         self.a.process(make_record(_T0, [make_cell(cell_metrics=make_cell_metrics())]))
