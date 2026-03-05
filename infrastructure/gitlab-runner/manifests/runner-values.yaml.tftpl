@@ -1,0 +1,286 @@
+#
+# Copyright 2021-2026 Software Radio Systems Limited
+#
+# By using this file, you agree to the terms and conditions set
+# forth in the LICENSE file which can be found at the top level of
+# the distribution.
+#
+# This template is based on the GitLab Runner Helm chart values.yaml
+# Reference: https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml
+#
+
+image:
+  registry: ${cluster_config.image.registry}
+  image: ${cluster_config.image.image}
+  tag: ${cluster_config.image.tag}
+
+imagePullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+gitlabUrl: ${cluster_config.gitlab_url}
+
+runnerToken: "${runner_token}"
+
+unregisterRunners: ${runner.unregister_runners}
+
+terminationGracePeriodSeconds: ${runner.termination_grace_period_seconds}
+
+concurrent: ${runner.concurrent}
+
+checkInterval: ${runner.check_interval}
+
+sessionServer:
+  enabled: ${runner.session_server_enabled}
+%{ if runner.session_server_timeout != null ~}
+  timeout: ${runner.session_server_timeout}
+%{ endif ~}
+%{ if runner.session_server_internal_port != null ~}
+  internalPort: ${runner.session_server_internal_port}
+%{ endif ~}
+%{ if runner.session_server_external_port != null ~}
+  externalPort: ${runner.session_server_external_port}
+%{ endif ~}
+%{ if runner.session_server_public_ip != null ~}
+  publicIP: "${runner.session_server_public_ip}"
+%{ endif ~}
+%{ if length(runner.session_server_load_balancer_source_ranges) > 0 ~}
+  loadBalancerSourceRanges:
+%{ for range in runner.session_server_load_balancer_source_ranges ~}
+    - "${range}"
+%{ endfor ~}
+%{ endif ~}
+
+rbac:
+  create: true
+  rules: ${jsonencode(runner.rbac.rules)}
+  clusterWideAccess: ${runner.rbac.cluster_wide_access}
+  podSecurityPolicy:
+    enabled: false
+    resourceNames:
+    - gitlab-runner
+%{ if runner.rbac.service_account_annotations != null ~}
+  serviceAccountAnnotations:
+%{ for key, value in runner.rbac.service_account_annotations ~}
+    ${key}: "${value}"
+%{ endfor ~}
+%{ endif ~}
+
+metrics:
+  enabled: ${runner.metrics_enabled}
+  portName: metrics
+  port: 9252
+  serviceMonitor:
+    enabled: false
+
+service:
+  enabled: false
+  type: ClusterIP
+
+runners:
+  config: |
+    [[runners]]
+      output_limit = ${runner.output_limit}
+      environment = [${join(", ", [for e in runner.environment : "\"${e}\""])}]
+      [runners.feature_flags]
+        FF_TIMESTAMPS = true
+        FF_PRINT_POD_EVENTS = true
+        FF_SCRIPT_SECTIONS = true
+      [runners.cache]
+        Type = "${cluster_config.cache.type}"
+        Path = "${cluster_config.cache.path}"
+        Shared = true
+        [runners.cache.${cluster_config.cache.type}]
+%{ if cluster_config.cache.type == "s3" ~}
+          ServerAddress = "${cluster_config.cache.s3.server_address}"
+          AccessKey = "${cluster_config.cache.s3.access_key}"
+          SecretKey = "${cluster_config.cache.s3.secret_key}"
+          BucketName = "${cluster_config.cache.s3.bucket_name}"
+          Insecure = ${cluster_config.cache.s3.insecure}
+%{ endif ~}
+      [runners.kubernetes]
+        cache_dir = "/cache"
+        namespace = "{{ .Release.Namespace }}"
+        privileged = true
+        poll_timeout = ${runner.poll_timeout}
+        helper_image_flavor = "ubuntu"
+        dns_policy = "default"
+        image = "${runner.build_image}"
+%{ if runner.pull_policy != null ~}
+        pull_policy = "${runner.pull_policy}"
+%{ endif ~}
+%{ if runner.service_account != null ~}
+        service_account = "${runner.service_account}"
+%{ endif ~}
+%{ if runner.service_account_overwrite_allowed != null ~}
+        service_account_overwrite_allowed = ${runner.service_account_overwrite_allowed}
+%{ endif ~}
+%{ if runner.priority_class_name != null ~}
+        priority_class_name = "${runner.priority_class_name}"
+%{ endif ~}
+%{ if runner.helper_image != null ~}
+        helper_image = "${runner.helper_image}"
+%{ endif ~}
+%{ if runner.cpu_request != null ~}
+            cpu_request = "${runner.cpu_request}"
+%{ endif ~}
+%{ if runner.cpu_limit != null ~}
+            cpu_limit = "${runner.cpu_limit}"
+%{ endif ~}
+            cpu_request_overwrite_max_allowed = "${runner.cpu_request_overwrite_max_allowed}"
+            cpu_limit_overwrite_max_allowed = "${runner.cpu_limit_overwrite_max_allowed}"
+%{ if runner.memory_request != null ~}
+            memory_request = "${runner.memory_request}"
+%{ endif ~}
+%{ if runner.memory_limit != null ~}
+            memory_limit = "${runner.memory_limit}"
+%{ endif ~}
+            memory_request_overwrite_max_allowed = "${runner.memory_request_overwrite_max_allowed}"
+            memory_limit_overwrite_max_allowed = "${runner.memory_limit_overwrite_max_allowed}"
+%{ if runner.ephemeral_storage_request != null ~}
+            ephemeral_storage_request = "${runner.ephemeral_storage_request}"
+%{ endif ~}
+%{ if runner.ephemeral_storage_limit != null ~}
+            ephemeral_storage_limit = "${runner.ephemeral_storage_limit}"
+%{ endif ~}
+            ephemeral_storage_request_overwrite_max_allowed = "${runner.ephemeral_storage_request_overwrite_max_allowed}"
+            ephemeral_storage_limit_overwrite_max_allowed = "${runner.ephemeral_storage_limit_overwrite_max_allowed}"
+            service_cpu_limit = "${runner.service_cpu_limit}"
+            service_memory_limit = "${runner.service_memory_limit}"
+            helper_cpu_limit = "${runner.helper_cpu_limit}"
+            helper_memory_limit = "${runner.helper_memory_limit}"
+%{ if runner.pod_security_context != null ~}
+      [runners.kubernetes.pod_security_context]
+%{ if runner.pod_security_context.run_as_non_root != null ~}
+        run_as_non_root = ${runner.pod_security_context.run_as_non_root}
+%{ endif ~}
+%{ if runner.pod_security_context.run_as_user != null ~}
+        run_as_user = ${runner.pod_security_context.run_as_user}
+%{ endif ~}
+%{ if runner.pod_security_context.run_as_group != null ~}
+        run_as_group = ${runner.pod_security_context.run_as_group}
+%{ endif ~}
+%{ if runner.pod_security_context.fs_group != null ~}
+        fs_group = ${runner.pod_security_context.fs_group}
+%{ endif ~}
+%{ if length(runner.pod_security_context.supplemental_groups) > 0 ~}
+        supplemental_groups = [${join(", ", runner.pod_security_context.supplemental_groups)}]
+%{ endif ~}
+%{ endif ~}
+%{ for volume in runner.volumes ~}
+%{ if volume.type == "empty_dir" ~}
+      [[runners.kubernetes.volumes.empty_dir]]
+        name = "${volume.name}"
+        mount_path = "${volume.mount_path}"
+%{ if volume.medium != null ~}
+        medium = "${volume.medium}"
+%{ endif ~}
+%{ endif ~}
+%{ if volume.type == "pvc" ~}
+      [[runners.kubernetes.volumes.pvc]]
+        name = "${volume.name}"
+        mount_path = "${volume.mount_path}"
+%{ endif ~}
+%{ if volume.type == "host_path" ~}
+      [[runners.kubernetes.volumes.host_path]]
+        name = "${volume.name}"
+        mount_path = "${volume.mount_path}"
+        host_path = "${volume.host_path}"
+%{ endif ~}
+%{ if volume.type == "secret" ~}
+      [[runners.kubernetes.volumes.secret]]
+        name = "${volume.name}"
+        mount_path = "${volume.mount_path}"
+        read_only = ${volume.read_only}
+%{ endif ~}
+%{ if volume.type == "config_map" ~}
+      [[runners.kubernetes.volumes.config_map]]
+        name = "${volume.name}"
+        mount_path = "${volume.mount_path}"
+%{ endif ~}
+%{ endfor ~}
+%{ if runner.host_aliases != null ~}
+      [[runners.kubernetes.host_aliases]]
+        ip = "${runner.host_aliases.ip}"
+        hostnames = [${join(", ", [for h in runner.host_aliases.hostnames : "\"${h}\""])}]
+%{ else ~}
+%{ if cluster_config.host_aliases != null ~}
+      [[runners.kubernetes.host_aliases]]
+        ip = "${cluster_config.host_aliases.ip}"
+        hostnames = [${join(", ", [for h in cluster_config.host_aliases.hostnames : "\"${h}\""])}]
+%{ endif ~}
+%{ endif ~}
+      [runners.kubernetes.node_selector]
+%{ if runner.node_selector != null ~}
+%{ for key, value in runner.node_selector ~}
+        "${key}" = "${value}"
+%{ endfor ~}
+%{ else ~}
+        "kubernetes.io/arch" = "${runner.arch}"
+        "kubernetes.io/os" = "linux"
+%{ endif ~}
+%{ if length(runner.node_tolerations) > 0 ~}
+      [runners.kubernetes.node_tolerations]
+%{ for key, value in runner.node_tolerations ~}
+        "${key}" = "${value}"
+%{ endfor ~}
+%{ endif ~}
+%{ if runner.clone_url != null ~}
+      clone_url = "${runner.clone_url}"
+%{ endif ~}
+
+  tags: "${runner.tags}"
+  name: ""
+  runUntagged: ${runner.run_untagged}
+  privileged: false
+
+cache: {}
+
+builds: {}
+
+services: {}
+
+helpers: {}
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  privileged: false
+  capabilities:
+    drop: ["ALL"]
+
+podSecurityContext:
+  runAsUser: 999
+  fsGroup: 999
+
+resources: {}
+
+affinity: {}
+
+nodeSelector: {}
+
+tolerations:
+  - key: "srs.io/mgmt-glr-runner"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+hostAliases: []
+
+podAnnotations: {}
+
+podLabels: {}
+
+%{ if runner.priority_class_name != null ~}
+priorityClassName: "${runner.priority_class_name}"
+%{ else ~}
+priorityClassName: ""
+%{ endif ~}
+
+secrets: []
+
+configMaps: {}
+
+volumeMounts: []
+
+volumes: []
