@@ -19,7 +19,7 @@ spec:
     retina_pypi_index:
       type: string
       description: "retina pypi repository url"
-      default: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+      default: ${RETINA_PYPI_INDEX}
     retina_registry_uri:
       type: string
       description: "retina container registry url"

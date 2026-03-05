@@ -19,7 +19,8 @@ The input `runner_tags` expects an array of tags that will be applied to the Ter
 | --- | --- | --- |
 | `infra_srs_path` | `$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME` | `infra_srs` repo path (e.g. `ocudu/ocudu_infra_srs`) |
 | `infra_srs_ref` | `$CI_COMMIT_REF_NAME` | Branch or tag to source the module from |
-| `retina_pypi_index` | `${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi` | Retina pypi index |
+| `retina_pypi_index` | `${RETINA_PYPI_INDEX}` | Retina pypi index |
+| `retina_registry_uri` | `${RETINA_REGISTRY_URI}` | Retina container registry URI like `registry.gitlab.com/ocudu/ocudu_infra_srs/retina` |
 | `kubeconfig_var` | required | Name of the **file-type** CI/CD variable holding the kubeconfig |
 | `runner_tags` | `[saas-linux-small-amd64]` | Runner tags with cluster access |
 | `state_name` | `retina-cluster-setup` | Terraform state name — unique per deployment |
@@ -38,6 +39,7 @@ iac:
           infra_srs_path: *infra_srs_path
           infra_srs_ref: *infra_srs_ref
           retina_pypi_index: https://gitlab.com/api/v4/projects/78028160/packages/pypi/simple
+          retina_registry_uri: registry.gitlab.com/ocudu/ocudu_infra_srs/retina  # Only required for retina cronjobs
           kubeconfig_var: MY_KUBECONFIG   # name of the file-type CI/CD variable
           runner_tags: [my-runner-tag]    # runners with cluster access
           state_name: my-iac
@@ -52,14 +54,14 @@ Any `TF_VAR_*` variable set in `variables:` on the trigger job is automatically 
 
 ### Predefined variables to use in your consumer main.tf file
 
-This CI component defines the following variables that are available in your main.tf file to use
+This CI component defines the following variables that are available in your main.tf file to use, getting their values from the inputs
 
-|variable|default value|
-|-|-|
-|infra_srs_path|`$CI_SERVER_HOST/$[[ inputs.infra_srs_path ]]`|
-|infra_srs_ref|`$[[ inputs.infra_srs_ref ]]`|
-|retina_version|`$RETINA_VERSION`, version available at the infra_srs_ref|
-|retina_registry_uri|`$[[ inputs.retina_registry_uri ]]`|
+|variable|
+|-|
+|infra_srs_path|
+|infra_srs_ref|
+|retina_version|
+|retina_registry_uri|
 
 For example, the following code will work because `infra_srs_path` and `infra_srs_ref` variables are populated:
 
