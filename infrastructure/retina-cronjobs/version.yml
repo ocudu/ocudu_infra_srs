@@ -2,4 +2,4 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 variables:
-  RETINA_CRONJOBS_VERSION: "2.7.1"
+  RETINA_CRONJOBS_VERSION: "2.7.2"
