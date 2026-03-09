@@ -38,7 +38,6 @@ from .steps.iperf_helpers import (
     LOW_BITRATE,
     MEDIUM_BITRATE,
     SHORT_DURATION,
-    TINY_DURATION,
 )
 from .steps.stub import (
     get_ntn_configs,
@@ -625,7 +624,7 @@ def test_smoke(
         common_scs=30,
         bandwidth=20,
         sample_rate=None,  # default from testbed
-        iperf_duration=TINY_DURATION,
+        iperf_duration=SHORT_DURATION,
         bitrate=LOW_BITRATE,
         protocol=IPerfProto.UDP,
         direction=direction,
