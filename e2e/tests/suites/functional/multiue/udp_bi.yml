@@ -2,14 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 baseline:
-  template: ue_simulator.test_gnb
-  testbed: zmq_mme
-  ue:
-    config: [1cell_1t1r_bw100_band78.cfg, multiue_ping.cfg]
-  gnb:
-    config: [1t1r_bw100_band78.yml, base_slice.yml, pcaps.yml, 512ue.yml]
-  core:
-    config: [baseline.cfg]
+  template: amarisoft_simulator.py
+  ue_config: [1cell_1t1r_bw100_band78.cfg, multiue_udp_bi.cfg]
+  gnb_config: [1t1r_bw100_band78.yml, base_slice.yml, pcaps.yml, 512ue.yml]
+  core_config: [baseline.cfg]
   criteria:
     dl_bitrate: 10.0e+3
     ul_bitrate: 10.0e+3
