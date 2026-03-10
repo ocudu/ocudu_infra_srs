@@ -7,5 +7,15 @@ pcap:
   rlc_filename: {{rlc_filename}}
 
 log:
+  all_level: info
   rlc_level: warning
   pdcp_level: warning
+  config_level: debug
+
+metrics:
+  autostart_stdout_metrics: true
+  enable_log: true
+  enable_json: true
+  layers:
+    enable_sched: true
+    enable_mac: true

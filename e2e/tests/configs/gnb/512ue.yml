@@ -1,0 +1,22 @@
+cell_cfg:
+  pucch:
+    sr_period_ms: 20
+    resource_set_size: 8
+    nof_cell_res_set_configs: 2
+    nof_cell_sr_res: 80
+    nof_cell_csi_res: 80
+  csi:
+    csi_rs_period: 40
+  ul_common:
+    max_ul_grants_per_slot: 128
+    max_pucchs_per_slot: 120
+  pusch:
+    max_puschs_per_slot: 8
+  scheduler:
+    nof_preselected_newtx_ues: 1024
+
+log:
+  all_level: warning
+  config_level: debug
+  rrc_level: info
+  du_level: info

@@ -7,7 +7,7 @@ baseline:
   ue:
     config: [ping_multiue.cfg]
   gnb:
-    config: [1t1r_bw10_band3.yml, base_slice.yml, pcaps.yml]
+    config: [512ue.yml, base_slice.yml, pcaps.yml]
   core:
     config: [baseline.cfg]
   criteria:
