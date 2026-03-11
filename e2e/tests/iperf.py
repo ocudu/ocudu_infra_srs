@@ -636,7 +636,7 @@ def test_smoke(
         bitrate_threshold=0,
         ue_startup_timeout=30,
         ue_stop_timeout=30,
-        gnb_post_cmd=("", "metrics --enable_log=True"),
+        gnb_post_cmd=("", "metrics --enable_log=True periodicity --du_report_period=500"),
     )
 
 
