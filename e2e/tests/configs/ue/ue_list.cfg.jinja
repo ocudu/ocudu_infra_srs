@@ -1,0 +1,82 @@
+
+  ue_list: [
+{%- for i in range(nof_ues) %}
+{%- set imsi = base_imsi + i %}
+{%- set K_hex = (base_K + i ) | hex32 %}
+{%- set power_on = base_power_on + i * power_on_increment %}
+{%- set traffic_start = base_power_on + nof_ues * power_on_increment + power_on_to_traffic_delay %}
+{%- set traffic_stop = traffic_start + traffic_duration_sec %}
+{%- set dereg_time = traffic_stop + traffic_stop_to_dereg_delay + i * power_on_increment %}
+{%- set power_off = dereg_time + dereg_to_pw_off_delay %}
+{%- set quit_time = power_off + 5 %}
+    /* UEs idx {{ i + 1 }} */
+    {
+      sim_algo: "xor",
+      imsi: "00{{ imsi }}",
+      K: "{{ K_hex }}",
+      apn: "srsapn",
+      as_release: 15,
+      ue_category: "nr",
+      power_control_enabled: false,
+      position: [100, 0],
+      speed: 0,
+      channel: {
+        type: "awgn",
+      },
+
+      attach_pdn_type: "ipv4",
+      ue_count: 1,
+      sim_events: [
+        {
+          event: "power_on",
+          start_time: {{ power_on }},
+        },
+{%- if traffic_type == "udp_dl" or traffic_type == "udp_bi" %}        
+        {
+            start_time: {{ traffic_start }},
+            end_time: {{ traffic_stop }},
+            dst_addr: "192.168.3.1",
+            payload_len: 1400,
+            bit_rate: {{ brate_dl }},
+            event: "cbr_recv"
+        },
+{%- endif %}        
+{%- if traffic_type == "udp_ul" or traffic_type == "udp_bi" %}       
+        {
+            start_time: {{ traffic_start }},
+            end_time: {{ traffic_stop }},
+            dst_addr: "192.168.3.1",
+            payload_len: 1400,
+            bit_rate: {{ brate_ul }},
+            event: "cbr_send"
+        },
+{%- endif %}        
+{%- if traffic_type == "ping"%}       
+        {
+          start_time: {{ traffic_start }},
+          end_time: {{ traffic_stop }},
+          dst_addr: "192.168.3.1",
+          payload_len: 1000,
+          delay: 1,
+          event: "ping"
+        },
+{%- endif %}        
+        {
+          event: "deregister",
+          start_time: {{ dereg_time }},
+        },
+        {
+          event: "power_off",
+          start_time: {{ power_off }},
+        },
+{%- if i == nof_ues - 1 %}
+        {
+          event: "quit",
+          start_time: {{ quit_time }},
+        },
+{%- endif %}
+      ]
+    },
+{%- endfor %}
+
+  ]

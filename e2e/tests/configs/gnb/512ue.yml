@@ -1,4 +1,8 @@
 cell_cfg:
+  tdd_ul_dl_cfg:
+    nof_dl_symbols: 10
+    nof_dl_slots: 6
+    nof_ul_slots: 3
   pucch:
     sr_period_ms: 20
     resource_set_size: 8
@@ -11,7 +15,11 @@ cell_cfg:
     max_ul_grants_per_slot: 128
     max_pucchs_per_slot: 120
   pusch:
-    max_puschs_per_slot: 8
+    max_puschs_per_slot: 16
+  pdcch:
+    dedicated:
+      ss2_n_candidates: [8, 8, 0, 0, 0]
+      coreset1_duration: 2
   scheduler:
     nof_preselected_newtx_ues: 1024
 

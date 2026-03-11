@@ -1172,6 +1172,8 @@ def stop(
         )
         error_msg_array.append(error_message)
 
+    sleep(10)  # Wait for all messages to be processed        
+
     if (stop_gnb_first is False) and (gnb_array is not None):
         for index, gnb in enumerate(gnb_array):
             error_message, _ = _stop_stub(

@@ -6,9 +6,9 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 
   {% if log_level == "debug" %}
-  log_options: "all.level={{log_level}},{% if type == "ru" %}s72.level={{log_s72_level if log_s72_level else 'debug'}},time.us=1,{% endif %}all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'info'}},phy.dci_size=1,phy.csi=1,phy.cell_meas=1,phy.cch=1,rrc.max_size=16,nas.key=1,rrc.key=1{{',pdcp.crypto=1' if log_ip_level == 'debug' else ''}}{{',phy.ntn=1' if ntn_enable else ''}}",
+  log_options: "all.level={{log_level}},{% if type == "ru" %}s72.level={{log_s72_level if log_s72_level else 'debug'}},time.us=1,{% endif %}all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'info'}},phy.dci_size=1,phy.csi=1,phy.cell_meas=1,phy.cch=1,rrc.max_size=16,nas.key=1,rrc.key=1{{',pdcp.crypto=1' if log_ip_level == 'debug' else ''}}{{',phy.ntn=1' if ntn_enable else ''}},com.level=debug,com.max_size=1,prod.level=debug,prod.max_size=1",
   {% elif log_level == "error" %}
-  log_options: "all.level={{log_level}},{% if type == "ru" %}s72.level={{log_s72_level if log_s72_level else 'error'}},time.us=1,{% endif %}all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'error'}}",
+  log_options: "all.level={{log_level}},{% if type == "ru" %}s72.level={{log_s72_level if log_s72_level else 'error'}},time.us=1,{% endif %}all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'error'}},com.level=debug,com.max_size=1,prod.level=debug,prod.max_size=1",
   {% endif %}
   log_filename: "{{log_filename}}",
 

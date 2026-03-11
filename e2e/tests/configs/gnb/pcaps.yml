@@ -7,9 +7,10 @@ pcap:
   rlc_filename: {{rlc_filename}}
 
 log:
-  all_level: info
   rlc_level: warning
   pdcp_level: warning
+  rrc_level: info
+  du_level: info
   config_level: debug
 
 metrics:
@@ -19,3 +20,4 @@ metrics:
   layers:
     enable_sched: true
     enable_mac: true
+    enable_rrc: true
