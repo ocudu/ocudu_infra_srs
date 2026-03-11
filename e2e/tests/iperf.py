@@ -624,7 +624,7 @@ def test_smoke(
         common_scs=30,
         bandwidth=20,
         sample_rate=None,  # default from testbed
-        iperf_duration=SHORT_DURATION,
+        iperf_duration=60,
         bitrate=LOW_BITRATE,
         protocol=IPerfProto.UDP,
         direction=direction,

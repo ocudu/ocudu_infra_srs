@@ -26,7 +26,6 @@ class QAMTable(Enum):
     QAM256 = 1
 
 
-TINY_DURATION = 10
 SHORT_DURATION = 20
 LONG_DURATION = 2 * 60
 LOW_BITRATE = int(1e6)
@@ -194,11 +193,6 @@ def get_peak_average_bitrate(
     Get the correct peak average bitrate reported metric based on the given iperf duration
     """
 
-    if iperf_duration == TINY_DURATION:
-        return (
-            sum(u.dl_av_5_samples for u in metrics.ue_array),
-            sum(u.ul_av_5_samples for u in metrics.ue_array),
-        )
     if iperf_duration == SHORT_DURATION:
         return (
             sum(u.dl_av_15_samples for u in metrics.ue_array),
