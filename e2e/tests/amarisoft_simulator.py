@@ -9,7 +9,7 @@ from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from time import sleep
-from typing import Dict, Generator
+from typing import Any, Dict, Generator
 
 import grpc
 import pytest
@@ -29,15 +29,18 @@ from .steps.stub import start_network, stop, ue_start
 
 
 @dataclass
-class AmarisoftSimTestDefinition:
+class AmarisoftSimTestDefinition:  # pylint: disable=too-many-instance-attributes
     """
     Test definition for Amarisoft simulator tests
     """
 
     name: str
     ue_config: list[str]
+    ue_parameters: Dict[str, Any]
     gnb_config: list[str]
+    gnb_parameters: Dict[str, Any]
     core_config: list[str]
+    core_parameters: Dict[str, Any]
     criteria: Dict[str, float]
 
 
@@ -55,9 +58,12 @@ def load_tests(template_filename: str) -> Generator[AmarisoftSimTestDefinition, 
                 test_id = f"{str(file_path).replace('/', '::')}::{test_name}"
                 yield AmarisoftSimTestDefinition(
                     name=test_id,
-                    gnb_config=test_declaration.get("gnb_config", []),
                     ue_config=test_declaration.get("ue_config", []),
+                    ue_parameters=test_declaration.get("ue_parameters", {}),
+                    gnb_config=test_declaration.get("gnb_config", []),
+                    gnb_parameters=test_declaration.get("gnb_parameters", {}),
                     core_config=test_declaration.get("core_config", []),
+                    core_parameters=test_declaration.get("core_parameters", {}),
                     criteria=test_declaration.get("criteria", {}),
                 )
 
@@ -87,8 +93,11 @@ def test_gnb(
         retina_manager=retina_manager,
         retina_data=retina_data,
         ue_config_files=test_definition.ue_config,
+        ue_parameters=test_definition.ue_parameters,
         gnb_config_files=test_definition.gnb_config,
+        gnb_parameters=test_definition.gnb_parameters,
         core_config_files=test_definition.core_config,
+        core_parameters=test_definition.core_parameters,
     )
 
     for criteria_id, criteria_expected_value in test_definition.criteria.items():

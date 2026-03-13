@@ -11,7 +11,7 @@ import tempfile
 from collections import defaultdict
 from pathlib import Path
 from pprint import pformat
-from typing import List, NamedTuple, Optional, Tuple, Union
+from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
@@ -457,8 +457,11 @@ def set_config_files(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     ue_config_files: List[str],
+    ue_parameters: Dict[str, Any],
     gnb_config_files: List[str],
+    gnb_parameters: Dict[str, Any],
     core_config_files: List[str],
+    core_parameters: Dict[str, Any],
 ):
     """
     Overwrite default config files with the provided ones
@@ -500,22 +503,13 @@ def set_config_files(
 
         retina_data.test_config = {
             "ue": {
-                "parameters": {
-                    "ue_simulator_mode": True,
-                    "sample_rate": 122880000,
-                    "nof_antennas_dl": 4,
-                    "nof_antennas_ul": 4,
-                },
+                "parameters": {"ue_simulator_mode": True, **ue_parameters},
                 "templates": {
                     "ue": ue_tmp_file.name,
                 },
             },
             "gnb": {
-                "parameters": {
-                    "sample_rate": 122880000,
-                    "nof_antennas_dl": 4,
-                    "nof_antennas_ul": 4,
-                },
+                "parameters": gnb_parameters,
                 "templates": {
                     "cu": gnb_tmp_file.name,
                     "du": tmp_file.name,
@@ -523,6 +517,7 @@ def set_config_files(
                 },
             },
             "5gc": {
+                "parameters": core_parameters,
                 "templates": {
                     "core": core_tmp_file.name,
                     "ims": tmp_file.name,
