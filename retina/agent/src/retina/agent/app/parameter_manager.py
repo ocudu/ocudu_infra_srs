@@ -95,26 +95,23 @@ def set_parameter(param_name: str, new_value: Any, auto_convert: bool = False) -
     namespace = ParameterNamespace(namespace_value)
     root_module = _param_root_dict[namespace]
 
-    # Validate param exists
-    if not hasattr(root_module, key):
-        raise KeyError(f"Unknown param name {param_name}")
-
-    # Get key, value and type_hint info
-    root_type_hints = get_type_hints(root_module)
-    if key not in root_type_hints:
-        raise AttributeError(f"param {key} from {namespace_value} namespace doesn't have a valid type hint")
-    type_hint = get_type_hints(root_module)[key]
-    old_value = getattr(root_module, key)
-
     if namespace is not ParameterNamespace.TEMPLATE and auto_convert:
         new_value = yaml.load(new_value, yaml.FullLoader)
 
-    # Validate new type is correct
-    check_type(key, new_value, type_hint)
+    # Validate param exists
+    if not hasattr(root_module, key):
+        logging.warning("New parameter %s", param_name)
+    else:
+        root_type_hints = get_type_hints(root_module)
+        if key not in root_type_hints:
+            raise AttributeError(f"param {key} from {namespace_value} namespace doesn't have a valid type hint")
+        type_hint = get_type_hints(root_module)[key]
+        old_value = getattr(root_module, key)
+        check_type(key, new_value, type_hint)
+        if old_value == new_value:
+            return
 
-    # Set the value
-    if old_value != new_value:
-        setattr(root_module, key, new_value)
-        if isinstance(new_value, str) and len(new_value.splitlines()) > 1:
-            new_value = new_value.splitlines()[0] + " ..."
-        logging.info("Parameter %s set to %s", param_name, new_value)
+    setattr(root_module, key, new_value)
+    if isinstance(new_value, str) and len(new_value.splitlines()) > 1:
+        new_value = new_value.splitlines()[0] + " ..."
+    logging.info("Parameter %s set to %s", param_name, new_value)
