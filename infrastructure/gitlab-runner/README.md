@@ -99,4 +99,4 @@ module "gitlab_runners" {
 }
 ```
 
-For CI template details see [infrastructure/opentofu.md](../opentofu.md). Please define `TF_VAR_runner_update_token`, which must be configured as a masked CI/CD variable in GitLab project settings.
+For CI template details see [opentofu.md](../_docs/04_opentofu.md). Please define `TF_VAR_runner_update_token`, which must be configured as a masked CI/CD variable in GitLab project settings.

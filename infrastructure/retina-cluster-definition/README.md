@@ -66,7 +66,7 @@ import {
 }
 ```
 
-For CI usage see [infrastructure/opentofu.md](../opentofu.md).
+For CI usage see [opentofu.md](../_docs/04_opentofu.md).
 
 ## Deploying without IaC
 

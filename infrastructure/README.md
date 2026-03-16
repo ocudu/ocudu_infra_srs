@@ -38,7 +38,13 @@ Follow these steps to set up your testing infrastructure:
 
 Check [the forking guide](./_docs/01_fork.md).
 
-### 2. Configure Your Servers
+### 2. Set Up a Kubernetes Cluster
+
+Deploy a Kubernetes cluster for test orchestration.
+
+Once the cluster is running, next steps can be configured using Infrastructure as Code. This repo provides Terraform modules, CI code and examples to cover server configuration, retina setup and gitlab runners installation. For a full overview of the IaC approach see [IaC Overview](./_docs/03_iac.md).
+
+### 3. Configure Your Servers
 
 Prepare the physical or virtual servers that will be used for testing so they can run OCUDU and other tools with good performance.
 
@@ -46,12 +52,8 @@ Prepare the physical or virtual servers that will be used for testing so they ca
 
 OCUDU Infra SRS project provides Terraform and CI files to help you to configure your servers by setting up:
 
-- [LinuxPTP](./k8s/Helm/linuxptp/main.tf)
-- [TuneD](./k8s/Helm/tuned/main.tf)
-
-### 3. Set Up a Kubernetes Cluster
-
-Deploy a Kubernetes cluster for test orchestration.
+- [LinuxPTP](./linuxptp/README.md)
+- [TuneD](./tuned/README.md)
 
 ### 4. Install Retina in the Cluster
 

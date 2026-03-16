@@ -86,4 +86,4 @@ module "retina_cluster_setup" {
 
 If resources already exist in the cluster and need to be imported into state, add import blocks after the module call.
 
-For CI usage see [infrastructure/opentofu.md](../opentofu.md).
+For CI usage see [infrastructure/opentofu.md](../_docs/04_opentofu.md).

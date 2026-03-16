@@ -99,7 +99,7 @@ module "retina_cronjobs" {
 }
 ```
 
-For CI template details see [infrastructure/opentofu.md](../opentofu.md).
+For CI template details see [opentofu.md](../_docs/04_opentofu.md).
 
 - `TF_VAR_gitlab_runner_token` must be configured as a masked CI/CD variable in GitLab project settings.
 - `RETINA_VERSION` and `RETINA_REGISTRY_URI` are injected automatically by the shared CI template.

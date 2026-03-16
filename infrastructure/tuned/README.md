@@ -20,8 +20,8 @@ Node-level tuned configuration lives under `services.<node>.tuned`. Global defau
 global:
   tuned:
     image:
-      repository: softwareradiosystems/tuned-agent
-      tag: "0.5.0"
+      repository: registry.gitlab.com/ocudu/ocudu_elements/ocudu_helm/tuned-agent
+      tag: "v2.21.0_1.0.0"
       pullPolicy: IfNotPresent
     hostPathTuned: /usr/lib/tuned
     securityContext:
@@ -40,7 +40,7 @@ services:
     tuned:
       enabled: true
       image:                    # optional — overrides global image
-        tag: "0.5.0-arm64"
+        tag: "v2.21.0_1.0.0-arm64"
       profileContent: |-
         [main]
         summary=My tuned profile
