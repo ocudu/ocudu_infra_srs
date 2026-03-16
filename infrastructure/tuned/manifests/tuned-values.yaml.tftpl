@@ -1,0 +1,52 @@
+image:
+  repository: ${node.image_repository}
+  tag: "${node.image_tag}"
+  pullPolicy: ${node.image_pull_policy}
+
+profileName: ${node.profile_name}
+
+profileContent: |
+  ${replace(node.profile_content, "\n", "\n  ")}
+
+startupScriptContent: |-
+  ${replace(node.startup_script_content, "\n", "\n  ")}
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - ${node_name}
+
+tolerations:
+%{ for t in node.tolerations ~}
+  - key: "${t.key}"
+    operator: "${t.operator}"
+%{ if t.value != null ~}
+    value: "${t.value}"
+%{ endif ~}
+    effect: "${t.effect}"
+%{ endfor ~}
+
+hostPathTuned: ${node.host_path_tuned}
+
+nodeSelector: ${jsonencode(node.node_selector)}
+
+securityContext:
+%{ for key, value in node.security_context ~}
+  ${key}: ${value}
+%{ endfor ~}
+
+resources: ${jsonencode(node.resources)}
+
+annotations: ${jsonencode(node.annotations)}
+
+restartOnConfigChange: ${node.restart_on_config_change}
+
+reboot:
+  enabled: ${node.reboot.enabled}
+  cmd: "${node.reboot.cmd}"
+  markerDir: ${node.reboot.markerDir}

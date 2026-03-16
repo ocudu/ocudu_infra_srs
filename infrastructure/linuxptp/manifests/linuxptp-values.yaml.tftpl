@@ -1,0 +1,71 @@
+replicaCount: 1
+
+image:
+  repository: softwareradiosystems/linuxptp
+  pullPolicy: IfNotPresent
+  tag: "${node.image_tag}"
+
+imagePullSecrets:
+  - name: regcred
+
+nameOverride: "linuxptp-${node_name}"
+fullnameOverride: "linuxptp-${node_name}"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "linuxptp-${node_name}"
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext:
+  capabilities:
+    add: ["SYS_NICE", "NET_ADMIN"]
+  privileged: true
+
+resources: {}
+
+nodeSelector:
+  kubernetes.io/hostname: ${node_name}
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+%{ if node_name == "dell-xr12" ~}
+  - key: "machine"
+    operator: "Equal"
+    value: "${node_name}"
+    effect: "NoSchedule"
+%{ endif ~}
+
+affinity: {}
+
+interfaceNameList: "${node.interface_name}"
+
+startupProbe:
+  enabled: true
+  failureThreshold: 30
+  periodSeconds: 10
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+ntp:
+  enabled: false
+  server: "pool.ntp.org"
+
+config:
+  ${indent(2, yamlencode(node.config))}
