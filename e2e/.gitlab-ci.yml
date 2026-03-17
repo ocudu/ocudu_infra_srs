@@ -197,6 +197,21 @@ dpdk rtsan avx512:
       -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
     TEST_MODE: none
 
+### Functional
+.functional_e2e:
+  extends: e2e
+  variables:
+    GROUP: zmq
+    LAUNCHER_ARGS: -n 2
+  needs:
+    - zmq driver
+    - job: release with deb info
+      artifacts: true
+      optional: true
+    - job: release with deb info cached
+      artifacts: true
+      optional: true
+
 ## Emulated Nightly
 ### Test mode
 .test mode ue:

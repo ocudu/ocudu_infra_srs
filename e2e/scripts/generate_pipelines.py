@@ -62,7 +62,7 @@ class Job:
 
         return f"""{self.name}:
   stage: {self.stage}
-  extends: .amarisoft_zmq
+  extends: .functional_e2e
   rules:
     - if: $ON_MR
       changes:
