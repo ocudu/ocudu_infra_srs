@@ -20,27 +20,19 @@ export AMARISOFT_MME_LICENSE_TAG=your_mme_tag
 # profile: testbed to start. Look at "launcher" service inside "docker-compose.yml" to see all available profiles
 export RETINA_PROFILE=zmq_amariue_mme
 
-# Generate variables from retina code (call it when you change retina repo and first time)
-cd $RETINA_PATH/_scripts
-python3 generate_env.py --ocudu-path ${OCUDU_PATH} --amari-path ${AMARISOFT_PATH}
-
 # Build gnb and zmq driver (call it when you change gnb code and first time)
+cd $RETINA_PATH/_scripts
 docker compose --profile builders up
 
-# Create testbed (call it when you change the profile and first time)
-python3 generate_testbed.py --profile ${RETINA_PROFILE}
-
-# Run agents
-docker compose --profile ${RETINA_PROFILE} up --timestamps
+# Run the test
+$RETINA_PATH/_scripts/retina_local.sh
 ```
 
 ### Terminal 2 - Run the test
 
 ```bash
-docker exec launcher retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml -x --force-download <pytest-arguments>
+docker exec launcher retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml <pytest-arguments>
 ```
-
-See details below.
 
 ## 1. Download repos
 
