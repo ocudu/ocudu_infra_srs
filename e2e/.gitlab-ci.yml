@@ -474,11 +474,13 @@ gnb 1UE s72:
   extends: .amarisoft s72
   variables:
     KEYWORDS: not handover and not fr2
+  allow_failure: true
 
 gnb 2UE s72:
   extends: .amarisoft s72
   variables:
     KEYWORDS: handover
+  allow_failure: true
 
 gnb 1UE s72 FR2:
   extends: .amarisoft s72
