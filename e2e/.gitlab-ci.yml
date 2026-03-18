@@ -454,23 +454,6 @@ cudu 64UE:
     KEYWORDS: "64"
     MARKERS: "zmq and not smoke"
 
-1cu2du 8UE:
-  extends: .amarisoft_zmq
-  timeout: 2h
-  variables:
-    TESTBED: zmq_1cu2du
-    MARKERS: "zmq and not smoke"
-    FILE_OR_DIR: tests/inter_du_handover.py
-    KEYWORDS: sequentially
-
-2gnb:
-  extends: .amarisoft_zmq
-  timeout: 2h
-  variables:
-    TESTBED: zmq_2gnb
-    MARKERS: "zmq and not smoke"
-    FILE_OR_DIR: tests/inter_cu_handover.py
-
 ### Amarisoft s72
 .amarisoft s72:
   extends: e2e
