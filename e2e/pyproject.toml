@@ -54,6 +54,8 @@ markers = [
   "zmq_srsue",
   "zmq_ric",
   "zmq_ntn",
+  "zmq_mme",
+  "zmq_1000",
   "test_mode",
   "test_mode_acc100",
   "test_mode_not_crash",

@@ -7,6 +7,7 @@
 # test_case_desc: 1 UE attaches to cell A, starts bidirectional UDP and moves to cell B, doing Handover
 baseline:
   template: amarisoft_simulator.py
+  testbed: zmq_mme
   ue_config: [2cell_2t2r_bw100_band78_chsim.cfg, handover.cfg]
   gnb_config:
     [2t2r_bw100_band78.yml, base_slice.yml, pcaps.yml, 2cell_intradu_ho.yml]

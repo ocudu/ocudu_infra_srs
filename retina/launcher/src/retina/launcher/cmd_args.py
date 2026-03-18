@@ -92,7 +92,9 @@ def retina_request(request: pytest.FixtureRequest) -> RetinaRequest:
     if req.in_cluster:
         logging.info("Running in in_cluster mode")
 
-    if (retina_request_raw and retina_testbed_raw) or (not retina_request_raw and not retina_testbed_raw):
+    if retina_request_raw and retina_testbed_raw:
+        retina_request_raw = ""
+    if not retina_request_raw and not retina_testbed_raw:
         raise ValueError(
             "You need to specify ONE of the following: \n"
             + "- A request.yml file using --retina-request to deploy a testbed.\n"
@@ -101,6 +103,8 @@ def retina_request(request: pytest.FixtureRequest) -> RetinaRequest:
 
     if retina_request_raw:
         retina_request_path: Path = Path(retina_request_raw).resolve()
+        if not retina_request_path.exists() and request.param is not None:
+            retina_request_path = Path(request.param).resolve()
         if not retina_request_path.exists():
             raise ValueError(f"Specified retina request [{retina_request_path}] is not valid.")
         logging.info("Request: %s", retina_request_path)

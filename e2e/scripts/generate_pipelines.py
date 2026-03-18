@@ -75,7 +75,7 @@ class Job:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{self.pipeline_name}/
   variables:
     KEYWORDS: {self.pipeline_name}/{self.stage}/{self.name}
-    TESTBED: zmq_mme
+    TESTBED: none
 """
 
 
