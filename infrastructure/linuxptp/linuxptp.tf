@@ -22,7 +22,7 @@ resource "helm_release" "linuxptp" {
   name             = "linuxptp-${each.key}"
   namespace        = "infra"
   create_namespace = false
-  repository       = "https://srsran.github.io/srsRAN_Project_helm"
+  repository       = "oci://registry.gitlab.com/ocudu/ocudu_elements/ocudu_helm"
   chart            = "linuxptp"
   version          = var.helm_version
 
