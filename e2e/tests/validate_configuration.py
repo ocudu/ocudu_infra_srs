@@ -151,4 +151,4 @@ def run_config(
     logging.info("Waiting 60s...")
     sleep(60)
 
-    stop(ue_array=tuple(), gnb_array=[gnb], fivegc=fivegc, retina_data=retina_data, log_search=False)
+    stop(ue_array=tuple(), gnb_array=[gnb], fivegc_array=[fivegc], retina_data=retina_data, log_search=False)

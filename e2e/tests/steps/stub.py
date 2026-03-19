@@ -135,7 +135,7 @@ def start_and_attach(
     start_network(
         ue_array=ue_array,
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         gnb_startup_timeout=gnb_startup_timeout,
         fivegc_startup_timeout=fivegc_startup_timeout,
         gnb_pre_cmd=gnb_pre_cmd,
@@ -170,7 +170,7 @@ def _get_hplmn(imsi: str) -> PLMN:
 def start_network(
     *,  # This enforces keyword-only arguments
     ue_array: Sequence[UEStub],
-    fivegc: FiveGCStub,
+    fivegc_array: Sequence[FiveGCStub],
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
     du_array: Optional[Sequence[DUStub]] = None,
@@ -213,19 +213,21 @@ def start_network(
             # Set PLMN to HPLMN of first UE
             plmn = ue_hplmn
             logging.info("Setting PLMN to HPLMN of first UE. MCC=%s MNC=%s", plmn.mcc, plmn.mnc)
-        fivegc.AddUESubscriber(ue_def.subscriber)
+        for fivegc in fivegc_array:
+            fivegc.AddUESubscriber(ue_def.subscriber)
         if ue_def.zmq_ip is not None:
             ue_def_for_gnb = ue_def
 
-    with handle_start_error(name=f"5GC [{id(fivegc)}]"):
-        # 5GC Start
-        fivegc.GetDefinition(Empty())
-        fivegc.Start(
-            FiveGCStartInfo(
-                plmn=plmn,
-                start_info=StartInfo(timeout=fivegc_startup_timeout),
+    for fivegc in fivegc_array:
+        with handle_start_error(name=f"5GC [{id(fivegc)}]"):
+            # 5GC Start
+            fivegc_definition = fivegc.GetDefinition(Empty())
+            fivegc.Start(
+                FiveGCStartInfo(
+                    plmn=plmn,
+                    start_info=StartInfo(timeout=fivegc_startup_timeout),
+                )
             )
-        )
 
     if channel_emulator and ue_def_for_gnb.zmq_ip is not None:
         # Overwrite the ZMQ IP and port, so the GNB connects to the channel emulator.
@@ -254,7 +256,7 @@ def start_network(
                     GNBStartInfo(
                         plmn=plmn,
                         ue_definition=ue_def_for_gnb,
-                        fivegc_definition=fivegc.GetDefinition(Empty()),
+                        fivegc_definition=fivegc_definition,
                         ric_definition=ric_definition,
                         start_info=StartInfo(
                             timeout=gnb_startup_timeout,
@@ -272,7 +274,7 @@ def start_network(
             cu.Start(
                 CUStartInfo(
                     plmn=plmn,
-                    fivegc_definition=fivegc.GetDefinition(Empty()),
+                    fivegc_definition=fivegc_definition,
                     start_info=StartInfo(
                         timeout=gnb_startup_timeout,
                         pre_commands=cu_pre_cmd,
@@ -963,7 +965,7 @@ def multi_ue_mobility_iperf(
     start_network(
         ue_array=ue_array,
         gnb_array=gnb_array,
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         gnb_post_cmd=(
             "log --cu_level=debug  --f1ap_level=debug --ngap_level=debug --hex_max_size=32",
             "log --du_level=debug",
@@ -1028,7 +1030,7 @@ def multi_ue_mobility_iperf(
     stop(
         ue_array=ue_array,
         gnb_array=gnb_array,
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         retina_data=retina_data,
         ue_stop_timeout=16,
         warning_as_errors=warning_as_errors,
@@ -1127,7 +1129,7 @@ def stop(
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
     du_array: Optional[Sequence[DUStub]] = None,
-    fivegc: Optional[FiveGCStub] = None,
+    fivegc_array: Optional[Sequence[FiveGCStub]] = None,
     ue_stop_timeout: int = 0,  # Auto
     gnb_stop_timeout: int = 0,
     fivegc_stop_timeout: int = 0,
@@ -1201,16 +1203,17 @@ def stop(
         )
         error_msg_array.append(error_message)
 
-    if fivegc is not None:
-        error_message, _ = _stop_stub(
-            stub=fivegc,
-            name="5GC",
-            retina_data=retina_data,
-            timeout=fivegc_stop_timeout,
-            log_search=log_search,
-            warning_as_errors=warning_as_errors,
-        )
-        error_msg_array.append(error_message)
+    if fivegc_array is not None:
+        for index, fivegc in enumerate(fivegc_array):
+            error_message, _ = _stop_stub(
+                stub=fivegc,
+                name=f"5GC {index+1}",
+                retina_data=retina_data,
+                timeout=fivegc_stop_timeout,
+                log_search=log_search,
+                warning_as_errors=warning_as_errors,
+            )
+            error_msg_array.append(error_message)
 
     if ric is not None:
         error_message, _ = _stop_stub(
@@ -1249,8 +1252,9 @@ def stop(
     if gnb_array is not None:
         for index, gnb in enumerate(gnb_array):
             metrics_msg_array.append(_get_metrics_msg(stub=gnb, name=f"GNB_{index+1}", fail_if_kos=fail_if_kos))
-    if fivegc is not None:
-        metrics_msg_array.append(_get_metrics_msg(stub=fivegc, name="5GC", fail_if_kos=fail_if_kos))
+    if fivegc_array is not None:
+        for fivegc in fivegc_array:
+            metrics_msg_array.append(_get_metrics_msg(stub=fivegc, name=f"5GC_{index+1}", fail_if_kos=fail_if_kos))
 
     # Fail if metric errors
     metrics_msg_array = list(filter(bool, metrics_msg_array))

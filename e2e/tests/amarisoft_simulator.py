@@ -106,7 +106,7 @@ def test_gnb(
     start_network(
         ue_array=(ue,),
         gnb_array=(gnb,),
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
     )
 
     ue_start(
@@ -125,7 +125,7 @@ def test_gnb(
         stop(
             ue_array=(ue,),
             gnb_array=(gnb,),
-            fivegc=fivegc,
+            fivegc_array=[fivegc],
             retina_data=retina_data,
             warning_as_errors=False,
         )

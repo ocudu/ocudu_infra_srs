@@ -366,7 +366,7 @@ def _handover_multi_ues(
         gnb_array=gnb_array,
         cu=cu,
         du_array=du_array,
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         gnb_post_cmd=(
             (
                 "log --du_level=debug --cu_level=debug --f1ap_level=debug --ngap_level=debug --hex_max_size=32",
@@ -419,7 +419,7 @@ def _handover_multi_ues(
         gnb_array=gnb_array,
         cu=cu,
         du_array=du_array,
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         retina_data=retina_data,
         ue_stop_timeout=16,
         warning_as_errors=warning_as_errors,

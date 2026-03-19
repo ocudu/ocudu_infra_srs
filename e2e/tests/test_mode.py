@@ -127,7 +127,7 @@ def test_ue(
     stop(
         ue_array=tuple(),
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         retina_data=retina_data,
         gnb_stop_timeout=gnb_stop_timeout,
         log_search=log_search,
@@ -319,7 +319,7 @@ def _test_ru(
     stop(
         ue_array=tuple(),
         gnb_array=[gnb],
-        fivegc=None,
+        fivegc_array=None,
         retina_data=retina_data,
         gnb_stop_timeout=gnb_stop_timeout,
         log_search=log_search,
@@ -407,7 +407,7 @@ def test_mode_many_ues(
     stop(
         ue_array=tuple(),
         gnb_array=[gnb],
-        fivegc=None,
+        fivegc_array=None,
         retina_data=retina_data,
         gnb_stop_timeout=gnb_stop_timeout,
         log_search=log_search,

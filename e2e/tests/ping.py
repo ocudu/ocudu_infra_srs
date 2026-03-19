@@ -486,7 +486,7 @@ def test_zmq_valgrind(
     stop(
         ue_array=ue_4,
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         retina_data=retina_data,
         gnb_stop_timeout=gnb_stop_timeout,
         log_search=False,
@@ -617,7 +617,7 @@ def test_rf_does_not_crash(
             log_search=False,
             always_download_artifacts=True,
         )
-    stop(ue_array=ue_4, gnb_array=[gnb], fivegc=fivegc, retina_data=retina_data, log_search=False)
+    stop(ue_array=ue_4, gnb_array=[gnb], fivegc_array=[fivegc], retina_data=retina_data, log_search=False)
 
 
 @mark.parametrize(
@@ -760,7 +760,7 @@ def _ping(
     start_network(
         ue_array=ue_array,
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         gnb_pre_cmd=pre_command,
         gnb_post_cmd=post_command,
         plmn=plmn,
@@ -799,7 +799,7 @@ def _ping(
     stop(
         ue_array=ue_array,
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         retina_data=retina_data,
         gnb_stop_timeout=gnb_stop_timeout,
         log_search=log_search,

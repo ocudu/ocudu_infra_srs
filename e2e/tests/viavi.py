@@ -341,7 +341,7 @@ def _test_viavi(
             stop(
                 ue_array=(),
                 gnb_array=[gnb],
-                fivegc=None,
+                fivegc_array=None,
                 retina_data=retina_data,
                 gnb_stop_timeout=gnb_stop_timeout,
                 log_search=log_search,

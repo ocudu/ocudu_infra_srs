@@ -966,7 +966,7 @@ def _iperf(
     stop(
         ue_array=ue_array,
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         retina_data=retina_data,
         ue_stop_timeout=ue_stop_timeout,
         warning_as_errors=warning_as_errors,

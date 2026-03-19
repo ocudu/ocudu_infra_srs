@@ -88,7 +88,7 @@ def test_multiple_configs_zmq(
     stop(
         ue_array=(ue,),
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         retina_data=retina_data,
         warning_as_errors=True,
         fail_if_kos=True,

@@ -584,7 +584,7 @@ def _test_reestablishments(
     start_network(
         ue_array=ue_array,
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         gnb_post_cmd=(
             "log --cu_level=debug",
             "log --mac_level=debug cell_cfg pdcch common --ss1_n_candidates=0 0 2 0 0"
@@ -608,7 +608,7 @@ def _test_reestablishments(
         stop(
             ue_array=ue_array,
             gnb_array=[gnb],
-            fivegc=fivegc,
+            fivegc_array=[fivegc],
             retina_data=retina_data,
             warning_as_errors=warning_as_errors,
         )

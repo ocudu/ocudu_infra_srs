@@ -169,7 +169,7 @@ def _attach_and_detach_multi_ues(
         always_download_artifacts=always_download_artifacts,
     )
 
-    start_network(ue_array=ue_array, gnb_array=[gnb], fivegc=fivegc)
+    start_network(ue_array=ue_array, gnb_array=[gnb], fivegc_array=[fivegc])
     ue_attach_info_dict = ue_start_and_attach(
         ue_array=ue_array,
         du_definition=[gnb.GetDefinition(UInt32Value(value=0))],
@@ -222,7 +222,7 @@ def _attach_and_detach_multi_ues(
     stop(
         ue_array=ue_array,
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         retina_data=retina_data,
         ue_stop_timeout=ue_stop_timeout,
         warning_as_errors=warning_as_errors,

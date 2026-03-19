@@ -57,7 +57,7 @@ def test_cots_paging(
     )
 
     logging.info("Paging Test")
-    start_network(ue_array=[ue], gnb_array=[gnb], fivegc=fivegc)
+    start_network(ue_array=[ue], gnb_array=[gnb], fivegc_array=[fivegc])
     ue_attach_info_dict = ue_start_and_attach(
         ue_array=[ue], du_definition=[gnb.GetDefinition(UInt32Value(value=0))], fivegc=fivegc
     )
@@ -67,7 +67,7 @@ def test_cots_paging(
     stop(
         ue_array=[ue],
         gnb_array=[gnb],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         retina_data=retina_data,
         warning_as_errors=False,
     )
