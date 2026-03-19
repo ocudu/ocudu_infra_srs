@@ -6,7 +6,7 @@
 # test_case_id: tc1.9 (handover.cfg)
 # test_case_desc: 1 UE attaches to cell A, starts bidirectional UDP and moves to cell B, doing Handover
 baseline:
-  template: ue_simulator
+  template: ue_simulator.test_gnb
   testbed: zmq_mme
   ue:
     config: [2cell_2t2r_bw100_band78_chsim.cfg, handover.cfg]

@@ -7,6 +7,7 @@ Test ping
 
 from contextlib import suppress
 from time import sleep
+from typing import Optional, Sequence
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
@@ -16,7 +17,7 @@ from retina.launcher.criteria import Criteria
 from retina.launcher.public import UInt32Value
 from retina.launcher.utils import configure_artifacts
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import GNBStub
+from retina.protocol.gnb_pb2_grpc import CUStub, DUStub, GNBStub
 from retina.protocol.ue_pb2_grpc import UEStub
 
 from .steps.configuration import set_config_files
@@ -35,7 +36,100 @@ def test_gnb(
     gnb: GNBStub,
     fivegc: FiveGCStub,
 ):
-    """Template test function for Amarisoft simulator tests"""
+    """Template test function for UE simulator + gNB + Core"""
+    _ue_simulator(
+        retina_manager=retina_manager,
+        retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
+        ue=ue,
+        gnb_array=[gnb],
+        fivegc_array=[fivegc],
+    )
+
+
+@load_tests
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def test_2gnb(
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: Criteria,
+    test_definition: RetinaTestDefinition,
+    ue: UEStub,
+    gnb_2: GNBStub,
+    fivegc: FiveGCStub,
+):
+    """Template test function for UE simulator + 2 gNB + Core"""
+    _ue_simulator(
+        retina_manager=retina_manager,
+        retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
+        ue=ue,
+        gnb_array=gnb_2,
+        fivegc_array=[fivegc],
+    )
+
+
+@load_tests
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def test_gnb_2core(
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: Criteria,
+    test_definition: RetinaTestDefinition,
+    ue: UEStub,
+    gnb: GNBStub,
+    fivegc_2: FiveGCStub,
+):
+    """Template test function for UE simulator + GNB + 2 Core"""
+    _ue_simulator(
+        retina_manager=retina_manager,
+        retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
+        ue=ue,
+        gnb_array=[gnb],
+        fivegc_array=fivegc_2,
+    )
+
+
+@load_tests
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def test_cu_2du(
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: Criteria,
+    test_definition: RetinaTestDefinition,
+    ue: UEStub,
+    cu: CUStub,
+    du_2: DUStub,
+    fivegc: FiveGCStub,
+):
+    """Template test function for UE simulator + CU + 2 DU + Core"""
+    _ue_simulator(
+        retina_manager=retina_manager,
+        retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
+        ue=ue,
+        cu=cu,
+        du_array=[du_2],
+        fivegc_array=[fivegc],
+    )
+
+
+def _ue_simulator(
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: Criteria,
+    test_definition: RetinaTestDefinition,
+    ue: UEStub,
+    fivegc_array: Sequence[FiveGCStub],
+    cu: Optional[CUStub] = None,
+    du_array: Optional[Sequence[DUStub]] = None,
+    gnb_array: Optional[Sequence[GNBStub]] = None,
+):  # pylint: disable=too-many-arguments,too-many-positional-arguments
 
     configure_artifacts(
         retina_data=retina_data,
@@ -48,16 +142,19 @@ def test_gnb(
     for criteria_id, criteria_expected_value in test_definition.criteria.items():
         criteria.add_criteria(criteria_id, criteria_expected_value)
 
-    start_network(
-        ue_array=(ue,),
-        gnb_array=(gnb,),
-        fivegc_array=[fivegc],
-    )
+    start_network(ue_array=(ue,), cu=cu, gnb_array=gnb_array, du_array=du_array, fivegc_array=fivegc_array)
+
+    if gnb_array:
+        du_definition = [gnb.GetDefinition(UInt32Value(value=idx)) for idx, gnb in enumerate(gnb_array)]
+    elif du_array and cu:
+        du_definition = [du.GetDefinition(UInt32Value(value=idx)) for idx, du in enumerate(du_array)]
+    else:
+        raise ValueError("GNB or DU is required")
 
     ue_start(
         ue_array=(ue,),
-        du_definition=[gnb.GetDefinition(UInt32Value(value=0))],
-        fivegc=fivegc,
+        du_definition=du_definition,
+        fivegc=fivegc_array[0],
     )
 
     # Wait until UE stops
@@ -69,8 +166,10 @@ def test_gnb(
     try:
         stop(
             ue_array=(ue,),
-            gnb_array=(gnb,),
-            fivegc_array=[fivegc],
+            cu=cu,
+            du_array=du_array,
+            gnb_array=gnb_array,
+            fivegc_array=fivegc_array,
             retina_data=retina_data,
             warning_as_errors=False,
         )

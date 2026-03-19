@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 baseline:
-  template: ue_simulator
+  template: ue_simulator.test_gnb
   testbed: zmq_mme
   ue:
     config: [ping_multiue.cfg]
