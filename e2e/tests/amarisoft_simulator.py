@@ -55,7 +55,7 @@ def load_tests(template_filename: str) -> Generator[AmarisoftSimTestDefinition, 
         for test_name, test_declaration in test_definition_raw.items():
             if Path(test_declaration.get("template", "")).stem == Path(template_filename).stem:
                 file_path = test_definition_file.relative_to(suites_dir).with_suffix("")
-                test_id = f"{str(file_path).replace('/', '::')}::{test_name}"
+                test_id = f"{str(file_path)}::{test_name}"
                 yield AmarisoftSimTestDefinition(
                     name=test_id,
                     ue_config=test_declaration.get("ue_config", []),

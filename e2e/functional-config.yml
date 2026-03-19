@@ -26,7 +26,7 @@ inter_ru_ho:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: functional and mobility and inter_ru_ho
+    FILE_OR_DIR: tests/suites/functional/mobility/inter_ru_ho
     TESTBED: zmq_mme
 
 ping:
@@ -43,5 +43,5 @@ ping:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: functional and multiue and ping
+    FILE_OR_DIR: tests/suites/functional/multiue/ping
     TESTBED: zmq_mme

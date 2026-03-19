@@ -74,7 +74,7 @@ class Job:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{self.pipeline_name}/
   variables:
-    KEYWORDS: {self.pipeline_name} and {self.stage} and {self.name}
+    FILE_OR_DIR: tests/suites/{self.pipeline_name}/{self.stage}/{self.name}
     TESTBED: zmq_mme
 """
 
