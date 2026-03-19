@@ -82,9 +82,9 @@
       remote_path: /usr/local/bin/odu
       is_executable: true
 
-- name: open5gs
+- name: amarisoft-mme
   type: 5gc
-  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
       requests: 10%
@@ -93,5 +93,7 @@
     ephemeral-storage:
       requests: 6G
   resources:
+    - type: license
+      model: amarisoft-mme.*
     - type: zmq
       dummy: true

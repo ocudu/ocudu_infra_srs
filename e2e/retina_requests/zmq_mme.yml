@@ -4,7 +4,6 @@
 - name: amarisoft-ue
   type: ue
   image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
-  nof_ports: 64
   requirements:
     cpu:
       requests: 20%

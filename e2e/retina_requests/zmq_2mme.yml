@@ -4,7 +4,6 @@
 - name: amarisoft-ue
   type: ue
   image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
-  nof_ports: 64
   requirements:
     cpu:
       requests: 20%
@@ -21,7 +20,7 @@
       remote_path: /opt/lteue/trx_ocudu.so
       is_executable: true
 
-- name: ocudu-gnb-1
+- name: ocudu-gnb
   type: gnb
   image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
   requirements:
@@ -42,9 +41,9 @@
       remote_path: /usr/local/bin/gnb
       is_executable: true
 
-- name: ocudu-gnb-2
-  type: gnb
-  image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
+- name: amarisoft-mme-1
+  type: 5gc
+  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
       requests: 10%
@@ -53,17 +52,12 @@
     ephemeral-storage:
       requests: 6G
   resources:
+    - type: license
+      model: amarisoft-mme.*
     - type: zmq
       dummy: true
-  environment:
-    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb
-    - LD_LIBRARY_PATH: /opt/rohc/lib/
-  shared_files:
-    - local_path: ${OCUDU_PATH}/build_retina/apps/gnb/gnb
-      remote_path: /usr/local/bin/gnb
-      is_executable: true
 
-- name: amarisoft-mme
+- name: amarisoft-mme-2
   type: 5gc
   image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
   requirements:
