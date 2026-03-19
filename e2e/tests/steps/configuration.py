@@ -11,11 +11,14 @@ import tempfile
 from collections import defaultdict
 from pathlib import Path
 from pprint import pformat
-from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Dict, List, NamedTuple, Optional, Tuple, Union
 
+from retina.client.core import storage
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.protocol.channel_emulator_pb2 import EphemerisInfoType, NtnScenarioConfig, NtnScenarioType
+
+from .test_loader import RetinaNodeTypeDefinition, RetinaTestDefinition
 
 
 def configure_ntn_parameters(
@@ -453,76 +456,72 @@ def nr_arfcn_to_freq(nr_arfcn: int) -> float:
     return int(params.F_REF_Offs_MHz * 1e6 + params.delta_F_kHz * (nr_arfcn - params.N_REF_Offs) * 1e3)
 
 
+class _NodeConfig(NamedTuple):
+    attr: str  # attribute on RetinaTestDefinition and configs/ subdirectory
+    templates: list  # template names expected by the retina API
+
+
+_NODE_CONFIGS: Dict[storage.NodeTypeEnum, _NodeConfig] = {
+    storage.NodeTypeEnum.UE: _NodeConfig("ue", ["ue"]),
+    storage.NodeTypeEnum.CU: _NodeConfig("cu", ["cu", "qos"]),
+    storage.NodeTypeEnum.DU: _NodeConfig("du", ["du", "qos"]),
+    storage.NodeTypeEnum.GNB: _NodeConfig("gnb", ["cu", "du", "qos"]),
+    storage.NodeTypeEnum.FIVEGC: _NodeConfig("core", ["core", "ims"]),
+}
+
+
 def set_config_files(
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    ue_config_files: List[str],
-    ue_parameters: Dict[str, Any],
-    gnb_config_files: List[str],
-    gnb_parameters: Dict[str, Any],
-    core_config_files: List[str],
-    core_parameters: Dict[str, Any],
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, test_definition: RetinaTestDefinition
 ):
     """
     Overwrite default config files with the provided ones
     """
-
     with contextlib.ExitStack() as stack:
-        # Create empty temp file
-        tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
-        tmp_file.write(" ")  # Make it not empty to overwrite default one
-        tmp_file.flush()
+        retina_data.test_config = {}
 
-        # Create and populate gnb temp file
-        ue_tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
-        for ue_config_file in ue_config_files:
-            with (Path(__file__).parent.parent / "configs" / "ue" / ue_config_file).open("r", encoding="UTF-8") as file:
-                ue_config_content = file.read()
-            ue_tmp_file.write(ue_config_content + "\n")
-        ue_tmp_file.flush()
+        for node_type, node_cfg in _NODE_CONFIGS.items():
+            item: RetinaNodeTypeDefinition = getattr(test_definition, node_cfg.attr)
+            if not item.config and not item.parameters and not item.items:
+                continue
 
-        # Create and populate gnb temp file
-        gnb_tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
-        for gnb_config_file in gnb_config_files:
-            with (Path(__file__).parent.parent / "configs" / "gnb" / gnb_config_file).open(
-                "r", encoding="UTF-8"
-            ) as file:
-                gnb_config_content = file.read()
-            gnb_tmp_file.write(gnb_config_content + "\n")
-        gnb_tmp_file.flush()
+            retina_data.test_config[node_type.value] = {}
+            if item.config:
+                retina_data.test_config[node_type.value]["templates"] = _build_templates(stack, node_cfg, item.config)
+            if item.parameters:
+                retina_data.test_config[node_type.value]["parameters"] = item.parameters
+            if item.items:
+                logging.info(storage.clients[node_type])
+                retina_data.test_config[node_type.value]["node_list"] = [
+                    {
+                        "name": storage.clients[node_type][i].name,
+                        **(
+                            {"templates": _build_templates(stack, node_cfg, [*item.config, *child.config])}
+                            if child.config
+                            else {}
+                        ),
+                        **({"parameters": child.parameters} if child.parameters else {}),
+                    }
+                    for i, child in enumerate(item.items)
+                ]
 
-        # Create and populate core temp file
-        core_tmp_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))
-        for core_config_file in core_config_files:
-            with (Path(__file__).parent.parent / "configs" / "core" / core_config_file).open(
-                "r", encoding="UTF-8"
-            ) as file:
-                core_config_content = file.read()
-            core_tmp_file.write(core_config_content + "\n")
-        core_tmp_file.flush()
-
-        retina_data.test_config = {
-            "ue": {
-                "parameters": {"ue_simulator_mode": True, **ue_parameters},
-                "templates": {
-                    "ue": ue_tmp_file.name,
-                },
-            },
-            "gnb": {
-                "parameters": gnb_parameters,
-                "templates": {
-                    "cu": gnb_tmp_file.name,
-                    "du": tmp_file.name,
-                    "qos": tmp_file.name,
-                },
-            },
-            "5gc": {
-                "parameters": core_parameters,
-                "templates": {
-                    "core": core_tmp_file.name,
-                    "ims": tmp_file.name,
-                },
-            },
-        }
         retina_manager.parse_configuration(retina_data.test_config)
         retina_manager.push_all_config()
+
+
+def _build_templates(stack: contextlib.ExitStack, node_cfg: _NodeConfig, config_files: list[str]) -> Dict:
+    main, *extras = node_cfg.templates
+
+    merged = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))  # pylint: disable=consider-using-with
+    for cfg_file in config_files:
+        merged.write((Path(__file__).parent.parent / "configs" / node_cfg.attr / cfg_file).read_text(encoding="UTF-8"))
+        merged.write("\n")
+    merged.flush()
+
+    empty_file = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))  # pylint: disable=consider-using-with
+    empty_file.write(" ")  # Must be non-empty to overwrite default
+    empty_file.flush()
+
+    return {
+        main: merged.name,
+        **{extra: empty_file.name for extra in extras},
+    }
