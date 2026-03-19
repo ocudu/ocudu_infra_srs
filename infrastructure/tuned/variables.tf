@@ -13,5 +13,5 @@ variable "services_file" {
 variable "helm_version" {
   description = "Tuned Helm chart version."
   type        = string
-  default     = "0.5.0"
+  default     = "1.1.1"
 }

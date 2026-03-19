@@ -4,12 +4,9 @@
 replicaCount: 1
 
 image:
-  repository: softwareradiosystems/linuxptp
+  repository: registry.gitlab.com/ocudu/ocudu_elements/ocudu_helm/linuxptp
   pullPolicy: IfNotPresent
   tag: "${node.image_tag}"
-
-imagePullSecrets:
-  - name: regcred
 
 nameOverride: "linuxptp-${node_name}"
 fullnameOverride: "linuxptp-${node_name}"
