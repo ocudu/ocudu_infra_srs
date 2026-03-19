@@ -78,16 +78,25 @@ pipeline_name/stage_name/job_name.yml
 ```yml
 example: # Test Case
   # Selecting the test template
-  template: amarisoft_simulator.py 
-  # Mixing configs for each item
-  ue_config: [2cell_2t2r_bw100_band78_chsim.cfg, handover.cfg]
-  gnb_config:
-    [2t2r_bw100_band78.yml, base_slice.yml, pcaps.yml, 2cell_intradu_ho.yml]
-  core_config: [baseline.cfg]
+  template: ue_simulator.test_gnb
+  # Selecting the retina request
+  testbed: zmq_mme
+  # Feature IDs covered in this test
+  feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14]
+  # Configs and parameters for each item
+  ue:
+    config: [2cell_2t2r_bw100_band78_chsim.cfg, handover.cfg]
+    parameters:
+      nof_antennas: 2
+  gnb:
+    config:
+      [2t2r_bw100_band78.yml, base_slice.yml, pcaps.yml, 2cell_intradu_ho.yml]
+  core:
+    config: [baseline.cfg]
   # Adding pass/fail criteria to the test
   criteria:
-    dl_bitrate: 100.0e+6
-    ul_bitrate: 100.0e+6
+    dl_bitrate: 10.0e+6
+    ul_bitrate: 10.0e+6
     errors: 0
     warnings: 0
 ```

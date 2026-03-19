@@ -65,6 +65,9 @@ markers = [
   "example",
   "example_srsue",
   "s72",
+  "MVP-FUNC-MOB-1-b",
+  "MVP-FUNC-MOB-1-c",
+  "MVP-FUNC-MOB-14",
 ]
 minversion = "6.0"
 python_files = [

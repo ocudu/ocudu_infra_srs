@@ -7,7 +7,7 @@ Steps related with stubs / resources
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, Generator, Optional
+from typing import Any, Callable, Dict, Generator
 
 import pytest
 import yaml
@@ -56,7 +56,8 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
     """
 
     name: str
-    retina_request: Optional[str]
+    retina_request: str
+    feature_ids: list[str]
     criteria: Dict[str, float]
     # Configs
     ue: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
@@ -70,7 +71,8 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
         """Create object from dictionary with type"""
         return cls(
             name=name,
-            retina_request="retina_requests/" + data.get("request", "zmq_mme") + ".yml",
+            retina_request=data.get("request", "zmq_mme"),
+            feature_ids=data.get("feature_ids", []),
             criteria=data.get("criteria", {}),
             ue=RetinaNodeTypeDefinition.from_dict(data.get("ue", {})),
             cu=RetinaNodeTypeDefinition.from_dict(data.get("cu", {})),
@@ -101,7 +103,12 @@ def load_tests(func: Callable):
     return pytest.mark.parametrize(
         "test_definition,retina_request",
         [
-            pytest.param(tdef, tdef.retina_request, id=tdef.name)
+            pytest.param(
+                tdef,
+                f"retina_requests/{tdef.retina_request}/.yml",
+                id=tdef.name,
+                marks=[getattr(pytest.mark, item) for item in (tdef.retina_request, *tdef.feature_ids)],
+            )
             for tdef in _parse_test_definitions(func.__module__.split(".")[-1] + "." + func.__qualname__)
         ],
         indirect=["retina_request"],

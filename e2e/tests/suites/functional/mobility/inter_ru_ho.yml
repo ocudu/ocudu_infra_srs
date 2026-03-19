@@ -8,6 +8,7 @@
 baseline:
   template: ue_simulator.test_gnb
   testbed: zmq_mme
+  feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14]
   ue:
     config: [2cell_2t2r_bw100_band78_chsim.cfg, handover.cfg]
   gnb:
