@@ -12,13 +12,7 @@ resource "kubernetes_secret_v1" "registry_credentials" {
   type = "kubernetes.io/dockerconfigjson"
 
   data = {
-    ".dockerconfigjson" = jsonencode({
-      auths = {
-        (var.registry_server) = {
-          auth = var.registry_auth
-        }
-      }
-    })
+    ".dockerconfigjson" = var.registry_auth
   }
 
   depends_on = [kubernetes_namespace_v1.retina]

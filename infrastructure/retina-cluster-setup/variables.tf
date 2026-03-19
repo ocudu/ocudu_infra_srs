@@ -10,15 +10,9 @@ variable "namespace" {
 
 # Registry credentials
 variable "registry_auth" {
-  description = "Base64-encoded docker registry auth token (base64 of 'username:token')"
+  description = "Content of the .dockerconfigjson secret (full docker auth config JSON)"
   type        = string
   sensitive   = true
-}
-
-variable "registry_server" {
-  description = "Docker registry server hostname"
-  type        = string
-  default     = "registry.gitlab.com"
 }
 
 variable "registry_secret_namespaces" {
