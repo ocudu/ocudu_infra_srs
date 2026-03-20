@@ -66,7 +66,7 @@ For a full list of supported runner fields see `manifests/runner-values.yaml.tft
 | --- | --- | --- | --- |
 | `runners_file` | `list(string)` | required | Paths to runner YAML files |
 | `cluster_type` | `string` | required | Only runners with a matching `cluster_types` entry are deployed; runners without `cluster_types` deploy to all clusters |
-| `runner_update_token` | `string` | required, sensitive | GitLab API token used to pause/unpause runners during updates |
+| `gitlab_runner_token` | `string` | required, sensitive | GitLab API token used to pause/unpause runners during updates |
 | `helm_version` | `string` | `"0.79.1"` | GitLab Runner Helm chart version |
 
 ## CUsing this module
@@ -83,7 +83,7 @@ terraform {
 
 variable "infra_srs_path"      { type = string }
 variable "infra_srs_ref"       { type = string }
-variable "runner_update_token" {
+variable "gitlab_runner_token" {
   type      = string
   sensitive = true
 }
@@ -95,8 +95,8 @@ module "gitlab_runners" {
 
   runners_file        = [abspath("${path.module}/...runners.yaml")]
   cluster_type        = "my-type"
-  runner_update_token = var.runner_update_token
+  gitlab_runner_token = var.gitlab_runner_token
 }
 ```
 
-For CI template details see [opentofu.md](../_docs/04_opentofu.md). Please define `TF_VAR_runner_update_token`, which must be configured as a masked CI/CD variable in GitLab project settings.
+For CI template details see [opentofu.md](../_docs/04_opentofu.md). Please define `TF_VAR_gitlab_runner_token`, which must be configured as a masked CI/CD variable in GitLab project settings.

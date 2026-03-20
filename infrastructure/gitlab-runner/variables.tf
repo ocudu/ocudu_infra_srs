@@ -22,7 +22,7 @@ variable "helm_version" {
   default     = "0.79.1"
 }
 
-variable "runner_update_token" {
+variable "gitlab_runner_token" {
   description = "GitLab API token used by pre/post apply null_resource provisioners to pause and unpause runners during Helm chart updates."
   type        = string
   sensitive   = true

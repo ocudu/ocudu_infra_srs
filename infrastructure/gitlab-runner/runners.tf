@@ -145,7 +145,7 @@ resource "null_resource" "pre_apply_pause" {
         --runners-def '${jsonencode(var.runners_file)}'
     EOT
     environment = {
-      RUNNER_TOKEN = var.runner_update_token
+      RUNNER_TOKEN = var.gitlab_runner_token
     }
   }
 }
@@ -191,7 +191,7 @@ resource "null_resource" "post_apply_unpause" {
         --runners-def '${jsonencode(var.runners_file)}'
     EOT
     environment = {
-      RUNNER_TOKEN = var.runner_update_token
+      RUNNER_TOKEN = var.gitlab_runner_token
     }
   }
 }
