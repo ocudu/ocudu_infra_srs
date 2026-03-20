@@ -175,7 +175,9 @@ def _agent_factory(
         logging.info("Closing the agent")
         retina_servicer.Stop(UInt32Value(value=0), None)
         health_servicer.enter_graceful_shutdown()
-        server.stop(None)
+        server.stop(grace=5)
+
+    retina_servicer.set_shutdown_callback(close)
 
     # Start
     server.start()
@@ -189,6 +191,8 @@ def _agent_factory(
     signal.signal(signal.SIGTERM, lambda signum, frame: close())
 
     server.wait_for_termination()
+
+    logging.info("Agent Closed")
 
 
 def main():

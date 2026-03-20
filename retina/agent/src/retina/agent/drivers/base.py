@@ -14,7 +14,7 @@ import traceback
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Dict, Generator, Optional, Tuple
+from typing import Callable, Dict, Generator, Optional, Tuple
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
@@ -59,9 +59,14 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         self._resource_folder: Path = Path(resource_folder).resolve()
         self._resource_folder.mkdir(parents=True, exist_ok=True)
         self._last_artifact_id = None
+        self._shutdown_callback: Optional[Callable] = None
         ResourceManager.load_resources(self._resource_folder)
         self._save_to_testbed()
         super().__init__(*args, **kwargs)
+
+    def set_shutdown_callback(self, callback: Callable) -> None:
+        """Add a shutdown callback"""
+        self._shutdown_callback = callback
 
     def _save_to_testbed(self):  # This is temporal, remove it when testbed is removed
         """
@@ -294,6 +299,11 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         self.close_previous_report_folder()
         self._last_artifact_id = None
         return StopResponse()
+
+    def Shutdown(self, request: Empty, context: Optional[grpc.ServicerContext]) -> Empty:
+        if self._shutdown_callback is not None:
+            self._shutdown_callback()
+        return Empty()
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         return Metrics()

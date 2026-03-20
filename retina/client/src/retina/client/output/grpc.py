@@ -6,9 +6,11 @@ Handle Retina Communication with the agent
 """
 
 import logging
+import socket
+from contextlib import suppress
 from random import randint
 from threading import Event, Thread
-from time import sleep
+from time import sleep, time
 from typing import Any, Dict, Optional, Tuple, Type
 
 import grpc
@@ -49,6 +51,7 @@ class GrpcAdaptor(CommunicationPort):
         self._grpc_channel_dict: Dict[RanStub, grpc.Channel] = {}
         self._thread_alive_dict: Dict[RanStub, Thread] = {}
         self._event_alive_dict: Dict[RanStub, Event] = {}
+        self._stub_address_dict: Dict[RanStub, Tuple[str, int]] = {}
         super().__init__(*args, **kwargs)
 
     def create_client(self, node_type: str, *com_args) -> RanStub:
@@ -70,9 +73,11 @@ class GrpcAdaptor(CommunicationPort):
         stub = BaseStub(channel)
         # pylint: disable=unnecessary-dunder-call
         HealthStub.__init__(stub, channel)
-        self._KIND_CODENAME_DICT[node_type].__init__(stub, channel)
+        self._wait_for_agent(stub)
 
+        self._KIND_CODENAME_DICT[node_type].__init__(stub, channel)
         self._grpc_channel_dict[stub] = channel
+        self._stub_address_dict[stub] = (ip_address, port)
         self._event_alive_dict[stub] = Event()
         self._thread_alive_dict[stub] = Thread(target=self._keep_alive, args=(stub, self._event_alive_dict[stub]))
         self._thread_alive_dict[stub].start()
@@ -90,13 +95,21 @@ class GrpcAdaptor(CommunicationPort):
     def push_parameter(stub: RanStub, key: str, value: Any, param_namespace: str) -> None:
         stub.SetParameter(Parameter(name=f"{param_namespace}.{key}", value=str(value)))
 
-    def close_client(self, stub: RanStub) -> None:
-        if stub in self._grpc_channel_dict:
+    def _close_all_keep_alive(self) -> None:
+        for stub in self._thread_alive_dict:  # pylint: disable=consider-using-dict-items
             if self._thread_alive_dict[stub].is_alive():
-                logging.info("Waiting for Keep alive thread to finish")
                 self._event_alive_dict[stub].set()
                 self._thread_alive_dict[stub].join()
-                logging.info("Keep alive thread ended.")
+
+    def close_client(self, stub: RanStub) -> None:
+        # When closing, we need to first close all keep alive threads to avoid fake comm error messages reported
+        self._close_all_keep_alive()
+        if stub in self._grpc_channel_dict:
+            ip, port = self._stub_address_dict[stub]
+            with suppress(OSError, grpc.RpcError):
+                with socket.create_connection((ip, port), timeout=1):
+                    # Shutdown called only if the port can be open (the agent is still listening)
+                    stub.Shutdown.with_call(Empty(), timeout=1)
             self._grpc_channel_dict[stub].close()
 
     @staticmethod
@@ -113,6 +126,19 @@ class GrpcAdaptor(CommunicationPort):
         except grpc.RpcError as err:
             logging.error(ErrorReportedByAgent(err))
             return str(id(stub))
+
+    @staticmethod
+    def _wait_for_agent(stub: HealthStub, timeout: int = 30) -> None:
+        deadline = time() + timeout
+        while time() < deadline:
+            try:
+                response: HealthCheckResponse = stub.Check(HealthCheckRequest())
+                if response.status == HealthCheckResponse.SERVING:
+                    return
+            except grpc.RpcError:
+                pass
+            sleep(1)
+        raise TimeoutError(f"Agent not ready after {timeout}s")
 
     @staticmethod
     def _keep_alive(stub: HealthStub, event: Event, step: int = _DEFAULT_KEEP_ALIVE_PERIOD) -> None:
@@ -168,7 +194,6 @@ class _RetryOnRpcErrorClientInterceptor(grpc.UnaryUnaryClientInterceptor, grpc.S
                 # If status code is in retryable status codes, sleep and continue/retry
                 if self.status_for_retry and ErrorReportedByAgent(response).code in self.status_for_retry:
                     sleep_ms = randint(self.min_backoff, min(self.min_backoff * (try_i + 1), self.max_backoff))
-                    logging.warning("GRPC communication failed. Waiting %s ms before retrying.", sleep_ms)
                     sleep(sleep_ms / 1000)
                     continue
             break

@@ -147,6 +147,7 @@ services:
       nofile:
         soft: 65536
         hard: 65536
+    restart: unless-stopped
     container_name: amarisoft-ue
     profiles:
       - all
@@ -181,6 +182,8 @@ services:
       # Following lines overwrite the retina code inside the container with your current code
       - ../protocol/src/retina/protocol:/usr/local/lib/python3.12/dist-packages/retina/protocol
       - ../agent/src/retina/agent:/usr/local/lib/python3.12/dist-packages/retina/agent
+    tmpfs: &agent_tmpfs
+      - /var/log/retina
     networks:
       retina:
         ipv4_address: *amariue_ip
@@ -190,6 +193,7 @@ services:
       type: ue
 
   amarisoft-ue-remote:
+    restart: unless-stopped
     container_name: amarisoft-ue-remote
     profiles:
       - all
@@ -202,11 +206,12 @@ services:
         agent: "service:agent-image"
     environment:
       RETINA_IP: &amariue_remote_ip 172.20.0.3
-      RETINA_SECRETS: ${AMARISOFT_REMOTE_UE_IP}
+      RETINA_SECRETS: ${AMARISOFT_REMOTE_UE_IP:-}
     configs:
       - source: amari_remote_ue.yml
         target: /etc/retina/resources/amari_remote_ue.yml
     volumes: *agent_volumes
+    tmpfs: *agent_tmpfs
     networks:
       retina:
         ipv4_address: *amariue_remote_ip
@@ -214,6 +219,7 @@ services:
       type: ue
 
   srs-ue:
+    restart: unless-stopped
     container_name: srs-ue
     profiles:
       - all
@@ -237,6 +243,7 @@ services:
       retina:
         ipv4_address: *srsue_ip
     volumes: *agent_volumes
+    tmpfs: *agent_tmpfs
     devices:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
@@ -262,6 +269,7 @@ services:
     entrypoint: ["true"]
 
   ocudu-gnb-1: &gnb_service
+    restart: unless-stopped
     container_name: ocudu-gnb-1
     profiles:
       - all
@@ -282,6 +290,7 @@ services:
       - SYS_NICE
       - CAP_SYS_PTRACE
     volumes: *agent_volumes
+    tmpfs: *agent_tmpfs
     environment:
       RETINA_IP: &gnb0_ip 172.20.0.5
       PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
@@ -373,6 +382,7 @@ services:
       type: du
 
   ocudu-gnb-remote:
+    restart: unless-stopped
     container_name: gnb-remote
     profiles:
       - all
@@ -384,12 +394,13 @@ services:
       additional_contexts:
         agent: "service:agent-image"
     volumes: *agent_volumes
+    tmpfs: *agent_tmpfs
     configs:
       - source: gnb_remote.yml
         target: /etc/retina/resources/gnb_remote.yml
     environment:
       RETINA_IP: &gnb_remote_ip 172.20.0.10
-      RETINA_SECRETS: ${GNB_REMOTE_IP}
+      RETINA_SECRETS: ${GNB_REMOTE_IP:-}
       PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb
     networks:
       retina:
@@ -398,6 +409,7 @@ services:
       type: gnb
 
   open5gs:
+    restart: unless-stopped
     container_name: open5gs
     profiles:
       - all
@@ -424,12 +436,14 @@ services:
       retina:
         ipv4_address: *open5gs_ip
     volumes: *agent_volumes
+    tmpfs: *agent_tmpfs
     devices:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
       type: 5gc
 
   amarisoft-5gc:
+    restart: unless-stopped
     container_name: amarisoft-5gc
     profiles:
       - all
@@ -456,12 +470,14 @@ services:
       retina:
         ipv4_address: *amari5gc_ip
     volumes: *agent_volumes
+    tmpfs: *agent_tmpfs
     devices:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
       type: 5gc
 
   ntn-channel-emulator:
+    restart: unless-stopped
     container_name: ntn-channel-emulator
     profiles:
       - all
@@ -478,10 +494,12 @@ services:
     networks:
       retina:
         ipv4_address: *emulator_ip
+    tmpfs: *agent_tmpfs
     x-testbed:
       type: channel-emulator
 
   flexric:
+    restart: unless-stopped
     container_name: flexric
     profiles:
       - all
@@ -498,6 +516,7 @@ services:
     networks:
       retina:
         ipv4_address: *flexric_ip
+    tmpfs: *agent_tmpfs
     x-testbed:
       type: ric
 
@@ -515,17 +534,17 @@ configs:
   amari_remote_ue.yml:
     content: |
       - type: Remote
-        address: ${AMARISOFT_REMOTE_UE_IP}
+        address: ${AMARISOFT_REMOTE_UE_IP:-}
         user: unknown
         password: unknown
         path: "/opt/lteue"
       - type: API
-        address: ${AMARISOFT_REMOTE_UE_IP}
+        address: ${AMARISOFT_REMOTE_UE_IP:-}
         port: 9002
   gnb_remote.yml:
     content: |
       - type: Remote
-        address: ${GNB_REMOTE_IP}
+        address: ${GNB_REMOTE_IP:-}
         user: unknown
         password: unknown
         path: ""

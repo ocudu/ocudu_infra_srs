@@ -22,6 +22,8 @@ service Base {
   rpc GetArtifactsId(google.protobuf.Empty) returns (google.protobuf.StringValue) {};
   // Download the artifacts
   rpc DownloadArtifacts(google.protobuf.Empty) returns (stream google.protobuf.BytesValue) {};
+  // Stop the sut and close the agent server
+  rpc Shutdown(google.protobuf.Empty) returns (google.protobuf.Empty) {};
 };
 
 message RetinaInfo {

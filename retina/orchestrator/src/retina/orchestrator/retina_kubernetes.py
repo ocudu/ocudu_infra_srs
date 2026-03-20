@@ -49,6 +49,7 @@ class PodStatus(Enum):
     RUNNING = "running"
     FAILED = "failed"
     ERROR = "error"
+    SUCCEEDED = "succeeded"
 
 
 class ConnectionPath(Enum):
@@ -652,17 +653,20 @@ class Kubernetes(KubernetesManager):
         namespace = pod.metadata.namespace
         grace_period = pod.spec.termination_grace_period_seconds
 
-        if pod.status.phase.lower() != PodStatus.RUNNING.value:
-            # Warn if pod is not in running state
-            logging_function = logging.error if pod.status.phase.lower() == PodStatus.FAILED.value else logging.warning
-            logging_function(
-                "Deleting %s: was not running. Status %s. Latest event: %s",
-                pod_name,
-                pod.status.phase,
-                self.get_pod_event(pod),
-            )
-        else:
-            logging.info("Deleting %s: starting %s sec grace period", pod_name, grace_period)
+        if pod.status.phase.lower() != PodStatus.SUCCEEDED.value:
+            if pod.status.phase.lower() != PodStatus.RUNNING.value:
+                # Warn if pod is not in running state
+                logging_function = (
+                    logging.error if pod.status.phase.lower() == PodStatus.FAILED.value else logging.warning
+                )
+                logging_function(
+                    "Deleting %s: was not running. Status %s. Latest event: %s",
+                    pod_name,
+                    pod.status.phase,
+                    self.get_pod_event(pod),
+                )
+            else:
+                logging.info("Deleting %s: starting %s sec grace period", pod_name, grace_period)
 
         if not dryrun:
             self._delete_pod(pod_name, namespace, grace_period)
@@ -932,7 +936,8 @@ class Kubernetes(KubernetesManager):
                 ):
                     futures.append(executor.submit(self._delete_deployment_and_wait, deployment, dryrun))
         concurrent.futures.wait(futures)
-        logging.info("Deletion completed for deployments")
+        if futures:
+            logging.info("Deletion completed for deployments")
 
         # Pods
         futures = []
@@ -945,13 +950,13 @@ class Kubernetes(KubernetesManager):
                 ):
                     futures.append(executor.submit(self._delete_pod_and_wait, pod, dryrun))
         concurrent.futures.wait(futures)
-        logging.info("Deletion completed for pods")
+        if futures:
+            logging.info("Deletion completed for pods")
 
         # ConfigMaps
+        futures = []
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = []
             configmaps_to_delete = []
-
             # First collect all configmaps to delete
             for config_map_name, config_map in self._get_config_map_dict(namespace).items():
                 if (
@@ -969,4 +974,5 @@ class Kubernetes(KubernetesManager):
 
             # Wait for all deletions to complete
             concurrent.futures.wait(futures)
-        logging.info("Deletion completed for configmaps")
+        if futures:
+            logging.info("Deletion completed for configmaps")
