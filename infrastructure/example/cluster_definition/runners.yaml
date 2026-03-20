@@ -1,0 +1,101 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+global:
+  image:
+    registry: registry.gitlab.com
+    image: gitlab-org/gitlab-runner
+    tag: ubuntu-v18.2.0
+  gitlab_url: https://gitlab.com/
+  check_interval: 1
+  cache:
+    type: s3
+    path: gl-runner-amd64
+    s3:
+      server_address: "10.11.12.13:9000"
+      access_key: "user"
+      secret_key: "password"
+      bucket_name: "ocudu-gl-runner"
+      insecure: true
+
+runners:
+  untagged:
+    - id: 12345677
+      name: glr-untagged
+      token: glrt-xxxx
+      concurrent: 5
+      tags: untagged
+      ephemeral_storage_request_overwrite_max_allowed: 200Gi
+      ephemeral_storage_limit_overwrite_max_allowed: 200Gi
+      node_tolerations:
+        machine=untagged: NoSchedule
+      cluster_types:
+        - ocudu
+  builder:
+    - id: 12345678
+      name: glr-build
+      token: glrt-xxxx
+      concurrent: 2
+      tags: saas-linux-medium-amd64, saas-linux-large-amd64
+      cpu_request: 6
+      cpu_limit: 6
+      memory_request: 12Gi
+      memory_limit: 12Gi
+      ephemeral_storage_request: 100Gi
+      ephemeral_storage_limit: 100Gi
+      helper_cpu_limit: "300m"
+      helper_memory_limit: "300Mi"
+      node_tolerations:
+        machine=builder: NoSchedule
+      cluster_types:
+        - ocudu
+  retina:
+    - image:
+      id: 12345679
+      name: glr-retina
+      token: glrt-xxxx
+      concurrent: 4
+      tags: retina, zmq, s72, rf
+      cpu_request: 1
+      cpu_limit: 2
+      memory_request: 3Gi
+      memory_limit: 3Gi
+      ephemeral_storage_request_overwrite_max_allowed: 10Gi
+      ephemeral_storage_limit_overwrite_max_allowed: 10Gi
+      service_account: "glr-dc-retina-e2e-gitlab-runner"
+      rbac:
+        clusterWideAccess: true
+        rules:
+          - apiGroups: [""]
+            resources:
+              [
+                "pods",
+                "pods/attach",
+                "pods/exec",
+                "pods/log",
+                "services",
+                "endpoints",
+                "secrets",
+                "events",
+                "configmaps",
+                "namespaces",
+                "nodes",
+              ]
+            verbs:
+              ["get", "list", "watch", "create", "delete", "patch", "update"]
+          - apiGroups: ["apps"]
+            resources:
+              ["deployments", "replicasets", "daemonsets", "statefulsets"]
+            verbs:
+              ["get", "list", "watch", "create", "delete", "patch", "update"]
+          - apiGroups: ["batch"]
+            resources: ["jobs", "cronjobs"]
+            verbs:
+              ["get", "list", "watch", "create", "delete", "patch", "update"]
+          - apiGroups: ["events.k8s.io"]
+            resources: ["events"]
+            verbs: ["get", "list", "watch"]
+      node_tolerations:
+        purpose=retina: NoSchedule
+      cluster_types:
+        - ocudu

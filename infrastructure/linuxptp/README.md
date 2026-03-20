@@ -19,7 +19,7 @@ Node-level linuxptp configuration lives under `services.<node>.linuxptp`. Global
 ```yaml
 global:
   linuxptp:
-    image_tag: "v4.4_1.1.2"
+    image_tag: "v4.4_2.0.0"
     config:
       dataset_comparison: G.8275.x
       G.8275.defaultDS.localPriority: 128
@@ -44,8 +44,8 @@ services:
   my-node:
     linuxptp:
       enabled: true
-      interface_name: enp1s0f0np0
-      image_tag: "v4.4_1.1.2-arm64"  # optional — overrides global image_tag
+      interface_name: interfaceName
+      image_tag: "v4.4_2.0.0-arm64"    # optional — overrides global image_tag
       config:                          # optional — merged on top of global config
         summary_interval: -3
 ```

@@ -1,0 +1,154 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+global:
+  name: retina
+  networking-mode: nodePort
+  version: 1.0.0
+  dnsPolicy: Default
+
+cluster_resource_list:
+  # Amarisoft Licenses
+  - type: license
+    model: amarisoft-ue-1
+    address: 10.11.12.13
+    args: myUeTag
+  - type: license
+    model: amarisoft-ue-2
+    address: 10.11.12.13
+    args: myUeTag
+  - type: license
+    model: amarisoft-mme-1
+    address: 10.11.12.13
+    args: myMmeTag
+  - type: license
+    model: amarisoft-mme-2
+    address: 10.11.12.13
+    args: myMmeTag
+  # External UE SimBox
+  - type: remote
+    model: uesim
+    address: 10.11.12.14
+    user: user
+    password: password
+    path: /my/path
+  - type: api
+    model: uesim
+    address: 10.11.12.14
+    port: 9002
+  # External Core
+  - type: remote
+    model: callbox
+    address: 10.11.12.15
+    user: user
+    password: password
+    path: /my/path
+  - type: api
+    model: callbox
+    address: 10.11.12.15
+    port: 9002
+  - type: core
+    model: callbox
+    address: 192.168.0.2
+    port: 38412
+    mask: 24
+
+nodes:
+  - name: zmq_server
+    type: linux-x86
+    compute-resources:
+      cpu: 32
+      memory: 64G
+      ephemeral-storage: 100G
+    resources:
+      - type: zmq
+        model: slot
+        space: 1
+      - type: zmq
+        model: slot
+        space: 2
+
+  - name: gnb_server
+    type: linux-x86
+    compute-resources:
+      cpu: 24
+      memory: 64G
+      ephemeral-storage: 100G
+    cpu_isolation:
+      low_priority_cpus: ""
+      l1_dl_cpus: ""
+      l1_ul_cpus: ""
+      l2_cell_cpus: ""
+      ru_cpus: ""
+      lcores_eal_args: "(0-1)@(1-22) -a 0000:11:01.0 -a 0000:11:02.0"
+    resources:
+      - type: ru
+        model: s72-ocudu
+        space: 3
+        address: ""
+        network_interface:
+          - "0000:11:01.0"
+          - "0000:11:02.0"
+        du_mac_addr:
+          - 00:11:22:33:44:55
+          - 00:22:33:44:55:66
+        ru_mac_addr:
+          - 00:33:44:55:66:77
+          - 00:44:55:66:77:88
+        vlan_tag_cp:
+          - "16"
+          - "17"
+        vlan_tag_up:
+          - "16"
+          - "17"
+        prach_port_id: "[4, 5, 6, 7]"
+        dl_port_id: "[0, 1, 2, 3]"
+        ul_port_id: "[0, 1, 2, 3]"
+      - type: ru
+        model: s72-fr2-ocudu
+        space: 3
+        address: ""
+        network_interface: ["0000:11:01.0"]
+        du_mac_addr: ["00:11:22:33:44:55"]
+        ru_mac_addr: ["00:33:44:55:66:77"]
+        vlan_tag_cp: ["16"]
+        vlan_tag_up: ["16"]
+        prach_port_id: "[4]"
+        dl_port_id: "[0, 1, 2, 3]"
+        ul_port_id: "[0]"
+
+  - name: rf_server
+    type: linux-x86
+    compute-resources:
+      cpu: 8
+      memory: 16G
+      ephemeral-storage: 50G
+    resources:
+      - type: android
+        model: xxxx
+        connection: usb
+        space: 1
+        serial_id: abcdefgh
+        imsi: 000000000000001
+        k: 0123456789ABCDEF0123456789ABCDEF
+        amf: "8000"
+        opc: 0123456789ABCDEF0123456789ABCDEF
+        adb_key: KEY...
+      - type: sdr
+        model: b200
+        connection: usb
+        space: 1
+        args: serial=0123456,clock=external,num_recv_frames=64,num_send_frames=64
+        sample_rate: 15360000
+        tx_gain: 60
+        rx_gain: 40
+        sync: external
+      - type: sdr
+        model: x300
+        connection: network
+        space: 1
+        args: type=x300,addr=192.168.1.3,send_frame_size=8000,recv_frame_size=8000
+        sample_rate: 92160000
+        tx_gain: 25
+        rx_gain: 20
+        sync: external

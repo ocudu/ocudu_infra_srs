@@ -1,0 +1,104 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+    infra_srs_path:
+      type: string
+      default: ocudu/ocudu_infra_srs
+      description: "OCUDU Infra SRS repository path."
+    infra_srs_ref:
+      type: string
+      default: main
+      description: "OCUDU Infra SRS reference branch or tag."
+---
+include:
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/workflow.yml
+
+variables:
+  # Customize those variables to use gitlab.com ocudu infra srs or your fork
+  RETINA_REGISTRY_URI: registry.gitlab.com/ocudu/ocudu_infra_srs/retina
+  RETINA_PYPI_INDEX: https://gitlab.com/api/v4/projects/78028160/packages/pypi/simple
+  # Tag of your Terraform Runner
+  CLUSTER_TAG: terraform
+
+stages:
+  - infra
+
+retina iac:
+  stage: infra
+  rules:
+    - if: $ON_MR
+    - if: $ON_DEFAULT_BRANCH
+  trigger:
+    include:
+      - project: $[[ inputs.infra_srs_path ]]
+        ref: $[[ inputs.infra_srs_ref ]]
+        file: infrastructure/.gitlab-ci.yml
+        inputs:
+          infra_srs_path: $[[ inputs.infra_srs_path ]]
+          infra_srs_ref: $[[ inputs.infra_srs_ref ]]
+          kubeconfig_var: KUBECONFIG
+          runner_tags:
+            - ${CLUSTER_TAG}
+          state_name: retina
+          root_dir: cluster_definition/retina
+    strategy: mirror
+  variables: # For secrets defined in CI
+    TF_VAR_registry_auth: $REGISTRY_AUTH
+    TF_VAR_gitlab_runner_token: $RUNNER_TOKEN
+  needs: []
+
+gitlab runners iac:
+  stage: infra
+  rules:
+    - if: $ON_MR
+    - if: $ON_DEFAULT_BRANCH
+  trigger:
+    include:
+      - project: $[[ inputs.infra_srs_path ]]
+        ref: $[[ inputs.infra_srs_ref ]]
+        file: infrastructure/.gitlab-ci.yml
+        inputs:
+          infra_srs_path: $[[ inputs.infra_srs_path ]]
+          infra_srs_ref: $[[ inputs.infra_srs_ref ]]
+          kubeconfig_var: KUBECONFIG
+          runner_tags:
+            - ${CLUSTER_TAG}
+          state_name: runners
+          root_dir: cluster_definition/runners
+    strategy: mirror
+  variables: # For secrets defined in CI
+    TF_VAR_gitlab_runner_token: $RUNNER_TOKEN
+  needs: []
+
+services iac:
+  stage: infra
+  rules:
+    - if: $ON_MR
+    - if: $ON_DEFAULT_BRANCH
+  trigger:
+    include:
+      - project: $[[ inputs.infra_srs_path ]]
+        ref: $[[ inputs.infra_srs_ref ]]
+        file: infrastructure/.gitlab-ci.yml
+        inputs:
+          infra_srs_path: $[[ inputs.infra_srs_path ]]
+          infra_srs_ref: $[[ inputs.infra_srs_ref ]]
+          kubeconfig_var: KUBECONFIG
+          runner_tags:
+            - ${CLUSTER_TAG}
+          state_name: services
+          root_dir: cluster_definition/services
+    strategy: mirror
+  needs: []

@@ -43,6 +43,8 @@ your-private-infra-repo/
 
 Each module deployment can be a separate Terraform root module (its own `main.tf`). This gives independent state, targeted applies, and clear separation of concerns. Another option is to put different modules in the same root module once they're related (f.e. `retina/main.tf` for all retina modules, `runners/main.tf` and `services/main.tf`).
 
+To see a full example of a cluster using all modules provided in this repo, go to the [example folder](../example/README.md).
+
 ### `retina_info.yaml`
 
 See the [Retina Cluster Setup docs](../../retina/_docs/02_cluster_setup.md#node-definitions).
@@ -70,7 +72,7 @@ global:
       cmd: /sbin/shutdown -r +1 'tuned profile applied by helm'
       markerDir: /var/lib/tuned-helm
   linuxptp:
-    image_tag: "v4.4_1.1.2"
+    image_tag: "v4.4_2.0.0"
     config:
       dataset_comparison: G.8275.x
       domainNumber: 24
@@ -174,6 +176,8 @@ For the full CI template reference and available inputs, see [opentofu.md](./04_
 
 ## Adding a new cluster
 
+See an [example of a complete cluster](../example/README.md).
+
 1. **Create config files** in your consumer repo.
 
 2. **Create consumer `main.tf` files** — Create one per module to deploy or combine multiple modules into one. See each module's README for the exact consumer template. Use `abspath("${path.module}/....yaml")` to pass the config path.
@@ -183,10 +187,16 @@ For the full CI template reference and available inputs, see [opentofu.md](./04_
 4. **Add CI trigger jobs** to `.gitlab-ci.yml`, following the pattern above.
 
 5. **Set CI/CD variables** in your GitLab project:
-   - A **file-type** variable containing the kubeconfig (referenced by `kubeconfig_var` input)
-   - Variables for any module-specific secrets.
 
-6. **Manually install a Terraform runner on the cluster** — This runner must exist before any IaC job can run, so it cannot be managed by the `gitlab-runner` module itself (doing so would destroy it while trying to recreate it). [Install it manually](https://docs.gitlab.com/runner/install):
+ | in .gitlab-ci.yml | variable name (example) | variable type | Description |
+ |-------|-------------------------|---------------|-------------|
+ | `kubeconfig_var` | `KUBECONFIG` | file | kubeconfig content |
+ | `TF_VAR_registry_auth` | `REGISTRY_AUTH` | var | Base64-encoded `username:token` to access the Retina registry |
+ | `TF_VAR_gitlab_runner_token` | `RUNNER_TOKEN` | var | GitLab API token used to pause/unpause runners during updates |
+ | `RETINA_REGISTRY_URI` | | | Retina Registry URL (f.e. `registry.gitlab.com/ocudu/ocudu_infra_srs/retina`) |
+ | `RETINA_PYPI_INDEX` | | | Retina pypi index URL (f.e. `https://gitlab.com/api/v4/projects/78028160/packages/pypi/simple`) |
+
+1. **Manually install a Terraform runner on the cluster** — This runner must exist before any IaC job can run, so it cannot be managed by the `gitlab-runner` module itself (doing so would destroy it while trying to recreate it). [Install it manually](https://docs.gitlab.com/runner/install):
 
    The runner needs:
    - A tag matching what you will pass as `runner_tags` in your CI trigger jobs (e.g. `terraform-my-cluster`)

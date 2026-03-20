@@ -1,0 +1,106 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+global:
+  tuned:
+    image:
+      repository: registry.gitlab.com/ocudu/ocudu_elements/ocudu_helm/tuned-agent
+      tag: "v2.21.0_1.0.0"
+      pullPolicy: IfNotPresent
+    hostPathTuned: /usr/lib/tuned
+    securityContext:
+      privileged: true
+    resources: {}
+    annotations: {}
+    restartOnConfigChange: true
+    nodeSelector: {}
+    reboot:
+      enabled: true
+      cmd: /sbin/shutdown -r +1 'tuned profile applied by helm'
+      markerDir: /var/lib/tuned-helm
+  linuxptp:
+    image_tag: "v4.4_2.0.0"
+    config:
+      dataset_comparison: G.8275.x
+      G.8275.defaultDS.localPriority: 128
+      maxStepsRemoved: 255
+      logAnnounceInterval: -3
+      logSyncInterval: -4
+      logMinDelayReqInterval: -4
+      serverOnly: 0
+      clientOnly: 1
+      G.8275.portDS.localPriority: 128
+      domainNumber: 24
+      network_transport: L2
+      delay_mechanism: E2E
+      time_stamping: hardware
+      clock_servo: linreg
+      clockClass: 6
+      clock_type: OC
+      ts2phc:
+        enabled: false
+services:
+  gnb_server:
+    linuxptp:
+      enabled: true
+      interface_name: myInterface
+    tuned:
+      enabled: true
+      profileContent: |-
+        [main]
+        summary=OCUDU optimization
+        [script]
+        script=${i:PROFILE_DIR}/startup.sh
+        ...
+      startupScriptContent: |-
+        #!/bin/bash
+        . /usr/lib/tuned/functions
+        # OCUDU performance script
+        # Set up VF and bind for DPDK
+        # NIC tuning
+        ...
+  rf_server:
+    linuxptp:
+      enabled: true
+      interface_name: myInterface
+    tuned:
+      enabled: true
+      profileContent: |-
+        [main]
+        summary=OCUDU optimization
+        [script]
+        script=${i:PROFILE_DIR}/startup.sh
+        ...
+      startupScriptContent: |-
+        #!/bin/bash
+        . /usr/lib/tuned/functions
+        # OCUDU performance script
+        # Set up VF and bind for DPDK
+        # NIC tuning
+        ...
+  zmq_server:
+    tuned:
+      enabled: true
+      profileContent: |-
+        [main]
+        summary=OCUDU ZMQ server
+        script=${i:PROFILE_DIR}/startup.sh
+        ...
+      startupScriptContent: |-
+        #!/bin/bash
+        . /usr/lib/tuned/functions
+        # OCUDU performance script
+        ...
+  builder:
+    tuned:
+      enabled: true
+      profileContent: |-
+        [main]
+        summary=OCUDU build server
+        [script]
+        script=${i:PROFILE_DIR}/startup.sh
+        ...
+      startupScriptContent: |-
+        #!/bin/bash
+        . /usr/lib/tuned/functions
+        ...
