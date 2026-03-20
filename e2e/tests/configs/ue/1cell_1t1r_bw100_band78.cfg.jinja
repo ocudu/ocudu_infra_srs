@@ -15,13 +15,25 @@ cell_groups: [
                 ssb_nr_arfcn: 624000,
                 subcarrier_spacing: 30,
                 ssb_subcarrier_spacing: 30,
-                n_antenna_dl: 4,
-                n_antenna_ul: 4,
-                global_timing_advance: 0,
+                n_antenna_dl: 1,
+                n_antenna_ul: 1,
+                global_timing_advance: -1,
+
+                // Cell specific Power calibration
+                ref_signal_power: 0,
+                ul_power_attenuation: 0,
+
+                position: [0, 0],
+                antenna: {
+                    type: "isotropic",
+                },
             },
         ],
         // PDCCH fine tuning: Ignore candidates with less power than threshold (relative to SSB) to avoid false-positive phantoms and save CPU power.
         pdcch_decode_opt: true,
-        pdcch_decode_opt_threshold: 0.7,
+        pdcch_decode_opt_threshold: {{ pdcch_decode_opt_threshold }},
+
+        /* This is for the UL channel model */
+        channel_sim: true, 
     },
 ],

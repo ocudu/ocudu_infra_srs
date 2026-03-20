@@ -1,19 +1,32 @@
+{# Set simulation parameters here #} 
+{%- set base_imsi = 1010123456789 %}
+{%- set base_K = "00112233445566778899aabbccddeeff" | int(base=16) %}
+{%- set base_power_on = 0 %}                 {# Time at which first UE is powered on #}  
+{%- set power_on_increment = 0.1 %}          {# Time diff (to prev UE) at which next UE is powered on #}
+{%- set traffic_stop_to_dereg_delay = 20 %}  {# Time from traffic stop to deregistration #}
+{%- set dereg_to_pw_off_delay = 5 %}         {# Time from deregistration to power off #}
 
+{# DERIVED PARAMETRS: DO NOT CHANGE THEM #} 
   ue_list: [
-{%- for i in range(nof_ues) %}
-{%- set imsi = base_imsi + i %}
-{%- set K_hex = (base_K + i ) | hex32 %}
+{%- for i in range(nof_sim_ues) %}
 {%- set power_on = base_power_on + i * power_on_increment %}
-{%- set traffic_start = base_power_on + nof_ues * power_on_increment + power_on_to_traffic_delay %}
-{%- set traffic_stop = traffic_start + traffic_duration_sec %}
+{%- set staggered_traffic_start = staggered_traffic_start | default(false) %}
+{%- if staggered_traffic_start  %}
+  {%- set power_on_to_traffic_delay = 1 %}
+  {%- set traffic_start = power_on + power_on_to_traffic_delay %}
+{%- else %}
+  {%- set power_on_to_traffic_delay = 10 %} 
+  {%- set traffic_start = base_power_on + nof_sim_ues * power_on_increment + power_on_to_traffic_delay %}
+{%- endif %}
+{%- set traffic_stop = base_power_on + nof_sim_ues * power_on_increment + power_on_to_traffic_delay + traffic_duration_sec %}
 {%- set dereg_time = traffic_stop + traffic_stop_to_dereg_delay + i * power_on_increment %}
 {%- set power_off = dereg_time + dereg_to_pw_off_delay %}
 {%- set quit_time = power_off + 5 %}
     /* UEs idx {{ i + 1 }} */
     {
       sim_algo: "xor",
-      imsi: "00{{ imsi }}",
-      K: "{{ K_hex }}",
+      imsi: "00{{ base_imsi + i }}",
+      K: "{{ "%032x" | format(base_K + i) }}",
       apn: "srsapn",
       as_release: 15,
       ue_category: "nr",
@@ -50,17 +63,7 @@
             bit_rate: {{ brate_ul }},
             event: "cbr_send"
         },
-{%- endif %}        
-{%- if traffic_type == "ping"%}       
-        {
-          start_time: {{ traffic_start }},
-          end_time: {{ traffic_stop }},
-          dst_addr: "192.168.3.1",
-          payload_len: 1000,
-          delay: 1,
-          event: "ping"
-        },
-{%- endif %}        
+{%- endif %}              
         {
           event: "deregister",
           start_time: {{ dereg_time }},
@@ -69,7 +72,7 @@
           event: "power_off",
           start_time: {{ power_off }},
         },
-{%- if i == nof_ues - 1 %}
+{%- if i == nof_sim_ues - 1 %}
         {
           event: "quit",
           start_time: {{ quit_time }},

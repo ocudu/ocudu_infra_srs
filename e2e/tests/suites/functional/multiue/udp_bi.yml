@@ -3,7 +3,7 @@
 
 baseline:
   template: amarisoft_simulator.py
-  ue_config: [1cell_1t1r_bw100_band78.cfg, multiue_udp_bi.cfg]
+  ue_config: [1cell_1t1r_bw100_band78.cfg.jinja, multiue_udp_bi.cfg.jinja]
   gnb_config: [1t1r_bw100_band78.yml, base_slice.yml, pcaps.yml, 512ue.yml]
   core_config: [baseline.cfg]
   criteria:
@@ -18,3 +18,13 @@ baseline:
     nof_error_indications: 0
     errors: 0
     warnings: 3
+  ue_parameters:
+    nof_sim_ues: 512
+    traffic_type: "udp_bi"
+    staggered_traffic_start: false
+    brate_dl: 800000
+    brate_ul: 350000
+    traffic_duration_sec: 180
+    log_com_level: "debug"
+    log_prod_level: "debug"
+    pdcch_decode_opt_threshold: 0.7

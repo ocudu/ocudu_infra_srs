@@ -5,7 +5,7 @@ baseline:
   template: ue_simulator.test_gnb
   testbed: zmq_mme
   ue:
-    config: [1cell_1t1r_bw100_band78.cfg, multiue_ping.cfg]
+    config: [1cell_1t1r_bw100_band78.cfg.jinja, multiue_ping.cfg.jinja]
   gnb:
     config: [1t1r_bw100_band78.yml, base_slice.yml, pcaps.yml, 512ue.yml]
   core:
@@ -22,3 +22,10 @@ baseline:
     nof_error_indications: 0
     errors: 0
     warnings: 3
+  ue_parameters:
+    nof_sim_ues: 512
+    traffic_duration_sec: 180
+    staggered_traffic_start: false
+    log_com_level: "debug"
+    log_prod_level: "debug"
+    pdcch_decode_opt_threshold: 0.7
