@@ -6,7 +6,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 # ==== Configuration ====
-traffic_type = "ping"          # Type of traffic to generate. Values: "udp_dl", "udp_ul", "udp_bi, "ping"
+traffic_type = "udp_bi"          # Type of traffic to generate. Values: "udp_dl", "udp_ul", "udp_bi, "ping"
 
 base_imsi = int("1010123456789", 10)
 base_K = int("00112233445566778899aabbccddeeff", 16)

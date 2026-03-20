@@ -21,4 +21,4 @@ baseline:
     max_late_ul_harqs: 0
     nof_error_indications: 0
     errors: 0
-    warnings: 0
+    warnings: 3

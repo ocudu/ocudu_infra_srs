@@ -20,4 +20,3 @@ metrics:
   layers:
     enable_sched: true
     enable_mac: true
-    enable_rrc: true

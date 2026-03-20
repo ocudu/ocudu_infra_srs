@@ -3,6 +3,9 @@ cell_cfg:
     nof_dl_symbols: 10
     nof_dl_slots: 6
     nof_ul_slots: 3
+  mac_cell_group:
+    bsr_cfg:
+      periodic_bsr_timer: 40
   pucch:
     sr_period_ms: 20
     resource_set_size: 8
@@ -22,9 +25,3 @@ cell_cfg:
       coreset1_duration: 2
   scheduler:
     nof_preselected_newtx_ues: 1024
-
-log:
-  all_level: warning
-  config_level: debug
-  rrc_level: info
-  du_level: info
