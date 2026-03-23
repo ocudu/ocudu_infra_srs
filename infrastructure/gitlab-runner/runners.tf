@@ -78,11 +78,7 @@ locals {
       helper_memory_limit  = tostring(try(r.helper_memory_limit, "500Mi"))
 
       # Compute environment list: explicit list overrides cpu/memory-derived defaults
-      environment = length(try(r.environment, [])) > 0 ? tolist(r.environment) : concat(
-        try(r.cpu_limit, null) != null ? ["SRS_CPU_LIMIT=${tostring(r.cpu_limit)}"] : [],
-        try(r.memory_limit, null) != null ? ["SRS_MEMORY_LIMIT=${tostring(r.memory_limit)}"] : [],
-        ["GIT_HTTP_POST_BUFFER=157286400"]
-      )
+      environment = length(try(r.environment, [])) > 0 ? tolist(r.environment): [GIT_HTTP_POST_BUFFER=157286400]
 
       # Node selector (map) or default arch/os labels
       node_selector = try(r.node_selector, null)
