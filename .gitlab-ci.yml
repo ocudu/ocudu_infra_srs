@@ -210,3 +210,21 @@ yaml lint:
         paths:
           - "**/*.yml"
           - "**/*.yaml"
+
+tf lint:
+  stage: static
+  image: registry.gitlab.com/components/opentofu/gitlab-opentofu:3.11.0-opentofu1.10.6-alpine
+  rules:
+    - if: $ON_MR
+      changes:
+        paths:
+          - "**/*.tf"
+  script:
+    - tofu fmt -check -recursive .
+    - |
+      find . -name "versions.tf" -not -path "*/example/*" | while read -r f; do
+        module=$(dirname "$f")
+        echo "== $module =="
+        tofu -chdir="$module" init -backend=false && tofu -chdir="$module" validate
+        echo ""
+      done
