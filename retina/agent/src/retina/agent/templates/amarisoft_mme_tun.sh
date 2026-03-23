@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: Copyright (C) 2019-2025 Amarisoft
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
