@@ -45,11 +45,11 @@ locals {
       session_server_load_balancer_source_ranges = try(r.session_server_load_balancer_source_ranges, [])
 
       # Kubernetes executor
-      poll_timeout  = try(r.poll_timeout, 1200)
-      build_image   = try(r.build_image, "ubuntu")
-      output_limit  = try(r.output_limit, 10485760)
-      pull_policy   = try(r.pull_policy, null)
-      helper_image  = try(r.helper_image, null)
+      poll_timeout = try(r.poll_timeout, 1200)
+      build_image  = try(r.build_image, "ubuntu")
+      output_limit = try(r.output_limit, 10485760)
+      pull_policy  = try(r.pull_policy, null)
+      helper_image = try(r.helper_image, null)
 
       service_account                   = try(r.service_account, null)
       service_account_overwrite_allowed = try(r.service_account_overwrite_allowed, null)
@@ -78,7 +78,7 @@ locals {
       helper_memory_limit  = tostring(try(r.helper_memory_limit, "500Mi"))
 
       # Compute environment list: explicit list overrides cpu/memory-derived defaults
-      environment = length(try(r.environment, [])) > 0 ? tolist(r.environment): [GIT_HTTP_POST_BUFFER=157286400]
+      environment = length(try(r.environment, [])) > 0 ? tolist(r.environment) : ["GIT_HTTP_POST_BUFFER=157286400"]
 
       # Node selector (map) or default arch/os labels
       node_selector = try(r.node_selector, null)

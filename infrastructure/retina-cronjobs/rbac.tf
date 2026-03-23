@@ -4,8 +4,8 @@
 resource "kubernetes_manifest" "serviceaccount" {
   manifest = yamldecode(
     templatefile("${path.module}/manifests/rbac/serviceaccount.yaml", {
-      suffix = var.suffix
-      namespace         = var.namespace
+      suffix    = var.suffix
+      namespace = var.namespace
     })
   )
 
@@ -19,8 +19,8 @@ resource "kubernetes_manifest" "serviceaccount" {
 resource "kubernetes_manifest" "clusterrolebinding" {
   manifest = yamldecode(
     templatefile("${path.module}/manifests/rbac/clusterrolebinding.yaml", {
-      suffix = var.suffix
-      namespace         = var.namespace
+      suffix    = var.suffix
+      namespace = var.namespace
     })
   )
 
@@ -36,8 +36,8 @@ resource "kubernetes_manifest" "clusterrolebinding" {
 resource "kubernetes_manifest" "rolebinding" {
   manifest = yamldecode(
     templatefile("${path.module}/manifests/rbac/rolebinding.yaml", {
-      suffix = var.suffix
-      namespace         = var.namespace
+      suffix    = var.suffix
+      namespace = var.namespace
     })
   )
 
