@@ -86,6 +86,19 @@ class Module(_BaseModule):  # pylint: disable=too-few-public-methods
         yield from top_level_suites
 
 
+def pytest_collection_modifyitems(items):
+    """
+    Record all markers as JUnit XML properties.
+    """
+    for item in items:
+        markers = []
+        for marker in item.iter_markers():
+            if marker.name in ("parametrize", "skip", "skipif", "xfail", "usefixtures", "filterwarnings"):
+                continue
+            markers.append(marker.name)
+        item.user_properties.append(("markers", ";".join(markers)))
+
+
 def pytest_pycollect_makemodule(module_path: Path, parent: Any):
     """
     Return a Module collector or None for the given path.

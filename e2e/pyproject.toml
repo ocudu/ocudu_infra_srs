@@ -26,6 +26,7 @@ addopts = [
 filterwarnings = [
   "ignore:HTTPResponse.getheaders:DeprecationWarning",
 ]
+junit_logging = "all"
 generate_report_on_test = true
 log_cli = true
 log_date_format = "%Y-%m-%d %H:%M:%S"
