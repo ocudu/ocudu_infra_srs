@@ -109,7 +109,7 @@ spec:
     when: always
     expire_in: 1 week
     reports:
-      junit: e2e/out.xml
+      junit: e2e/log/out.xml
   before_script:
     - |
       export OCUDU_COMMIT=$(cat ${OCUDU_DIR}/.gitlab/ci/version.txt)

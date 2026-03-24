@@ -9,7 +9,7 @@ addopts = [
   "--log-folder=./log",
   "--html=./log/report.html",
   "--self-contained-html",
-  "--junitxml=out.xml",
+  "--junitxml=./log/out.xml",
   "--reruns=3",
   "--reruns-delay=10",
   "--only-rerun=Timeout reached while reserving",
