@@ -375,6 +375,7 @@ gnb 4UE tsan:
   variables:
     MARKERS: smoke
     KEYWORDS: iperf
+    LAUNCHER_ARGS: "" # Overwrite the -n option in base job to launch 1 test at a time because TSAN requires more resources.
   needs:
     - zmq driver
     - tsan
