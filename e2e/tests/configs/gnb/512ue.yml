@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
 cell_cfg:
   tdd_ul_dl_cfg:
     nof_dl_symbols: 10
@@ -9,7 +12,7 @@ cell_cfg:
   pucch:
     sr_period_ms: 20
     resource_set_size: 8
-    nof_cell_res_set_configs: 2
+    nof_cell_res_set_configs: 4
     nof_cell_sr_res: 80
     nof_cell_csi_res: 80
   csi:

@@ -45,3 +45,37 @@ ping:
   variables:
     KEYWORDS: functional/multiue/ping
     TESTBED: dynamic
+
+ping_4ues:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/multiue/ping_4ues
+    TESTBED: dynamic
+
+udp_bi:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/multiue/udp_bi
+    TESTBED: dynamic

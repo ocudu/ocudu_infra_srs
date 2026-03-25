@@ -9,14 +9,3 @@ pcap:
 log:
   rlc_level: warning
   pdcp_level: warning
-  rrc_level: info
-  du_level: info
-  config_level: debug
-
-metrics:
-  autostart_stdout_metrics: true
-  enable_log: true
-  enable_json: true
-  layers:
-    enable_sched: true
-    enable_mac: true
