@@ -452,14 +452,14 @@ def stop_rc_xapp(ric: NearRtRicStub) -> None:
 @contextmanager
 def handle_start_error(name: str) -> Generator[None, None, None]:
     """
-    Fail the test if the stub `name` could not start
+    Fail the test if the stub could not start
     """
     raise_failed = False
     try:
         yield
         logging.info("%s started", name)
     except grpc.RpcError as err:
-        if ErrorReportedByAgent(err).code is grpc.StatusCode.ABORTED:
+        if ErrorReportedByAgent(err).code in (grpc.StatusCode.ABORTED, grpc.StatusCode.DEADLINE_EXCEEDED):
             raise_failed = True
         else:
             raise err from None

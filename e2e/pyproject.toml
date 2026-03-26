@@ -23,12 +23,13 @@ addopts = [
   "--only-rerun=exit code 66",
   "--only-rerun=Viavi API call timed out",
   "--only-rerun=time-out in waiting for Cell Frame Boundary detection",
+  "--only-rerun=failed to start",
 ]
 filterwarnings = [
   "ignore:HTTPResponse.getheaders:DeprecationWarning",
 ]
-junit_logging = "all"
 generate_report_on_test = true
+junit_logging = "all"
 log_cli = true
 log_date_format = "%Y-%m-%d %H:%M:%S"
 log_format = "%(asctime)s [%(levelname)s] %(message)s"
