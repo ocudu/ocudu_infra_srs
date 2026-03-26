@@ -901,6 +901,7 @@ def multi_ue_mobility_iperf(
     cell_position_offset: Tuple[float, float, float] = (1000, 0, 0),
     nof_movements: int = 2,
     allow_failure: bool = False,
+    gnb_post_cmd: Tuple[str, ...] = tuple(),
 ) -> Generator[
     Tuple[
         Dict[UEStub, UEAttachedInfo],
@@ -967,8 +968,11 @@ def multi_ue_mobility_iperf(
         gnb_array=gnb_array,
         fivegc_array=[fivegc],
         gnb_post_cmd=(
-            "log --cu_level=debug  --f1ap_level=debug --ngap_level=debug --hex_max_size=32",
-            "log --du_level=debug",
+            (
+                (gnb_post_cmd[0] if len(gnb_post_cmd) == 2 else "")
+                + "log --cu_level=debug  --f1ap_level=debug --ngap_level=debug --hex_max_size=32"
+            ),
+            "log --du_level=debug" + gnb_post_cmd[1] if len(gnb_post_cmd) == 2 else "",
         ),
     )
 

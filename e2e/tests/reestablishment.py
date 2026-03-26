@@ -672,6 +672,7 @@ def test_zmq_mobility_noise_reestablishment(
         sleep_between_movement_steps=1,
         warning_as_errors=True,
         allow_failure=True,
+        gnb_post_cmd=("cu_cp mobility --trigger_handover_from_measurements=false ", ""),
     ) as (ue_attach_info_dict, movements, _):
 
         for ue_stub, ue_attach_info in ue_attach_info_dict.items():
