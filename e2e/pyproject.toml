@@ -18,6 +18,7 @@ addopts = [
   "--only-rerun=Exception calling application",
   "--only-rerun=socket is already closed",
   "--only-rerun=failed to connect to all addresses",
+  "--only-rerun=Agent not ready",
   "--only-rerun=License unavailable",
   "--only-rerun=exit code 66",
   "--only-rerun=Viavi API call timed out",
