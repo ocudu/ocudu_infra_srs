@@ -113,7 +113,7 @@ release with deb info:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-  variables:
+  variables: &release_with_deb_info_vars
     OS: ubuntu-24.04
     OCUDU_TARGET: ocu odu gnb
     COMPILER: gcc
@@ -123,15 +123,14 @@ release with deb info:
     TEST_MODE: none
 
 release with deb info cached:
-  extends: release with deb info
+  extends: build
+  retry: 2
   rules:
     - <<: *on_mr_suites_changed
       when: manual
       allow_failure: true
-  cache:
-    - key: $OS-$COMPILER-$BUILD_ARGS
-      paths: [ocudu/ccache]
-      policy: pull-push
+  variables:
+    <<: *release_with_deb_info_vars
 
 debug:
   extends: build
