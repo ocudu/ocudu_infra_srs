@@ -105,7 +105,7 @@ def load_tests(func: Callable):
         [
             pytest.param(
                 tdef,
-                f"retina_requests/{tdef.retina_request}/.yml",
+                f"retina_requests/{tdef.retina_request}.yml",
                 id=tdef.name,
                 marks=[getattr(pytest.mark, item) for item in (tdef.retina_request, *tdef.feature_ids)],
             )

@@ -75,6 +75,7 @@ spec:
         - zmq_ric
         - zmq_srsue
         - zmq
+        - dynamic
         - none
     markers:
       type: string

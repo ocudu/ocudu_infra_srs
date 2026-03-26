@@ -49,6 +49,7 @@ spec:
         - zmq_ric
         - zmq_srsue
         - zmq
+        - dynamic
         - none
     markers:
       type: string
@@ -130,7 +131,7 @@ spec:
       cd ${CI_PROJECT_DIR}
     # Modify request to shared the complete folder with ocudu containers
     - |
-      yq -i '(.[] | select(.name == "ocudu*") | .shared_files) = [{"local_path": "../ocudu", "remote_path": env(OCUDU_DIR), "is_executable": false}]' ${CI_PROJECT_DIR}/e2e/retina_requests/${TESTBED}.yml
+      find e2e/retina_requests/ -iname "*.yml" -exec yq -i '(.[] | select(.name == "ocudu*") | .shared_files) = [{"local_path": "../ocudu", "remote_path": env(OCUDU_DIR), "is_executable": false}]' {} \;
     # Remove any existing retina resource for this group
     - retina --in-cluster release --username ci_${GROUP}
     - |

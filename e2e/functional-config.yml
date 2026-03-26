@@ -27,7 +27,7 @@ inter_ru_ho:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: functional/mobility/inter_ru_ho
-    TESTBED: none
+    TESTBED: dynamic
 
 ping:
   stage: multiue
@@ -44,4 +44,4 @@ ping:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: functional/multiue/ping
-    TESTBED: none
+    TESTBED: dynamic
