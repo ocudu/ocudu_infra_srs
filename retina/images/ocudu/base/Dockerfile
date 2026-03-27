@@ -29,9 +29,5 @@ ENV TSAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 ENV RTSAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 ENV RTSAN_OPTIONS="halt_on_error=false:suppress_equal_stacks=true"
 
-RUN uhd_images_downloader -t b2xx_
-RUN uhd_images_downloader -t n310
-RUN uhd_images_downloader -t x3xx_
-
 ADD ocudu_entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/ocudu_entrypoint.sh"]

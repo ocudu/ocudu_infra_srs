@@ -476,6 +476,15 @@ class Kubernetes(KubernetesManager):
                 }
             )
 
+        # Share UHD images folder with host
+        volumes.append(
+            {
+                "name": "uhd-volume",
+                "hostPath": {"path": "/usr/share/uhd/images"},
+            }
+        )
+        volume_mounts.append({"name": "uhd-volume", "mountPath": "/usr/share/uhd/images"})
+
         # Enable coredump logging
         volumes.append(
             {

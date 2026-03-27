@@ -45,9 +45,5 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 ENV PATH="${PATH}:/opt/lteue"
 
-RUN uhd_images_downloader -t b2xx_
-RUN uhd_images_downloader -t n310
-RUN uhd_images_downloader -t x3xx_
-
 ADD amarisoft_ue_entrypoint.sh amarisoft_ue_setup.sh /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/amarisoft_ue_entrypoint.sh"]

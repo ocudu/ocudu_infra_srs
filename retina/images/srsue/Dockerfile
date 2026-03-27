@@ -39,9 +39,5 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Europe/Madrid \
   uhd-host libuhd-dev libzmq3-dev libsoapysdr-dev \
   && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN uhd_images_downloader -t b2xx_
-RUN uhd_images_downloader -t n310
-RUN uhd_images_downloader -t x3xx_
-
 ADD srsue_entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/srsue_entrypoint.sh"]
