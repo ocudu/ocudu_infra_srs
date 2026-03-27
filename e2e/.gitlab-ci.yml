@@ -201,7 +201,6 @@ dpdk rtsan avx512:
   extends: e2e
   variables:
     GROUP: zmq
-    LAUNCHER_ARGS: -n 2
   needs:
     - zmq driver
     - job: release with deb info
@@ -224,7 +223,6 @@ dpdk rtsan avx512:
     MARKERS: test_mode
     KEYWORDS: test_ue
     RETINA_ARGS: ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
-    LAUNCHER_ARGS: -n 2
 
 test ue:
   extends: .test mode ue
@@ -287,7 +285,6 @@ ru dummy test many ues:
   variables:
     GROUP: zmq
     RETINA_ARGS: ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
-    LAUNCHER_ARGS: -n 2
   needs:
     - release with deb info
 
@@ -312,7 +309,6 @@ ric:
   variables:
     GROUP: zmq
     TESTBED: zmq
-    LAUNCHER_ARGS: -n 2
     RETINA_ARGS: >
       gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.enable_integrity_protection=True
       ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
@@ -331,7 +327,6 @@ smoke zmq:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
   variables:
     MARKERS: smoke
-    LAUNCHER_ARGS: -x
     RETINA_ARGS: >
       ue.all.pdcch_decode_opt_threshold=0.1
       gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.enable_integrity_protection=True
@@ -349,7 +344,6 @@ gnb 1UE ntn:
   variables:
     TESTBED: zmq_ntn
     MARKERS: zmq_ntn
-    LAUNCHER_ARGS: ""
   parallel:
     matrix:
       - E2E_FILE_OR_DIR: tests/ping.py
@@ -374,7 +368,6 @@ gnb 4UE tsan:
   variables:
     MARKERS: smoke
     KEYWORDS: iperf
-    LAUNCHER_ARGS: "" # Overwrite the -n option in base job to launch 1 test at a time because TSAN requires more resources.
   needs:
     - zmq driver
     - tsan

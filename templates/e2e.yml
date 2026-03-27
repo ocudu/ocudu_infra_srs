@@ -19,14 +19,6 @@ spec:
       type: string
       default: 3 hours
       description: "Timeout for the job."
-    group:
-      type: string
-      default: zmq
-      description: "Retina group to use."
-      options:
-        - rf
-        - viavi
-        - zmq
     testbed:
       type: string
       default: zmq
@@ -51,6 +43,18 @@ spec:
         - zmq
         - dynamic
         - none
+    group:
+      type: string
+      description: "Retina group to use."
+      rules:
+        - if: $[[ inputs.testbed ]] =~ /zmq/
+          default: zmq
+        - if: $[[ inputs.testbed ]] =~ /s72/
+          default: s72
+        - if: $[[ inputs.testbed ]] =~ /viavi/
+          default: viavi
+        - if: $[[ inputs.testbed ]] =~ /rf/
+          default: rf
     markers:
       type: string
       default: ""
@@ -116,7 +120,6 @@ spec:
       export OCUDU_COMMIT=$(cat ${OCUDU_DIR}/.gitlab/ci/version.txt)
     # Print E2E parameters
     - |
-      echo "GROUP=${GROUP}"
       echo "TESTBED=${TESTBED}"
       echo "MARKERS=${MARKERS}"
       echo "FILE_OR_DIR=${FILE_OR_DIR}"
@@ -132,25 +135,19 @@ spec:
     # Modify request to shared the complete folder with ocudu containers
     - |
       find e2e/retina_requests/ -iname "*.yml" -exec yq -i '(.[] | select(.name == "ocudu*") | .shared_files) = [{"local_path": "../ocudu", "remote_path": env(OCUDU_DIR), "is_executable": false}]' {} \;
-    # Remove any existing retina resource for this group
-    - retina --in-cluster release --username ci_${GROUP}
     - |
       run_retina() {
         cd ${CI_PROJECT_DIR}/e2e
-        export LOGNAME=ci_${GROUP}
+        export LOGNAME=ci_${GROUP}_${CI_JOB_ID}
         set -x
         retina-launcher --retina-in-cluster "${FILE_OR_DIR}" ${LAUNCHER_ARGS} --retina-request=retina_requests/${TESTBED}.yml -m "${MARKERS}" -k "${KEYWORDS}" --register-parameter ${RETINA_ARGS}
         { set +x; } 2>/dev/null
       }
   script:
-    # Set username for retina
-    - |
-      cd e2e
-      export LOGNAME=ci_${GROUP}
-    # Run Retina
+    - cd e2e
     - run_retina
   after_script:
-    - retina --in-cluster release --username ci_${GROUP}
+    - retina --in-cluster release --username ci_${GROUP}_${CI_JOB_ID}
     # Artifact size
     - echo -e "\e[0Ksection_start:`date +%s`:e2e_folder_section[collapsed=true]\r\e[0KLog folder's tree"
     - |

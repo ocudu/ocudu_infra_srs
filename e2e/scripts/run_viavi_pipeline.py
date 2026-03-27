@@ -197,7 +197,6 @@ def _run_test(args_definition: _ArgsDefinition, test_definition: _TestDefinition
         "dpdk_version": build_definition.dpdk_version,
         "uhd_version": build_definition.uhd_version,
         "test_mode": "none",
-        "group": "viavi",
         "testbed": "viavi",
         "markers": "viavi_manual",
         "file_or_dir": "",
