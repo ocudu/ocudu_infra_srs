@@ -97,6 +97,10 @@ spec:
       type: string
       default: ""
       description: "Extra launcher args"
+    e2e_timeout:
+      type: string
+      default: 3 hours
+      description: "Timeout for the job."
 ---
 include:
   # Import OCUDU ci tools
@@ -175,6 +179,7 @@ include:
       keywords: $[[ inputs.keywords ]]
       retina_args: $[[ inputs.retina_args ]]
       launcher_args: $[[ inputs.launcher_args ]]
+      timeout: $[[ inputs.e2e_timeout ]]
   # CI/CD for each item in the repository
   - local: retina/.gitlab-ci.yml
     inputs:

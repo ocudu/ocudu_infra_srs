@@ -12,7 +12,7 @@ import argparse
 import os
 import pathlib
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict
 
 # Setup those environment variables to override default ocudu_infra repository
@@ -34,16 +34,17 @@ except ImportError:
     sys.exit(1)
 
 
+DEFAULT_TEST_TIMEOUT = 93600
+
+
 # pylint: disable=too-many-instance-attributes
 @dataclass
 class _TestDefinition:
-    """ """
-
-    id: str = ""
-    campaign_filename: str = ""
-    test_name: str = ""
-    description: str = ""
-    gnb_extra_config: Dict = field(default_factory=dict)
+    id: str
+    campaign_filename: str
+    test_name: str
+    timeout: int
+    gnb_extra_config: Dict
 
 
 @dataclass
@@ -121,12 +122,13 @@ def _get_viavi_tests() -> Dict[str, _TestDefinition]:
 
     test_dict = {}
     for test in data["tests"]:
-        test_definition = _TestDefinition()
-        test_definition.id = test["id"]
-        test_definition.campaign_filename = test["campaign_filename"]
-        test_definition.test_name = test["test_name"]
-        test_definition.description = test.get("description", "")
-        test_definition.gnb_extra_config = test.get("gnb_extra_config", "")
+        test_definition = _TestDefinition(
+            id=test["id"],
+            campaign_filename=test["campaign_filename"],
+            test_name=test["test_name"],
+            timeout=test.get("test_timeout", DEFAULT_TEST_TIMEOUT),
+            gnb_extra_config=test.get("gnb_extra_config", ""),
+        )
         test_dict[test_definition.id] = test_definition
 
     return test_dict
@@ -160,7 +162,7 @@ def _validate_args(args) -> _ArgsDefinition:
 
 def _run_test(args_definition: _ArgsDefinition, test_definition: _TestDefinition):
     build_definition = BUILD_DEFINITIONS[args_definition.build_mode]
-    timeout = args_definition.timeout if args_definition.timeout else 972800
+    timeout = args_definition.timeout if args_definition.timeout else test_definition.timeout
 
     retina_launcher_args = (
         f'--viavi-manual-campaign-filename "{test_definition.campaign_filename}" '
@@ -202,6 +204,7 @@ def _run_test(args_definition: _ArgsDefinition, test_definition: _TestDefinition
         "keywords": "",
         "retina_args": "gnb.all.pcap=True gnb.all.rlc_enable=True gnb.all.rlc_rb_type=srb",
         "launcher_args": retina_launcher_args,
+        "e2e_timeout": (str(timeout + (30 * 60)) + " seconds"),  # Make job time 30 minutes bigger than test timeout
     }
 
     print(f"Creating Viavi pipeline for branch {args_definition.ocudu_ref}...")
@@ -291,7 +294,7 @@ def main():
                 id=args_definition.test_name,
                 campaign_filename=args_definition.campaign_path,
                 test_name=args_definition.test_name,
-                description="Custom test",
+                timeout=DEFAULT_TEST_TIMEOUT,
                 gnb_extra_config={},
             ),
         )
