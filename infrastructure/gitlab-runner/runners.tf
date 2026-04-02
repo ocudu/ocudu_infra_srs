@@ -7,7 +7,7 @@ locals {
   cluster_config = {
     image        = local._yaml_cluster_config.image
     gitlab_url   = local._yaml_cluster_config.gitlab_url
-    cache        = local._yaml_cluster_config.cache
+    cache        = try(local._yaml_cluster_config.cache, null)
     host_aliases = try(local._yaml_cluster_config.host_aliases, null)
   }
 

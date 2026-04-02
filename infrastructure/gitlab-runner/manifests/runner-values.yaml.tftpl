@@ -80,17 +80,28 @@ runners:
         FF_TIMESTAMPS = true
         FF_PRINT_POD_EVENTS = true
         FF_SCRIPT_SECTIONS = true
+%{ if cluster_config.cache != null && contains(["s3", "gcs", "azure"], try(cluster_config.cache.type, "")) ~}
       [runners.cache]
         Type = "${cluster_config.cache.type}"
         Path = "${cluster_config.cache.path}"
         Shared = true
-        [runners.cache.${cluster_config.cache.type}]
 %{ if cluster_config.cache.type == "s3" ~}
+      [runners.cache.s3]
           ServerAddress = "${cluster_config.cache.s3.server_address}"
           AccessKey = "${cluster_config.cache.s3.access_key}"
           SecretKey = "${cluster_config.cache.s3.secret_key}"
           BucketName = "${cluster_config.cache.s3.bucket_name}"
           Insecure = ${cluster_config.cache.s3.insecure}
+%{ endif ~}
+%{ if cluster_config.cache.type == "gcs" ~}
+      [runners.cache.gcs]
+          BucketName = "${cluster_config.cache.gcs.bucket_name}"
+%{ endif ~}
+%{ if cluster_config.cache.type == "azure" ~}
+      [runners.cache.azure]
+          ContainerName = "${cluster_config.cache.azure.container_name}"
+          StorageDomain = "${cluster_config.cache.azure.storage_domain}"
+%{ endif ~}
 %{ endif ~}
       [runners.kubernetes]
         cache_dir = "/cache"
