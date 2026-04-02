@@ -16,21 +16,21 @@ import json
 from pathlib import Path
 from typing import List
 
-def toggle_pause(paused: bool, runner_id: int, runner_name: str, headers: dict):
+def toggle_pause(paused: bool, runner_id: int, runner_name: str, headers: dict, gitlab_url: str):
     """Pause or unpause a GitLab runner."""
     data = {
         "paused": "true" if paused else "false"
     }
-    GITLAB_API_URL = f"https://gitlab.com/api/v4/runners/{runner_id}"
+    GITLAB_API_URL = f"{gitlab_url.rstrip('/')}/api/v4/runners/{runner_id}"
     response = requests.put(GITLAB_API_URL, headers=headers, data=data)
     if response.ok:
         print(f"Runner {runner_name} with id {runner_id} has been successfully {'paused' if paused else 'unpaused'}.")
     else:
         print(f"Failed to {'pause' if paused else 'unpause'} runner {runner_name} with id {runner_id}: {response.status_code} - {response.text}")
 
-def wait(minutes: int, runner_id: int, runner_name: str, headers: dict):
+def wait(minutes: int, runner_id: int, runner_name: str, headers: dict, gitlab_url: str):
     """Wait for runner to have no running jobs, cancelling them if timeout."""
-    GITLAB_API_URL = f"https://gitlab.com/api/v4/runners/{runner_id}/jobs?status=running"
+    GITLAB_API_URL = f"{gitlab_url.rstrip('/')}/api/v4/runners/{runner_id}/jobs?status=running"
 
     if minutes > 0:
         print(f"Starting to wait for {minutes} minute(s)...")
@@ -55,7 +55,7 @@ def wait(minutes: int, runner_id: int, runner_name: str, headers: dict):
             job_id = job["id"]
             print(f"Cancelling running job with id {job_id} of runner {runner_name} with id {runner_id}...")
 
-            cancel_url = f"https://gitlab.com/api/v4/projects/{project_id}/jobs/{job_id}/cancel"
+            cancel_url = f"{gitlab_url.rstrip('/')}/api/v4/projects/{project_id}/jobs/{job_id}/cancel"
             cancel_response = requests.post(cancel_url, headers=headers)
 
             if cancel_response.ok:
@@ -191,12 +191,16 @@ if __name__ == "__main__":
     # Find runner ID by exact name match across all files
     runner_id = find_runner_id(runner_name, existing_paths)
 
+    # Read gitlab_url from the first runners file
+    runners_data = yaml.safe_load(existing_paths[0].read_text(encoding="utf-8"))
+    gitlab_url = runners_data.get("global", {}).get("gitlab_url", "https://gitlab.com").rstrip("/")
+
     headers = {
         "PRIVATE-TOKEN": token
     }
 
     if args.pause_wait:
-        toggle_pause(True, runner_id, runner_name, headers)
-        wait(args.wait_minutes, runner_id, runner_name, headers)
+        toggle_pause(True, runner_id, runner_name, headers, gitlab_url)
+        wait(args.wait_minutes, runner_id, runner_name, headers, gitlab_url)
     elif args.unpause:
-        toggle_pause(False, runner_id, runner_name, headers)
+        toggle_pause(False, runner_id, runner_name, headers, gitlab_url)
