@@ -187,6 +187,14 @@ module "settings" {
       active      = true
       variables   = {}
     }
+    nightly_setup = {
+      description = "Prepare Nightly"
+      cron        = "45 20 * * 0-5"
+      timezone    = "Europe/Madrid"
+      ref         = "refs/heads/main"
+      active      = true
+      variables   = {}
+    }
     nightly = {
       description = "Emulated Nightly"
       cron        = "00 21 * * 0-5"

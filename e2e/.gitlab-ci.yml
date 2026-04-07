@@ -92,6 +92,27 @@ dynamically generated pipeline validation:
       python3 e2e/scripts/generate_pipelines.py --input_path=e2e/tests/suites --pipelines_output_path=e2e --stages_output_path=.
       is-pristine-repo.sh
 
+## Schedules pipeline setup
+retina demolition:
+  stage: e2e
+  tags:
+    - retina
+    - ${GROUP}
+  image:
+    name: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
+    entrypoint: ["/bin/sh", "-c"]
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Prepare Nightly/
+  script:
+    - retina-garbage-collector --in-cluster --mode demolition
+  parallel:
+    matrix:
+      - GROUP: rf
+      - GROUP: viavi
+      - GROUP: zmq
+  retry: 2
+  needs: []
+
 ## Build jobs for Scheduled Pipelines
 zmq driver:
   extends: build trx driver
