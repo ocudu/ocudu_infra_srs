@@ -95,6 +95,7 @@ spec:
     OCUDU_DIR: ${CI_PROJECT_DIR}/ocudu
     GROUP: $[[ inputs.group ]]
     # Retina E2E variables
+    LOGNAME: ci_${CI_RUNNER_ID}_${CI_CONCURRENT_PROJECT_ID}
     TESTBED: $[[ inputs.testbed ]]
     MARKERS: $[[ inputs.markers ]]
     FILE_OR_DIR: $[[ inputs.file_or_dir ]]
@@ -134,10 +135,11 @@ spec:
     # Modify request to shared the complete folder with ocudu containers
     - |
       find e2e/retina_requests/ -iname "*.yml" -exec yq -i '(.[] | select(.name == "ocudu*") | .shared_files) = [{"local_path": "../ocudu", "remote_path": env(OCUDU_DIR), "is_executable": false}]' {} \;
+    # Remove any reserved resources from previous runs
+    - retina --in-cluster release --username ${LOGNAME}
     - |
       run_retina() {
         cd ${CI_PROJECT_DIR}/e2e
-        export LOGNAME=ci_${GROUP}_${CI_JOB_ID}
         set -x
         retina-launcher --retina-in-cluster "${FILE_OR_DIR}" ${LAUNCHER_ARGS} --retina-request=retina_requests/${TESTBED}.yml -m "${MARKERS}" -k "${KEYWORDS}" --register-parameter ${RETINA_ARGS}
         { set +x; } 2>/dev/null
@@ -146,7 +148,7 @@ spec:
     - cd e2e
     - run_retina
   after_script:
-    - retina --in-cluster release --username ci_${GROUP}_${CI_JOB_ID}
+    - retina --in-cluster release --username ${LOGNAME}
     # Artifact size
     - echo -e "\e[0Ksection_start:`date +%s`:e2e_folder_section[collapsed=true]\r\e[0KLog folder's tree"
     - |
