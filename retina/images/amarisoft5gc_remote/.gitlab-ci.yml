@@ -23,7 +23,7 @@ stages:
 
 .docker-builder-amarisoft:
   extends: .docker-builder
-  variables: &image_variables
+  variables:
     REGISTRY_URI: ${RETINA_REGISTRY_URI}
     NAME: amarisoft5gc-remote
     CONTEXT: retina/images/amarisoft5gc_remote
@@ -49,20 +49,3 @@ build-and-publish:
   retry: 2
   variables:
     MODE: publish
-    MULTI_ARCH_BUILD: "true"
-  parallel:
-    matrix:
-      - PLATFORM: ["arm64", "amd64"]
-
-publish manifest:
-  stage: publish
-  extends: .docker manifest
-  rules:
-    - if: $ON_DEFAULT_BRANCH
-    - if: $ON_MR
-      when: manual
-      allow_failure: true
-  variables:
-    <<: *image_variables
-  needs:
-    - build-and-publish

@@ -34,7 +34,7 @@ stages:
 
 .agent-docker:
   extends: .docker-builder
-  variables: &image_variables
+  variables:
     AGENT_OS_NAME: ubuntu
     AGENT_OS_VERSION: "24.04"
     NAME: retina/agent-${AGENT_OS_NAME}-${AGENT_OS_VERSION}
@@ -100,20 +100,3 @@ publish docker:
         <<: *container_changes
   variables:
     MODE: publish
-    MULTI_ARCH_BUILD: "true"
-  parallel:
-    matrix:
-      - PLATFORM: ["arm64", "amd64"]
-
-publish manifest:
-  stage: publish docker
-  extends: .docker manifest
-  rules:
-    - if: $ON_DEFAULT_BRANCH
-    - if: $ON_MR
-      changes:
-        <<: *container_changes
-  variables:
-    <<: *image_variables
-  needs:
-    - publish docker

@@ -86,12 +86,8 @@ publish docker:
       allow_failure: true
   variables:
     MODE: publish
-    MULTI_ARCH_BUILD: "true"
-  parallel:
-    matrix:
-      - PLATFORM: ["arm64", "amd64"]
 
-publish manifest:
+publish latest:
   stage: publish
   extends: .docker manifest
   rules:
@@ -103,16 +99,10 @@ publish manifest:
     <<: *image_variables
   needs:
     - publish docker
-
-publish latest:
-  extends: publish manifest
-  variables:
-    <<: *image_variables
   script:
     - |
       docker manifest create \
         ${RETINA_REGISTRY_URI}/${NAME}:latest \
-        --amend ${RETINA_REGISTRY_URI}/${NAME}:${VERSION}-amd64 \
-        --amend ${RETINA_REGISTRY_URI}/${NAME}:${VERSION}-arm64
+        --amend ${RETINA_REGISTRY_URI}/${NAME}:${VERSION}
       docker manifest push ${RETINA_REGISTRY_URI}/${NAME}:latest
       echo "Image ${RETINA_REGISTRY_URI}/${NAME}:latest pushed"

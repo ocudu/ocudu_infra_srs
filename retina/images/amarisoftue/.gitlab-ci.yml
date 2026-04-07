@@ -26,7 +26,7 @@ variables:
 
 .docker-builder-amarisoft:
   extends: .docker-builder
-  variables: &image_variables
+  variables:
     AMARISOFT_RELEASE: ${AMARISOFT_VERSION}
     REGISTRY_URI: ${RETINA_REGISTRY_URI}
     NAME: amarisoftue
@@ -63,24 +63,6 @@ build-and-publish:
   retry: 2
   variables:
     MODE: publish
-    MULTI_ARCH_BUILD: "true"
-  parallel:
-    matrix:
-      - PLATFORM: ["amd64", "arm64"]
-        AMARISOFT_RELEASE: ["${AMARISOFT_VERSION}", "2025-12-19"]
-
-publish manifest:
-  stage: publish
-  extends: .docker manifest
-  rules:
-    - if: $ON_DEFAULT_BRANCH
-    - if: $ON_MR
-      when: manual
-      allow_failure: true
-  variables:
-    <<: *image_variables
-  needs:
-    - build-and-publish
   parallel:
     matrix:
       - AMARISOFT_RELEASE: ["${AMARISOFT_VERSION}", "2025-12-19"]
