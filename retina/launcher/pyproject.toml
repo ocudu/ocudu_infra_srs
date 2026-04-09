@@ -149,11 +149,13 @@ commands =
 [testenv:build]
 skip_install = true
 deps =
+  setuptools >= 61
+  wheel
   build
   -e ../protocol
   -e ../client
   -e ../orchestrator
   -e ../viavi
 commands =
-  python -m build
+  python -m build --no-isolation
 """

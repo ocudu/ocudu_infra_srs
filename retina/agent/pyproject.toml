@@ -139,7 +139,9 @@ commands =
 skip_install = true
 deps =
   build
-  -e ../protocol 
+  setuptools >= 61
+  wheel
+  -e ../protocol
 commands =
-  python -m build
+  python -m build --no-isolation
 """
