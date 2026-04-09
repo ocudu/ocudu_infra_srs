@@ -32,6 +32,7 @@ variables:
     CONTEXT: retina/images/amarisoftue
     VERSION: ${AMARISOFT_VERSION}_${RETINA_VERSION}
     BUILD_ARGS: AMARISOFT_VERSION=${AMARISOFT_VERSION};RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
+    CACHE: "true"
   before_script:
     - |
       download_amarisoft() {

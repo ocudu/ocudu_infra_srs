@@ -28,16 +28,16 @@ RUN ldconfig
 
 FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
 FROM agent AS srsue
-COPY --from=builder /usr/local/bin /usr/local/bin
-COPY --from=builder /usr/local/include/srsran /usr/local/include/srsran
-COPY --from=builder /usr/local/lib /usr/local/lib
-
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN DEBIAN_FRONTEND=noninteractive TZ=Europe/Madrid \ 
+RUN DEBIAN_FRONTEND=noninteractive TZ=Europe/Madrid \
   apt-get update && apt-get install -y --no-install-recommends \
   libboost-program-options-dev libmbedcrypto7 libconfig++-dev libsctp-dev libfftw3-dev \
   uhd-host libuhd-dev libzmq3-dev libsoapysdr-dev \
   && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /usr/local/include/srsran /usr/local/include/srsran
+COPY --from=builder /usr/local/lib /usr/local/lib
 
 ADD srsue_entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/srsue_entrypoint.sh"]

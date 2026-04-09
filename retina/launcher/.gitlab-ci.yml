@@ -35,6 +35,7 @@ stages:
     DOCKERFILE: retina/launcher
     BUILD_ARGS: PYTHON_VERSION=${PYTHON_VERSION};OS=${OS};RETINA_VERSION=${RETINA_VERSION}
     VERSION: ${RETINA_VERSION}
+    CACHE: "true"
 
 .launcher_build_dependencies:
   before_script:

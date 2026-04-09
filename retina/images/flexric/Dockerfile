@@ -6,9 +6,8 @@ ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
 FROM ubuntu:${AGENT_OS_VERSION} AS builder
 
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt-get install -y --no-install-recommends \
        swig \
        build-essential \
        libsctp-dev \
@@ -31,7 +30,7 @@ RUN apt-get update && \
        libconfig-dev \
        libconfig++-dev \
        gcc-12 && \
-    apt-get clean
+    apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 ARG FLEXRIC_VERSION=br-flexric

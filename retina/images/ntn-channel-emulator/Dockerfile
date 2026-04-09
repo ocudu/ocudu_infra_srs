@@ -9,12 +9,11 @@ ARG RETINA_VERSION
 FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION as agent
 FROM agent AS ntn-channel-emulator
 
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt-get install -y --no-install-recommends \
         python3 \
         python3-pip && \
-    apt-get clean
+    apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install the required Python packages using pip
 RUN pip3 config set global.break-system-packages true

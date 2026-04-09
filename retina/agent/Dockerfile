@@ -31,26 +31,18 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     gcc python3-dev python3-pip \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Add the folder
-ADD . /src
 WORKDIR /src
 
 # Build wheels and save dependencies
 ARG RETINA_VERSION
-RUN python3 -m pip wheel -w /src/wheelhouse protocol/ agent/
+COPY protocol/ /src/protocol/
+COPY agent/ /src/agent/
+RUN python3 -m pip wheel -w /src/wheelhouse protocol/ agent/ py-spy
 
 ######################
 # Final docker image #
 ######################
 FROM ubuntu:$AGENT_OS_VERSION
-ARG PIP_EXTRA_INDEX_URL=""
-
-# Copy wheels
-COPY --from=builder /src/wheelhouse /app/
-COPY --from=iperf_builder /opt/iperf /opt/iperf
-
-ENV PYTHONBUFFERED=1
-ENV PATH="${PATH}:/opt/iperf/bin"
 
 # OS dependencies + tshark from the Wireshark stable PPA
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
@@ -64,7 +56,14 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install the generated wheels
-RUN python3 -m pip install --break-system-packages --ignore-installed /app/*.whl py-spy
+ENV PYTHONBUFFERED=1
+ARG PIP_EXTRA_INDEX_URL=""
+COPY --from=builder /src/wheelhouse /app/
+RUN python3 -m pip install --break-system-packages --ignore-installed /app/*.whl
+
+# Copy wheels and iperf
+ENV PATH="${PATH}:/opt/iperf/bin"
+COPY --from=iperf_builder /opt/iperf /opt/iperf
 
 WORKDIR /var/log/retina
 

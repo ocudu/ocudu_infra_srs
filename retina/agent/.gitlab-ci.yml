@@ -42,6 +42,7 @@ stages:
     CONTEXT: ${CI_PROJECT_DIR}/retina
     DOCKERFILE: retina/agent
     BUILD_ARGS: AGENT_OS_VERSION=${AGENT_OS_VERSION};RETINA_VERSION=${RETINA_VERSION}
+    CACHE: "true"
 
 .agent_build_dependencies:
   before_script:

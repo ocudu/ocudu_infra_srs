@@ -4,17 +4,10 @@
 ARG PYTHON_VERSION=3.12
 ARG OS=alpine
 FROM python:${PYTHON_VERSION}-${OS} AS builder
-ARG PIP_EXTRA_INDEX_URL=""
 ENV PYTHONBUFFERED=1
 
 # OS deps to build python libs
 RUN apk add build-base linux-headers libffi-dev
-
-# Add the folder
-ADD . /src
-
-ARG RETINA_VERSION
-RUN pip install /src/viavi /src/protocol /src/client /src/orchestrator /src/launcher
 
 # Install kubectl
 WORKDIR /tmp
@@ -41,6 +34,16 @@ RUN cd /tmp && mkdir influxdb2-client-${INFLUX_VERSION}-linux-amd64 && \
     tar xvzf influxdb2-client-${INFLUX_VERSION}-linux-amd64.tar.gz -C influxdb2-client-${INFLUX_VERSION}-linux-amd64 && \
     cp influxdb2-client-${INFLUX_VERSION}-linux-amd64/influx /usr/local/bin/ && \
     rm -Rf influxdb2-client-${INFLUX_VERSION}-linux-amd64*
+
+# Install Python packages
+ARG RETINA_VERSION
+ARG PIP_EXTRA_INDEX_URL=""
+COPY viavi/ /src/viavi/
+COPY protocol/ /src/protocol/
+COPY client/ /src/client/
+COPY orchestrator/ /src/orchestrator/
+COPY launcher/ /src/launcher/
+RUN pip install /src/viavi /src/protocol /src/client /src/orchestrator /src/launcher
 
 WORKDIR /workdir
 

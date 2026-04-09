@@ -54,11 +54,12 @@ RUN cp /usr/bin/true /usr/sbin/telinit && \
 ARG OPEN5GS_VERSION=v2.7.6
 
 # open5gs
-ADD retina.patch /tmp/retina.patch
-RUN git clone --depth 1 --branch $OPEN5GS_VERSION $REPO_URL open5gs\
+RUN git clone --depth 1 --branch $OPEN5GS_VERSION $REPO_URL open5gs \
     && cd open5gs \
     && meson build --prefix=`pwd`/install \
-    && ninja -C build \
+    && ninja -C build
+ADD retina.patch /tmp/retina.patch
+RUN cd open5gs \
     && git apply /tmp/retina.patch \
     && cd build \
     && ninja install

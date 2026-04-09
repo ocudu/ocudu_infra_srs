@@ -32,6 +32,7 @@ variables:
     CONTEXT: retina/images/ntn-channel-emulator
     VERSION: ${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
     BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI}
+    CACHE: "true"
   before_script:
     - |
       download_ntn_channel_emulator() {
