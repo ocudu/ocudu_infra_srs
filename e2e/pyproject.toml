@@ -113,8 +113,8 @@ envlist =
 [testenv:format]
 skip_install = true
 deps =
-  black
-  isort
+  black <= 26.3.1
+  isort <= 8.0.1
 commands =
   black --check --diff --color tests scripts conftest.py
   isort --check tests scripts conftest.py
@@ -122,8 +122,8 @@ commands =
 [testenv:format_apply]
 skip_install = true
 deps =
-  black
-  isort
+  black <= 26.3.1
+  isort <= 8.0.1
 commands =
   black tests scripts conftest.py
   isort tests scripts conftest.py
@@ -131,14 +131,14 @@ commands =
 [testenv:lint]
 skip_install = true
 deps =
-  pylint
+  pylint <= 4.0.5
 commands =
   pylint tests scripts conftest.py
 
 [testenv:type]
 skip_install = true
 deps =
-  mypy
+  mypy <= 1.20.0
 commands =
   mypy --check-untyped-defs tests scripts conftest.py
 """

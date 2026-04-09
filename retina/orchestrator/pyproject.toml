@@ -96,8 +96,8 @@ passenv = RETINA_VERSION
 [testenv:format]
 skip_install = true
 deps =
-  black
-  isort
+  black <= 26.3.1
+  isort <= 8.0.1
 commands =
   black --check --diff --color src
   isort --check src
@@ -105,33 +105,33 @@ commands =
 [testenv:format_apply]
 skip_install = true
 deps =
-  black
-  isort
+  black <= 26.3.1
+  isort <= 8.0.1
 commands =
   black src
   isort src
 
 [testenv:lint]
 deps =
-  pylint 
-  -e ../protocol 
+  pylint <= 4.0.5
+  -e ../protocol
 commands =
   pylint src
 
 [testenv:type]
 skip_install = true
-deps = 
-  mypy
-  types-PyYAML
-commands = 
+deps =
+  mypy <= 1.20.0
+  types-PyYAML <= 6.0.12
+commands =
   mypy src
 
 [testenv:build]
 skip_install = true
 deps =
-  build
-  setuptools >= 61
-  wheel
+  build <= 1.4.2
+  setuptools >= 61, <= 82.0.1
+  wheel <= 0.46.3
   -e ../protocol
 commands =
   python -m build --no-isolation

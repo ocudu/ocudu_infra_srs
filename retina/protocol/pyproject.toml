@@ -91,10 +91,10 @@ passenv = RETINA_VERSION
 [testenv:grpc]
 skip_install = true
 deps =
-  mypy-protobuf < 4
+  mypy-protobuf <= 3.7.0
   grpcio < 1.68.0
   grpcio-tools < 1.68.0
-  requests < 3
+  requests <= 2.33.1
 commands_pre =
   python3 scripts/download_protoc_gen.py
 commands =    
@@ -112,8 +112,8 @@ commands =
 [testenv:format]
 skip_install = true
 deps =
-  black
-  isort
+  black <= 26.3.1
+  isort <= 8.0.1
 commands =
   black --check --diff --color src
   isort --check src
@@ -121,29 +121,29 @@ commands =
 [testenv:format_apply]
 skip_install = true
 deps =
-  black
-  isort
+  black <= 26.3.1
+  isort <= 8.0.1
 commands =
   black src
   isort src
 
 [testenv:lint]
 deps =
-  pylint
+  pylint <= 4.0.5
 commands =
   pylint src
 
 [testenv:type]
 skip_install = true
 deps = 
-  mypy
+  mypy <= 1.20.0
 commands = 
   mypy src
 
 [testenv:unittest]
 usedevelop = True
 deps =
-  coverage[toml]
+  coverage[toml] <= 7.13.5
 commands =
   coverage run -m unittest discover -v
   coverage report
@@ -153,9 +153,9 @@ commands =
 [testenv:build]
 skip_install = true
 deps =
-  build
-  setuptools >= 61
-  wheel
+  build <= 1.4.2
+  setuptools >= 61, <= 82.0.1
+  wheel <= 0.46.3
 commands =
   python -m build --no-isolation
 """
