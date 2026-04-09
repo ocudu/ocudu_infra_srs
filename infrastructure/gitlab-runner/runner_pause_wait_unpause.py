@@ -16,19 +16,19 @@ import json
 from pathlib import Path
 from typing import List
 
-def toggle_pause(paused: bool, runner_id: int, runner_name: str, headers: dict, gitlab_url: str):
+def toggle_pause(paused: bool, runner_id: int, runner_name: str, headers: dict, gitlab_url: str, ssl_verify=True):
     """Pause or unpause a GitLab runner."""
     data = {
         "paused": "true" if paused else "false"
     }
     GITLAB_API_URL = f"{gitlab_url.rstrip('/')}/api/v4/runners/{runner_id}"
-    response = requests.put(GITLAB_API_URL, headers=headers, data=data)
+    response = requests.put(GITLAB_API_URL, headers=headers, data=data, verify=ssl_verify)
     if response.ok:
         print(f"Runner {runner_name} with id {runner_id} has been successfully {'paused' if paused else 'unpaused'}.")
     else:
         print(f"Failed to {'pause' if paused else 'unpause'} runner {runner_name} with id {runner_id}: {response.status_code} - {response.text}")
 
-def wait(minutes: int, runner_id: int, runner_name: str, headers: dict, gitlab_url: str):
+def wait(minutes: int, runner_id: int, runner_name: str, headers: dict, gitlab_url: str, ssl_verify=True):
     """Wait for runner to have no running jobs, cancelling them if timeout."""
     GITLAB_API_URL = f"{gitlab_url.rstrip('/')}/api/v4/runners/{runner_id}/jobs?status=running"
 
@@ -37,8 +37,11 @@ def wait(minutes: int, runner_id: int, runner_name: str, headers: dict, gitlab_u
         time_to_reach = time.time() + (minutes * 60)
         start_time = time.time()
         while time.time() < time_to_reach:
-            response = requests.get(GITLAB_API_URL, headers=headers)
-            jobs = response.json() 
+            response = requests.get(GITLAB_API_URL, headers=headers, verify=ssl_verify)
+            if not response.ok:
+                print(f"Error querying jobs for runner {runner_name}: {response.status_code} - {response.text}")
+                sys.exit(1)
+            jobs = response.json()
             print(f"Number of running jobs for runner {runner_name} with id {runner_id}: {len(jobs)}")
             if len(jobs) == 0:
                 print(f"There are no running jobs for runner {runner_name} with id {runner_id}! Stopping the wait...")
@@ -47,7 +50,10 @@ def wait(minutes: int, runner_id: int, runner_name: str, headers: dict, gitlab_u
             print(f"... {(time.time() - start_time) / 60} minute(s) passed waiting for runner {runner_name} with id {runner_id} to have no running jobs...")
         print(f"Timeout reached: Runner {runner_name} with id {runner_id} still has running jobs after {minutes} minutes. Cancelling all its running jobs...")
         # cancel jobs
-        response = requests.get(GITLAB_API_URL, headers=headers)
+        response = requests.get(GITLAB_API_URL, headers=headers, verify=ssl_verify)
+        if not response.ok:
+            print(f"Error querying jobs for runner {runner_name}: {response.status_code} - {response.text}")
+            sys.exit(1)
         jobs = response.json()
 
         for job in jobs:
@@ -56,7 +62,7 @@ def wait(minutes: int, runner_id: int, runner_name: str, headers: dict, gitlab_u
             print(f"Cancelling running job with id {job_id} of runner {runner_name} with id {runner_id}...")
 
             cancel_url = f"{gitlab_url.rstrip('/')}/api/v4/projects/{project_id}/jobs/{job_id}/cancel"
-            cancel_response = requests.post(cancel_url, headers=headers)
+            cancel_response = requests.post(cancel_url, headers=headers, verify=ssl_verify)
 
             if cancel_response.ok:
                 print(f"Cancelled job with id {job_id} of runner {runner_name} with id {runner_id}.")
@@ -191,16 +197,18 @@ if __name__ == "__main__":
     # Find runner ID by exact name match across all files
     runner_id = find_runner_id(runner_name, existing_paths)
 
-    # Read gitlab_url from the first runners file
+    # Read gitlab_url and ssl_verify from the first runners file
     runners_data = yaml.safe_load(existing_paths[0].read_text(encoding="utf-8"))
-    gitlab_url = runners_data.get("global", {}).get("gitlab_url", "https://gitlab.com").rstrip("/")
+    global_config = runners_data.get("global", {})
+    gitlab_url = global_config.get("gitlab_url", "https://gitlab.com").rstrip("/")
+    ssl_verify = global_config.get("ssl_verify", True)
 
     headers = {
         "PRIVATE-TOKEN": token
     }
 
     if args.pause_wait:
-        toggle_pause(True, runner_id, runner_name, headers, gitlab_url)
-        wait(args.wait_minutes, runner_id, runner_name, headers, gitlab_url)
+        toggle_pause(True, runner_id, runner_name, headers, gitlab_url, ssl_verify)
+        wait(args.wait_minutes, runner_id, runner_name, headers, gitlab_url, ssl_verify)
     elif args.unpause:
-        toggle_pause(False, runner_id, runner_name, headers, gitlab_url)
+        toggle_pause(False, runner_id, runner_name, headers, gitlab_url, ssl_verify)

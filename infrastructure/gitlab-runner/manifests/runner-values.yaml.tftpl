@@ -74,6 +74,9 @@ service:
 runners:
   config: |
     [[runners]]
+%{ if !cluster_config.ssl_verify ~}
+      tls-skip-verify = true
+%{ endif ~}
       output_limit = ${runner.output_limit}
       environment = [${join(", ", [for e in runner.environment : "\"${e}\""])}]
       [runners.feature_flags]

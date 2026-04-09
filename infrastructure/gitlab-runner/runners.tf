@@ -9,6 +9,7 @@ locals {
     gitlab_url   = local._yaml_cluster_config.gitlab_url
     cache        = try(local._yaml_cluster_config.cache, null)
     host_aliases = try(local._yaml_cluster_config.host_aliases, null)
+    ssl_verify   = try(local._yaml_cluster_config.ssl_verify, true)
   }
 
   # Flatten runners from all files, filtering by cluster_type.
