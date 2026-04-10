@@ -24,6 +24,6 @@ udr_ip: str = "127.0.0.20"
 udr_port: int = 7777
 tun_subnet: str = "10.45.0.1"
 tun_mask: int = 16
-apn: str = "srsapn"
+apn: str = "internet"
 ims_mode: str = ""  # enabled, not_registering
 slices: List[int] = []
