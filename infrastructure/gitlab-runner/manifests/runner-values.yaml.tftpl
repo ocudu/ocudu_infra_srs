@@ -242,6 +242,10 @@ runners:
   runUntagged: ${runner.run_untagged}
   privileged: false
 
+%{ if certs_secret_name != null ~}
+certsSecretName: "${certs_secret_name}"
+%{ endif ~}
+
 cache: {}
 
 builds: {}

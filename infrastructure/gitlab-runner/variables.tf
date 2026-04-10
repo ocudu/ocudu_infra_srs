@@ -27,3 +27,9 @@ variable "gitlab_runner_token" {
   type        = string
   sensitive   = true
 }
+
+variable "certs_secret_name" {
+  description = "Name of a Kubernetes secret in the gitlab-runner namespace containing CA certs (e.g. gitlab.lab.mil.crt). Mounted by the runner pod to trust custom CAs during registration."
+  type        = string
+  default     = null
+}

@@ -10,6 +10,17 @@ locals {
     cache        = try(local._yaml_cluster_config.cache, null)
     host_aliases = try(local._yaml_cluster_config.host_aliases, null)
     ssl_verify   = try(local._yaml_cluster_config.ssl_verify, true)
+    environment  = tolist(try(local._yaml_cluster_config.environment, []))
+    volumes = [
+      for v in try(local._yaml_cluster_config.volumes, []) : {
+        type       = v.type
+        name       = v.name
+        mount_path = v.mount_path
+        medium     = try(v.medium, null)
+        host_path  = try(v.host_path, null)
+        read_only  = try(v.read_only, true)
+      }
+    ]
   }
 
   # Flatten runners from all files, filtering by cluster_type.
@@ -78,8 +89,11 @@ locals {
       helper_cpu_limit     = tostring(try(r.helper_cpu_limit, "500m"))
       helper_memory_limit  = tostring(try(r.helper_memory_limit, "500Mi"))
 
-      # Compute environment list: explicit list overrides cpu/memory-derived defaults
-      environment = length(try(r.environment, [])) > 0 ? tolist(r.environment) : ["GIT_HTTP_POST_BUFFER=157286400"]
+      # Cluster-level environment is prepended to every runner.
+      environment = concat(
+        local.cluster_config.environment,
+        length(try(r.environment, [])) > 0 ? tolist(r.environment) : ["GIT_HTTP_POST_BUFFER=157286400"]
+      )
 
       # Node selector (map) or default arch/os labels
       node_selector = try(r.node_selector, null)
@@ -101,7 +115,7 @@ locals {
       } : null
 
       # Volumes list
-      volumes = [
+      volumes = concat(local.cluster_config.volumes, [
         for v in try(r.volumes, []) : {
           type       = v.type
           name       = v.name
@@ -110,7 +124,7 @@ locals {
           host_path  = try(v.host_path, null)
           read_only  = try(v.read_only, true)
         }
-      ]
+      ])
 
       # RBAC
       rbac = {
@@ -159,9 +173,10 @@ resource "helm_release" "runners" {
   version          = var.helm_version
 
   values = [templatefile("${path.module}/manifests/runner-values.yaml.tftpl", {
-    runner         = each.value
-    runner_token   = local.runners_map[each.key].token
-    cluster_config = local.cluster_config
+    runner            = each.value
+    runner_token      = local.runners_map[each.key].token
+    cluster_config    = local.cluster_config
+    certs_secret_name = var.certs_secret_name
   })]
 
   lifecycle {
