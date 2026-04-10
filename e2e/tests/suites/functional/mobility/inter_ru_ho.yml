@@ -7,10 +7,10 @@
 # test_case_desc: 1 UE attaches to cell A, starts bidirectional UDP and moves to cell B, doing Handover
 baseline:
   template: ue_simulator.test_gnb
-  testbed: zmq_mme
+  request: zmq_mme
   feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14]
   ue:
-    config: [2cell_2t2r_bw100_band78_chsim.cfg, handover.cfg]
+    config: [2cell_2t2r_bw100_band78_chsim.cfg.jinja, handover.cfg]
   gnb:
     config:
       [2t2r_bw100_band78.yml, base_slice.yml, pcaps.yml, 2cell_intradu_ho.yml]

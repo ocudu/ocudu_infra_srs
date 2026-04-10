@@ -3,7 +3,7 @@
 
 baseline:
   template: ue_simulator.test_gnb
-  testbed: zmq_mme
+  request: zmq_mme
   ue:
     config: [1cell_1t1r_bw100_band78.cfg.jinja, multiue_ping.cfg.jinja]
     parameters:
