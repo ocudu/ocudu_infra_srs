@@ -6,13 +6,13 @@ ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
 
 FROM ubuntu:$AGENT_OS_VERSION AS binary_setup
-ARG AMARISOFT_VERSION
 
 # trx_uhd.so dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
     uhd-host libuhd-dev make build-essential libboost-program-options-dev \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ARG AMARISOFT_VERSION
 # Add amarisoftue bins and libs
 ADD amarisoft/${AMARISOFT_VERSION}/lteue-linux-${AMARISOFT_VERSION}.tar.gz /opt/
 ADD amarisoft/${AMARISOFT_VERSION}/libs/**/*.so* /opt/lteue-linux-${AMARISOFT_VERSION}/

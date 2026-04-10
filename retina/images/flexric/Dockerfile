@@ -33,7 +33,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
-ARG FLEXRIC_VERSION=br-flexric
 ARG REPO_URL=https://gitlab.eurecom.fr/mosaic5g/flexric.git
 ARG REPO_BRANCH=br-flexric
 
