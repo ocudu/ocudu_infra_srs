@@ -37,7 +37,6 @@ dependencies = [
 description = "Retina launcher"
 dynamic = ["version"]
 name = "retina_launcher"
-readme = "README.md"
 requires-python = ">=3.9"
 
 [project.scripts]

@@ -270,7 +270,7 @@ class Kubernetes(KubernetesManager):
         annotation_list.extend([pod.metadata.annotations for pod in self._get_pod_dict(namespace).values()])
 
         for annotation in annotation_list:
-            if "orch_id" in annotation:
+            if annotation and "orch_id" in annotation:
                 orch_id = annotation["orch_id"]
                 user_name = annotation["user_name"]
                 is_here = False

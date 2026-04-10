@@ -156,7 +156,11 @@ def _get_reserved_info_from_node(k_server: Kubernetes, node_name: str) -> Option
         pod
         for pod in retina_pods_in_node
         if pod.metadata.labels[RETINA_DEPLOY_LABEL_KEY] != pod.metadata.name
-        or ("dev_mode" in pod.metadata.annotations and pod.metadata.annotations["dev_mode"] == "true")
+        or (
+            pod.metadata.annotations
+            and "dev_mode" in pod.metadata.annotations
+            and pod.metadata.annotations["dev_mode"] == "true"
+        )
     ]
     for pod in dev_mode_pod_array:
         user_name = (

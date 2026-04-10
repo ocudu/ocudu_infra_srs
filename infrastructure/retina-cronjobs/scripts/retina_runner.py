@@ -152,7 +152,7 @@ def get_node_name_select(pod) -> Union[str, None]:
     Get the node name from the pod using the node selector
     """
     annotations = pod.metadata.annotations
-    if "dev_mode" in annotations and annotations["dev_mode"] == "true":
+    if annotations and "dev_mode" in annotations and annotations["dev_mode"] == "true":
         selector_terms_list = (
             pod.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms
         )
