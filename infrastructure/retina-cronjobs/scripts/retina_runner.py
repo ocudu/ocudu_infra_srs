@@ -22,9 +22,6 @@ from retina.orchestrator.retina_kubernetes import Kubernetes
 
 RETINA_TAG = "paused-by-retina"
 
-RUNNERS_NAMESPACE = "retina"
-RUNNERS_CONFIGMAP_KEY = "runners"
-
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def change_runner_status(runner_id: int, gitlab_token: str, paused: bool, node: str):
@@ -82,7 +79,10 @@ def get_runner_list(k_server: Kubernetes):
 def _load_runners_by_node_from_configmap():
     cm_name = os.getenv("RETINA_RUNNERS_CONFIGMAP", "")
     if not cm_name:
-        raise RuntimeError("Missing env RETINA_RUNNERS_CONFIGMAP (expected ConfigMap name in namespace 'retina').")
+        raise RuntimeError("Missing env RETINA_RUNNERS_CONFIGMAP (expected ConfigMap name for runners).")
+    cm_namespace = os.getenv("RETINA_RUNNERS_CONFIGMAP_NAMESPACE", "")
+    if not cm_namespace:
+        raise RuntimeError("Missing env RETINA_RUNNERS_CONFIGMAP_NAMESPACE (expected ConfigMap namespace).")
 
     # runner-manager runs in-cluster; we keep kubeconfig fallback for local debugging.
     try:
@@ -91,12 +91,12 @@ def _load_runners_by_node_from_configmap():
         k8s_config.load_kube_config(context=os.getenv("KUBECONFIG_CONTEXT"))
 
     v1 = k8s_client.CoreV1Api()
-    cm = v1.read_namespaced_config_map(cm_name, RUNNERS_NAMESPACE)
-    if not cm.data or RUNNERS_CONFIGMAP_KEY not in cm.data or not cm.data[RUNNERS_CONFIGMAP_KEY]:
-        raise RuntimeError(f"ConfigMap '{cm_name}' is missing data.{RUNNERS_CONFIGMAP_KEY} in namespace '{RUNNERS_NAMESPACE}'.")
+    cm = v1.read_namespaced_config_map(cm_name, cm_namespace)
+    if not cm.data or "runners" not in cm.data or not cm.data["runners"]:
+        raise RuntimeError(f"ConfigMap '{cm_name}' is missing runners data in namespace '{cm_namespace}'.")
 
     try:
-        decoded = base64.b64decode(cm.data[RUNNERS_CONFIGMAP_KEY].encode("ascii")).decode("ascii")
+        decoded = base64.b64decode(cm.data["runners"].encode("ascii")).decode("ascii")
         runners_by_node = json.loads(decoded)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         raise RuntimeError(f"Failed to decode runners from ConfigMap '{cm_name}'") from exc
@@ -252,4 +252,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

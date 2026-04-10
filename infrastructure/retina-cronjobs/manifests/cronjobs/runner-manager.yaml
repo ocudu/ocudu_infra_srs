@@ -38,6 +38,8 @@ spec:
               env:
                 - name: RETINA_RUNNERS_CONFIGMAP
                   value: retina-runners-${suffix}
+                - name: RETINA_RUNNERS_CONFIGMAP_NAMESPACE
+                  value: ${namespace}
                 - name: GITLAB_TOKEN
                   valueFrom:
                     secretKeyRef:
