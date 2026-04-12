@@ -1,11 +1,13 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-ARG AGENT_OS_VERSION=24.04
+ARG AGENT_OS_VERSION
 ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
 
-FROM ubuntu:$AGENT_OS_VERSION AS binary_setup
+FROM ${RETINA_REGISTRY_URI}/wheelhouse:${RETINA_VERSION} AS wheelhouse
+
+FROM ubuntu:${AGENT_OS_VERSION} AS binary_setup
 
 # trx_uhd.so dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
@@ -37,7 +39,7 @@ RUN mv /usr/lib/*-linux-gnu/libcrypto.so.1.1 /opt/lteue/libcrypto.so.1.1 && \
 # RUN [ ! -d /opt/lteue/libcrypto.so.1.1 ] && ln -sf /opt/lteue/libcrypto.so.1 /opt/lteue/libcrypto.so.1.1
 # RUN [ ! -d /opt/lteue/libssl.so.1.1 ] && ln -sf /opt/lteue/libssl.so.1 /opt/lteue/libssl.so.1.1
 
-FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
+FROM ${RETINA_REGISTRY_URI}/agent:${AGENT_OS_VERSION} AS agent
 FROM agent AS amarisoftue
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
     uhd-host libuhd-dev libzmq3-dev \
@@ -47,3 +49,7 @@ ENV PATH="${PATH}:/opt/lteue"
 
 ADD amarisoft_ue_entrypoint.sh amarisoft_ue_setup.sh /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/amarisoft_ue_entrypoint.sh"]
+
+# Install retina
+COPY --from=wheelhouse /src/wheelhouse /app/
+RUN pip install --break-system-packages --no-index --find-links /app/ retina-agent

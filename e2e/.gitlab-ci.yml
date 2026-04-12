@@ -40,16 +40,11 @@ e2e tests tox:
     - apk add build-base
   needs: []
 
-.e2e validation:
-  stage: static
-  image:
-    name: python:3.12-alpine
-    entrypoint: ["/bin/sh", "-c"]
-  before_script:
-    - pip install retina/launcher/ retina/protocol/ retina/client/ retina/orchestrator/ retina/viavi/
-
 e2e dynamic tests validation:
-  extends: .e2e validation
+  image:
+    name: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
+    entrypoint: ["/bin/sh", "-c"]
+  stage: static
   rules:
     - if: $ON_MR
       changes:
@@ -61,9 +56,16 @@ e2e dynamic tests validation:
     - |
       cd ${CI_PROJECT_DIR}/e2e
       retina-launcher --collect-only
+  needs:
+    - get retina version
+    - job: retina containers [launcher]
+      optional: true
 
 e2e request validation:
-  extends: .e2e validation
+  image:
+    name: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
+    entrypoint: ["/bin/sh", "-c"]
+  stage: static
   rules:
     - if: $ON_MR
       changes:
@@ -77,6 +79,10 @@ e2e request validation:
       for f in $file_list; do
           retina-request-checker --input $f
       done
+  needs:
+    - get retina version
+    - job: retina containers [launcher]
+      optional: true
 
 dynamically generated pipeline validation:
   extends: .static
@@ -112,7 +118,8 @@ retina demolition:
       - GROUP: viavi
       - GROUP: zmq
   retry: 2
-  needs: []
+  needs:
+    - get retina version
 
 ## Build jobs for Scheduled Pipelines
 zmq driver:
@@ -224,6 +231,7 @@ dpdk rtsan avx512:
   variables:
     GROUP: zmq
   needs:
+    - get retina version
     - zmq driver
     - job: release with deb info
       artifacts: true
@@ -249,11 +257,13 @@ dpdk rtsan avx512:
 test ue:
   extends: .test mode ue
   needs:
+    - get retina version
     - release with deb info
 
 test ue asan:
   extends: .test mode ue
   needs:
+    - get retina version
     - asan
 
 .test mode ru:
@@ -272,6 +282,7 @@ ru dummy:
     MARKERS: test_mode
     KEYWORDS: test_ru
   needs:
+    - get retina version
     - dpdk rtsan avx512
 
 ru dummy asan:
@@ -280,6 +291,7 @@ ru dummy asan:
     MARKERS: test_mode_not_crash
     KEYWORDS: "test_ru"
   needs:
+    - get retina version
     - asan
 
 ru dummy tsan:
@@ -288,6 +300,7 @@ ru dummy tsan:
     MARKERS: test_mode_not_crash
     KEYWORDS: "test_ru"
   needs:
+    - get retina version
     - tsan
 
 ru dummy test many ues:
@@ -296,6 +309,7 @@ ru dummy test many ues:
     MARKERS: test_mode_many_ues
     KEYWORDS: test_mode_many_ues
   needs:
+    - get retina version
     - dpdk rtsan avx512
 
 ### SRSUE
@@ -308,6 +322,7 @@ ru dummy test many ues:
     GROUP: zmq
     RETINA_ARGS: ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
   needs:
+    - get retina version
     - release with deb info
 
 srsue basic:
@@ -335,6 +350,7 @@ ric:
       gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.enable_integrity_protection=True
       ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
   needs:
+    - get retina version
     - zmq driver
     - job: release with deb info
       artifacts: true
@@ -382,6 +398,7 @@ gnb 4UE asan:
     MARKERS: smoke
     KEYWORDS: iperf
   needs:
+    - get retina version
     - zmq driver
     - asan
 
@@ -391,6 +408,7 @@ gnb 4UE tsan:
     MARKERS: smoke
     KEYWORDS: iperf
   needs:
+    - get retina version
     - zmq driver
     - tsan
 
@@ -402,6 +420,7 @@ gnb 4UE memcheck:
       gnb.all.pcap=True gnb.all.mac_enable=True gnb.all.rlc_enable=True gnb.all.enable_integrity_protection=True
       ue.all.log_level=info gnb.all.log_level=warning 5gc.all.log_level=info
   needs:
+    - get retina version
     - zmq driver
     - debug
 
@@ -498,6 +517,7 @@ cudu 64UE:
       gnb.all.pcap=True gnb.all.rlc_enable=False gnb.all.enable_integrity_protection=True
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
+    - get retina version
     - dpdk rtsan avx512
 
 gnb 1UE s72:
@@ -533,6 +553,7 @@ gnb 1UE s72 FR2:
       gnb.all.pcap=True gnb.all.rlc_enable=True gnb.all.rlc_rb_type=srb
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
+    - get retina version
     - dpdk rtsan avx512
 
 1UE:
@@ -598,6 +619,7 @@ gnb 1UE s72 FR2:
     RETINA_ARGS: >
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
+    - get retina version
     - release with deb info
 
 b200 asan:
@@ -605,6 +627,7 @@ b200 asan:
   variables:
     MARKERS: rf_not_crash
   needs:
+    - get retina version
     - asan
 
 validate b200 config:
@@ -624,6 +647,7 @@ validate b200 config:
     RETINA_ARGS: >
       ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
   needs:
+    - get retina version
     - release with deb info
 
 android b200:

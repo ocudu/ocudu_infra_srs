@@ -12,6 +12,7 @@ import logging
 import os
 import re
 import shutil
+import subprocess
 import tarfile
 from pathlib import Path
 from string import Template
@@ -62,31 +63,30 @@ def main():
     root_data = load_yaml(retina_dir / "../.gitlab-ci.yml")
     root_variables = root_data["variables"]
 
-    version_data = load_yaml(retina_dir / "version.yml")
-    retina_version = version_data["variables"]["RETINA_VERSION"]
+    retina_version = os.getenv("RETINA_VERSION")
+    if retina_version is None:
+        retina_version = subprocess.check_output(
+            ["sh", str(retina_dir / "version.sh")],
+            text=True,
+            cwd=retina_dir.parent,
+        ).strip()
 
-    agent_data = load_yaml(retina_dir / "agent/.gitlab-ci.yml")
-    agent_variables = agent_data[".agent-docker"]["variables"]
-    os_name = agent_variables["AGENT_OS_NAME"]
-    os_version = agent_variables["AGENT_OS_VERSION"]
+    retina_ci_data = load_yaml(retina_dir / ".gitlab-ci.yml")
+    containers_vars = retina_ci_data[".retina containers"]["variables"]
+    os_version = containers_vars["AGENT_OS_VERSION"]
+    srsue_version = containers_vars["SRSUE_VERSION"]
+    open5gs_version = containers_vars["OPEN5GS_VERSION"]
+    flexric_version = containers_vars["FLEXRIC_VERSION"]
+    ntn_channel_emulator_version = containers_vars["NTN_CHANNEL_EMULATOR_VERSION"]
+
+    ocudu_vars = retina_ci_data["retina containers [ocudu]"]["variables"]
+    builder_image = OCUDU_REGISTRY_URI + "/" + ocudu_vars["BUILDER_IMAGE_NAME"]
 
     if amari_path is None:
         logging.warning("Skipped Amarisoft support: path not provided (do it by adding --amari-path argument)")
         amarisoft_version = root_variables["AMARISOFT_VERSION"]
     else:
         amarisoft_version = manage_amari_binaries(retina_dir, amari_path)
-
-    srsue_data = load_yaml(retina_dir / "images/srsue/.gitlab-ci.yml")
-    srsue_variables = srsue_data["variables"]
-    srsue_version = srsue_variables["SRSUE_VERSION"]
-
-    open5gs_data = load_yaml(retina_dir / "images/open5gs/.gitlab-ci.yml")
-    open5gs_version = open5gs_data["variables"]["OPEN5GS_VERSION"]
-
-    ocudu_data = load_yaml(retina_dir / "images/ocudu/.gitlab-ci.yml")
-    builder_image = (
-        OCUDU_REGISTRY_URI + "/" + ocudu_data[".docker-builder-ocudu-base"]["variables"]["BUILDER_IMAGE_NAME"]
-    )
 
     if ocudu_path is None:
         logging.warning(
@@ -97,19 +97,12 @@ def main():
         builder_data = load_yaml(ocudu_path / ".gitlab/ci/builders/version.yml")
         docker_builder_version = builder_data["variables"]["DOCKER_BUILDER_VERSION"]
 
-    flexric_data = load_yaml(retina_dir / "images/flexric/.gitlab-ci.yml")
-    flexric_version = flexric_data["variables"]["FLEXRIC_VERSION"]
-
-    ntn_channel_emulator_data = load_yaml(retina_dir / "images/ntn-channel-emulator/.gitlab-ci.yml")
-    ntn_channel_emulator_version = ntn_channel_emulator_data["variables"]["NTN_CHANNEL_EMULATOR_VERSION"]
-
     # .env creating
     current_working_directory = Path.cwd()
 
     env_vars = {
         "RETINA_REGISTRY_URI": RETINA_REGISTRY_URI,
         "RETINA_VERSION": retina_version,
-        "AGENT_OS_NAME": os_name,
         "AGENT_OS_VERSION": os_version,
         "AMARISOFT_VERSION": amarisoft_version,
         "SRSUE_VERSION": srsue_version,

@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+ARG AGENT_OS_VERSION
+FROM ubuntu:$AGENT_OS_VERSION AS builder
+
+# OS dependencies
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip python3-dev gcc \
+    && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Copy retina source code
+COPY protocol/ /src/protocol/
+COPY agent/ /src/agent/
+COPY client/ /src/client/
+COPY orchestrator/ /src/orchestrator/
+COPY viavi/ /src/viavi/
+COPY launcher/ /src/launcher/
+WORKDIR /src
+
+# Build wheels and save dependencies
+ARG RETINA_VERSION
+RUN python3 -m pip wheel -w /src/wheelhouse protocol/ agent/ client/ orchestrator/ viavi/ launcher/ py-spy

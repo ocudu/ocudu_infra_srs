@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-ARG AGENT_OS_VERSION=24.04
+ARG AGENT_OS_VERSION
 
 #################
 # Iperf Builder #
 #################
-FROM ubuntu:$AGENT_OS_VERSION AS iperf_builder
+FROM ubuntu:${AGENT_OS_VERSION} AS iperf_builder
 ARG IPERF_VERSION=3.14
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
     git ca-certificates \
@@ -21,28 +21,10 @@ RUN cd iperf && \
     make && \
     make install
 
-#################
-# Agent Builder #
-#################
-FROM ubuntu:$AGENT_OS_VERSION AS builder
-
-# OS dependencies
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
-    gcc python3-dev python3-pip \
-    && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /src
-
-# Build wheels and save dependencies
-ARG RETINA_VERSION
-COPY protocol/ /src/protocol/
-COPY agent/ /src/agent/
-RUN python3 -m pip wheel -w /src/wheelhouse protocol/ agent/ py-spy
-
 ######################
 # Final docker image #
 ######################
-FROM ubuntu:$AGENT_OS_VERSION
+FROM ubuntu:${AGENT_OS_VERSION}
 
 # OS dependencies + tshark from the Wireshark stable PPA
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
@@ -55,21 +37,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     tshark \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install the generated wheels
-ENV PYTHONBUFFERED=1
-ARG PIP_EXTRA_INDEX_URL=""
-COPY --from=builder /src/wheelhouse /app/
-RUN python3 -m pip install --break-system-packages --ignore-installed /app/*.whl
-
-# Copy wheels and iperf
+# Copy iperf
 ENV PATH="${PATH}:/opt/iperf/bin"
 COPY --from=iperf_builder /opt/iperf /opt/iperf
 
+# Retina Setup
+ENV PYTHONBUFFERED=1
 WORKDIR /var/log/retina
-
 # export grpc default port
 EXPOSE 50051
-
 ADD agent/agent.sh /usr/local/bin/
-
-ENTRYPOINT ["/usr/local/bin/agent.sh", "ocudu-gnb"]

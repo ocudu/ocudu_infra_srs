@@ -1,12 +1,13 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# syntax=docker/dockerfile:1.2
-
-ARG AGENT_OS_VERSION=24.04
+ARG AGENT_OS_VERSION
 ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
-FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION as agent
+
+FROM ${RETINA_REGISTRY_URI}/wheelhouse:${RETINA_VERSION} AS wheelhouse
+
+FROM ${RETINA_REGISTRY_URI}/agent:${AGENT_OS_VERSION} as agent
 FROM agent AS ntn-channel-emulator
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -22,3 +23,7 @@ RUN pip3 install  --ignore-installed --no-cache-dir pyzmq skyfield numpy numba a
 COPY ntn-channel-emulator /ntn-channel-emulator
 
 ENTRYPOINT ["/usr/local/bin/agent.sh", "ntn-channel-emulator"]
+
+# Install retina
+COPY --from=wheelhouse /src/wheelhouse /app/
+RUN pip install --break-system-packages --no-index --find-links /app/ retina-agent

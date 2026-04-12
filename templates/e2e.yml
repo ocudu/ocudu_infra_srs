@@ -80,6 +80,21 @@ spec:
       default: []
       description: "Needs configuration for the job."
 ---
+get retina version:
+  stage: .pre
+  image:
+    name: alpine/git:v2.49.1
+    entrypoint: ["/bin/sh", "-c"]
+  variables:
+    GIT_DEPTH: 0
+  script:
+    - echo "RETINA_VERSION=$(sh retina/version.sh)" | tee retina_version.env
+  artifacts:
+    reports:
+      dotenv: retina_version.env
+  retry: 2
+  needs: []
+
 "$[[ inputs.job ]]":
   stage: $[[ inputs.stage ]]
   rules: $[[ inputs.rules ]]
@@ -108,6 +123,7 @@ spec:
     RUNNER_AFTER_SCRIPT_TIMEOUT: 20m
   needs:
     - $[[ inputs.needs ]]
+    - get retina version
   artifacts:
     paths:
       - e2e/log

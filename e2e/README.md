@@ -15,7 +15,6 @@ This folder contains E2E test sources, configurations and testbed definitions, a
 **Security best practices**:
 
 - Variables must be **masked** to hide sensitive values in logs
-- Mark variables as **protected** if you only trigger jobs on protected branches
 
 For detailed configuration options, see the [build and E2E component documentation](../templates/README.md).
 

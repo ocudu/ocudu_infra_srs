@@ -124,7 +124,7 @@ services:
     user: "${UID}:${GID}"
     entrypoint: ["sh", "-c", "trap 'exit 0' SIGTERM; tail -f /dev/null & wait"]
 
-  agent-image:
+  agent-image: &agent-image
     profiles:
       - all
       - zmq_srsue
@@ -133,10 +133,21 @@ services:
       - zmq_amariue_2gnb
       - zmq_amariue_mme
       - zmq_ntn
-    image: ${RETINA_REGISTRY_URI}/agent-ubuntu-${AGENT_OS_VERSION}:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/agent:${AGENT_OS_VERSION}
     build:
       context: ../
       dockerfile: agent/Dockerfile
+      args:
+        <<: *variables
+    network_mode: "none"
+    entrypoint: ["true"]
+
+  wheelhouse:
+    <<: *agent-image
+    image: ${RETINA_REGISTRY_URI}/wheelhouse:${RETINA_VERSION}
+    build:
+      context: ../
+      dockerfile: agent/Dockerfile.wheelhouse
       args:
         <<: *variables
     network_mode: "none"
@@ -161,6 +172,7 @@ services:
       context: ../images/amarisoftue
       additional_contexts:
         agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
       args:
         <<: *variables
     environment:
@@ -204,6 +216,7 @@ services:
         <<: *variables
       additional_contexts:
         agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     environment:
       RETINA_IP: &amariue_remote_ip 172.20.0.3
       RETINA_SECRETS: ${AMARISOFT_REMOTE_UE_IP:-}
@@ -231,6 +244,7 @@ services:
         <<: *variables
       additional_contexts:
         agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     cap_add:
       - SYS_NICE
       - NET_ADMIN
@@ -249,25 +263,6 @@ services:
     x-testbed:
       type: ue
 
-  ocudu-base-image:
-    image: ${RETINA_REGISTRY_URI}/ocudu-base:${RETINA_VERSION}
-    profiles:
-      - all
-      - zmq_srsue
-      - zmq_amariue
-      - zmq_amariue_1cu_2du
-      - zmq_amariue_2gnb
-      - zmq_amariue_mme
-      - zmq_ntn
-    build:
-      context: ../images/ocudu/base
-      args:
-        <<: *variables
-      additional_contexts:
-        agent: "service:agent-image"
-    network_mode: "none"
-    entrypoint: ["true"]
-
   ocudu-gnb-1: &gnb_service
     restart: unless-stopped
     container_name: ocudu-gnb-1
@@ -285,7 +280,8 @@ services:
         <<: *variables
         RETINA_AGENT: ocudu-gnb # ocudu-gnb, ocudu-cudu, ocudu-cu, ocudu-du
       additional_contexts:
-        ocudu-base: "service:ocudu-base-image"
+        agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     cap_add:
       - SYS_NICE
       - CAP_SYS_PTRACE
@@ -328,7 +324,8 @@ services:
         <<: *variables
         RETINA_AGENT: ocudu-cu
       additional_contexts:
-        ocudu-base: "service:ocudu-base-image"
+        agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     environment:
       RETINA_IP: &cu_ip 172.20.0.7
     networks:
@@ -350,7 +347,8 @@ services:
         <<: *variables
         RETINA_AGENT: ocudu-du
       additional_contexts:
-        ocudu-base: "service:ocudu-base-image"
+        agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     environment:
       RETINA_IP: &du0_ip 172.20.0.8
     networks:
@@ -372,7 +370,8 @@ services:
         <<: *variables
         RETINA_AGENT: ocudu-du
       additional_contexts:
-        ocudu-base: "service:ocudu-base-image"
+        agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     environment:
       RETINA_IP: &du1_ip 172.20.0.9
     networks:
@@ -393,6 +392,7 @@ services:
         <<: *variables
       additional_contexts:
         agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     volumes: *agent_volumes
     tmpfs: *agent_tmpfs
     configs:
@@ -425,6 +425,7 @@ services:
         <<: *variables
       additional_contexts:
         agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     cap_add:
       - NET_ADMIN
       - CAP_SYS_PTRACE
@@ -455,6 +456,7 @@ services:
         <<: *variables
       additional_contexts:
         agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     environment:
       RETINA_IP: &amari5gc_ip 172.20.0.12
       RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_MME_LICENSE_TAG}
@@ -489,6 +491,7 @@ services:
         <<: *variables
       additional_contexts:
         agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     environment:
       RETINA_IP: &emulator_ip 172.20.0.13
     networks:
@@ -511,6 +514,7 @@ services:
         <<: *variables
       additional_contexts:
         agent: "service:agent-image"
+        wheelhouse: "service:wheelhouse"
     environment:
       RETINA_IP: &flexric_ip 172.20.0.14
     networks:

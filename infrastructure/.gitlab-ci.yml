@@ -19,6 +19,10 @@ spec:
       type: string
       description: "retina container registry url"
       default: ${RETINA_REGISTRY_URI}
+    retina_version:
+      type: string
+      description: "retina version"
+      default: latest
     kubeconfig_var:
       type: string
       description: "Name of the file-type CI/CD variable containing the kubeconfig (e.g. MY_KUBECONFIG)."
@@ -37,11 +41,10 @@ variables:
   KUBECONFIG_VAR: $[[ inputs.kubeconfig_var ]]
   TF_VAR_infra_srs_path: $CI_SERVER_HOST/$[[ inputs.infra_srs_path ]]
   TF_VAR_infra_srs_ref: $[[ inputs.infra_srs_ref ]]
-  TF_VAR_retina_version: $RETINA_VERSION
+  TF_VAR_retina_version: $[[ inputs.retina_version ]]
   TF_VAR_retina_registry_uri: $[[ inputs.retina_registry_uri ]]
 
 include:
-  - local: retina/version.yml
   - component: ${CI_SERVER_FQDN}/components/opentofu/job-templates@3.11.0
     inputs:
       root_dir: $[[ inputs.root_dir ]]
@@ -62,7 +65,7 @@ stages:
   before_script:
     - eval "export KUBE_CONFIG_PATH=\${$KUBECONFIG_VAR}"
     - apk add --no-cache py3-pip
-    - pip install --break-system-packages --extra-index-url $TWINE_REPO retina-orchestrator
+    - pip install --break-system-packages --extra-index-url $TWINE_REPO retina-orchestrator$([ "$TF_VAR_retina_version" = "latest" ] || echo "==$TF_VAR_retina_version")
   cache: []
 
 fmt:

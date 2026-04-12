@@ -1,9 +1,12 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-ARG AGENT_OS_VERSION=24.04
+ARG AGENT_OS_VERSION
 ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
+
+FROM ${RETINA_REGISTRY_URI}/wheelhouse:${RETINA_VERSION} AS wheelhouse
+
 FROM ubuntu:${AGENT_OS_VERSION} AS builder
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -32,7 +35,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
        gcc-12 && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-
 ARG REPO_URL=https://gitlab.eurecom.fr/mosaic5g/flexric.git
 ARG REPO_BRANCH=br-flexric
 
@@ -49,7 +51,7 @@ RUN mkdir build && \
 
 RUN ldconfig
 
-FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
+FROM ${RETINA_REGISTRY_URI}/agent:${AGENT_OS_VERSION} AS agent
 FROM agent AS flexric
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder /usr/local/lib /usr/local/lib
@@ -59,6 +61,8 @@ COPY --from=builder /lib/x86_64-linux-gnu/libconfig.so.9 /lib/x86_64-linux-gnu/l
 COPY --from=builder /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6
 COPY --from=builder /flexric /flexric
 
-WORKDIR /var/log/retina
-
 ENTRYPOINT ["/usr/local/bin/agent.sh", "flexric-ric"]
+
+# Install retina
+COPY --from=wheelhouse /src/wheelhouse /app/
+RUN pip install --break-system-packages --no-index --find-links /app/ retina-agent

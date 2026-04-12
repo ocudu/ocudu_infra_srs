@@ -1,9 +1,12 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-ARG AGENT_OS_VERSION=24.04
+ARG AGENT_OS_VERSION
 ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
+
+FROM ${RETINA_REGISTRY_URI}/wheelhouse:${RETINA_VERSION} AS wheelhouse
+
 FROM ubuntu:${AGENT_OS_VERSION} AS builder
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -26,7 +29,7 @@ RUN git clone --depth 1 --branch $REPO_BRANCH $REPO_URL srsran\
 
 RUN ldconfig
 
-FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
+FROM ${RETINA_REGISTRY_URI}/agent:${AGENT_OS_VERSION} AS agent
 FROM agent AS srsue
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder /usr/local/include/srsran /usr/local/include/srsran
@@ -41,3 +44,7 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Europe/Madrid \
 
 ADD srsue_entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/srsue_entrypoint.sh"]
+
+# Install retina
+COPY --from=wheelhouse /src/wheelhouse /app/
+RUN pip install --break-system-packages --no-index --find-links /app/ retina-agent

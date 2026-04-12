@@ -15,707 +15,378 @@ spec:
 include:
   - project: $[[ inputs.ocudu_path ]]
     ref: $[[ inputs.ocudu_ref ]]
-    file: .gitlab/ci-shared/version_check.yml
-  - local: retina/version.yml
+    file: .gitlab/ci-shared/python.yml
+  - project: $[[ inputs.ocudu_path ]]
+    ref: $[[ inputs.ocudu_ref ]]
+    file: .gitlab/ci-shared/docker.yml
 
-.path_changes:
-  - &version_changes retina/version.yml
-  - &protocol_changes retina/protocol/**/*
-  - &client_changes retina/client/**/*
-  - &viavi_changes retina/viavi/**/*
-  - &agent_changes retina/agent/**/*
-  - changes: &agent_container_changes
-      paths:
-        - retina/agent/**/Dockerfile
-        - retina/agent/**/*.sh
-  - &images_changes retina/images/**/*
-  - &amarisoftue_changes retina/images/amarisoftue/**/*
-  - &amarisoftue_remote_changes retina/images/amarisoftue_remote/**/*
-  - &amarisoft5gc_changes retina/images/amarisoft5gc/**/*
-  - &amarisoft5gc_remote_changes retina/images/amarisoft5gc_remote/**/*
-  - &android_changes retina/images/android/**/*
-  - &open5gs_changes retina/images/open5gs/**/*
-  - &ocudu_changes retina/images/ocudu/**/*
-  - &ocudu_remote_changes retina/images/ocudu_remote/**/*
-  - &srsue_changes retina/images/srsue/**/*
-  - &flexric_changes retina/images/flexric/**/*
-  - &ntn_channel_emulator_changes retina/images/ntn-channel-emulator/**/*
-  - &orchestrator_changes retina/orchestrator/**/*
-  - &launcher_changes retina/launcher/**/*
-
-warning:
-  stage: static
+.retina ci rules:
   rules:
-    - if: $SKIP_RETINA_CI && $ON_MR
+    - &skip_retina_ci
+      if: $SKIP_RETINA_CI
+      when: never
+    - &skip_mr_fork
+      if: $ON_MR_FORK
+      when: never
+    - &force_retina_ci
+      if: $CI_MERGE_REQUEST_LABELS =~ /ci-retina-force/
+    - &retina_on_mr
+      if: $ON_MR
       changes:
         paths:
-          - *version_changes
-          - *protocol_changes
-          - *client_changes
-          - *viavi_changes
-          - *agent_changes
-          - *images_changes
-          - *orchestrator_changes
-          - *launcher_changes
-    - if: $ON_MR_FORK && $ON_MR
+          - retina/**/*
+    - &retina_on_default_branch
+      if: $ON_DEFAULT_BRANCH
       changes:
         paths:
-          - *version_changes
-          - *protocol_changes
-          - *client_changes
-          - *viavi_changes
-          - *agent_changes
-          - *images_changes
-          - *orchestrator_changes
-          - *launcher_changes
-  image: alpine:3
-  allow_failure: true
+          - retina/**/*
+        compare_to: "$CI_COMMIT_BEFORE_SHA"
+
+.retina python:
+  before_script:
+    - |
+      . /etc/os-release
+
+      echo "Setting up the OS"
+      case "$ID" in
+        debian | ubuntu) DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends build-essential libffi-dev ;;
+                 alpine) apk add build-base linux-headers libffi-dev ;;
+                      *) echo 'Unsupported OS' && exit 1 ;;
+      esac
+  needs:
+    - get retina version
+
+# Static
+.retina tox:
+  stage: static
+  extends:
+    - .tox
+    - .retina python
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ["3.9", "3.14"]
+
+retina tox [protocol]:
+  extends: .retina tox
+  variables:
+    PY_DIR: retina/protocol
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - if: $ON_MR
+      changes:
+        paths:
+          - retina/protocol/**/*.{py,pyi,proto,json,sh,nj,jinja,ntl,toml,in}
+
+retina tox [client]:
+  extends: .retina tox
+  variables:
+    PY_DIR: retina/client
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - if: $ON_MR
+      changes:
+        paths:
+          - retina/client/**/*.{py,pyi,proto,json,sh,nj,jinja,ntl,toml,in}
+
+retina tox [orchestrator]:
+  extends: .retina tox
+  variables:
+    PY_DIR: retina/orchestrator
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - if: $ON_MR
+      changes:
+        paths:
+          - retina/orchestrator/**/*.{py,pyi,proto,json,sh,nj,jinja,ntl,toml,in}
+
+retina tox [viavi]:
+  extends: .retina tox
+  variables:
+    PY_DIR: retina/viavi
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - if: $ON_MR
+      changes:
+        paths:
+          - retina/viavi/**/*.{py,pyi,proto,json,sh,nj,jinja,ntl,toml,in}
+
+retina tox [launcher]:
+  extends: .retina tox
+  variables:
+    PY_DIR: retina/launcher
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - if: $ON_MR
+      changes:
+        paths:
+          - retina/launcher/**/*.{py,pyi,proto,json,sh,nj,jinja,ntl,toml,in}
+
+retina tox [agent]:
+  extends: .retina tox
+  variables:
+    PY_DIR: retina/agent
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - if: $ON_MR
+      changes:
+        paths:
+          - retina/agent/**/*.{py,pyi,proto,json,sh,nj,jinja,ntl,toml,in}
+
+# Publish PyPi
+.retina publish:
+  extends: .retina python
+  stage: ci
+  retry: 2
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - *retina_on_default_branch
+
+retina publish deps:
+  extends:
+    - .publish deps
+    - .retina publish
+  parallel:
+    matrix:
+      - PY_DIR:
+          &py_dir_libs [
+            "retina/protocol",
+            "retina/client",
+            "retina/orchestrator",
+            "retina/viavi",
+            "retina/launcher",
+            "retina/agent",
+          ]
+        PYTHON_VERSION: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+
+retina publish wheel:
+  extends:
+    - .publish wheel
+    - .retina publish
+  parallel:
+    matrix:
+      - PY_DIR: *py_dir_libs
+
+# Publish Containers
+.retina containers:
+  extends: .docker-builder
+  stage: ci
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - *retina_on_mr
+  retry: 2
+  variables:
+    REGISTRY_URI: ${RETINA_REGISTRY_URI}
+    MODE: publish
+    CACHE: "true"
+    CACHE_MODE: max
+    VERSION: ${RETINA_VERSION}
+    AGENT_OS_VERSION: "noble-20260217"
+    FLEXRIC_VERSION: "br-flexric" # NOTE: there is only version 1.0.0 but very old
+    NTN_CHANNEL_EMULATOR_VERSION: d15635f3
+    OPEN5GS_VERSION: "2.7.6"
+    SRSUE_VERSION: "23.11"
+  needs:
+    - get retina version
+
+retina containers [launcher]:
+  extends: .retina containers
+  variables:
+    NAME: launcher
+    DOCKERFILE: retina/launcher
+    CONTEXT: ${CI_PROJECT_DIR}/retina
+    PYTHON_VERSION: "3.12"
+    OS: alpine
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};OS=${OS};PYTHON_VERSION=${PYTHON_VERSION}
+
+retina containers [agent]:
+  extends: .retina containers
+  variables:
+    NAME: agent
+    VERSION: ${AGENT_OS_VERSION}
+    DOCKERFILE: retina/agent
+    CONTEXT: ${CI_PROJECT_DIR}/retina
+    BUILD_ARGS: AGENT_OS_VERSION=${AGENT_OS_VERSION}
+
+retina containers [wheelhouse]:
+  extends: .retina containers
+  variables:
+    NAME: wheelhouse
+    DOCKERFILE: retina/agent
+    CONTEXT: ${CI_PROJECT_DIR}/retina
+    BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION} --opt filename=Dockerfile.wheelhouse
+
+.retina containers images:
+  extends: .retina containers
+  variables:
+    CONTEXT: retina/images/${NAME}
+    BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION}
+  needs:
+    - get retina version
+    - retina containers [agent]
+    - retina containers [wheelhouse]
+
+retina containers:
+  extends: .retina containers images
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - <<: *retina_on_mr
+      when: delayed
+      start_in: 1 minute
+  variables:
+    CACHE: "false" # Just FROM agent + minimal apt
+  parallel:
+    matrix:
+      - NAME: amarisoft5gc-remote
+        CONTEXT: retina/images/amarisoft5gc_remote
+      - NAME: amarisoftue-remote
+        CONTEXT: retina/images/amarisoftue_remote
+      - NAME: android
+      - NAME: ocudu-remote
+        CONTEXT: retina/images/ocudu_remote
+
+retina containers [amarisoftue]:
+  extends: .retina containers images
+  variables:
+    NAME: amarisoftue
+    VERSION: ${AMARISOFT_VERSION}_${RETINA_VERSION}
+    BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};AMARISOFT_VERSION=${AMARISOFT_VERSION}
+  before_script:
+    - |
+      download_amarisoft() {
+        cd ${CI_PROJECT_DIR}/${CONTEXT}
+        mkdir amarisoft
+        curl -u "${AMARISOFT_PACKAGE_REG_USER}:${AMARISOFT_PACKAGE_REG_PWD}" ${AMARISOFT_PACKAGE_REGISTRY}/${AMARISOFT_VERSION}/amarisoft.${AMARISOFT_VERSION}.tar.gz -o amarisoft.${AMARISOFT_VERSION}.tar.gz
+        tar -zxf amarisoft.${AMARISOFT_VERSION}.tar.gz -C amarisoft
+        cd ${CI_PROJECT_DIR}
+      }
+    - download_amarisoft
+
+retina containers [amarisoft5gc]:
+  extends: retina containers [amarisoftue]
+  variables:
+    NAME: amarisoft5gc
+
+retina containers [flexric]:
+  extends: .retina containers images
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - <<: *retina_on_mr
+      when: delayed
+      start_in: 1 minute
+  variables:
+    NAME: flexric
+    FLEXRIC_REPO_URL: https://gitlab.eurecom.fr/mosaic5g/flexric.git
+    FLEXRIC_BRANCH: br-flexric
+    VERSION: ${FLEXRIC_VERSION}_${RETINA_VERSION}
+    BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};REPO_URL=${FLEXRIC_REPO_URL};REPO_BRANCH=${FLEXRIC_BRANCH}
+
+retina containers [ntn-channel-emulator]:
+  extends: .retina containers images
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - <<: *retina_on_mr
+      when: delayed
+      start_in: 1 minute
+  variables:
+    NAME: ntn-channel-emulator
+    VERSION: ${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
+    CACHE: "false" # Just FROM agent + minimal apt
+  before_script:
+    - |
+      download_ntn_channel_emulator() {
+        cd ${CI_PROJECT_DIR}/${CONTEXT}
+        curl -u "${AMARISOFT_PACKAGE_REG_USER}:${AMARISOFT_PACKAGE_REG_PWD}" ${NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY}/${NTN_CHANNEL_EMULATOR_VERSION}/ntn-channel-emulator.tar.gz -o ntn-channel-emulator.tar.gz
+        tar -zxf ntn-channel-emulator.tar.gz
+        mv ntn-channel-emulator-*/ ntn-channel-emulator/
+        cd ${CI_PROJECT_DIR}
+      }
+    - download_ntn_channel_emulator
+
+retina containers [ocudu]:
+  extends: .retina containers images
+  variables:
+    NAME: ocudu-${DRIVER}
+    CONTEXT: retina/images/ocudu
+    BUILDER_IMAGE_NAME: builder-ubuntu-24.04:${DOCKER_BUILDER_VERSION}
+    BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};BUILDER_IMAGE=${OCUDU_REGISTRY_URI}/${BUILDER_IMAGE_NAME};RETINA_AGENT=${NAME}
+    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "100G"
+    KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "100G"
+  parallel:
+    matrix:
+      - DRIVER: gnb
+      - DRIVER: cudu
+      - DRIVER: cu
+      - DRIVER: du
+
+retina containers [open5gs]:
+  extends: .retina containers images
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - <<: *retina_on_mr
+      when: delayed
+      start_in: 1 minute
+  variables:
+    NAME: open5gs
+    VERSION: ${OPEN5GS_VERSION}_${RETINA_VERSION}
+    BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};OPEN5GS_VERSION=v${OPEN5GS_VERSION}
+
+retina containers [srsue]:
+  extends: .retina containers images
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - <<: *retina_on_mr
+      when: delayed
+      start_in: 1 minute
+  variables:
+    NAME: srsue
+    VERSION: ${SRSUE_VERSION}_${RETINA_VERSION}
+    SRSRAN_REPO_URL: https://github.com/srsran/srsRAN_4G.git
+    SRSRAN_BRANCH: release_23_11
+    BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};REPO_URL=${SRSRAN_REPO_URL};REPO_BRANCH=${SRSRAN_BRANCH}
+
+# Publish Containers
+publish latest:
+  stage: ci
+  extends:
+    - .docker manifest
+    - .retina containers
+  retry: 2
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - *retina_on_default_branch
   script:
     - |
-      echo "WARNING: Retina code has been modified but CI/CD is skipped for this pipeline."
-      exit 1
-  needs: []
-
-version changed:
-  stage: static
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        paths:
-          - *version_changes
-          - *viavi_changes
-          - *protocol_changes
-          - *client_changes
-          - *agent_changes
-          - *orchestrator_changes
-          - *launcher_changes
-  extends: .version increased
-  variables:
-    FILE_PATH: retina/version.yml
-    VARIABLE_NAME: RETINA_VERSION
-
-################################################################################
-## Launch Downstream
-################################################################################
-viavi-client:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        paths:
-          - *viavi_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *viavi_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/viavi/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  needs: []
-
-protocol:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        paths:
-          - *protocol_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/protocol/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  needs: []
-
-client:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        paths:
-          - *protocol_changes
-          - *client_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *client_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/client/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
+      docker manifest create \
+        ${REGISTRY_URI}/${NAME}:latest \
+        --amend ${REGISTRY_URI}/${NAME}:${VERSION}
+      docker manifest push ${REGISTRY_URI}/${NAME}:latest
+      echo "Image ${REGISTRY_URI}/${NAME}:latest pushed"
+  parallel:
+    matrix:
+      - NAME: launcher
   needs:
-    - job: protocol
+    - get retina version
+    - job: retina containers [launcher]
       optional: true
-      artifacts: false
-
-agent:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        paths:
-          - *protocol_changes
-          - *agent_changes
-          - *images_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/agent/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-
-amarisoftue image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *amarisoftue_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *amarisoftue_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/amarisoftue/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables: &images_variables
-    AGENT_OS_VERSION: "24.04"
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-amarisoftue remote image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *amarisoftue_remote_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *amarisoftue_remote_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/amarisoftue_remote/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-amarisoft5gc image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *amarisoft5gc_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *amarisoft5gc_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/amarisoft5gc/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-amarisoft5gc remote image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *amarisoft5gc_remote_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *amarisoft5gc_remote_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/amarisoft5gc_remote/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-android image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *android_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *android_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/android/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-open5gs image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *open5gs_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *android_changes
-          - *open5gs_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/open5gs/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-ocudu image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *ocudu_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *ocudu_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/ocudu/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-ocudu remote image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *ocudu_remote_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *ocudu_remote_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/ocudu_remote/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-srsue image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *srsue_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *srsue_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/srsue/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-flexric image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $ON_MR
-      changes:
-        paths:
-          - *flexric_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *flexric_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/flexric/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-ntn-channel-emulator image:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY && $ON_MR
-      changes:
-        <<: *agent_container_changes
-    - if: $NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY && $ON_MR
-      changes:
-        paths:
-          - *ntn_channel_emulator_changes
-    - if: $NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY && $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *agent_changes
-          - *ntn_channel_emulator_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/images/ntn-channel-emulator/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  variables:
-    <<: *images_variables
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: agent
-      optional: true
-      artifacts: false
-
-orchestrator:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        paths:
-          - *protocol_changes
-          - *orchestrator_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *version_changes
-          - *protocol_changes
-          - *orchestrator_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/orchestrator/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-
-launcher:
-  stage: ci
-  rules:
-    - if: $SKIP_RETINA_CI
-      when: never
-    - if: $ON_MR_FORK
-      when: never
-    - if: $ON_MR
-      changes:
-        paths:
-          - *viavi_changes
-          - *protocol_changes
-          - *client_changes
-          - *orchestrator_changes
-          - *launcher_changes
-    - if: $ON_DEFAULT_BRANCH
-      changes:
-        paths:
-          - *viavi_changes
-          - *version_changes
-          - *protocol_changes
-          - *client_changes
-          - *orchestrator_changes
-          - *launcher_changes
-        compare_to: "$CI_COMMIT_BEFORE_SHA"
-  trigger:
-    include:
-      - local: retina/launcher/.gitlab-ci.yml
-        inputs:
-          ocudu_ref: $[[ inputs.ocudu_ref ]]
-          ocudu_path: $[[ inputs.ocudu_path ]]
-    strategy: mirror
-  needs:
-    - job: protocol
-      optional: true
-      artifacts: false
-    - job: client
-      optional: true
-      artifacts: false
-    - job: orchestrator
-      optional: true
-      artifacts: false

@@ -1,9 +1,12 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-ARG AGENT_OS_VERSION=24.04
+ARG AGENT_OS_VERSION
 ARG RETINA_REGISTRY_URI
 ARG RETINA_VERSION
+
+FROM ${RETINA_REGISTRY_URI}/wheelhouse:${RETINA_VERSION} AS wheelhouse
+
 FROM ubuntu:${AGENT_OS_VERSION} AS builder
 
 ENV PYTHONBUFFERED=1
@@ -64,7 +67,7 @@ RUN cd open5gs \
     && cd build \
     && ninja install
 
-FROM ${RETINA_REGISTRY_URI}/agent-ubuntu-$AGENT_OS_VERSION:$RETINA_VERSION AS agent
+FROM ${RETINA_REGISTRY_URI}/agent:${AGENT_OS_VERSION} AS agent
 FROM agent AS open5gs
 COPY --from=builder /open5gs/install/bin /usr/local/bin
 COPY --from=builder /open5gs/build/tests/app/5gc /usr/local/bin/5gc
@@ -81,3 +84,7 @@ RUN /usr/local/bin/install_open5gs_dependencies.sh \
 
 ADD open5gs_setup.sh open5gs_entrypoint.sh open5gs_teardown.sh /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/open5gs_entrypoint.sh"]
+
+# Install retina
+COPY --from=wheelhouse /src/wheelhouse /app/
+RUN pip install --break-system-packages --no-index --find-links /app/ retina-agent
