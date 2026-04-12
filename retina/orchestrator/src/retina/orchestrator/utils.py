@@ -6,7 +6,6 @@ Utils
 """
 
 import getpass
-import importlib.metadata
 import json
 import logging
 import os
@@ -254,15 +253,3 @@ def find_in_path(binary_name: str) -> str:
     if path is None:
         raise FileNotFoundError(f"Can not found '{binary_name}' in path")
     return path
-
-
-def get_package_version() -> str:
-    """
-    Get package version
-    """
-    package_name = "retina_orchestrator"
-    try:
-        version = importlib.metadata.version(package_name)
-        return version
-    except importlib.metadata.PackageNotFoundError:
-        return "0.0.0"

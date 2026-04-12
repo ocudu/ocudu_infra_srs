@@ -38,7 +38,6 @@ requires-python = ">=3.9"
 [project.scripts]
 retina = "retina.orchestrator.entry_points.retina_entrypoint:retina"
 retina-deploy-cluster = "retina.orchestrator.entry_points.deploy_cluster_entrypoint:main"
-retina-deploy-cluster-version = "retina.orchestrator.entry_points.retina_deploy_cluster_version_entrypoint:main"
 retina-garbage-collector = "retina.orchestrator.entry_points.garbage_collector_entrypoint:main"
 retina-request-checker = "retina.orchestrator.entry_points.request_checker_entrypoint:main"
 

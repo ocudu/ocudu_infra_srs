@@ -12,7 +12,6 @@ from typing import Dict, List
 import click
 
 import retina.orchestrator.reservation.transformations as ts
-from retina.orchestrator.cluster_utils import check_if_update_needed
 from retina.orchestrator.elements import Node
 from retina.orchestrator.entry_points.dev_mode_utils import (
     DEFAULT_DOCKER_IMAGE,
@@ -140,7 +139,6 @@ def reserve(
         username = get_retina_user()
 
     k_server = get_kubernetes_server(in_cluster)
-    check_if_update_needed(k_server)
 
     logging.info("⏳ Reserving resource %s for user %s", resource, username)
     check_user_name(username)
@@ -195,7 +193,6 @@ def release(ctx, username, resource):
         raise click.UsageError("You must provide either a --username or a resource.")
 
     k_server = get_kubernetes_server(in_cluster)
-    check_if_update_needed(k_server)
 
     logging.info("⏳ Releasing resource %s", resource if resource else "")
     check_user_name(username)

@@ -12,7 +12,6 @@ from rich.console import Console
 from rich.table import Table
 
 import retina.orchestrator.reservation.transformations as ts
-from retina.orchestrator.cluster_utils import check_if_update_needed
 from retina.orchestrator.elements import Node
 from retina.orchestrator.entry_points.utils import (
     GITLAB_RUNNER_NAMESPACE,
@@ -211,5 +210,3 @@ def show_resources(verbose: bool, in_cluster: bool = False):
     if verbose:
         print_node_resources(node_resources, k_server)
     print_nodes(k_server, retina_node_dict, verbose)
-
-    check_if_update_needed(k_server)
