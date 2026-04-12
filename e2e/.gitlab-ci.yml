@@ -38,6 +38,7 @@ e2e tests tox:
     PY_DIR: e2e
   before_script:
     - apk add build-base
+  needs: []
 
 .e2e validation:
   stage: static

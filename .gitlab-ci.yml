@@ -191,8 +191,7 @@ variables:
 
 headers:
   extends: .headers
-  variables:
-    IGNORE_PATH: e2e/tests/configs
+  needs: []
 
 yaml lint:
   stage: static
@@ -207,6 +206,7 @@ yaml lint:
         paths:
           - "**/*.yml"
           - "**/*.yaml"
+  needs: []
 
 tf lint:
   stage: static
@@ -225,3 +225,4 @@ tf lint:
         tofu -chdir="$module" init -backend=false && tofu -chdir="$module" validate
         echo ""
       done
+  needs: []
