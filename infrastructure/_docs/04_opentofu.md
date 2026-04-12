@@ -21,6 +21,7 @@ The input `runner_tags` expects an array of tags applied to the OpenTofu jobs. T
 | `infra_srs_ref` | `$CI_COMMIT_REF_NAME` | Branch or tag to source the module from |
 | `retina_pypi_index` | `${RETINA_PYPI_INDEX}` | Retina PyPI index URL |
 | `retina_registry_uri` | `${RETINA_REGISTRY_URI}` | Retina container registry URI (e.g. `registry.gitlab.com/ocudu/ocudu_infra_srs/retina`) |
+| `retina_version` | `latest` | Retina version |
 | `kubeconfig_var` | required | Name of the **file-type** CI/CD variable holding the kubeconfig |
 | `runner_tags` | `[saas-linux-small-amd64]` | Runner tags for jobs needing cluster access |
 | `state_name` | `retina-cluster-setup` | Terraform state name — must be unique per deployment |
@@ -57,7 +58,7 @@ The shared template sets the following variables automatically from its inputs, 
 | --- | --- |
 | `infra_srs_path` | `infra_srs_path` |
 | `infra_srs_ref` | `infra_srs_ref` |
-| `retina_version` | loaded from `retina/version.yml` |
+| `retina_version` | `retina_version` |
 | `retina_registry_uri` | `retina_registry_uri` |
 
 Any additional `TF_VAR_*` set on the trigger job's `variables:` block are also passed through automatically.

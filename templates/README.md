@@ -29,7 +29,7 @@ stages: [build]
 
 The `download_urls_pre_build` input accepts a list of URLs to download at the beginning of the build job. It expects one URL per line.
 
-**Authentication**: Authentication headers should be included in the variable itself. If using GitLab Package Registry, the recommended approach is to use a valid [deploy token](https://docs.gitlab.com/user/project/deploy_tokens) in the project where the package registry lives. For that, `wget` should include:
+**Authentication**: Authentication headers should be included in the variable itself. If using GitLab Package Registry, the recommended approach is to use a valid [deploy token](https://docs.gitlab.com/user/project/deploy_tokens) in the project where the package registry lives, with `read_package_registry` scope. For that, `wget` should include:
 
 ```bash
 --user="$DEPLOY_TOKEN_USER" --password="$DEPLOY_TOKEN_PASS"

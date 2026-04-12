@@ -112,9 +112,9 @@ Default behavior when `SKIP_RETINA_CI` is not set. Builds and publishes to your 
 
 **Initial Setup:**
 
-When forking via [GitLab UI](https://docs.gitlab.com/ee/user/project/repository/forking_workflow.html#create-a-fork), the pipeline in charge of building and pushing retina artifacts won't trigger automatically. This won't happen if you do a push using git commands.
+When forking via [GitLab UI](https://docs.gitlab.com/ee/user/project/repository/forking_workflow.html#create-a-fork), the pipeline in charge of building and pushing retina artifacts won't trigger automatically. The pipeline will be created if you setup your repository using git commands.
 
-To trigger the pipeline manually, please do a harmless modification in [retina/version.yml](../../retina/version.yml), like the comment line before the variables section. Optionally revert after pipeline completes.
+To force a re-build of retina packages and containers, open an MR with the label `ci-retina-force`.
 
 **Ongoing Updates:**
 

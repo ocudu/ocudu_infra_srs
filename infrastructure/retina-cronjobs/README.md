@@ -43,7 +43,7 @@ Per-cronjob schedule and tolerations are configured via the `cronjobs` input var
 | `suffix` | `string` | `"cluster"` | Suffix appended to all resource names |
 | `namespace` | `string` | `"retina"` | Namespace to deploy into (must already exist) |
 | `retina_registry_uri` | `string` | required | Base image registry URI (e.g. `registry.gitlab.com/ocudu/ocudu_infra_srs/retina`) |
-| `retina_version` | `string` | required | Launcher image tag — set automatically from `retina/version.yml` via CI |
+| `retina_version` | `string` | required | Launcher image tag |
 | `gitlab_runner_token` | `string` | required, sensitive | GitLab runner token (pass as `TF_VAR_gitlab_runner_token`) |
 | `runners_file` | `list(string)` | required | Paths to runner YAML files (relative to Terraform working directory) |
 | `cronjobs` | `map(object)` | both cronjobs with defaults | Which cronjobs to deploy and their per-cronjob config (see below) |
