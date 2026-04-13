@@ -13,10 +13,9 @@ baseline:
       brate_dl: 800000
       brate_ul: 350000
       traffic_duration_sec: 180
-      log_com_level: "debug"
-      log_prod_level: "debug"
+      log_level: "error"
   gnb:
-    config: [cell_cfg.yml, mac_pcap.yml, 512ue.yml, tdd_default.yml]
+    config: [cell_cfg.yml, 512ue.yml, tdd_default.yml]
     parameters:
       log_level: warning
   core:
