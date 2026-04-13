@@ -12,7 +12,7 @@ spec:
       default: dev
       description: "OCUDU reference branch or tag."
 ---
-inter_du_ho:
+.inter_du_ho:
   stage: mobility
   extends: .functional_e2e
   rules:
@@ -26,7 +26,7 @@ inter_du_ho:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: functional/mobility/inter_du_ho
+    KEYWORDS: functional/mobility/.inter_du_ho
     TESTBED: dynamic
 
 inter_ru_ho:
@@ -131,23 +131,6 @@ ping:
     KEYWORDS: functional/multiue/ping
     TESTBED: dynamic
 
-ping_4ues:
-  stage: multiue
-  extends: .functional_e2e
-  rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/suites/**/*
-        - e2e/scripts/generate_pipelines.py
-        - e2e/*.yml
-        - .gitlab-ci-stages.yml
-      when: manual
-      allow_failure: true
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-  variables:
-    KEYWORDS: functional/multiue/ping_4ues
-    TESTBED: dynamic
-
 udp_bi:
   stage: multiue
   extends: .functional_e2e
@@ -163,6 +146,40 @@ udp_bi:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: functional/multiue/udp_bi
+    TESTBED: dynamic
+
+.mocn:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/.mocn
+    TESTBED: dynamic
+
+.tdd_mimo:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/.tdd_mimo
     TESTBED: dynamic
 
 cmas:
@@ -216,23 +233,6 @@ gbr_vonr:
     KEYWORDS: functional/singleue/gbr_vonr
     TESTBED: dynamic
 
-mocn:
-  stage: singleue
-  extends: .functional_e2e
-  rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/suites/**/*
-        - e2e/scripts/generate_pipelines.py
-        - e2e/*.yml
-        - .gitlab-ci-stages.yml
-      when: manual
-      allow_failure: true
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-  variables:
-    KEYWORDS: functional/singleue/mocn
-    TESTBED: dynamic
-
 phy_configs:
   stage: singleue
   extends: .functional_e2e
@@ -282,23 +282,6 @@ slicing:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: functional/singleue/slicing
-    TESTBED: dynamic
-
-tdd_mimo:
-  stage: singleue
-  extends: .functional_e2e
-  rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/suites/**/*
-        - e2e/scripts/generate_pipelines.py
-        - e2e/*.yml
-        - .gitlab-ci-stages.yml
-      when: manual
-      allow_failure: true
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-  variables:
-    KEYWORDS: functional/singleue/tdd_mimo
     TESTBED: dynamic
 
 tdd_siso:
