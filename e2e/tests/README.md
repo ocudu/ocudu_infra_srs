@@ -32,36 +32,39 @@ ocudu_infra_srs/e2e/tests/
 │   │   ├── campaign.xml
 │   │   └── ...
 │   ├── gnb/
-│   │   ├── 1t1r_bw10_band3.yml
+│   │   ├── cell_cfg.yml
 │   │   └── ...
 │   ├── core/
 │   │   ├── baseline.cfg
 │   │   └── ...
 ├── steps/
 │   ├── configuration.py
+│   ├── stub.py
+│   ├── test_loader.py
 │   └── ...
 ├── suites/
 │   ├── functional/
-│   │   ├── mobility/
-│   │   │   ├── inter_ru_ho.yml
+│   │   ├── singleue/
+│   │   │   ├── slicing.yml
 │   │   │   └── ...
 │   │   ├── multiue/
 │   │   │   ├── ping.yml
 │   │   │   └── ...
-│   ├── performance/
-│   └── ...
-|── # Test Templates
-|── amarisoft_simulator.py
-|── viavi_simulator.py
-|── iperf.py
-└── ...
+│   │   ├── mobility/
+│   │   │   ├── inter_ru_ho.yml
+│   │   │   └── ...
+│   └── performance/
+│       └── mobility/
+│           ├── paging.yml
+│           └── ...
+├── # Test Templates
+├── ue_simulator.py
+├── viavi_simulator.py
 ```
 
 ## Test Templates
 
 Located at `ocudu_infra_srs/e2e/tests/`:
-
-my test_template.py
 
 ```python
 @pytest.mark....
@@ -71,36 +74,46 @@ def test(*args, **kwargs): # Receives parameters from the tests
 
 ## Tests Suites
 
-Located at `ocudu_infra_srs/e2e/tests/suites`:
+Located at `infra_srs/e2e/tests/suites`:
 
 pipeline_name/stage_name/job_name.yml
 
 ```yml
-example: # Test Case
+baseline: &base_config # Test Case
   # Selecting the test template
   template: ue_simulator.test_gnb
-  # Selecting the retina request
-  testbed: zmq_mme
+  # Selecting the retina request (testbed definition from retina_requests/)
+  request: zmq_mme
   # Feature IDs covered in this test
   feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14]
   # Configs and parameters for each item
   ue:
-    config: [2cell_2t2r_bw100_band78_chsim.cfg, handover.cfg]
+    config: [2cell_intrafreq_chsim.cfg, handover.cfg]
     parameters:
-      nof_antennas: 2
+      nof_ue: 1
+      test_duration: 100
   gnb:
-    config:
-      [2t2r_bw100_band78.yml, pcaps.yml, 2cell_intradu_ho.yml]
+    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
   # Adding pass/fail criteria to the test
   criteria:
-    dl_bitrate: 10.0e+6
-    ul_bitrate: 10.0e+6
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_handovers_ge: 20
     errors: 0
     warnings: 0
+
+# Additional test cases can extend a base config with YAML anchors
+conditional_ho:
+  <<: *base_config
+  gnb:
+    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, conditional_ho.yml]
+  feature_ids: [MVP-FUNC-MOB-15]
 ```
 
 ## CI
 
 Please run `ocudu_infra_srs/e2e/scripts/generate_pipelines.py` to update the CI files after any change in the `suites` folder. MR CI will enforce that everything is up-to-date.
+
+The generated files (`e2e/functional-config.yml` and `e2e/performance-config.yml`) define one GitLab CI job per test suite file and must not be edited manually.
