@@ -69,7 +69,7 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
     @classmethod
     def from_dict(cls, name: str, data: Dict) -> "RetinaTestDefinition":
         """Create object from dictionary with type"""
-        return cls(
+        instance = cls(
             name=name,
             retina_request=data.get("request", "zmq_mme"),
             feature_ids=data.get("feature_ids", []),
@@ -80,6 +80,21 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
             gnb=RetinaNodeTypeDefinition.from_dict(data.get("gnb", {})),
             core=RetinaNodeTypeDefinition.from_dict(data.get("core", {})),
         )
+        all_configs = []
+        for cfg_file in instance.ue.config:
+            all_configs.append(Path(__file__).parent.parent / "configs" / "ue" / cfg_file)
+        for cfg_file in instance.cu.config:
+            all_configs.append(Path(__file__).parent.parent / "configs" / "cu" / cfg_file)
+        for cfg_file in instance.du.config:
+            all_configs.append(Path(__file__).parent.parent / "configs" / "du" / cfg_file)
+        for cfg_file in instance.gnb.config:
+            all_configs.append(Path(__file__).parent.parent / "configs" / "gnb" / cfg_file)
+        for cfg_file in instance.core.config:
+            all_configs.append(Path(__file__).parent.parent / "configs" / "core" / cfg_file)
+        for cfg_path in all_configs:
+            if not cfg_path.exists():
+                raise ValueError(f"{cfg_path} config file does not exist.")
+        return instance
 
 
 def _parse_test_definitions(template_name: str) -> Generator[RetinaTestDefinition, None, None]:
