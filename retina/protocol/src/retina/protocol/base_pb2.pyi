@@ -426,6 +426,27 @@ class Metrics(google.protobuf.message.Message):
     NOF_UNDER_FIELD_NUMBER: builtins.int
     NOF_SEQ_ERR_FIELD_NUMBER: builtins.int
     UE_ARRAY_FIELD_NUMBER: builtins.int
+    NOF_SIB1_TRANSMISSIONS_FIELD_NUMBER: builtins.int
+    NOF_SIB2_TRANSMISSIONS_FIELD_NUMBER: builtins.int
+    NOF_SIB3_TRANSMISSIONS_FIELD_NUMBER: builtins.int
+    NOF_SIB4_TRANSMISSIONS_FIELD_NUMBER: builtins.int
+    NOF_SIB5_TRANSMISSIONS_FIELD_NUMBER: builtins.int
+    NOF_SIB8_TRANSMISSIONS_FIELD_NUMBER: builtins.int
+    NOF_PAGING_MESSAGES_FIELD_NUMBER: builtins.int
+    NOF_PDU_SESSION_ESTABLISHMENT_ACCEPT_FIELD_NUMBER: builtins.int
+    NOF_5GS_NAS_SERVICE_ACCEPT_FIELD_NUMBER: builtins.int
+    NOF_NG_PAGING_FIELD_NUMBER: builtins.int
+    NOF_RRC_SUSPEND_FIELD_NUMBER: builtins.int
+    NOF_RRC_RESUME_REQUEST_FIELD_NUMBER: builtins.int
+    PRACH_CONFIGURATION_INDEX_FIELD_NUMBER: builtins.int
+    TRANSFORM_PRECODER_FIELD_NUMBER: builtins.int
+    DRX_LONG_CYCLE_START_OFFSET_FIELD_NUMBER: builtins.int
+    T312_FIELD_NUMBER: builtins.int
+    C_SRS_FIELD_NUMBER: builtins.int
+    B_SRS_FIELD_NUMBER: builtins.int
+    DL_AVG_RI_FIELD_NUMBER: builtins.int
+    UL_AVG_RI_FIELD_NUMBER: builtins.int
+    NOF_TAU_REQUEST_FIELD_NUMBER: builtins.int
     dl_bitrate: builtins.float
     ul_bitrate: builtins.float
     nof_ko_dl: builtins.int
@@ -442,6 +463,27 @@ class Metrics(google.protobuf.message.Message):
     nof_lates: builtins.int
     nof_under: builtins.int
     nof_seq_err: builtins.int
+    nof_sib1_transmissions: builtins.int
+    nof_sib2_transmissions: builtins.int
+    nof_sib3_transmissions: builtins.int
+    nof_sib4_transmissions: builtins.int
+    nof_sib5_transmissions: builtins.int
+    nof_sib8_transmissions: builtins.int
+    nof_paging_messages: builtins.int
+    nof_pdu_session_establishment_accept: builtins.int
+    nof_5gs_nas_service_accept: builtins.int
+    nof_ng_paging: builtins.int
+    nof_rrc_suspend: builtins.int
+    nof_rrc_resume_request: builtins.int
+    prach_configuration_index: builtins.int
+    transform_precoder: builtins.int
+    drx_long_cycle_start_offset: builtins.int
+    t312: builtins.int
+    c_srs: builtins.int
+    b_srs: builtins.int
+    dl_avg_ri: builtins.float
+    ul_avg_ri: builtins.float
+    nof_tau_request: builtins.int
     @property
     def ue_array(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[Global___UeMetrics]: ...
     def __init__(
@@ -464,8 +506,29 @@ class Metrics(google.protobuf.message.Message):
         nof_under: builtins.int = ...,
         nof_seq_err: builtins.int = ...,
         ue_array: collections.abc.Iterable[Global___UeMetrics] | None = ...,
+        nof_sib1_transmissions: builtins.int = ...,
+        nof_sib2_transmissions: builtins.int = ...,
+        nof_sib3_transmissions: builtins.int = ...,
+        nof_sib4_transmissions: builtins.int = ...,
+        nof_sib5_transmissions: builtins.int = ...,
+        nof_sib8_transmissions: builtins.int = ...,
+        nof_paging_messages: builtins.int = ...,
+        nof_pdu_session_establishment_accept: builtins.int = ...,
+        nof_5gs_nas_service_accept: builtins.int = ...,
+        nof_ng_paging: builtins.int = ...,
+        nof_rrc_suspend: builtins.int = ...,
+        nof_rrc_resume_request: builtins.int = ...,
+        prach_configuration_index: builtins.int = ...,
+        transform_precoder: builtins.int = ...,
+        drx_long_cycle_start_offset: builtins.int = ...,
+        t312: builtins.int = ...,
+        c_srs: builtins.int = ...,
+        b_srs: builtins.int = ...,
+        dl_avg_ri: builtins.float = ...,
+        ul_avg_ri: builtins.float = ...,
+        nof_tau_request: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["dl_bitrate", b"dl_bitrate", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_error_indications", b"nof_error_indications", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_lates", b"nof_lates", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_seq_err", b"nof_seq_err", "nof_under", b"nof_under", "ue_array", b"ue_array", "ul_bitrate", b"ul_bitrate"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "dl_avg_ri", b"dl_avg_ri", "dl_bitrate", b"dl_bitrate", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_5gs_nas_service_accept", b"nof_5gs_nas_service_accept", "nof_error_indications", b"nof_error_indications", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_lates", b"nof_lates", "nof_ng_paging", b"nof_ng_paging", "nof_paging_messages", b"nof_paging_messages", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_rrc_resume_request", b"nof_rrc_resume_request", "nof_rrc_suspend", b"nof_rrc_suspend", "nof_seq_err", b"nof_seq_err", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_tau_request", b"nof_tau_request", "nof_under", b"nof_under", "prach_configuration_index", b"prach_configuration_index", "t312", b"t312", "transform_precoder", b"transform_precoder", "ue_array", b"ue_array", "ul_avg_ri", b"ul_avg_ri", "ul_bitrate", b"ul_bitrate"]) -> None: ...
 
 Global___Metrics: typing_extensions.TypeAlias = Metrics
 

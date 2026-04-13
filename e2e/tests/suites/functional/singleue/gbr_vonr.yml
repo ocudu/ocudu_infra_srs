@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# GBR bearer, VoNR 5QI and ROHC test
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, gbr_vonr.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, vonr_qos.yml]
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-SVCS-16-8-a, MVP-FUNC-SVCS-16-8-b, MVP-FUNC-SVCS-16-8-c, DU-QOS-1]
+  criteria:
+    dl_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0

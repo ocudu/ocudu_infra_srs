@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Intra-cell handover for key regeneration
+key_regen: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, key_regen.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml]
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-MOB-1-a]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_handovers_eq: 1
+    nof_reestablishments_eq: 0
+    nof_error_indications: 0
+    nof_pdu_session_establishment_accept_geq: 25
+    errors: 0
+    warnings: 0
+
+# TAU request test
+# TODO: verify that the TAU request has been actually sent
+tau_request:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, tau_request.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+  feature_ids: [CU-GEN-7]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_handovers_eq: 0
+    nof_reestablishments_eq: 0
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0

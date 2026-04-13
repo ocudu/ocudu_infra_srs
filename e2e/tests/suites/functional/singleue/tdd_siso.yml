@@ -1,0 +1,68 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Baseline gNB configuration test. Test basic functionality,: TDD DDDSU, PRACH format B4, periodic SRS, periodic CSI-RS, SIB1-5 and SIB8, SSB and CSI-RS based link monitoring, RAN slicing
+baseline_gnb: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 3
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-ARCH-INTF-4, MVP-FUNC-ARCH-16-1, MVP-FUNC-PHY-16-3, MVP-FUNC-PHY-16-13, MVP-FUNC-PHY-16-15, MVP-FUNC-BAS-16-2, MVP-FUNC-TDD-16-2, MVP-FUNC-RLM-16-1, MVP-FUNC-RACH-16-1, MVP-FUNC-MOB-9, MVP-FUNC-RLM-16-1, MVP-ARCH-GEN-1, MVP-ARCH-GEN-2, DU-GEN-1, DU-PHY-2, DU-GEN-5, DU-PHY-5, DU-PHY-6, DU-PHY-4, MVP-FUNC-SVCS-17-1, MVP-FUNC-TDD-16-1]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+    nof_sib1_geq: 1
+    nof_sib2_geq: 1
+
+# Mixed TDD pattern 6:4 DDDSUUUUDD
+tdd_mixed:
+  <<: *base_config
+  gnb:
+    config: [cell_cfg.yml, prach_config.yml, tdd_mixed.yml, mac_pcap.yml]
+    parameters:
+      prach_config_index: 156
+  feature_ids: [MVP-FUNC-TDD-16-4]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+
+# DL Heavy TDD pattern 6:4 DDDSUUDDDD
+tdd_dl_heavy:
+  <<: *base_config
+  gnb:
+    config: [cell_cfg.yml, prach_config.yml, tdd_72b.yml, mac_pcap.yml]
+    parameters:
+      prach_config_index: 156
+  feature_ids: [MVP-FUNC-TDD-16-5]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0

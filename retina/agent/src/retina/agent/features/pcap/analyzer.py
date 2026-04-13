@@ -49,46 +49,40 @@ class PcapAnalyzer(ABC):
         """Called once when the capture ends. Return the analysis result."""
 
 
-def run_analyzers(pcap_file: str, analyzers: Sequence[PcapAnalyzer]) -> Metrics:
+def run_analyzers(pcap_file: str, analyzers: Sequence[PcapAnalyzer], tshark_param: str = "") -> Metrics:
     """
-    All analyzer display filters are OR-combined into a single tshark filter so
-    only one tshark process is spawned. Calls `report()` on every analyzer when
-    the loop ends, regardless of reason.
+    Runs all analyzers against *pcap_file*.  Analyzers that share the same
+    display_filter are batched into a single tshark process.  *tshark_param* is
+    passed verbatim to every tshark invocation (e.g. "--enable-heuristic rlc_nr_udp").
 
-    *dissector* selects the pcap format: "mac" for MAC-NR pcaps, "rlc" for RLC-NR
-    pcaps (enables the rlc_nr_udp heuristic dissector in tshark).
-
-    Returns a list of results in the same order as *analyzers*.
+    Calls `report()` on every analyzer when the loop ends, regardless of reason.
     """
 
     if Path(pcap_file).exists():
         logging.info("[Pcap Parsing] %s", pcap_file)
 
-        analyzers_grouped: Dict[Tuple[str, ...], Dict[str, List[PcapAnalyzer]]] = {}
+        analyzers_grouped: Dict[str, List[PcapAnalyzer]] = {}
         for a in analyzers:
-            if a.tshark_params not in analyzers_grouped:
-                analyzers_grouped[a.tshark_params] = {}
-            if a.display_filter not in analyzers_grouped[a.tshark_params]:
-                analyzers_grouped[a.tshark_params][a.display_filter] = []
-            analyzers_grouped[a.tshark_params][a.display_filter].append(a)
+            if a.display_filter not in analyzers_grouped:
+                analyzers_grouped[a.display_filter] = []
+            analyzers_grouped[a.display_filter].append(a)
 
-        for tshark_params, analyzer_by_filter in analyzers_grouped.items():
-            for display_filter, analyzer_with_same_tshark_call in analyzer_by_filter.items():
-                try:
-                    with pyshark.FileCapture(
-                        pcap_file,
-                        keep_packets=False,
-                        display_filter=display_filter,
-                        custom_parameters=list(tshark_params),
-                    ) as capture:
-                        for packet in capture:
-                            for analyzer in analyzer_with_same_tshark_call:
-                                try:
-                                    analyzer.process(packet)
-                                except Exception:  # pylint: disable=broad-except
-                                    logging.exception("Error in %s while processing packet", type(analyzer).__name__)
-                except Exception as err:  # pylint: disable=broad-except
-                    logging.exception(err)
+        for display_filter, analyzers_with_same_filter in analyzers_grouped.items():
+            try:
+                with pyshark.FileCapture(
+                    pcap_file,
+                    keep_packets=False,
+                    display_filter=display_filter,
+                    custom_parameters=tshark_param.split() if tshark_param else [],
+                ) as capture:
+                    for packet in capture:
+                        for analyzer in analyzers_with_same_filter:
+                            try:
+                                analyzer.process(packet)
+                            except Exception:  # pylint: disable=broad-except
+                                logging.exception("Error in %s while processing packet", type(analyzer).__name__)
+            except Exception as err:  # pylint: disable=broad-except
+                logging.warning("[Pcap Parsing] TShark failed on %s for filter %s: %s", pcap_file, display_filter, err)
 
     else:
         logging.warning("[Pcap Parsing] file not found: %s", pcap_file)

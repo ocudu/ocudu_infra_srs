@@ -1,0 +1,98 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Paging test
+paging: &base_config
+  template: amarisoft_simulator.py
+  ue_config: [1cell.cfg, paging.cfg]
+  ue_parameters:
+    dl_bitrate: 1.0e+3
+    ul_bitrate: 1.0e+3
+    nof_paging: &nof_paging 2
+  gnb_config: [cell_cfg.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
+  core_config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-MOB-11]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_5gs_nas_service_accept_eq: *nof_paging
+    nof_ng_paging_eq: *nof_paging
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    nof_paging_eq: 4 # the DU sends 2x Paging messages per NG paging
+    errors: 0
+    warnings: 0
+
+# DRX test
+drx:
+  <<: *base_config
+  gnb_config: [cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
+  parameters:
+    drx_long_cycle: 80
+  feature_ids: [MVP-FUNC-SVCS-16-6]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+    nof_ng_paging_eq: *nof_paging
+    nof_paging_eq: 4  # the DU sends 2x Paging messages per NG paging
+    drx_long_cycle_eq: 7 # this is the coded value that corresponds to 80 ms
+
+# eDRX test
+edrx:
+  <<: *base_config
+  gnb_config: [cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
+  feature_ids: [DU-GEN-10]
+
+# MT-Initiated Access
+mt_initiate:
+  <<: *base_config
+  ue_config: [1cell.cfg, mt_initiate.cfg]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+    nof_ng_paging_eq: 0
+    nof_paging_eq: 0
+  feature_ids: [MVP-FUNC-MOB-11]
+
+# RRC Inactive and t308 expire
+rrc_inactive_t308_expire:
+  <<: *base_config
+  gnb_config: [cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml, inactivity_timer.yml]
+  ue_config: [1cell.cfg, paging.cfg]
+  ue_parameters:
+    dl_bitrate: 1.0e+3
+    ul_bitrate: 1.0e+3
+    nof_paging: 1
+  feature_ids: [MVP-FUNC-MOB-10]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+    nof_5gs_nas_service_accept_eq: 1
+    nof_ng_paging_eq: 1
+    nof_paging_eq: 1
+    nof_rrc_suspend_eq: 1
+    nof_rrc_resume_request_eq: 1

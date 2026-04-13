@@ -2,9 +2,5 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 cell_cfg:
-  nof_antennas_dl: 1
-  nof_antennas_ul: 1
-  dl_arfcn: 368500
-  band: 3
-  channel_bandwidth_MHz: 10
-  common_scs: 15
+  pusch:
+    enable_transform_precoding: true

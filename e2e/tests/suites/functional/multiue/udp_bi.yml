@@ -5,7 +5,7 @@ baseline:
   template: ue_simulator.test_gnb
   request: zmq_1000
   ue:
-    config: [1cell_1t1r_bw100_band78.cfg.jinja, multiue_udp_bi.cfg.jinja]
+    config: [1cell.cfg, multiue_udp_bi.cfg.jinja]
     parameters:
       nof_sim_ues: 512
       traffic_type: "udp_bi"
@@ -15,9 +15,8 @@ baseline:
       traffic_duration_sec: 180
       log_com_level: "debug"
       log_prod_level: "debug"
-      pdcch_decode_opt_threshold: 0.7
   gnb:
-    config: [1t1r_bw100_band78.yml, base_slice.yml, pcaps.yml, 512ue.yml]
+    config: [cell_cfg.yml, mac_pcap.yml, 512ue.yml, tdd_default.yml]
     parameters:
       log_level: warning
   core:

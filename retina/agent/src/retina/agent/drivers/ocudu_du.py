@@ -9,6 +9,7 @@ import json
 import logging
 import os
 from dataclasses import dataclass, field
+from pathlib import Path
 from threading import Event, Thread
 from time import sleep
 from typing import Any, Dict, List, Optional, Tuple
@@ -33,14 +34,38 @@ from retina.agent.features.gnb_report import transform_metrics
 from retina.agent.features.json_metrics.du_general import GeneralMetricsAnalyzer
 from retina.agent.features.json_metrics.du_peak_average import PerUePeakAverageAnalyzer
 from retina.agent.features.pcap.analyzer import run_analyzers
-from retina.agent.features.pcap.rrc import HandoverAnalyzer, ReestablishmentAnalyzer
+from retina.agent.features.pcap.rrc import (
+    DrxLongCycleAnalyzer,
+    HandoverAnalyzer,
+    PagingAnalyzer,
+    PrachConfigIndexAnalyzer,
+    ReestablishmentAnalyzer,
+    ResumeRequestAnalyzer,
+    SibAnalyzer,
+    SrsFreqDomainAnalyzer,
+    SuspendConfigAnalyzer,
+    T312Analyzer,
+    TransformPrecoderAnalyzer,
+)
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
 from retina.agent.tools.threading import join_thread
 
 _WS_ANALYZER_ARRAY = (GeneralMetricsAnalyzer, PerUePeakAverageAnalyzer)
-_RLC_PCAP_ANALYZER_ARRAY = (ReestablishmentAnalyzer, HandoverAnalyzer)
+_RRC_PCAP_ANALYZER_ARRAY = (
+    ReestablishmentAnalyzer,
+    HandoverAnalyzer,
+    PrachConfigIndexAnalyzer,
+    SibAnalyzer,
+    PagingAnalyzer,
+    DrxLongCycleAnalyzer,
+    T312Analyzer,
+    SrsFreqDomainAnalyzer,
+    ResumeRequestAnalyzer,
+    SuspendConfigAnalyzer,
+    TransformPrecoderAnalyzer,
+)
 
 
 @dataclass
@@ -311,20 +336,37 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         """
         if self._metrics_parsing_done:
             return tuple()
-        return (self.get_filepath_in_report_folder(gnb_defaults.rlc_filename),)
+        return (
+            self.get_filepath_in_report_folder(gnb_defaults.rlc_filename),
+            self.get_filepath_in_report_folder(gnb_defaults.mac_filename),
+        )
 
     def extract_metrics(self, *args):
         """
         Extract Metrics
         """
         if not self._metrics_parsing_done:
-            (rlc_pcap_filename,) = args
+            rlc_pcap_filename, mac_pcap_filename = args
             for ws_analyzer in self._ws_analyzers:
                 self._metrics.MergeFrom(ws_analyzer.report())
-            self._metrics.MergeFrom(
-                run_analyzers(rlc_pcap_filename, tuple(analyzer_cls() for analyzer_cls in _RLC_PCAP_ANALYZER_ARRAY))
-            )
-            self._metrics_parsing_done = True
+            if Path(mac_pcap_filename).exists():
+                self._metrics.MergeFrom(
+                    run_analyzers(
+                        mac_pcap_filename,
+                        tuple(analyzer_cls() for analyzer_cls in _RRC_PCAP_ANALYZER_ARRAY),
+                        "--enable-heuristic mac_nr_udp",
+                    )
+                )
+                self._metrics_parsing_done = True
+            elif Path(rlc_pcap_filename).exists():
+                self._metrics.MergeFrom(
+                    run_analyzers(
+                        rlc_pcap_filename,
+                        tuple(analyzer_cls() for analyzer_cls in _RRC_PCAP_ANALYZER_ARRAY),
+                        "--enable-heuristic rlc_nr_udp",
+                    )
+                )
+                self._metrics_parsing_done = True
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
         metrics_json_path = self.stop_listening_metrics()

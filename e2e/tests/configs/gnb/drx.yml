@@ -1,11 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-pcap:
-  rlc_enable: true
-  rlc_rb_type: srb
-  rlc_filename: {{rlc_filename}}
-
-log:
-  rlc_level: warning
-  pdcp_level: warning
+cell_cfg:
+  drx:
+    long_cycle: {{drx_long_cycle}}

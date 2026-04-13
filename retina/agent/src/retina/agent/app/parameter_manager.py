@@ -103,10 +103,12 @@ def set_parameter(param_name: str, new_value: Any, auto_convert: bool = False) -
         logging.warning("New parameter %s", param_name)
     else:
         root_type_hints = get_type_hints(root_module)
-        if key not in root_type_hints:
-            raise AttributeError(f"param {key} from {namespace_value} namespace doesn't have a valid type hint")
-        type_hint = get_type_hints(root_module)[key]
         old_value = getattr(root_module, key)
+        if key in root_type_hints:
+            type_hint = get_type_hints(root_module)[key]
+        else:
+            logging.warning("param %s from %s namespace doesn't have a valid type hint", key, namespace_value)
+            type_hint = type(old_value)
         check_type(key, new_value, type_hint)
         if old_value == new_value:
             return

@@ -3,21 +3,9 @@
 
 gnb_id_bit_length: 32
 
-cells:
-  -
-    # Cell 1
-    pci: 1
-    prach:
-      prach_root_sequence_index: 0
-  -
-    # Cell 2
-    pci: 2
-    prach:
-      prach_root_sequence_index: 64
-
 cu_cp:
   mobility:
-    trigger_handover_from_measurements: true
+    trigger_handover_from_measurements: {{trigger_handover | default(true)}}
     cells:
       - nr_cell_id: 0x19B0
         ncells:
@@ -38,3 +26,4 @@ cu_cp:
         meas_trigger_quantity_offset_db: 3
         hysteresis_db: 0
         time_to_trigger_ms: 100
+        t312: 200

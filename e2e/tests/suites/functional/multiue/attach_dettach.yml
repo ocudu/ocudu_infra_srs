@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, attach_cycle.cfg]
+    parameters:
+      nof_ue: 10
+      nof_cycles: 5
+  gnb:
+    config: [cell_cfg.yml, 512ue.yml, tdd_default.yml]
+  core:
+    config: [baseline.cfg]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 50 # nof_ue * nof_cycles
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+
+dl_heavy_tdd:
+  <<: *base_config
+  gnb:
+    config: [cell_cfg.yml, 512ue.yml, tdd_72.yml]
+
+ul_heavy_tdd:
+  <<: *base_config
+  gnb:
+    config: [cell_cfg.yml, 512ue.yml, tdd_27.yml]

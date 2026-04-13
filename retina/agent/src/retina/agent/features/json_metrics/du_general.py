@@ -13,7 +13,7 @@ from retina.protocol.base_pb2 import Metrics
 from retina.agent.features.json_metrics.analyzer import JsonMetricsAnalyzer
 
 
-class GeneralMetricsAnalyzer(JsonMetricsAnalyzer):
+class GeneralMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instance-attributes
     """
     Computes aggregate DU metrics from JSON WebSocket records.
     """
@@ -25,6 +25,8 @@ class GeneralMetricsAnalyzer(JsonMetricsAnalyzer):
         self._time_last: Optional[datetime.datetime] = None
         self._prev_ue_list: List[Dict] = []
         self._reports_since_last_ue_event: Dict[int, int] = {}
+        self._dl_avg_ri: float = 0.0
+        self._ul_avg_ri: float = 0.0
 
     def process(self, metric_info: dict) -> None:
         if "cells" not in metric_info:
@@ -33,6 +35,10 @@ class GeneralMetricsAnalyzer(JsonMetricsAnalyzer):
         timestamp = datetime.datetime.fromisoformat(metric_info["timestamp"].strip())
         total_dl_brate = 0.0
         total_ul_brate = 0.0
+        total_dl_ri = 0.0
+        total_dl_ri_count = 0
+        total_ul_ri = 0.0
+        total_ul_ri_count = 0
 
         for cell_info in metric_info["cells"]:
             if "cell_metrics" in cell_info and cell_info["cell_metrics"]:
@@ -60,6 +66,10 @@ class GeneralMetricsAnalyzer(JsonMetricsAnalyzer):
                 self._metrics.nof_ko_ul += sum(u["ul_nof_nok"] for u in cell_info["ue_list"])
                 total_dl_brate += sum(u["dl_brate"] for u in cell_info["ue_list"])
                 total_ul_brate += sum(u["ul_brate"] for u in cell_info["ue_list"])
+                total_dl_ri += sum(u.get("dl_ri", 0.0) for u in cell_info["ue_list"])
+                total_dl_ri_count += sum(1 for u in cell_info["ue_list"] if "dl_ri" in u)
+                total_ul_ri += sum(u.get("ul_ri", 0.0) for u in cell_info["ue_list"])
+                total_ul_ri_count += sum(1 for u in cell_info["ue_list"] if "ul_ri" in u)
 
                 self._handle_events(cell_info)
                 # PUCCH from the previous report, excluding UEs with recent events
@@ -72,6 +82,8 @@ class GeneralMetricsAnalyzer(JsonMetricsAnalyzer):
                 self._prev_ue_list = cell_info["ue_list"]
 
         self._update_bitrate(timestamp, total_dl_brate, total_ul_brate)
+        self._update_dl_avg_ri(timestamp, total_dl_ri, total_dl_ri_count)
+        self._update_ul_avg_ri(timestamp, total_ul_ri, total_ul_ri_count)
         self._time_last = timestamp
 
     def _handle_events(self, cell_info: dict) -> None:
@@ -83,6 +95,30 @@ class GeneralMetricsAnalyzer(JsonMetricsAnalyzer):
         for event in cell_info.get("event_list", []):
             if event["event_type"] in ("ue_create", "ue_reconf", "ue_rem"):
                 self._reports_since_last_ue_event[event["rnti"]] = 0
+
+    def _update_dl_avg_ri(self, timestamp: datetime.datetime, total_dl_ri: float, count: int) -> None:
+        if self._time_first is None or self._time_last is None or count == 0:
+            return
+        sample_ri = total_dl_ri / count
+        t_old = (self._time_last - self._time_first).total_seconds()
+        t_new = (timestamp - self._time_last).total_seconds()
+        t_beginning = (timestamp - self._time_first).total_seconds()
+        if t_beginning == 0:
+            self._dl_avg_ri = sample_ri
+        else:
+            self._dl_avg_ri = ((self._dl_avg_ri * t_old) + (sample_ri * t_new)) / t_beginning
+
+    def _update_ul_avg_ri(self, timestamp: datetime.datetime, total_ul_ri: float, count: int) -> None:
+        if self._time_first is None or self._time_last is None or count == 0:
+            return
+        sample_ri = total_ul_ri / count
+        t_old = (self._time_last - self._time_first).total_seconds()
+        t_new = (timestamp - self._time_last).total_seconds()
+        t_beginning = (timestamp - self._time_first).total_seconds()
+        if t_beginning == 0:
+            self._ul_avg_ri = sample_ri
+        else:
+            self._ul_avg_ri = ((self._ul_avg_ri * t_old) + (sample_ri * t_new)) / t_beginning
 
     def _update_bitrate(self, timestamp: datetime.datetime, dl_brate: float, ul_brate: float) -> None:
         if self._time_first is None or self._time_last is None:
@@ -99,4 +135,6 @@ class GeneralMetricsAnalyzer(JsonMetricsAnalyzer):
             self._metrics.ul_bitrate = ((self._metrics.ul_bitrate * t_old) + (ul_brate * t_new)) / t_beginning
 
     def report(self) -> Metrics:
+        self._metrics.dl_avg_ri = self._dl_avg_ri
+        self._metrics.ul_avg_ri = self._ul_avg_ri
         return self._metrics

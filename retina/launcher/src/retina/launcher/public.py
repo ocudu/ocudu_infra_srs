@@ -312,15 +312,133 @@ def _register_du_criteria(
         ),
         operator.le,
     )
+    criteria.register_available_criteria(
+        "prach_configuration_index_eq",
+        "PRACH Config Index",
+        lambda: sum(s.GetMetrics(Empty()).prach_configuration_index for s in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "transform_precoder_eq",
+        "Transform Precoder",
+        lambda: sum(s.GetMetrics(Empty()).transform_precoder for s in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "c_srs_eq",
+        "c-SRS",
+        lambda: sum(s.GetMetrics(Empty()).c_srs for s in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "b_srs_eq",
+        "b-SRS",
+        lambda: sum(s.GetMetrics(Empty()).b_srs for s in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "t312_eq",
+        "T312",
+        lambda: sum(s.GetMetrics(Empty()).t312 for s in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "drx_long_cycle_eq",
+        "DRX Long Cycle",
+        lambda: sum(s.GetMetrics(Empty()).drx_long_cycle_start_offset for s in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "nof_paging_eq",
+        "Paging messages",
+        lambda: sum(s.GetMetrics(Empty()).nof_paging_messages for s in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "nof_rrc_resume_request_eq",
+        "RRC Resume Request",
+        lambda: sum(s.GetMetrics(Empty()).nof_rrc_resume_request for s in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "nof_rrc_resume_request_geq",
+        "RRC Resume Request",
+        lambda: sum(s.GetMetrics(Empty()).nof_rrc_resume_request for s in du_or_gnb_array),
+        operator.ge,
+    )
+    criteria.register_available_criteria(
+        "nof_rrc_suspend_eq",
+        "RRC Suspend (suspendConfig)",
+        lambda: sum(s.GetMetrics(Empty()).nof_rrc_suspend for s in du_or_gnb_array),
+        operator.eq,
+    )
+    criteria.register_available_criteria(
+        "nof_rrc_suspend_geq",
+        "RRC Suspend (suspendConfig)",
+        lambda: sum(s.GetMetrics(Empty()).nof_rrc_suspend for s in du_or_gnb_array),
+        operator.ge,
+    )
+    for _sib_n, _field in (
+        (1, "nof_sib1_transmissions"),
+        (2, "nof_sib2_transmissions"),
+        (3, "nof_sib3_transmissions"),
+        (4, "nof_sib4_transmissions"),
+        (5, "nof_sib5_transmissions"),
+        (8, "nof_sib8_transmissions"),
+    ):
+        criteria.register_available_criteria(
+            f"nof_sib{_sib_n}_geq",
+            f"SIB{_sib_n} transmissions",
+            lambda f=_field: sum(getattr(s.GetMetrics(Empty()), f) for s in du_or_gnb_array),
+            operator.ge,
+        )
+    criteria.register_available_criteria(
+        "dl_avg_ri_geq",
+        "DL avg RI",
+        lambda: mean(s.GetMetrics(Empty()).dl_avg_ri for s in du_or_gnb_array),
+        operator.ge,
+    )
+    criteria.register_available_criteria(
+        "ul_avg_ri_geq",
+        "UL avg RI",
+        lambda: mean(s.GetMetrics(Empty()).ul_avg_ri for s in du_or_gnb_array),
+        operator.ge,
+    )
 
 
 @pytest.fixture
-def fivegc(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Generator[FiveGCStub, None, None]:
+def fivegc(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+) -> Generator[FiveGCStub, None, None]:
     """
     Return a 5GC
     """
     try:
         fivegc_stub = retina_manager.get_5gc()
+        criteria.register_available_criteria(
+            "nof_pdu_session_establishment_accept_eq",
+            "PDU Session Establishment Accept",
+            lambda: fivegc_stub.GetMetrics(Empty()).nof_pdu_session_establishment_accept,
+            operator.eq,
+        )
+        criteria.register_available_criteria(
+            "nof_pdu_session_establishment_accept_geq",
+            "PDU Session Establishment Accept",
+            lambda: fivegc_stub.GetMetrics(Empty()).nof_pdu_session_establishment_accept,
+            operator.ge,
+        )
+        criteria.register_available_criteria(
+            "nof_5gs_nas_service_accept_eq",
+            "5GS NAS Service Accept",
+            lambda: fivegc_stub.GetMetrics(Empty()).nof_5gs_nas_service_accept,
+            operator.eq,
+        )
+        criteria.register_available_criteria(
+            "nof_ng_paging_eq",
+            "NG Paging",
+            lambda: fivegc_stub.GetMetrics(Empty()).nof_ng_paging,
+            operator.eq,
+        )
         yield fivegc_stub
     finally:
         with suppress(NameError, UnboundLocalError):

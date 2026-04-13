@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Intra-RU Reestablishment test (same cell)
+intra_ru:
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, reestablishment.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_reestablishments: &nof_reestablishments 5
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml]
+  core:
+    config: [baseline.cfg]
+  feature_ids: [CU-GEN-3]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: *nof_reestablishments
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0

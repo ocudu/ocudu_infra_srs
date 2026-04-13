@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Multiple UEs doing random Handovers
+inter_ru_ho: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [2cell_intrafreq_chsim.cfg, handover_random.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_ue: &nof_ue 10
+  gnb:
+    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, 512ue.yml]
+  core:
+    config: [baseline.cfg]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: *nof_ue
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+
+# Multiple UEs doing Reestablishments
+reestablishment:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, reestablishment.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_ue: 60
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, 512ue.yml]
+  criteria:
+    nof_reestablishments_ge: 40

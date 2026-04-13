@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  # TDD pattern DDDSUUDDDD 6:4:4
+  tdd_ul_dl_cfg:
+    # pattern1 = DDDSUU
+    dl_ul_tx_period: 6
+    nof_dl_slots: 3
+    nof_ul_slots: 2
+    nof_dl_symbols: 6
+    nof_ul_symbols: 4
+
+    # pattern2 = DD
+    pattern2:
+      dl_ul_tx_period: 4
+      nof_dl_slots: 4
+      nof_ul_slots: 0
+      nof_dl_symbols: 0
+      nof_ul_symbols: 0

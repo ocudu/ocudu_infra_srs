@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+paging:
+  stage: mobility
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
+  variables:
+    KEYWORDS: performance/mobility/paging
+    TESTBED: dynamic

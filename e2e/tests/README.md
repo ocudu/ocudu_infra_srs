@@ -90,7 +90,7 @@ example: # Test Case
       nof_antennas: 2
   gnb:
     config:
-      [2t2r_bw100_band78.yml, base_slice.yml, pcaps.yml, 2cell_intradu_ho.yml]
+      [2t2r_bw100_band78.yml, pcaps.yml, 2cell_intradu_ho.yml]
   core:
     config: [baseline.cfg]
   # Adding pass/fail criteria to the test

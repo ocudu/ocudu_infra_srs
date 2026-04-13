@@ -12,6 +12,23 @@ spec:
       default: dev
       description: "OCUDU reference branch or tag."
 ---
+inter_du_ho:
+  stage: mobility
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/mobility/inter_du_ho
+    TESTBED: dynamic
+
 inter_ru_ho:
   stage: mobility
   extends: .functional_e2e
@@ -27,6 +44,74 @@ inter_ru_ho:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: functional/mobility/inter_ru_ho
+    TESTBED: dynamic
+
+intra_ru_ho:
+  stage: mobility
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/mobility/intra_ru_ho
+    TESTBED: dynamic
+
+reestablishment:
+  stage: mobility
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/mobility/reestablishment
+    TESTBED: dynamic
+
+attach_dettach:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/multiue/attach_dettach
+    TESTBED: dynamic
+
+mobility:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/multiue/mobility
     TESTBED: dynamic
 
 ping:
@@ -78,4 +163,157 @@ udp_bi:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: functional/multiue/udp_bi
+    TESTBED: dynamic
+
+cmas:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/cmas
+    TESTBED: dynamic
+
+fdd_siso:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/fdd_siso
+    TESTBED: dynamic
+
+gbr_vonr:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/gbr_vonr
+    TESTBED: dynamic
+
+mocn:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/mocn
+    TESTBED: dynamic
+
+phy_configs:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/phy_configs
+    TESTBED: dynamic
+
+power_control:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/power_control
+    TESTBED: dynamic
+
+slicing:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/slicing
+    TESTBED: dynamic
+
+tdd_mimo:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/tdd_mimo
+    TESTBED: dynamic
+
+tdd_siso:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/suites/**/*
+        - e2e/scripts/generate_pipelines.py
+        - e2e/*.yml
+        - .gitlab-ci-stages.yml
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: functional/singleue/tdd_siso
     TESTBED: dynamic

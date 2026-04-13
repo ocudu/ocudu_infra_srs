@@ -13,7 +13,7 @@ from typing import List, Type
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import FiveGCDefinition, PLMN, StopResponse, Subscriber, SubscriberArray
+from retina.protocol.base_pb2 import FiveGCDefinition, Metrics, PLMN, StopResponse, Subscriber, SubscriberArray
 from retina.protocol.fivegc_pb2 import FiveGCStartInfo
 
 from retina.agent.drivers.amarisoft_ws import AmarisoftBaseDriver, AmarisoftWebSocket
@@ -38,6 +38,7 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._subscriber_array: List[Subscriber] = []
+        self._metrics = Metrics()
 
     def _get_binary_name(self) -> str:
         return "ltemme"
@@ -114,8 +115,19 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
         with suppress(AttributeError):
-            self._websocket.quit()
+            stats = self._websocket.quit()
+            counters = stats.get("counters", {}).get("messages", {})
+            self._metrics = Metrics(
+                nof_pdu_session_establishment_accept=counters.get("5gs_nas_pdu_session_establishment_accept", 0),
+                nof_5gs_nas_service_accept=counters.get("5gs_nas_service_accept", 0),
+                nof_ng_paging=counters.get("ng_paging", 0),
+            )
         return super().Stop(request, context)
+
+    def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
+        metrics = super().GetMetrics(request, context)
+        metrics.MergeFrom(self._metrics)
+        return metrics
 
 
 class _RemoteAmarisoftMme(_AmarisoftMme):
@@ -291,6 +303,9 @@ class Amarisoft5gc(FiveGCDriver):
                 testbed_defaults.api_port += 1
                 self._ims.Start(request, context)
             return Empty()
+
+    def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
+        return self._mme.GetMetrics(request, context)
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
         ims_response = self._ims.Stop(request, context)

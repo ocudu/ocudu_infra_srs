@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cu_cp:
+  extra_amfs:
+    -
+      addr: 10.12.1.101
+      bind_addr: 10.12.1.148
+      supported_tracking_areas:
+        - tac: 7
+          plmn_list:
+            - plmn: "00102"
+              tai_slice_support_list:
+                - sst: 1
+
+cell_cfg:
+  additional_plmns: 00102

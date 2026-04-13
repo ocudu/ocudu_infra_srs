@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# ETWS and CMAS test
+etws_cmas:
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 2
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, etws_cmas.yml, mac_pcap.yml]
+  core:
+    config: [baseline.cfg]
+  feature_ids: [CU-GEN-1, MVP-FUNC-SVCS-16-5]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+    nof_sib8_geq: 1

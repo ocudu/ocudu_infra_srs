@@ -1,0 +1,96 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+qos:
+  -
+    # 5QI=1 e.g. Conversational Voice
+    # PDB=100ms PER=10^-2
+    five_qi: 1
+    pdcp:
+      rohc:
+        rohc_type: rohc
+        profile0x0001: true
+      tx:
+        sn: 18
+        discard_timer: 100
+        status_report_required: false
+      rx:
+        sn: 18
+        t_reordering: 0
+        out_of_order_delivery: false
+    f1u_cu_up:
+      backoff_timer: 10
+    f1u_du:
+      backoff_timer: 10
+    rlc:
+      mode: um-bidir
+      um-bidir:
+        tx:
+          sn: 12
+          queue-size: 16384
+          queue-bytes: 6172672
+        rx:
+          sn: 12
+          t-reassembly: 50
+  -
+    # 5QI=2 e.g. conversational video
+    # PDB=150ms PER=10^-3
+    five_qi: 2
+    pdcp:
+      rohc:
+        rohc_type: rohc
+        profile0x0002: true
+      tx:
+        sn: 18
+        discard_timer: 150
+        status_report_required: false
+      rx:
+        sn: 18
+        t_reordering: 0
+        out_of_order_delivery: false
+    f1u_cu_up:
+      backoff_timer: 10
+    f1u_du:
+      backoff_timer: 10
+    rlc:
+      mode: um-bidir
+      um-bidir:
+        tx:
+          sn: 12
+          queue-size: 16384
+          queue-bytes: 6172672
+        rx:
+          sn: 12
+          t-reassembly: 50
+  -
+    # 5QI = 9 e.g Video (Buffered Streaming)
+    # PDB = 300ms PER = 10^-6
+    five_qi: 9
+    pdcp:
+      tx:
+        sn: 18
+        discard_timer: -1
+        status_report_required: false
+      rx:
+        sn: 18
+        t_reordering: 220
+        out_of_order_delivery: false
+    f1u_cu_up:
+      backoff_timer: 10
+    f1u_du:
+      backoff_timer: 10
+    rlc:
+      mode: am
+      am:
+        tx:
+          sn: 18
+          t-poll-retransmit: 100
+          max-retx-threshold: 32
+          poll-pdu: 16
+          poll-byte: -1
+          queue-size: 16384
+          queue-bytes: 6172672
+        rx:
+          sn: 18
+          t-reassembly: 20
+          t-status-prohibit: 10

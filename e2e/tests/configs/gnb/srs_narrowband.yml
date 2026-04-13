@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  srs:
+    c_srs: 0
+    freq_domain_shift: 20
+    period_ms: 40

@@ -197,18 +197,20 @@ class AmarisoftWebSocket:
         logging.warning("WS already closed")
         return {}
 
-    def quit(self) -> None:
+    def quit(self) -> Dict:
         """
-        Send quit command and close the websocket
+        Send quit command and close the websocket. Returns the stats response dict.
         """
         if self._ws.connected:
             with suppress(websocket.WebSocketConnectionClosedException):
                 logging.info("Sending quit command")
-                self.send_command_and_wait_response(message="stats", samples=True, rf=True)
+                stats = self.send_command_and_wait_response(message="stats", samples=True, rf=True)
                 self.send_command_and_wait_response(message="quit")
                 self.close()
+                return stats
         else:
             logging.info("Websocket connection already closed")
+        return {}
 
     def close(self) -> None:
         """

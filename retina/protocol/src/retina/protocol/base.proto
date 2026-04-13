@@ -156,6 +156,32 @@ message Metrics {
   uint32 nof_seq_err = 16;
 
   repeated UeMetrics ue_array = 17;
+
+  uint32 nof_sib1_transmissions = 30;
+  uint32 nof_sib2_transmissions = 18;
+  uint32 nof_sib3_transmissions = 19;
+  uint32 nof_sib4_transmissions = 20;
+  uint32 nof_sib5_transmissions = 21;
+  uint32 nof_sib8_transmissions = 22;
+  uint32 nof_paging_messages    = 23;
+
+  uint32 nof_pdu_session_establishment_accept = 32;
+  uint32 nof_5gs_nas_service_accept           = 33;
+  uint32 nof_ng_paging                        = 34;
+  uint32 nof_rrc_suspend                      = 35;
+  uint32 nof_rrc_resume_request               = 36;
+
+  int32 prach_configuration_index   = 24;
+  int32 transform_precoder          = 25;
+  int32 drx_long_cycle_start_offset = 26;
+  int32 t312                        = 27;
+  int32 c_srs                       = 28;
+  int32 b_srs                       = 29;
+
+  double dl_avg_ri = 37;
+  double ul_avg_ri = 38;
+
+  uint32 nof_tau_request = 39;
 };
 
 message UeMetrics {

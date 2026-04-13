@@ -780,9 +780,6 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                             dl_bitrate=ue_info["dl_bitrate"],
                             nof_ko_ul=ue_info["ul_retx_count"],
                             ul_bitrate=ue_info["ul_bitrate"],
-                            nof_reestablishments_request=ue_info["counters"]["messages"].get(
-                                "nr_rrc_reconfiguration", 0
-                            ),
                             nof_reestablishments_complete=ue_info["counters"]["messages"].get(
                                 "nr_rrc_reconfiguration_complete", 0
                             ),
@@ -810,9 +807,6 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
                     ue_metric.time_last = timestamp
 
-                    ue_metric.metrics.nof_reestablishments_request = ue_info["counters"]["messages"].get(
-                        "nr_rrc_reconfiguration", 0
-                    )
                     ue_metric.metrics.nof_reestablishments_complete = ue_info["counters"]["messages"].get(
                         "nr_rrc_reconfiguration_complete", 0
                     )
@@ -830,7 +824,6 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             metrics.nof_ko_dl += ue_metric.metrics.nof_ko_dl
             metrics.nof_ko_ul += ue_metric.metrics.nof_ko_ul
             metrics.nof_handovers += ue_metric.metrics.nof_handovers
-            metrics.nof_reestablishments_request = ue_metric.metrics.nof_reestablishments_request
             metrics.nof_reestablishments_complete = ue_metric.metrics.nof_reestablishments_complete
         return metrics
 

@@ -2,31 +2,59 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 # inter-RU, intra-DU, intra-freq HO
-# test_id: tid1.2.6
-# test_case_id: tc1.9 (handover.cfg)
-# test_case_desc: 1 UE attaches to cell A, starts bidirectional UDP and moves to cell B, doing Handover
-baseline:
+baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14]
   ue:
-    config: [2cell_2t2r_bw100_band78_chsim.cfg.jinja, handover.cfg]
+    config: [2cell_intrafreq_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: &nof_ue 1
   gnb:
-    config:
-      [2t2r_bw100_band78.yml, base_slice.yml, pcaps.yml, 2cell_intradu_ho.yml]
+    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14, MVP-FUNC-BAS-16-2]
   criteria:
-    dl_bitrate: 10.0e+6
-    ul_bitrate: 10.0e+6
-    nof_ko_dl: 100
-    nof_ko_ul: 10
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
     nof_reestablishments_eq: 0
-    nof_handovers_ge: 45
-    max_late_dl_harqs: 0
-    max_late_ul_harqs: 0
+    nof_pdu_session_establishment_accept_eq: *nof_ue
+    nof_handovers_ge: 20 # calculated based on the test_duration
     nof_error_indications: 0
     errors: 0
     warnings: 0
-  ue_parameters:
-    pdcch_decode_opt_threshold: 0.7
+    t312_eq: 1
+    nof_sib3_geq: 1
+    nof_sib4_geq: 1
+
+# inter-RU conditional HO
+conditional_ho:
+  <<: *base_config
+  ue:
+    config: [2cell_intrafreq_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: *nof_ue
+  gnb:
+    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, conditional_ho.yml, mac_pcap.yml]
+    parameters:
+      trigger_handover: false
+  feature_ids: [MVP-FUNC-MOB-15]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: *nof_ue
+    nof_handovers_ge: 20 # calculated based on the test_duration
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0

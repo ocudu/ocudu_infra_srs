@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 cell_cfg:
-  tdd_ul_dl_cfg:
-    nof_dl_symbols: 10
-    nof_dl_slots: 6
-    nof_ul_slots: 3
   mac_cell_group:
     bsr_cfg:
       periodic_bsr_timer: 40

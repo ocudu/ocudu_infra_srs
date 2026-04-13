@@ -54,6 +54,7 @@ ue_sds: List[str] = []
 # UE
 apn: str = "internet"
 tun_sh_path: str = template_path("amarisoft_ue_tun.sh")
+quit_on_start: bool = False
 
 # NTN
 ntn_enable: bool = False
