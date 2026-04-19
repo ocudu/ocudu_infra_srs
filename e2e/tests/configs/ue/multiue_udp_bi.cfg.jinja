@@ -32,7 +32,7 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
       sim_algo: "xor",
       imsi: "00{{ base_imsi + i }}",
       K: "{{ "%032x" | format(base_K + i) }}",
-      apn: "internet",
+      apn: "{{apn}}",
       as_release: 15,
       ue_category: "nr",
       power_control_enabled: false,
