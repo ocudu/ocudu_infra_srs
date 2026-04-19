@@ -66,7 +66,7 @@ class Job:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml

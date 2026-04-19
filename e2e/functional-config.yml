@@ -18,7 +18,7 @@ spec:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -35,7 +35,7 @@ inter_ru_ho:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -52,7 +52,7 @@ intra_ru_ho:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -69,7 +69,7 @@ reestablishment:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -86,7 +86,7 @@ attach_dettach:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -103,7 +103,7 @@ mobility:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -120,7 +120,7 @@ ping:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -137,7 +137,7 @@ udp_bi:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -154,7 +154,7 @@ udp_bi:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -171,7 +171,7 @@ udp_bi:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -188,7 +188,7 @@ cmas:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -205,7 +205,7 @@ fdd_siso:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -222,7 +222,7 @@ gbr_vonr:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -239,7 +239,7 @@ phy_configs:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -256,7 +256,7 @@ power_control:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -273,7 +273,7 @@ slicing:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
@@ -290,7 +290,7 @@ tdd_siso:
   rules:
     - if: $ON_MR
       changes:
-        - e2e/tests/suites/**/*
+        - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
         - .gitlab-ci-stages.yml
