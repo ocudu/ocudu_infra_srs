@@ -34,8 +34,14 @@ reestablishment:
     parameters:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
-      nof_ue: 60
+      nof_ue: *nof_ue
   gnb:
     config: [cell_cfg.yml, tdd_default.yml, 512ue.yml]
   criteria:
-    nof_reestablishments_ge: 40
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_reestablishments_ge: 50
+    nof_pdu_session_establishment_accept_eq: *nof_ue
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
