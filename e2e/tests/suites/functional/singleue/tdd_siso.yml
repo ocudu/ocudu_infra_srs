@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# Baseline gNB configuration test. Test basic functionality,: TDD DDDSU, PRACH format B4, periodic SRS, periodic CSI-RS, SIB1-5 and SIB8, SSB and CSI-RS based link monitoring, RAN slicing
+# tid1.1.1: Baseline gNB configuration test. Test basic functionality,: TDD DDDSU, PRACH format B4, periodic SRS, periodic CSI-RS, SIB1-5 and SIB8, SSB and CSI-RS based link monitoring, RAN slicing
 baseline_gnb: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -29,7 +29,7 @@ baseline_gnb: &base_config
     nof_sib1_geq: 1
     nof_sib2_geq: 1
 
-# Mixed TDD pattern 6:4 DDDSUUUUDD
+# tid1.1.4: Mixed TDD pattern 6:4 DDDSUUUUDD
 tdd_mixed:
   <<: *base_config
   gnb:
@@ -48,7 +48,7 @@ tdd_mixed:
     errors: 0
     warnings: 0
 
-# DL Heavy TDD pattern 6:4 DDDSUUDDDD
+# tid1.1.3: DL Heavy TDD pattern 6:4 DDDSUUDDDD
 tdd_dl_heavy:
   <<: *base_config
   gnb:

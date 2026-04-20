@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+# tid1.3.0
 baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -24,11 +25,13 @@ baseline: &base_config
     errors: 0
     warnings: 0
 
+# tid1.3.1
 dl_heavy_tdd:
   <<: *base_config
   gnb:
     config: [cell_cfg.yml, 512ue.yml, tdd_72.yml]
 
+# tid1.3.2
 ul_heavy_tdd:
   <<: *base_config
   gnb:

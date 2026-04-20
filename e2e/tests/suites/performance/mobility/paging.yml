@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# Paging test
+# tid2.2.22: Paging test
 paging: &base_config
   template: amarisoft_simulator.py
   ue_config: [1cell.cfg, paging.cfg]
@@ -26,7 +26,7 @@ paging: &base_config
     errors: 0
     warnings: 0
 
-# DRX test
+# tid2.2.23: DRX test
 drx:
   <<: *base_config
   gnb_config: [cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
@@ -47,13 +47,13 @@ drx:
     nof_paging_eq: 4  # the DU sends 2x Paging messages per NG paging
     drx_long_cycle_eq: 7 # this is the coded value that corresponds to 80 ms
 
-# eDRX test
+# tid2.2.24: eDRX test
 edrx:
   <<: *base_config
   gnb_config: [cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
   feature_ids: [DU-GEN-10]
 
-# MT-Initiated Access
+# tid2.2.25: MT-Initiated Access
 mt_initiate:
   <<: *base_config
   ue_config: [1cell.cfg, mt_initiate.cfg]
@@ -71,7 +71,7 @@ mt_initiate:
     nof_paging_eq: 0
   feature_ids: [MVP-FUNC-MOB-11]
 
-# RRC Inactive and t308 expire
+# tid2.2.26: RRC Inactive and t308 expire
 rrc_inactive_t308_expire:
   <<: *base_config
   gnb_config: [cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml, inactivity_timer.yml]

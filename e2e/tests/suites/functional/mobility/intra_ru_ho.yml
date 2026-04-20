@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# Intra-cell handover for key regeneration
+# tid1.2.5: Intra-cell handover for key regeneration
 key_regen: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -27,7 +27,7 @@ key_regen: &base_config
     errors: 0
     warnings: 0
 
-# TAU request test
+# tid1.2.6: TAU request test
 # TODO: verify that the TAU request has been actually sent
 tau_request:
   <<: *base_config

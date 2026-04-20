@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# inter-RU, intra-DU, intra-freq HO
+# tid1.2.7: inter-RU, intra-DU, intra-freq HO
 baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -32,7 +32,7 @@ baseline: &base_config
     nof_sib3_geq: 1
     nof_sib4_geq: 1
 
-# inter-RU conditional HO
+# tid1.2.9: inter-RU conditional HO
 conditional_ho:
   <<: *base_config
   ue:

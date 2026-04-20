@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# GBR bearer, VoNR 5QI and ROHC test
+# tid1.1.23: GBR bearer, VoNR 5QI and ROHC test
 baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme

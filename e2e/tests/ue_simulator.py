@@ -161,7 +161,7 @@ def _ue_simulator(
     with suppress(grpc.RpcError):
         while True:
             ue.GetMessages(Empty())
-            sleep(1)
+            sleep(5)
 
     try:
         stop(
