@@ -151,6 +151,7 @@ def _main():
         metavar="module.ClassName",
         help='Analyzer specs relative to this package, e.g. "rrc.HandoverAnalyzer"',
     )
+    parser.add_argument("--tshark-param", help="Tshark Parameters", required=False, default="")
     args = parser.parse_args()
 
     instances = []
@@ -161,7 +162,7 @@ def _main():
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)
 
-    results = run_analyzers(args.pcap_file, instances)
+    results = run_analyzers(args.pcap_file, instances, args.tshark_param)
     logging.info("%s", MessageToString(results, as_one_line=True))
 
 

@@ -53,9 +53,8 @@ from retina.agent.parameters import gnb_defaults, template_defaults, testbed_def
 from retina.agent.tools.threading import join_thread
 
 _WS_ANALYZER_ARRAY = (GeneralMetricsAnalyzer, PerUePeakAverageAnalyzer)
-_RRC_PCAP_ANALYZER_ARRAY = (
+_MAC_PCAP_ANALYZER_ARRAY = (
     ReestablishmentAnalyzer,
-    HandoverAnalyzer,
     PrachConfigIndexAnalyzer,
     SibAnalyzer,
     PagingAnalyzer,
@@ -64,6 +63,15 @@ _RRC_PCAP_ANALYZER_ARRAY = (
     SrsFreqDomainAnalyzer,
     ResumeRequestAnalyzer,
     SuspendConfigAnalyzer,
+    TransformPrecoderAnalyzer,
+)
+_RLC_PCAP_ANALYZER_ARRAY = (
+    ReestablishmentAnalyzer,
+    HandoverAnalyzer,
+    PrachConfigIndexAnalyzer,
+    DrxLongCycleAnalyzer,
+    T312Analyzer,
+    SrsFreqDomainAnalyzer,
     TransformPrecoderAnalyzer,
 )
 
@@ -353,16 +361,16 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                 self._metrics.MergeFrom(
                     run_analyzers(
                         mac_pcap_filename,
-                        tuple(analyzer_cls() for analyzer_cls in _RRC_PCAP_ANALYZER_ARRAY),
+                        tuple(analyzer_cls() for analyzer_cls in _MAC_PCAP_ANALYZER_ARRAY),
                         "--enable-heuristic mac_nr_udp",
                     )
                 )
                 self._metrics_parsing_done = True
-            elif Path(rlc_pcap_filename).exists():
+            if Path(rlc_pcap_filename).exists():
                 self._metrics.MergeFrom(
                     run_analyzers(
                         rlc_pcap_filename,
-                        tuple(analyzer_cls() for analyzer_cls in _RRC_PCAP_ANALYZER_ARRAY),
+                        tuple(analyzer_cls() for analyzer_cls in _RLC_PCAP_ANALYZER_ARRAY),
                         "--enable-heuristic rlc_nr_udp",
                     )
                 )
