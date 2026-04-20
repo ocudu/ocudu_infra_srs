@@ -115,7 +115,8 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
         with suppress(AttributeError):
-            stats = self._websocket.quit()
+            stats = self._websocket.send_command_and_wait_response(message="stats", samples=False, rf=False)
+            self._websocket.quit()
             counters = stats.get("counters", {}).get("messages", {})
             self._metrics = Metrics(
                 nof_pdu_session_establishment_accept=counters.get("5gs_nas_pdu_session_establishment_accept", 0),

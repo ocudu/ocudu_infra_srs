@@ -384,15 +384,20 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     raise ChildProcessError("Process has died")
 
         with notify_grpc_exception(context):
+            ue_info = {}
             if context.peer() in self._subscriber_client_dict:
-                logging.info("Querying message counters")
+                logging.info("Querying UE message counters")
                 for ue_info in self._ue_get(
                     context_peer=context.peer(),
                     update=False,
                     timeout=self.AMARISOFT_WAIT_BEFORE_STOP,
                 ):
-                    return self._parse_messages(ue_info["counters"]["messages"])
-            return RrcMessages()
+                    break
+            else:
+                logging.info("Querying stats message counters")
+                ue_info = self._get_stats()
+
+            return self._parse_messages(ue_info.get("counters", {}).get("messages", {}))
 
     def _parse_messages(self, messages: Dict) -> RrcMessages:
         return RrcMessages(
@@ -647,6 +652,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         # No pending virtual UEs to stop or sut already stopped
         if self._process is not None and self._websocket is not None:
             sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
+            self._get_stats()
             self._websocket.quit()
             # Close metrics file
             with open(
@@ -811,20 +817,55 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                         "nr_rrc_reconfiguration_complete", 0
                     )
 
+    def _get_stats(self) -> Dict:
+        if self._websocket is None:
+            raise ChildProcessError("Process has died")
+        stats = self._websocket.send_command_and_wait_response(message="stats", samples=False, rf=False)
+        self._parse_stats(stats)
+        return stats
+
+    def _parse_stats(self, stats_dict: Dict):
+        if not stats_dict:
+            return {}
+        if "stats" not in self._metrics_dict:
+            self._metrics_dict["stats"] = {}
+        self._metrics_dict["stats"][0] = _AmarisoftMetrics(
+            rnti=0,
+            time_first=datetime.now(),
+            time_last=datetime.now(),
+            metrics=Metrics(
+                dl_bitrate=sum(cell["dl_bitrate"] for cell in stats_dict["cells"].values()),
+                ul_bitrate=sum(cell["ul_bitrate"] for cell in stats_dict["cells"].values()),
+                nof_ko_dl=sum(cell["dl_err_count"] + cell["dl_retx_count"] for cell in stats_dict["cells"].values()),
+                nof_ko_ul=sum(cell["ul_retx_count"] for cell in stats_dict["cells"].values()),
+                nof_handovers=stats_dict["counters"]["messages"].get("handover_success", 0),
+                nof_reestablishments_complete=stats_dict["counters"]["messages"].get(
+                    "nr_rrc_reconfiguration_complete", 0
+                ),
+                nof_pdu_session_establishment_accept=stats_dict["counters"]["messages"].get(
+                    "5gs_nas_pdu_session_establishment_accept", 0
+                ),
+            ),
+        )
+
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         metrics = super().GetMetrics(request, context)
-        ue_metrics_iter = (
-            self._metrics_dict[context.peer()].values()
-            if context.peer() in self._metrics_dict
-            else (ue_metric for ue_dict in self._metrics_dict.values() for ue_metric in ue_dict.values())
-        )
+        if "stats" in self._metrics_dict and 0 in self._metrics_dict["stats"]:
+            ue_metrics_iter: tuple[_AmarisoftMetrics, ...] = (self._metrics_dict["stats"][0],)
+        else:
+            ue_metrics_iter = tuple(
+                self._metrics_dict[context.peer()].values()
+                if context.peer() in self._metrics_dict
+                else (ue_metric for ue_dict in self._metrics_dict.values() for ue_metric in ue_dict.values())
+            )
         for ue_metric in ue_metrics_iter:
             metrics.dl_bitrate += ue_metric.metrics.dl_bitrate
             metrics.ul_bitrate += ue_metric.metrics.ul_bitrate
             metrics.nof_ko_dl += ue_metric.metrics.nof_ko_dl
             metrics.nof_ko_ul += ue_metric.metrics.nof_ko_ul
             metrics.nof_handovers += ue_metric.metrics.nof_handovers
-            metrics.nof_reestablishments_complete = ue_metric.metrics.nof_reestablishments_complete
+            metrics.nof_reestablishments_complete += ue_metric.metrics.nof_reestablishments_complete
+            metrics.nof_pdu_session_establishment_accept += ue_metric.metrics.nof_pdu_session_establishment_accept
         return metrics
 
 
