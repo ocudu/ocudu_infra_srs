@@ -5,16 +5,16 @@ cu_cp:
   mobility:
     trigger_cho_on_ue_setup: true
     cho_timeout_ms: 60000
-    trigger_handover_from_measurements: False
+    trigger_handover_from_measurements: false
     cells:
-        - nr_cell_id: 0x19B0
-          ncells:
-            - nr_cell_id: 0x19B1
-              report_configs: [2]
-        - nr_cell_id: 0x19B1
-          ncells:
-            - nr_cell_id: 0x19B0
-              report_configs: [2]
+      - nr_cell_id: 0x19B0
+        ncells:
+          - nr_cell_id: 0x19B1
+            report_configs: [2]
+      - nr_cell_id: 0x19B1
+        ncells:
+          - nr_cell_id: 0x19B0
+            report_configs: [2]
     report_configs:
       - report_cfg_id: 1
         report_type: periodical
