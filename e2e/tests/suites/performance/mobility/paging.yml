@@ -5,13 +5,16 @@
 paging: &base_config
   template: ue_simulator.test_gnb
   request: s72
-  ue_config: [1cell.cfg, paging.cfg]
-  ue_parameters:
-    dl_bitrate: 1.0e+3
-    ul_bitrate: 1.0e+3
-    nof_paging: &nof_paging 2
-  gnb_config: [cell_cfg.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
-  core_config: [baseline.cfg]
+  ue:
+    config: [1cell.cfg, paging.cfg]
+    parameters:
+      dl_bitrate: 1.0e+3
+      ul_bitrate: 1.0e+3
+      nof_paging: &nof_paging 2
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
+  core:
+    config: [baseline.cfg]
   feature_ids: [MVP-FUNC-MOB-11]
   criteria:
     dl_bitrate: 0
@@ -30,9 +33,10 @@ paging: &base_config
 # tid2.2.23: DRX test
 drx:
   <<: *base_config
-  gnb_config: [cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
-  parameters:
-    drx_long_cycle: 80
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
+    parameters:
+      drx_long_cycle: 80
   feature_ids: [MVP-FUNC-SVCS-16-6]
   criteria:
     dl_bitrate: 0
@@ -51,13 +55,16 @@ drx:
 # tid2.2.24: eDRX test
 edrx:
   <<: *base_config
-  gnb_config: [cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
   feature_ids: [DU-GEN-10]
 
 # tid2.2.25: MT-Initiated Access
 mt_initiate:
   <<: *base_config
-  ue_config: [1cell.cfg, mt_initiate.cfg]
+  ue:
+    config: [1cell.cfg, mt_initiate.cfg]
+  feature_ids: [MVP-FUNC-MOB-11]
   criteria:
     dl_bitrate: 0
     ul_bitrate: 0
@@ -70,17 +77,18 @@ mt_initiate:
     warnings: 0
     nof_ng_paging_eq: 0
     nof_paging_eq: 0
-  feature_ids: [MVP-FUNC-MOB-11]
 
 # tid2.2.26: RRC Inactive and t308 expire
 rrc_inactive_t308_expire:
   <<: *base_config
-  gnb_config: [cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml, inactivity_timer.yml]
-  ue_config: [1cell.cfg, paging.cfg]
-  ue_parameters:
-    dl_bitrate: 1.0e+3
-    ul_bitrate: 1.0e+3
-    nof_paging: 1
+  ue:
+    config: [1cell.cfg, paging.cfg]
+    parameters:
+      dl_bitrate: 1.0e+3
+      ul_bitrate: 1.0e+3
+      nof_paging: 1
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml, inactivity_timer.yml]
   feature_ids: [MVP-FUNC-MOB-10]
   criteria:
     dl_bitrate: 0
