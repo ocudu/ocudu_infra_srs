@@ -46,9 +46,9 @@
       remote_path: /usr/local/bin/gnb
       is_executable: true
 
-- name: open5gs
+- name: amarisoft-mme
   type: 5gc
-  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
       requests: 20%
@@ -59,6 +59,8 @@
     ephemeral-storage:
       requests: 6G
   resources:
+    - type: license
+      model: amarisoft-mme.*
     - type: ru
       model: s72-ocudu
       dummy: true
