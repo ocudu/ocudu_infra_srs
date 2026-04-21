@@ -68,7 +68,6 @@ _MAC_PCAP_ANALYZER_ARRAY = (
 _RLC_PCAP_ANALYZER_ARRAY = (
     ReestablishmentAnalyzer,
     HandoverAnalyzer,
-    PrachConfigIndexAnalyzer,
     DrxLongCycleAnalyzer,
     T312Analyzer,
     SrsFreqDomainAnalyzer,
