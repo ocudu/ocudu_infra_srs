@@ -9,8 +9,44 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Dict, Generator
 
+import jsonschema
 import pytest
 import yaml
+
+_TEST_DEFINITION_SCHEMA: Dict = {
+    "$defs": {
+        "item_config": {
+            "type": "object",
+            "properties": {
+                "config": {"type": "array", "items": {"type": "string"}},
+                "parameters": {"type": "object"},
+            },
+            "additionalProperties": False,
+        },
+        "node_type_definition": {
+            "type": "object",
+            "properties": {
+                "config": {"type": "array", "items": {"type": "string"}},
+                "parameters": {"type": "object"},
+                "items": {"type": "array", "items": {"$ref": "#/$defs/item_config"}},
+            },
+            "additionalProperties": False,
+        },
+    },
+    "type": "object",
+    "properties": {
+        "template": {"type": "string"},
+        "request": {"type": "string"},
+        "feature_ids": {"type": "array", "items": {"type": "string"}},
+        "criteria": {"type": "object", "additionalProperties": {"type": "number"}},
+        "ue": {"$ref": "#/$defs/node_type_definition"},
+        "cu": {"$ref": "#/$defs/node_type_definition"},
+        "du": {"$ref": "#/$defs/node_type_definition"},
+        "gnb": {"$ref": "#/$defs/node_type_definition"},
+        "core": {"$ref": "#/$defs/node_type_definition"},
+    },
+    "additionalProperties": False,
+}
 
 
 @dataclass
@@ -69,17 +105,21 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
     @classmethod
     def from_dict(cls, name: str, data: Dict) -> "RetinaTestDefinition":
         """Create object from dictionary with type"""
-        instance = cls(
-            name=name,
-            retina_request=data.get("request", "zmq_mme"),
-            feature_ids=data.get("feature_ids", []),
-            criteria=data.get("criteria", {}),
-            ue=RetinaNodeTypeDefinition.from_dict(data.get("ue", {})),
-            cu=RetinaNodeTypeDefinition.from_dict(data.get("cu", {})),
-            du=RetinaNodeTypeDefinition.from_dict(data.get("du", {})),
-            gnb=RetinaNodeTypeDefinition.from_dict(data.get("gnb", {})),
-            core=RetinaNodeTypeDefinition.from_dict(data.get("core", {})),
-        )
+        try:
+            jsonschema.validate(data, _TEST_DEFINITION_SCHEMA)
+            instance = cls(
+                name=name,
+                retina_request=data.get("request", "zmq_mme"),
+                feature_ids=data.get("feature_ids", []),
+                criteria=data.get("criteria", {}),
+                ue=RetinaNodeTypeDefinition.from_dict(data.get("ue", {})),
+                cu=RetinaNodeTypeDefinition.from_dict(data.get("cu", {})),
+                du=RetinaNodeTypeDefinition.from_dict(data.get("du", {})),
+                gnb=RetinaNodeTypeDefinition.from_dict(data.get("gnb", {})),
+                core=RetinaNodeTypeDefinition.from_dict(data.get("core", {})),
+            )
+        except jsonschema.ValidationError as e:
+            raise ValueError(f"Invalid test definition '{name}': {e.message}") from e
         all_configs = []
         for cfg_file in instance.ue.config:
             all_configs.append(Path(__file__).parent.parent / "configs" / "ue" / cfg_file)
