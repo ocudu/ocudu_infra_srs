@@ -3,7 +3,8 @@
 
 # tid2.2.22: Paging test
 paging: &base_config
-  template: amarisoft_simulator.py
+  template: ue_simulator.test_gnb
+  request: s72
   ue_config: [1cell.cfg, paging.cfg]
   ue_parameters:
     dl_bitrate: 1.0e+3
