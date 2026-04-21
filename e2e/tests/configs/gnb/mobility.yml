@@ -5,7 +5,7 @@ gnb_id_bit_length: 32
 
 cu_cp:
   mobility:
-    trigger_handover_from_measurements: {{trigger_handover | default(true)}}
+    trigger_handover_from_measurements: true
     cells:
       - nr_cell_id: 0x19B0
         ncells:

@@ -5,3 +5,24 @@ cu_cp:
   mobility:
     trigger_cho_on_ue_setup: true
     cho_timeout_ms: 60000
+    trigger_handover_from_measurements: False
+    cells:
+        - nr_cell_id: 0x19B0
+          ncells:
+            - nr_cell_id: 0x19B1
+              report_configs: [2]
+        - nr_cell_id: 0x19B1
+          ncells:
+            - nr_cell_id: 0x19B0
+              report_configs: [2]
+    report_configs:
+      - report_cfg_id: 1
+        report_type: periodical
+        report_interval_ms: 480
+      - report_cfg_id: 2
+        report_type: cond_trigger
+        event_triggered_report_type: a3
+        meas_trigger_quantity: rsrp
+        meas_trigger_quantity_offset_db: 3
+        hysteresis_db: 0
+        time_to_trigger_ms: 100
