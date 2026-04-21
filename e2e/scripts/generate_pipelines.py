@@ -62,7 +62,7 @@ class Job:
 
         return f"""{self.name}:
   stage: {self.stage}
-  extends: .functional_e2e
+  extends: .{self.pipeline_name}_e2e
   rules:
     - if: $ON_MR
       changes:

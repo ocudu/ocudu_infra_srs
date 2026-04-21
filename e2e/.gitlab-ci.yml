@@ -16,10 +16,11 @@ include:
   - project: $[[ inputs.ocudu_path ]]
     ref: $[[ inputs.ocudu_ref ]]
     file: .gitlab/ci-shared/python.yml
-  - local: e2e/functional-config.yml
   - project: $[[ inputs.ocudu_path ]]
     ref: $[[ inputs.ocudu_ref ]]
     file: .gitlab/ci-shared/static.yml
+  - local: e2e/functional-config.yml
+  - local: e2e/performance-config.yml
 
 # E2E CI/CD Pipeline
 
@@ -214,7 +215,8 @@ dpdk rtsan avx512:
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
-  variables:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
+  variables: &dpdk_rtsan_avx512_variables
     OS: ubuntu-24.04-rtsan
     OCUDU_TARGET: gnb_split_7_2 gnb
     COMPILER: clang
@@ -224,6 +226,16 @@ dpdk rtsan avx512:
       -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
       -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
     TEST_MODE: none
+
+dpdk rtsan avx512 cached:
+  extends: build
+  retry: 2
+  rules:
+    - <<: *on_mr_suites_changed
+      when: manual
+      allow_failure: true
+  variables:
+    <<: *dpdk_rtsan_avx512_variables
 
 ### Functional
 .functional_e2e:
@@ -237,6 +249,20 @@ dpdk rtsan avx512:
       artifacts: true
       optional: true
     - job: release with deb info cached
+      artifacts: true
+      optional: true
+
+### Performance
+.performance_e2e:
+  extends: e2e
+  variables:
+    GROUP: s72
+  needs:
+    - get retina version
+    - job: dpdk rtsan avx512
+      artifacts: true
+      optional: true
+    - job: dpdk rtsan avx512 cached
       artifacts: true
       optional: true
 

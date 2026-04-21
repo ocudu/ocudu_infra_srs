@@ -219,6 +219,14 @@ module "settings" {
       active      = true
       variables   = {}
     }
+    performance = {
+      description = "performance"
+      cron        = "30 22 * * 0-5"
+      timezone    = "Europe/Madrid"
+      ref         = "refs/heads/main"
+      active      = true
+      variables   = {}
+    }
     weekly = {
       description = "Emulated Weekly"
       cron        = "00 10 * * 6"

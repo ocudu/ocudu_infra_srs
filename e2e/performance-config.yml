@@ -14,7 +14,7 @@ spec:
 ---
 paging:
   stage: mobility
-  extends: .functional_e2e
+  extends: .performance_e2e
   rules:
     - if: $ON_MR
       changes:
