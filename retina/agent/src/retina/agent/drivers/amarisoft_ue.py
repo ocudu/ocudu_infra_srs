@@ -183,6 +183,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     )
                     raise ValueError("The UE agent can't be started in split 7.2 mode due to incorrect config")
 
+            prach_ports = str(list(range(4, 4 + ue_defaults.nof_antennas_ul)))
+            sample_rate = testbed_defaults.sample_rate if ue_defaults.sample_rate < 0 else ue_defaults.sample_rate
             config_file = self._render(
                 filename=self.AMARISOFT_CONF_FILE_FINAL_NAME,
                 templates={
@@ -218,14 +220,12 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                         )
                         for i in range(ue_defaults.num_cells if testbed_defaults.type == "ru" else 0)
                     ),
-                    "prach_ports": str(list(range(4, 4 + ue_defaults.nof_antennas_ul))),
+                    "prach_ports": prach_ports,
                     "sdr_driver_args": f"type={testbed_defaults.model}," f"{testbed_defaults.args}",
                     "tx_gain": testbed_defaults.tx_gain if ue_defaults.tx_gain < 0 else ue_defaults.tx_gain,
                     "rx_gain": testbed_defaults.rx_gain if ue_defaults.rx_gain < 0 else ue_defaults.rx_gain,
                     # Cell
-                    "sample_rate": (
-                        testbed_defaults.sample_rate if ue_defaults.sample_rate < 0 else ue_defaults.sample_rate
-                    ),
+                    "sample_rate": sample_rate,
                     "cell_array": tuple(
                         _CellInfo(
                             rf_port=i,
@@ -264,6 +264,12 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     "subnet_prefix": str(
                         ipaddress.ip_network(f"{request.fivegc_definition.tun_ip}/16", False).network_address
                     ).replace(".0", ""),
+                    # HW related cell info
+                    "cell_ru_cfg": (
+                        f"s72: {{rtc_id: 0x0000, ud_comp_hdr: 0x91, port_mapping_prach: {prach_ports}, gen_prb0: true}}"
+                        if testbed_defaults.type == "ru"
+                        else f"sample_rate: {sample_rate / 1000000}"
+                    ),
                 },
             )
 
