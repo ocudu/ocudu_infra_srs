@@ -24,4 +24,6 @@ rules:
 
 ignore: |
   e2e/tests/test_mode/
+  e2e/log/
   docs/node_modules/
+  retina/_scripts/testbed.yml
