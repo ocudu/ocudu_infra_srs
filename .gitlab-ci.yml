@@ -137,7 +137,7 @@ include:
       ocudu_build_dir: build_retina
       job: build trx driver
       rules:
-        - if: '"$[[ inputs.testbed ]]" !~ /^zmq/'
+        - if: '"$[[ inputs.testbed ]]" !~ /^(zmq|dynamic)/'
           when: never
         - if: $ON_WEB
         - if: $ON_API
