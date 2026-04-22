@@ -11,8 +11,11 @@ paging: &base_config
       dl_bitrate: 1.0e+3
       ul_bitrate: 1.0e+3
       nof_paging: &nof_paging 2
+      log_level: warning
   gnb:
     config: [cell_cfg.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
+    parameters:
+      log_level: warning
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-MOB-11]
@@ -37,6 +40,7 @@ drx:
     config: [cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       drx_long_cycle: 80
+      log_level: warning
   feature_ids: [MVP-FUNC-SVCS-16-6]
   criteria:
     dl_bitrate: 0
@@ -57,6 +61,8 @@ edrx:
   <<: *base_config
   gnb:
     config: [cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
+    parameters:
+      log_level: warning
   feature_ids: [DU-GEN-10]
 
 # tid2.2.25: MT-Initiated Access
@@ -64,6 +70,11 @@ mt_initiate:
   <<: *base_config
   ue:
     config: [1cell.cfg, mt_initiate.cfg]
+    parameters:
+      dl_bitrate: 1.0e+3
+      ul_bitrate: 1.0e+3
+      nof_paging: *nof_paging
+      log_level: warning
   feature_ids: [MVP-FUNC-MOB-11]
   criteria:
     dl_bitrate: 0
@@ -87,6 +98,7 @@ rrc_inactive_t308_expire:
       dl_bitrate: 1.0e+3
       ul_bitrate: 1.0e+3
       nof_paging: 1
+      log_level: warning
   gnb:
     config: [cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml, inactivity_timer.yml]
   feature_ids: [MVP-FUNC-MOB-10]
