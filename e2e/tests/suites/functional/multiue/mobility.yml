@@ -30,7 +30,7 @@ inter_ru_ho: &base_config
 reestablishment:
   <<: *base_config
   ue:
-    config: [1cell.cfg, reestablishment.cfg]
+    config: [1cell_chsim.cfg, reestablishment.cfg]
     parameters:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
