@@ -50,6 +50,10 @@ if [ "$type" = "ipv4" ] ; then
     # run ltesim_server
     echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3000"
     /opt/ltemme/ltesim_server -a $tun_ip_prefix.$first_subnet.1:3000 &
+    echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3001"
+    /opt/ltemme/ltesim_server -a $tun_ip_prefix.$first_subnet.1:3001 &
+    echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3002"
+    /opt/ltemme/ltesim_server -a $tun_ip_prefix.$first_subnet.1:3002 &
 else
 
     ll="$5"     # ipv6 link local address
