@@ -16,7 +16,7 @@ from pytest import mark
 from requests import HTTPError
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.criteria import Criteria
+from retina.launcher.criteria import CriteriaTable
 from retina.launcher.utils import configure_artifacts
 from retina.protocol.base_pb2 import FiveGCDefinition, PLMN, StartInfo
 from retina.protocol.gnb_pb2 import GNBStartInfo
@@ -136,7 +136,7 @@ def test_viavi_manual(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     test_log_folder: str,
-    criteria: Criteria,
+    criteria: CriteriaTable,
     # Clients
     gnb: GNBStub,
     viavi: Viavi,
@@ -197,7 +197,7 @@ def test_viavi(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     test_log_folder: str,
-    criteria: Criteria,
+    criteria: CriteriaTable,
     # Clients
     gnb: GNBStub,
     viavi: Viavi,
@@ -237,7 +237,7 @@ def _test_viavi(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     test_log_folder: str,
-    criteria: Criteria,
+    criteria: CriteriaTable,
     # Clients
     gnb: GNBStub,
     viavi: Viavi,

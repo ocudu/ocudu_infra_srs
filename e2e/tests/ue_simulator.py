@@ -13,7 +13,7 @@ import grpc
 from google.protobuf.empty_pb2 import Empty
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.criteria import Criteria
+from retina.launcher.criteria import CriteriaTable
 from retina.launcher.public import UInt32Value
 from retina.launcher.utils import configure_artifacts
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
@@ -30,7 +30,7 @@ from .steps.test_loader import load_tests, RetinaTestDefinition
 def test_gnb(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    criteria: Criteria,
+    criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
     ue: UEStub,
     gnb: GNBStub,
@@ -53,7 +53,7 @@ def test_gnb(
 def test_2gnb(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    criteria: Criteria,
+    criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
     ue: UEStub,
     gnb_2: GNBStub,
@@ -76,7 +76,7 @@ def test_2gnb(
 def test_gnb_2core(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    criteria: Criteria,
+    criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
     ue: UEStub,
     gnb: GNBStub,
@@ -99,7 +99,7 @@ def test_gnb_2core(
 def test_cu_2du(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    criteria: Criteria,
+    criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
     ue: UEStub,
     cu: CUStub,
@@ -122,7 +122,7 @@ def test_cu_2du(
 def _ue_simulator(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    criteria: Criteria,
+    criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
     ue: UEStub,
     fivegc_array: Sequence[FiveGCStub],

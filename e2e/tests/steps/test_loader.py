@@ -13,6 +13,8 @@ import jsonschema
 import pytest
 import yaml
 
+from .. import criterias as _
+
 _TEST_DEFINITION_SCHEMA: Dict = {
     "$defs": {
         "item_config": {
@@ -38,7 +40,7 @@ _TEST_DEFINITION_SCHEMA: Dict = {
         "template": {"type": "string"},
         "request": {"type": "string"},
         "feature_ids": {"type": "array", "items": {"type": "string"}},
-        "criteria": {"type": "object", "additionalProperties": {"type": "number"}},
+        "criteria": {"type": "object", "additionalProperties": {}},
         "ue": {"$ref": "#/$defs/node_type_definition"},
         "cu": {"$ref": "#/$defs/node_type_definition"},
         "du": {"$ref": "#/$defs/node_type_definition"},

@@ -8,134 +8,175 @@ Pass/fail criteria management for test validation.
 import logging
 import operator
 import sys
-from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional
+from abc import ABC, abstractmethod
+from typing import Any, Callable, ClassVar, Dict, final, List, Sequence
 
 import pytest
 from rich.console import Console
 from rich.table import Table
 
+_UNSET = object()
 
-@dataclass
-class _CriteriaDefinition:
-    name: str
-    callback: Callable
-    operator_method: Callable
-    expected: Optional[float] = None
-    _result: Optional[float] = None
+_OPERATOR_SYMBOLS = {
+    operator.lt: "<",
+    operator.le: "<=",
+    operator.eq: "==",
+    operator.ne: "!=",
+    operator.gt: ">",
+    operator.ge: ">=",
+}
+
+
+def _number_to_str(value: Any) -> str:
+    if isinstance(value, bool):
+        return "yes" if value else "no"
+    if not isinstance(value, (int, float)):
+        return str(value)
+    if value in (float("inf"), float("-inf")):
+        return "∞" if value > 0 else "-∞"
+    for threshold, suffix in ((1_000_000_000, "G"), (1_000_000, "M"), (1_000, "K")):
+        if value >= threshold:
+            return f"{value / threshold:.1f}{suffix}"
+    return f"{value:.1f}"
+
+
+class Criteria(ABC):  # pylint: disable=too-few-public-methods
+    """Base class for pass/fail criteria definitions."""
+
+    def __init__(self, table: "CriteriaTable", stub_array: Sequence) -> None:
+        self._stub_array = stub_array
+        self._input: Any = None
+        self.__result: Any = _UNSET
+        table.register(self)
+
+    @final
+    @property
+    def criteria_id(self) -> str:
+        """Unique criteria ID derived from the class qualified name."""
+        return type(self).__qualname__
+
+    @final
+    @property
+    def name(self) -> str:
+        """Human-readable name derived from the class docstring."""
+        return type(self).__doc__ or ""
+
+    @property
+    def operator_method(self) -> Callable:
+        """Comparison operator; defaults to eq. Override as a class attribute."""
+        return operator.eq
+
+    @property
+    def expected(self) -> Any:
+        """Expected value for comparison, derived from the configured input."""
+        return self._input
 
     @property
     def expected_str(self) -> str:
-        """Return formatted string representation of expected value with operator."""
-        if self.expected is None:
-            return "?"
-        operator_str = {
-            operator.lt: "<",
-            operator.le: "<=",
-            operator.eq: "==",
-            operator.ne: "!=",
-            operator.gt: ">",
-            operator.ge: ">=",
-        }.get(self.operator_method, "?")
-        return f"{operator_str} {self._number_to_str(self.expected)}"
+        """Formatted string representation of the expected value with its operator symbol."""
+        return f"{_OPERATOR_SYMBOLS.get(self.operator_method, '?')} {_number_to_str(self.expected)}"
 
+    @final
     @property
-    def result(self) -> float:
-        """Return the result value, computing it if not already cached."""
-        if self._result is None:
-            self._result = self.callback()
-            if self._result is None:
-                self._result = 0
-        return self._result
+    def result(self) -> Any:
+        """Lazily computed and cached result of callback()."""
+        if self.__result is _UNSET:
+            self.__result = self.callback()
+        return self.__result
 
-    @property
-    def result_str(self) -> str:
-        """Return formatted string representation of the result value."""
-        return self._number_to_str(self.result)
+    @final
+    def configure(self, config: Any) -> None:
+        """Store the input config passed via CriteriaTable.add_criteria."""
+        self._input = config
 
-    def is_requested(self) -> bool:
-        """Check if this criteria has been requested (has an expected value)."""
-        return self.expected is not None
-
+    @final
     def is_ok(self) -> bool:
-        """Check if the result meets the expected criteria."""
-        if self.expected is None:
-            return False
+        """Return True if result satisfies operator_method(result, expected)."""
         return self.operator_method(self.result, self.expected)
 
-    @staticmethod
-    def _number_to_str(value: float) -> str:
-        if value == float("inf"):
-            return "∞"
-        if value == float("-inf"):
-            return "-∞"
-        if value >= 1_000_000_000:
-            return f"{value / 1_000_000_000:.1f}G"
-        if value >= 1_000_000:
-            return f"{value / 1_000_000:.1f}M"
-        if value >= 1_000:
-            return f"{value / 1_000:.1f}K"
-        return f"{value:.1f}"
+    @abstractmethod
+    def callback(self) -> Any:
+        """Compute the result using self._array and optionally self._input."""
 
 
-class Criteria:
+class CriteriaTable:
     """Manage and validate test pass/fail criteria."""
 
     def __init__(self, capsys: pytest.CaptureFixture[str]):
-        self._criteria_dict: Dict[str, _CriteriaDefinition] = {}
-        self._criteria_order: List[str] = []
+        self._criteria: Dict[str, Criteria] = {}
+        self._order: List[str] = []
         self._capsys = capsys
 
-    def register_available_criteria(self, criteria_id: str, name: str, callback: Callable, operator_method: Callable):
-        """Register a new criteria that can be validated."""
-        if criteria_id in self._criteria_dict:
-            raise ValueError(f"{criteria_id} criteria already registered")
-        self._criteria_dict[criteria_id] = _CriteriaDefinition(
-            name=name, callback=callback, operator_method=operator_method
-        )
+    def register(self, criteria: Criteria) -> None:
+        """Register a Criteria instance; called automatically from Criteria.__init__."""
+        if criteria.criteria_id in self._criteria:
+            raise ValueError(f"{criteria.criteria_id} criteria already registered")
+        self._criteria[criteria.criteria_id] = criteria
 
-    def add_criteria(self, criteria_id: str, expected_value: float):
-        """Add pass/fail criteria with operator and expected value."""
-        if criteria_id not in self._criteria_dict:
+    def add_criteria(self, criteria_id: str, config: Any) -> None:
+        """Activate a registered criteria by supplying its expected input config."""
+        if criteria_id not in self._criteria:
             raise KeyError(f"{criteria_id} not registered")
-        self._criteria_dict[criteria_id].expected = expected_value
-        self._criteria_order.append(criteria_id)
+        self._criteria[criteria_id].configure(config)
+        self._order.append(criteria_id)
 
-    def validate(self):
-        """
-        Create a table with the results
-        """
+    def validate(self) -> None:
+        """Build and log the pass/fail results table, failing the test if any criteria failed."""
         table = Table(title="Pass/Fail Criteria")
-
         table.add_column("Criteria Name", justify="left", style="cyan", no_wrap=True)
         table.add_column("Result", justify="right", style="magenta")
         table.add_column("Expected", justify="right", style="magenta")
         table.add_column("Pass", justify="center", style="magenta")
 
         failures = []
-        for criteria_id in self._criteria_order:
-            criteria = self._criteria_dict[criteria_id]
-            if criteria.is_requested():  # It has been added
-                row_style = "green" if criteria.is_ok() else "red"
-                table.add_row(
-                    criteria.name,
-                    criteria.result_str,
-                    criteria.expected_str,
-                    "✅" if criteria.is_ok() else "❌",
-                    style=row_style,
-                )
-                if not criteria.is_ok():
-                    failures.append(criteria.name)
+        for criteria_id in self._order:
+            c = self._criteria[criteria_id]
+            ok = c.is_ok()
+            table.add_row(
+                c.name,
+                _number_to_str(c.result),
+                c.expected_str,
+                "✅" if ok else "❌",
+                style="green" if ok else "red",
+            )
+            if not ok:
+                failures.append(c.name)
 
         console = Console()
-        # Capture the table to print it in the console
         with console.capture() as capture:
             console.print(table)
-        output = "\n" + capture.get()
-
-        # Disable temporarily the capsys to print the table
         with self._capsys.disabled():
-            logging.info(output)
+            logging.info("\n%s", capture.get())
 
         if sys.exc_info()[0] is None and failures:
             pytest.fail("Test didn't pass the following criteria: " + ", ".join(failures))
+
+
+class DuCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for DU/gNB pass/fail criteria definitions."""
+
+    subclasses: ClassVar[List[type]] = []
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        DuCriteria.subclasses.append(cls)
+
+
+class FiveGcCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for 5GC pass/fail criteria definitions."""
+
+    subclasses: ClassVar[List[type]] = []
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        FiveGcCriteria.subclasses.append(cls)
+
+
+class ViaviCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for Viavi pass/fail criteria definitions."""
+
+    subclasses: ClassVar[List[type]] = []
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        ViaviCriteria.subclasses.append(cls)

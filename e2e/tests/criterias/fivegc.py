@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+"""
+5GC pass/fail criteria definitions.
+"""
+
+import operator
+
+from google.protobuf.empty_pb2 import Empty
+from retina.launcher.criteria import FiveGcCriteria
+
+# pylint: disable=invalid-name,missing-function-docstring,too-few-public-methods
+
+
+class nof_pdu_session_establishment_accept_eq(FiveGcCriteria):
+    """PDU Session Establishment Accept"""
+
+    operator_method = operator.eq
+
+    def callback(self):
+        return self._stub_array.GetMetrics(Empty()).nof_pdu_session_establishment_accept
+
+
+class nof_pdu_session_establishment_accept_geq(FiveGcCriteria):
+    """PDU Session Establishment Accept"""
+
+    operator_method = operator.ge
+
+    def callback(self):
+        return self._stub_array.GetMetrics(Empty()).nof_pdu_session_establishment_accept
+
+
+class nof_5gs_nas_service_accept_eq(FiveGcCriteria):
+    """5GS NAS Service Accept"""
+
+    operator_method = operator.eq
+
+    def callback(self):
+        return self._stub_array.GetMetrics(Empty()).nof_5gs_nas_service_accept
+
+
+class nof_ng_paging_eq(FiveGcCriteria):
+    """NG Paging"""
+
+    operator_method = operator.eq
+
+    def callback(self):
+        return self._stub_array.GetMetrics(Empty()).nof_ng_paging

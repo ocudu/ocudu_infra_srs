@@ -6,11 +6,9 @@ Fixtures to use from tests
 """
 
 import logging
-import operator
 from contextlib import suppress
 from pathlib import Path
-from statistics import mean
-from typing import Callable, Dict, Generator, Optional, Sequence, Tuple
+from typing import Callable, Dict, Generator, Optional, Tuple
 
 import grpc
 import pytest
@@ -31,7 +29,7 @@ from retina.protocol.ue_pb2_grpc import UEStub
 from retina.viavi.client import CampaignStatusEnum, Viavi
 
 from retina.launcher.artifacts import RetinaTestData, TEST_SUCCESS_FIELD
-from retina.launcher.criteria import Criteria
+from retina.launcher.criteria import CriteriaTable, DuCriteria, FiveGcCriteria, ViaviCriteria
 from retina.launcher.reporter import create_report
 
 
@@ -159,14 +157,15 @@ def _generate_gnb_fixture(number_of_gnbs: int) -> Callable:
     @pytest.fixture
     # pylint: disable=invalid-name
     def gnb_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
     ) -> Generator[Tuple[GNBStub, ...], None, None]:
         """
         Return multiple GNBs
         """
         try:
             gnb_stub_array = tuple(retina_manager.get_gnb(index) for index in range(number_of_gnbs))
-            _register_du_criteria(criteria, gnb_stub_array)
+            for cls in DuCriteria.subclasses:
+                cls(criteria, gnb_stub_array)
             yield gnb_stub_array
         finally:
             with suppress(NameError, UnboundLocalError):
@@ -182,14 +181,15 @@ for n in range(1, 64 + 1):
 
 @pytest.fixture
 def gnb(
-    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
 ) -> Generator[GNBStub, None, None]:
     """
     Return a GNB
     """
     try:
         gnb_stub = retina_manager.get_gnb()
-        _register_du_criteria(criteria, (gnb_stub,))
+        for cls in DuCriteria.subclasses:
+            cls(criteria, (gnb_stub,))
         yield gnb_stub
     finally:
         with suppress(NameError, UnboundLocalError):
@@ -212,14 +212,15 @@ def cu(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Genera
 @pytest.fixture
 # pylint: disable=invalid-name
 def du(
-    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
 ) -> Generator[DUStub, None, None]:
     """
     Return an DU
     """
     try:
         du_stub = retina_manager.get_du()
-        _register_du_criteria(criteria, (du_stub,))
+        for cls in DuCriteria.subclasses:
+            cls(criteria, (du_stub,))
         yield du_stub
     finally:
         with suppress(NameError, UnboundLocalError):
@@ -230,14 +231,15 @@ def _generate_du_fixture(number_of_dus: int) -> Callable:
     @pytest.fixture
     # pylint: disable=invalid-name
     def du_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
     ) -> Generator[Tuple[DUStub, ...], None, None]:
         """
         Return multiple DUs
         """
         try:
             du_stub_array = tuple(retina_manager.get_du(index) for index in range(number_of_dus))
-            _register_du_criteria(criteria, du_stub_array)
+            for cls in DuCriteria.subclasses:
+                cls(criteria, du_stub_array)
             yield du_stub_array
         finally:
             with suppress(NameError, UnboundLocalError):
@@ -251,194 +253,17 @@ for n in range(1, 64 + 1):
     globals()[f"du_{n}"] = _generate_du_fixture(n)
 
 
-def _register_du_criteria(
-    criteria: Criteria, du_or_gnb_array: Sequence[RanStub]
-):  # pylint: disable=redefined-outer-name
-
-    for field, name, op, agg in (
-        ("dl_bitrate", "DL bitrate", operator.gt, mean),
-        ("ul_bitrate", "UL bitrate", operator.gt, mean),
-        ("nof_ko_dl", "DL KOs", operator.le, sum),
-        ("nof_ko_ul", "UL KOs", operator.le, sum),
-        ("max_late_dl_harqs", "Late DL HARQs", operator.le, sum),
-        ("max_late_ul_harqs", "Late UL HARQs", operator.le, sum),
-        ("nof_error_indications", "Error indications", operator.le, sum),
-        ("nof_pucch_f0f1_invalid_harqs", "PUCCH f0/f1 HARQs", operator.le, sum),
-    ):
-        criteria.register_available_criteria(
-            field,
-            name,
-            lambda f=field, a=agg: a(getattr(s.GetMetrics(Empty()), f) for s in du_or_gnb_array),
-            op,
-        )
-
-    criteria.register_available_criteria(
-        "nof_reestablishments_eq",
-        "Reestablishments",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).nof_reestablishments_complete for gnb_stub in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "nof_reestablishments_ge",
-        "Reestablishments",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).nof_reestablishments_complete for gnb_stub in du_or_gnb_array),
-        operator.ge,
-    )
-    criteria.register_available_criteria(
-        "nof_handovers_eq",
-        "Handovers",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).nof_handovers for gnb_stub in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "nof_handovers_ge",
-        "Handovers",
-        lambda: sum(gnb_stub.GetMetrics(Empty()).nof_handovers for gnb_stub in du_or_gnb_array),
-        operator.ge,
-    )
-    criteria.register_available_criteria(
-        "errors",
-        "Errors",
-        lambda: sum(
-            gnb_stub.Stop.with_call(UInt32Value(value=15), timeout=15)[0].error_count for gnb_stub in du_or_gnb_array
-        ),
-        operator.le,
-    )
-    criteria.register_available_criteria(
-        "warnings",
-        "Warnings",
-        lambda: sum(
-            gnb_stub.Stop.with_call(UInt32Value(value=15), timeout=15)[0].warning_count for gnb_stub in du_or_gnb_array
-        ),
-        operator.le,
-    )
-    criteria.register_available_criteria(
-        "prach_configuration_index_eq",
-        "PRACH Config Index",
-        lambda: sum(s.GetMetrics(Empty()).prach_configuration_index for s in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "transform_precoder_eq",
-        "Transform Precoder",
-        lambda: sum(s.GetMetrics(Empty()).transform_precoder for s in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "c_srs_eq",
-        "c-SRS",
-        lambda: sum(s.GetMetrics(Empty()).c_srs for s in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "b_srs_eq",
-        "b-SRS",
-        lambda: sum(s.GetMetrics(Empty()).b_srs for s in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "t312_eq",
-        "T312",
-        lambda: sum(s.GetMetrics(Empty()).t312 for s in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "drx_long_cycle_eq",
-        "DRX Long Cycle",
-        lambda: sum(s.GetMetrics(Empty()).drx_long_cycle_start_offset for s in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "nof_paging_eq",
-        "Paging messages",
-        lambda: sum(s.GetMetrics(Empty()).nof_paging_messages for s in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "nof_rrc_resume_request_eq",
-        "RRC Resume Request",
-        lambda: sum(s.GetMetrics(Empty()).nof_rrc_resume_request for s in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "nof_rrc_resume_request_geq",
-        "RRC Resume Request",
-        lambda: sum(s.GetMetrics(Empty()).nof_rrc_resume_request for s in du_or_gnb_array),
-        operator.ge,
-    )
-    criteria.register_available_criteria(
-        "nof_rrc_suspend_eq",
-        "RRC Suspend (suspendConfig)",
-        lambda: sum(s.GetMetrics(Empty()).nof_rrc_suspend for s in du_or_gnb_array),
-        operator.eq,
-    )
-    criteria.register_available_criteria(
-        "nof_rrc_suspend_geq",
-        "RRC Suspend (suspendConfig)",
-        lambda: sum(s.GetMetrics(Empty()).nof_rrc_suspend for s in du_or_gnb_array),
-        operator.ge,
-    )
-    for _sib_n, _field in (
-        (1, "nof_sib1_transmissions"),
-        (2, "nof_sib2_transmissions"),
-        (3, "nof_sib3_transmissions"),
-        (4, "nof_sib4_transmissions"),
-        (5, "nof_sib5_transmissions"),
-        (8, "nof_sib8_transmissions"),
-    ):
-        criteria.register_available_criteria(
-            f"nof_sib{_sib_n}_geq",
-            f"SIB{_sib_n} transmissions",
-            lambda f=_field: sum(getattr(s.GetMetrics(Empty()), f) for s in du_or_gnb_array),
-            operator.ge,
-        )
-    criteria.register_available_criteria(
-        "dl_avg_ri_geq",
-        "DL avg RI",
-        lambda: mean(s.GetMetrics(Empty()).dl_avg_ri for s in du_or_gnb_array),
-        operator.ge,
-    )
-    criteria.register_available_criteria(
-        "ul_avg_ri_geq",
-        "UL avg RI",
-        lambda: mean(s.GetMetrics(Empty()).ul_avg_ri for s in du_or_gnb_array),
-        operator.ge,
-    )
-
-
 @pytest.fixture
 def fivegc(
-    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
 ) -> Generator[FiveGCStub, None, None]:
     """
     Return a 5GC
     """
     try:
         fivegc_stub = retina_manager.get_5gc()
-        criteria.register_available_criteria(
-            "nof_pdu_session_establishment_accept_eq",
-            "PDU Session Establishment Accept",
-            lambda: fivegc_stub.GetMetrics(Empty()).nof_pdu_session_establishment_accept,
-            operator.eq,
-        )
-        criteria.register_available_criteria(
-            "nof_pdu_session_establishment_accept_geq",
-            "PDU Session Establishment Accept",
-            lambda: fivegc_stub.GetMetrics(Empty()).nof_pdu_session_establishment_accept,
-            operator.ge,
-        )
-        criteria.register_available_criteria(
-            "nof_5gs_nas_service_accept_eq",
-            "5GS NAS Service Accept",
-            lambda: fivegc_stub.GetMetrics(Empty()).nof_5gs_nas_service_accept,
-            operator.eq,
-        )
-        criteria.register_available_criteria(
-            "nof_ng_paging_eq",
-            "NG Paging",
-            lambda: fivegc_stub.GetMetrics(Empty()).nof_ng_paging,
-            operator.eq,
-        )
+        for cls in FiveGcCriteria.subclasses:
+            cls(criteria, fivegc_stub)
         yield fivegc_stub
     finally:
         with suppress(NameError, UnboundLocalError):
@@ -529,7 +354,7 @@ def _log_metrics(
 
 @pytest.fixture
 def viavi(
-    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: Criteria
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
 ) -> Generator[Viavi, None, None]:  # pylint: disable=too-many-nested-blocks
     """
     Return a Viavi Controller
@@ -571,31 +396,8 @@ def viavi(
             viavi_client.delete_tma()
         viavi_client.create_tma()
 
-        # Register pass fail criteria
-        criteria.register_available_criteria(
-            "viavi_nof_ko_dl",
-            "DL KOs (viavi)",
-            lambda: viavi_client.get_test_kpis().dl_data.num_tbs_errors,
-            operator.le,
-        )
-        criteria.register_available_criteria(
-            "viavi_nof_ko_ul",
-            "UL KOs (viavi)",
-            lambda: viavi_client.get_test_kpis().ul_data.num_tbs_nack,
-            operator.le,
-        )
-        criteria.register_available_criteria(
-            "viavi_warnings",
-            "Viavi Warnings",
-            lambda: len(viavi_client.get_test_kpis().warning_array),
-            operator.lt,
-        )
-        criteria.register_available_criteria(
-            "viavi_procedure_table",
-            "Procedure table",
-            lambda: viavi_client.get_test_kpis().get_number_of_procedure_failures(["authentication"]),
-            operator.eq,
-        )
+        for cls in ViaviCriteria.subclasses:
+            cls(criteria, viavi_client)
 
         yield viavi_client
     finally:
@@ -611,8 +413,8 @@ def viavi(
 
 
 @pytest.fixture
-def criteria(capsys: pytest.CaptureFixture[str]) -> Generator[Criteria, None, None]:
+def criteria(capsys: pytest.CaptureFixture[str]) -> Generator[CriteriaTable, None, None]:
     """
     Return a Criteria instance for managing test pass/fail criteria.
     """
-    yield Criteria(capsys=capsys)
+    yield CriteriaTable(capsys=capsys)
