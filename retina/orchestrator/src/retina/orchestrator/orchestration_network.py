@@ -518,7 +518,8 @@ class OrchestratorManager:
             if binary_inst.is_executable:
                 check_binary_can_exec(local_path)
 
-            msg = f'Copying local folder "{local_path}" to "{remote_path}" {pod_name}'
+            local_size = os.path.getsize(local_path) if os.path.exists(local_path) else 0
+            msg = f'Copying local folder "{local_path}" ({local_size} bytes) to "{remote_path}" {pod_name}'
             logging.info(msg)
             # Copy binary
             self.k_server.copy_to_pod(local_path, remote_path, pod_name, DEFAULT_NAMESPACE)

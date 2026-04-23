@@ -175,8 +175,11 @@ def parse_request(request_path: str, max_name_size=MAX_NAME_SIZE) -> List[Dict]:
 
 def check_binary_can_exec(binary_path: str):
     """
-    Check if binary has execution permissions
+    Check if binary has execution permissions and is not empty (guards against truncated downloads).
     """
+    size = os.path.getsize(binary_path)
+    if size == 0:
+        raise RuntimeError(f"{binary_path} is empty (0 bytes) — artifact download may have been truncated.")
     if not os.access(binary_path, os.X_OK):
         raise RuntimeError(f"{binary_path} hasn't execution permissions.")
 
