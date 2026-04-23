@@ -137,15 +137,32 @@ def archive_artifact_folder(
                         return
 
 
-def download_archived_artifact(stub: RanStub, folder_to_unpack_path: str):
+def download_archived_artifact(stub: RanStub, folder_to_unpack_path: str, max_attempts: int = 3):
     """
-    Request archived artifacts to a stub and unpack them
+    Request archived artifacts to a stub and unpack them.
+    Retries up to max_attempts times on download or extraction failure.
     """
     folder_to_unpack = Path(folder_to_unpack_path)
-    if not folder_to_unpack.exists():
-        folder_to_unpack.mkdir(parents=True, exist_ok=False)
-    with tempfile.NamedTemporaryFile() as tmp_file:
-        for chunk in stub.DownloadArtifacts(Empty()):
-            tmp_file.write(chunk.value)
-        tmp_file.flush()
-        shutil.unpack_archive(tmp_file.name, str(folder_to_unpack), _ARCHIVE_FORMAT, filter="data")
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            folder_to_unpack.mkdir(parents=True, exist_ok=True)
+            with tempfile.NamedTemporaryFile() as tmp_file:
+                for chunk in stub.DownloadArtifacts(Empty()):
+                    tmp_file.write(chunk.value)
+                tmp_file.flush()
+                downloaded_bytes = tmp_file.tell()
+                if downloaded_bytes == 0:
+                    raise RuntimeError("Downloaded artifact archive is empty — gRPC stream may have been interrupted")
+                logging.info("Artifact archive downloaded: %d bytes (attempt %d/%d)", downloaded_bytes, attempt, max_attempts)
+                shutil.unpack_archive(tmp_file.name, str(folder_to_unpack), _ARCHIVE_FORMAT, filter="data")
+                return
+        except Exception as err:  # pylint: disable=broad-except
+            if attempt < max_attempts:
+                logging.warning(
+                    "Artifact download attempt %d/%d failed (%s). Retrying...", attempt, max_attempts, err
+                )
+                shutil.rmtree(folder_to_unpack, ignore_errors=True)
+            else:
+                logging.error("Artifact download failed after %d attempts: %s", max_attempts, err)
+                raise
