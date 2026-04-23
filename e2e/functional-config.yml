@@ -12,23 +12,6 @@ spec:
       default: dev
       description: "OCUDU reference branch or tag."
 ---
-.inter_du_ho:
-  stage: mobility
-  extends: .functional_e2e
-  rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
-        - e2e/*.yml
-        - .gitlab-ci-stages.yml
-      when: manual
-      allow_failure: true
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-  variables:
-    KEYWORDS: "functional/mobility/.inter_du_ho::"
-    TESTBED: dynamic
-
 inter_ru_ho:
   stage: mobility
   extends: .functional_e2e
@@ -146,40 +129,6 @@ udp_bi:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: "functional/multiue/udp_bi::"
-    TESTBED: dynamic
-
-.mocn:
-  stage: singleue
-  extends: .functional_e2e
-  rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
-        - e2e/*.yml
-        - .gitlab-ci-stages.yml
-      when: manual
-      allow_failure: true
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-  variables:
-    KEYWORDS: "functional/singleue/.mocn::"
-    TESTBED: dynamic
-
-.tdd_mimo:
-  stage: singleue
-  extends: .functional_e2e
-  rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
-        - e2e/*.yml
-        - .gitlab-ci-stages.yml
-      when: manual
-      allow_failure: true
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-  variables:
-    KEYWORDS: "functional/singleue/.tdd_mimo::"
     TESTBED: dynamic
 
 cmas:
