@@ -19,7 +19,6 @@ inter_ru_ho: &base_config
     dl_bitrate: 0
     ul_bitrate: 0
     nof_ko_dl: 0
-    nof_ko_ul: 0
     nof_reestablishments_eq: 0
     nof_pdu_session_establishment_accept_eq: *nof_ue
     nof_error_indications: 0
