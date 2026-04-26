@@ -21,7 +21,7 @@ baseline: &base_config
     dl_bitrate: 0
     ul_bitrate: 0
     nof_ko_dl: 0
-    nof_ko_ul: 0
+    nof_ko_ul: 5 # allow some KOs due to SR false alarms during UE reconfiguration
     nof_reestablishments_eq: 0
     nof_pdu_session_establishment_accept_eq: *nof_ue
     nof_handovers_ge: 20 # calculated based on the test_duration
