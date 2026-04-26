@@ -26,6 +26,7 @@ baseline: &base_config
     nof_ko_dl: 0
     nof_ko_ul: 0
     nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 512
     nof_handovers_eq: 0
     max_late_dl_harqs: 0
     max_late_ul_harqs: 0
