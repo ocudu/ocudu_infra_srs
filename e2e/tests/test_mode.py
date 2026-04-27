@@ -279,9 +279,7 @@ def _test_ru(
                     "pcap": False,
                     "nof_antennas_dl": nof_ant,
                     "nof_antennas_ul": nof_ant,
-                    "warning_extra_regex": (
-                        (r"(?!.*" + r")(?!.*".join(warning_allowlist) + r")") if warning_allowlist else ""
-                    ),
+                    "warning_allowlist": warning_allowlist,
                 },
                 "templates": {
                     "cu": str(Path(__file__).joinpath(f"../test_mode/{ru_config}").resolve()),
