@@ -19,9 +19,8 @@ inter_ru_ho:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -36,9 +35,8 @@ intra_ru_ho:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -53,9 +51,8 @@ reestablishment:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -70,9 +67,8 @@ attach_dettach:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -87,9 +83,8 @@ mobility:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -104,9 +99,8 @@ ping:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -121,9 +115,8 @@ udp_bi:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -138,9 +131,8 @@ cmas:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -155,9 +147,8 @@ fdd_siso:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -172,9 +163,8 @@ gbr_vonr:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -189,9 +179,8 @@ phy_configs:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -206,9 +195,8 @@ power_control:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -223,9 +211,8 @@ slicing:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -240,9 +227,8 @@ tdd_siso:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/

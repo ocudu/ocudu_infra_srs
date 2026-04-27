@@ -67,9 +67,8 @@ class Job:
     - if: $ON_MR
       changes:
         - e2e/tests/**/*
-        - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
-        - .gitlab-ci-stages.yml
+        - retina/**/*
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{self.pipeline_name}/

@@ -97,8 +97,7 @@ e2e request validation:
 dynamically generated pipeline validation:
   extends: .static
   rules:
-    - &on_mr_suites_changed
-      if: $ON_MR
+    - if: $ON_MR
       changes:
         - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
@@ -139,7 +138,12 @@ zmq driver:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - <<: *on_mr_suites_changed
+    - &on_mr_e2e_pipeline
+      if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
       when: manual
       allow_failure: true
 
@@ -165,7 +169,7 @@ release with deb info cached:
   extends: build
   retry: 2
   rules:
-    - <<: *on_mr_suites_changed
+    - <<: *on_mr_e2e_pipeline
       when: manual
       allow_failure: true
   variables:
@@ -240,7 +244,7 @@ dpdk rtsan avx512 cached:
   extends: build
   retry: 2
   rules:
-    - <<: *on_mr_suites_changed
+    - <<: *on_mr_e2e_pipeline
       when: manual
       allow_failure: true
   variables:
