@@ -25,7 +25,7 @@ inter_ru_ho:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/mobility/inter_ru_ho::"
+    KEYWORDS: "functional.mobility.inter_ru_ho."
     TESTBED: dynamic
 
 intra_ru_ho:
@@ -41,7 +41,7 @@ intra_ru_ho:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/mobility/intra_ru_ho::"
+    KEYWORDS: "functional.mobility.intra_ru_ho."
     TESTBED: dynamic
 
 reestablishment:
@@ -57,7 +57,7 @@ reestablishment:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/mobility/reestablishment::"
+    KEYWORDS: "functional.mobility.reestablishment."
     TESTBED: dynamic
 
 attach_dettach:
@@ -73,7 +73,7 @@ attach_dettach:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/multiue/attach_dettach::"
+    KEYWORDS: "functional.multiue.attach_dettach."
     TESTBED: dynamic
 
 mobility:
@@ -89,7 +89,7 @@ mobility:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/multiue/mobility::"
+    KEYWORDS: "functional.multiue.mobility."
     TESTBED: dynamic
 
 ping:
@@ -105,7 +105,7 @@ ping:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/multiue/ping::"
+    KEYWORDS: "functional.multiue.ping."
     TESTBED: dynamic
 
 udp_bi:
@@ -121,7 +121,7 @@ udp_bi:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/multiue/udp_bi::"
+    KEYWORDS: "functional.multiue.udp_bi."
     TESTBED: dynamic
 
 cmas:
@@ -137,7 +137,7 @@ cmas:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/singleue/cmas::"
+    KEYWORDS: "functional.singleue.cmas."
     TESTBED: dynamic
 
 fdd_siso:
@@ -153,7 +153,7 @@ fdd_siso:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/singleue/fdd_siso::"
+    KEYWORDS: "functional.singleue.fdd_siso."
     TESTBED: dynamic
 
 gbr_vonr:
@@ -169,7 +169,7 @@ gbr_vonr:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/singleue/gbr_vonr::"
+    KEYWORDS: "functional.singleue.gbr_vonr."
     TESTBED: dynamic
 
 phy_configs:
@@ -185,7 +185,7 @@ phy_configs:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/singleue/phy_configs::"
+    KEYWORDS: "functional.singleue.phy_configs."
     TESTBED: dynamic
 
 power_control:
@@ -201,7 +201,7 @@ power_control:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/singleue/power_control::"
+    KEYWORDS: "functional.singleue.power_control."
     TESTBED: dynamic
 
 slicing:
@@ -217,7 +217,7 @@ slicing:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/singleue/slicing::"
+    KEYWORDS: "functional.singleue.slicing."
     TESTBED: dynamic
 
 tdd_mimo:
@@ -233,7 +233,7 @@ tdd_mimo:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/singleue/tdd_mimo::"
+    KEYWORDS: "functional.singleue.tdd_mimo."
     TESTBED: dynamic
 
 tdd_siso:
@@ -249,5 +249,5 @@ tdd_siso:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional/singleue/tdd_siso::"
+    KEYWORDS: "functional.singleue.tdd_siso."
     TESTBED: dynamic

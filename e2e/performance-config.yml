@@ -25,5 +25,5 @@ paging:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
   variables:
-    KEYWORDS: "performance/mobility/paging::"
+    KEYWORDS: "performance.mobility.paging."
     TESTBED: dynamic

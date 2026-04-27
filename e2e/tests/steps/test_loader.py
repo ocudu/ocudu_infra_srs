@@ -147,7 +147,7 @@ def _parse_test_definitions(template_name: str) -> Generator[RetinaTestDefinitio
         for test_name, test_declaration in test_definition_raw.items():
             if test_declaration.get("template", "") == template_name:
                 file_path = test_definition_file.relative_to(suites_dir).with_suffix("")
-                test_id = f"{str(file_path)}::{test_name}"
+                test_id = f"{str(file_path).replace('/', '.')}.{test_name}"
                 yield RetinaTestDefinition.from_dict(test_id, test_declaration)
 
 
