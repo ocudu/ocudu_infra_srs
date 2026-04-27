@@ -265,7 +265,7 @@ def configure_test_parameters(
                 "pucch_formats": pucch_formats,
                 "pdsch_interleaving_bundle_size": pdsch_interleaving_bundle_size,
                 "slices": slices if slices is not None else [],
-                "warning_allowlist": warning_allowlist,
+                "warning_allowlist": warning_allowlist if warning_allowlist is not None else [],
             },
         },
         "du": {
