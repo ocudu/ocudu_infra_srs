@@ -144,6 +144,9 @@ def download_archived_artifact(stub: RanStub, folder_to_unpack_path: str, max_at
     """
     folder_to_unpack = Path(folder_to_unpack_path)
 
+    if not folder_to_unpack.exists():
+        folder_to_unpack.mkdir(parents=True, exist_ok=False)
+
     for attempt in range(1, max_attempts + 1):
         try:
             folder_to_unpack.mkdir(parents=True, exist_ok=True)
