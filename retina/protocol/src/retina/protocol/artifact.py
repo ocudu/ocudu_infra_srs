@@ -157,14 +157,14 @@ def download_archived_artifact(stub: RanStub, folder_to_unpack_path: str, max_at
                 downloaded_bytes = tmp_file.tell()
                 if downloaded_bytes == 0:
                     raise RuntimeError("Downloaded artifact archive is empty — gRPC stream may have been interrupted")
-                logging.info("Artifact archive downloaded: %d bytes (attempt %d/%d)", downloaded_bytes, attempt, max_attempts)
+                logging.info(
+                    "Artifact archive downloaded: %d bytes (attempt %d/%d)", downloaded_bytes, attempt, max_attempts
+                )
                 shutil.unpack_archive(tmp_file.name, str(folder_to_unpack), _ARCHIVE_FORMAT, filter="data")
                 return
         except Exception as err:  # pylint: disable=broad-except
             if attempt < max_attempts:
-                logging.warning(
-                    "Artifact download attempt %d/%d failed (%s). Retrying...", attempt, max_attempts, err
-                )
+                logging.warning("Artifact download attempt %d/%d failed (%s). Retrying...", attempt, max_attempts, err)
                 shutil.rmtree(folder_to_unpack, ignore_errors=True)
             else:
                 logging.error("Artifact download failed after %d attempts: %s", max_attempts, err)
