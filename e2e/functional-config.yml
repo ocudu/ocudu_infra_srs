@@ -220,6 +220,22 @@ slicing:
     KEYWORDS: "functional/singleue/slicing::"
     TESTBED: dynamic
 
+tdd_mimo:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional/singleue/tdd_mimo::"
+    TESTBED: dynamic
+
 tdd_siso:
   stage: singleue
   extends: .functional_e2e

@@ -1,0 +1,61 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# TDD MIMO 2x2 configuration test
+mimo_2x2: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      nof_antennas: 2
+      pdcch_decode_threshold: 0
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, srs_wideband.yml]
+    parameters:
+      nof_antennas: 2
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-MIMO-16-3, MVP-FUNC-MIMO-16-4, MVP-FUNC-PHY-16-10]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    dl_avg_ri_geq: 1.5
+    ul_avg_ri_geq: 1.5
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+
+# TDD MIMO 4x4 configuration test
+mimo_4x4:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      nof_antennas: 4
+      pdcch_decode_threshold: 0
+  gnb:
+    config: [cell_cfg.yml, tdd_default.yml, srs_wideband.yml]
+    parameters:
+      nof_antennas: 4
+  feature_ids: [MVP-FUNC-MIMO-16-5, MVP-FUNC-PHY-16-7]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    dl_avg_ri_geq: 3.5
+    ul_avg_ri_geq: 3.5
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
