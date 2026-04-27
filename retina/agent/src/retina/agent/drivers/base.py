@@ -233,7 +233,10 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
                 with template_path(basename, add_ext=True).open("r", encoding="utf-8") as tmp_file_descriptor:
                     content = tmp_file_descriptor.read()
             # Evaluate template
-            file_content += Template(content).render(**values) + os.linesep
+            file_content += (
+                Template(content).render(**values, report_folder=str(self.get_current_report_folder().resolve()))
+                + os.linesep
+            )
         # Remove multiple empty lines
         file_content = prefix + re.sub(r"\n\s*\n", "\n\n", file_content) + suffix
 
