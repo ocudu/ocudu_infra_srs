@@ -7,7 +7,7 @@ baseline:
   ue:
     config: [1cell_chsim.cfg, multiue_ping.cfg.jinja]
     parameters:
-      nof_sim_ues: 512
+      nof_sim_ues: &nof_ue 512
       traffic_duration_sec: 180
       staggered_traffic_start: false
       log_com_level: "debug"
@@ -24,6 +24,7 @@ baseline:
     ul_bitrate: 10.0e+3
     nof_ko_dl: 0
     nof_ko_ul: 0
+    nof_pdu_session_establishment_accept_eq: *nof_ue
     nof_reestablishments_eq: 0
     nof_handovers_eq: 0
     max_late_dl_harqs: 0
