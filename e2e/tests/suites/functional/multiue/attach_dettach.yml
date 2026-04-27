@@ -6,7 +6,7 @@ baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [1cell_chsim.cfg, attach_cycle.cfg]
+    config: [1cell.cfg, attach_cycle.cfg]
     parameters:
       nof_ue: 10
       nof_cycles: 5
