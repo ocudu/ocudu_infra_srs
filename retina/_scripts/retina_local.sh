@@ -31,6 +31,11 @@ cleanup() {
 }
 trap cleanup INT TERM
 
+if ! docker buildx version >/dev/null 2>&1; then
+    echo "Error: docker buildx is not installed. Install it using your repository manager or as a docker plugin. Check https://github.com/docker/buildx#installing" >&2
+    exit 1
+fi
+
 # Run agents
 docker compose --profile ${RETINA_PROFILE} up --detach
 docker compose --profile ${RETINA_PROFILE} logs --follow --since 0s --timestamps
