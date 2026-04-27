@@ -18,12 +18,12 @@ from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.gnb import GNBDriver
 from retina.agent.drivers.ocudu_cu import OCUDU_CU_WARNING_BODY, OcuduCu
 from retina.agent.drivers.ocudu_du import (
+    _warning_allowlist_suffix,
     OCUDU_DU_WARNING_BODY,
-    OCUDU_ERROR_HEADER,
+    OCUDU_ERROR_REGEX,
     OCUDU_WARNING_HEADER,
     OCUDU_WERROR_FOOTER,
     OcuduDu,
-    RTSAN_ERROR,
 )
 from retina.agent.features.executor import LocalExecutor, SshExecutor
 from retina.agent.features.gnb_report import transform_metrics
@@ -212,13 +212,13 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
             OCUDU_WARNING_HEADER
             + OCUDU_CU_WARNING_BODY
             + OCUDU_DU_WARNING_BODY
-            + gnb_defaults.warning_extra_regex
+            + _warning_allowlist_suffix()
             + OCUDU_WERROR_FOOTER
         )
 
     @property
     def _error_regex(self) -> str:
-        return r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
+        return OCUDU_ERROR_REGEX
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         return self._du.GetMetrics(request, context)

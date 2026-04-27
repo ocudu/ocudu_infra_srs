@@ -385,11 +385,11 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
 
     @property
     def _warning_regex(self) -> str:
-        return OCUDU_WARNING_HEADER + OCUDU_DU_WARNING_BODY + gnb_defaults.warning_extra_regex + OCUDU_WERROR_FOOTER
+        return OCUDU_WARNING_HEADER + OCUDU_DU_WARNING_BODY + _warning_allowlist_suffix() + OCUDU_WERROR_FOOTER
 
     @property
     def _error_regex(self) -> str:
-        return r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
+        return OCUDU_ERROR_REGEX
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         metrics = super().GetMetrics(request, context)
@@ -412,6 +412,13 @@ OCUDU_DU_WARNING_BODY: str = (
     r"(?!.*RAPL MSR interface is not available.)"
 )
 OCUDU_WERROR_FOOTER: str = r".*$"
+OCUDU_ERROR_REGEX: str = r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
+
+
+def _warning_allowlist_suffix() -> str:
+    if gnb_defaults.warning_allowlist:
+        return r"(?!.*" + r")(?!.*".join(gnb_defaults.warning_allowlist) + r")"
+    return ""
 
 
 class LocalOcuduDu(OcuduDu):

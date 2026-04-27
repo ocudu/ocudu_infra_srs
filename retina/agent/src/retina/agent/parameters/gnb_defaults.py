@@ -7,7 +7,7 @@ They must be lowercase and snake case because they're variables and not constant
 Must always be explicit typed.
 """
 
-from typing import TypedDict, Union
+from typing import List, TypedDict, Union
 
 from retina.agent.app.parameter_manager import convert_to_parameter_source, ParameterNamespace
 
@@ -77,7 +77,7 @@ warn_on_drop: bool = False
 enable_integrity_protection: bool = False
 enable_security_mode: bool = False
 enable_dddsu: bool = False
-warning_extra_regex: str = ""
+warning_allowlist: List[str] = []
 enable_drx: bool = False
 cu_cp_inactivity_timer: int = -1
 cu_ip: str = ""  # Keep it empty to use ip provided by testbed

@@ -252,21 +252,13 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
 
         pattern_list: Tuple = tuple(re.compile(regex, re.MULTILINE | re.DOTALL) for regex in regex_list)
 
-        # pylint: disable=too-many-nested-blocks
         try:
             all_output = ""
             for data in self._get_log_line(timeout, from_beginning):
                 all_output += data + os.linesep
-                for index, value in enumerate(result):  # Iterate over result
-                    if not value:  # If no result yet, we look for the match
-                        msg_match = re.search(pattern_list[index], all_output)
-                        if msg_match:
-                            result[index] = (
-                                msg_match.group(),
-                                *(subitem for subitem in msg_match.groups()),
-                            )
-                            if found_any or (not found_any and () not in result):
-                                return result
+                matched = _check_matches(result, pattern_list, all_output, found_any)
+                if matched is not None:
+                    return matched
             return result
         except TimeoutError:
             raise TimeoutError(
@@ -320,6 +312,19 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
 #########
 # Utils #
 #########
+
+
+def _check_matches(
+    result: List[Tuple[str, ...]], pattern_list: Tuple, all_output: str, found_any: bool
+) -> Optional[List[Tuple[str, ...]]]:
+    for index, value in enumerate(result):
+        if not value:
+            msg_match = re.search(pattern_list[index], all_output)
+            if msg_match:
+                result[index] = (msg_match.group(), *msg_match.groups())
+                if found_any or () not in result:
+                    return result
+    return None
 
 
 def _extract_uhd(filepath: str) -> Tuple[int, int, int]:
