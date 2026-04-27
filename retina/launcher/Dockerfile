@@ -11,7 +11,7 @@ RUN apk add build-base linux-headers libffi-dev
 
 # Install kubectl
 WORKDIR /tmp
-ARG KUBECTL_VERSION=v1.26.5
+ARG KUBECTL_VERSION=v1.35.4
 RUN apk add --no-cache curl tar \
     && curl -LO "https://dl.k8s.io/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl" \
     && curl -LO "https://dl.k8s.io/$KUBECTL_VERSION/bin/linux/amd64/kubectl.sha256" \
