@@ -14,8 +14,10 @@ paging: &base_config
       log_level: warning
   gnb:
     config: [cell_cfg.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
-    parameters:
+    parameters: &s72_parameters
       log_level: warning
+      warning_allowlist:
+        - missed incoming User-Plane PRACH messages
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-MOB-11]
@@ -40,7 +42,7 @@ drx:
     config: [cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       drx_long_cycle: 80
-      log_level: warning
+      <<: *s72_parameters
   feature_ids: [MVP-FUNC-SVCS-16-6]
   criteria:
     dl_bitrate: 0
@@ -62,7 +64,7 @@ edrx:
   gnb:
     config: [cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
-      log_level: warning
+      <<: *s72_parameters
   feature_ids: [DU-GEN-10]
 
 # tid2.2.25: MT-Initiated Access
@@ -74,7 +76,7 @@ mt_initiate:
       dl_bitrate: 1.0e+3
       ul_bitrate: 1.0e+3
       nof_paging: *nof_paging
-      log_level: warning
+      <<: *s72_parameters
   feature_ids: [MVP-FUNC-MOB-11]
   criteria:
     dl_bitrate: 0
@@ -101,6 +103,8 @@ rrc_inactive_t308_expire:
       log_level: warning
   gnb:
     config: [cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml, inactivity_timer.yml]
+    parameters:
+      <<: *s72_parameters
   feature_ids: [MVP-FUNC-MOB-10]
   criteria:
     dl_bitrate: 0
