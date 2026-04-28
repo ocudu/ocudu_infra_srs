@@ -1,6 +1,29 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+cu_cp:
+  amf:
+    addrs: {{fivegc_definition[0].amf_ip}}
+    port: {{fivegc_definition[0].amf_port}}
+    bind_addrs: {{ip}}
+    supported_tracking_areas:
+      - tac: 7
+        plmn_list:
+          - plmn: "00101"
+            tai_slice_support_list:
+              - sst: 1
+                sd: 1
+  extra_amfs:
+    - addr: {{fivegc_definition[1].amf_ip}}
+      port: {{fivegc_definition[1].amf_port}}
+      bind_addr: {{ip}}
+      supported_tracking_areas:
+        - tac: 7
+          plmn_list:
+            - plmn: "00102"
+              tai_slice_support_list:
+                - sst: 1
+                  sd: 1
 cell_cfg:
   additional_plmns: 00102
 

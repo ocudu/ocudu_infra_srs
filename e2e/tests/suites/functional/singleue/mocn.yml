@@ -6,11 +6,7 @@ mocn: &base_config
   template: ue_simulator.test_gnb_2core
   request: zmq_mme
   ue:
-    config: [2cell_intrafreq_chsim.cfg, udp_bi.cfg]
-    parameters:
-      dl_bitrate: 10.0e+3
-      ul_bitrate: 10.0e+3
-      test_duration: 2
+    config: [1cell.cfg, mocn.cfg]
   gnb:
     config: [amf.yml, cell_cfg.yml, mocn.yml]
   core:
@@ -32,20 +28,16 @@ mocn: &base_config
     nof_ko_dl: 0
     nof_ko_ul: 0
     nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: 1
+    nof_pdu_session_establishment_accept_eq: 2 # there are 2 UEs, one per PLMN
     nof_error_indications: 0
     errors: 0
     warnings: 0
 
 # MORAN test
-#moran:
-#  <<: *base_config
-#  ue:
-#    config: [1cell.cfg, udp_bi.cfg]
-#    parameters:
-#      dl_bitrate: 10.0e+3
-#      ul_bitrate: 10.0e+3
-#      test_duration: 2
-#  gnb:
-#    config: [amf.yml, cell_cfg.yml, 2cell_moran.yml]
-#  feature_ids: [MVP-FUNC-RANS-16-2]
+moran:
+  <<: *base_config
+  ue:
+    config: [2cell_intrafreq.cfg, mocn.cfg]
+  gnb:
+    config: [amf.yml, cell_cfg.yml, mocn.yml, 2cell_moran.yml]
+  feature_ids: [MVP-FUNC-RANS-16-2]
