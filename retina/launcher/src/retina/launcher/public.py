@@ -263,11 +263,37 @@ def fivegc(
     try:
         fivegc_stub = retina_manager.get_5gc()
         for cls in FiveGcCriteria.subclasses:
-            cls(criteria, fivegc_stub)
+            cls(criteria, (fivegc_stub,))
         yield fivegc_stub
     finally:
         with suppress(NameError, UnboundLocalError):
             _stop_stub(fivegc_stub, "5GC", retina_data)
+
+
+def _generate_fivegc_fixture(number_of_dus: int) -> Callable:
+    @pytest.fixture
+    # pylint: disable=invalid-name
+    def fivegc_multiple(
+        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
+    ) -> Generator[Tuple[DUStub, ...], None, None]:
+        """
+        Return multiple DUs
+        """
+        try:
+            fivegc_stub_array = tuple(retina_manager.get_5gc(index) for index in range(number_of_dus))
+            for cls in FiveGcCriteria.subclasses:
+                cls(criteria, fivegc_stub_array)
+            yield fivegc_stub_array
+        finally:
+            with suppress(NameError, UnboundLocalError):
+                for index, fivegc_stub in enumerate(fivegc_stub_array):
+                    _stop_stub(fivegc_stub, f"5GC_{index+1}", retina_data)
+
+    return fivegc_multiple
+
+
+for n in range(1, 64 + 1):
+    globals()[f"fivegc_{n}"] = _generate_fivegc_fixture(n)
 
 
 @pytest.fixture
