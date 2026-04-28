@@ -172,6 +172,22 @@ gbr_vonr:
     KEYWORDS: "functional.singleue.gbr_vonr."
     TESTBED: dynamic
 
+mocn:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.singleue.mocn."
+    TESTBED: dynamic
+
 phy_configs:
   stage: singleue
   extends: .functional_e2e

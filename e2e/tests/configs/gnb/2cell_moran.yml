@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cells:
+  -
+    # Cell 1
+    pci: 1                              # Set the Physcial Cell ID
+    plmn: 00101
+    prach:
+      prach_root_sequence_index: 0        # Set the PRACH root sequence index
+  -
+    # Cell 2
+    pci: 2                              # Set the Physcial Cell ID
+    plmn: 00102
+    prach:
+      prach_root_sequence_index: 64
