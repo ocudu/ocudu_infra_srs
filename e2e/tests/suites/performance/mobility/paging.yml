@@ -76,7 +76,6 @@ mt_initiate:
       dl_bitrate: 1.0e+3
       ul_bitrate: 1.0e+3
       nof_paging: *nof_paging
-      <<: *s72_parameters
   feature_ids: [MVP-FUNC-MOB-11]
   criteria:
     dl_bitrate: 0
