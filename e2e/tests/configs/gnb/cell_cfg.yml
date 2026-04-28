@@ -33,3 +33,5 @@ metrics:
   layers:
     enable_sched: true
     enable_mac: true
+    enable_du_proc: true
+    enable_executor: true
