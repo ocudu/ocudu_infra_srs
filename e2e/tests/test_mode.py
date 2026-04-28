@@ -9,7 +9,7 @@ import logging
 import tempfile
 from pathlib import Path
 from time import sleep
-from typing import Iterable
+from typing import List, Optional
 
 import pytest
 from google.protobuf.empty_pb2 import Empty
@@ -153,11 +153,11 @@ def test_ru_acc100(
         gnb=gnb,
         ru_config="config_ru_acc100.yml",
         min_dl_bitrate=1e6,
-        warning_allowlist=(
+        warning_allowlist=[
             "Resource grid with identifier",
             "Could not enqueue PDCCH",
             "received late DL request from slot",
-        ),
+        ],
     )
 
 
@@ -262,7 +262,7 @@ def _test_ru(
     # Criteria
     log_search: bool = True,
     warning_as_errors: bool = True,
-    warning_allowlist: Iterable[str] = tuple(),
+    warning_allowlist: Optional[List[str]] = None,
     fail_if_kos: bool = True,
     min_dl_bitrate: float = 1,
     min_ul_bitrate: float = 1,
@@ -279,7 +279,7 @@ def _test_ru(
                     "pcap": False,
                     "nof_antennas_dl": nof_ant,
                     "nof_antennas_ul": nof_ant,
-                    "warning_allowlist": warning_allowlist,
+                    "warning_allowlist": warning_allowlist if warning_allowlist is not None else [],
                 },
                 "templates": {
                     "cu": str(Path(__file__).joinpath(f"../test_mode/{ru_config}").resolve()),
