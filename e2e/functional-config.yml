@@ -76,6 +76,22 @@ attach_dettach:
     KEYWORDS: "functional.multiue.attach_dettach."
     TESTBED: dynamic
 
+load_test:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.multiue.load_test."
+    TESTBED: dynamic
+
 mobility:
   stage: multiue
   extends: .functional_e2e
@@ -106,22 +122,6 @@ ping:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: "functional.multiue.ping."
-    TESTBED: dynamic
-
-udp_bi:
-  stage: multiue
-  extends: .functional_e2e
-  rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-  variables:
-    KEYWORDS: "functional.multiue.udp_bi."
     TESTBED: dynamic
 
 cmas:
