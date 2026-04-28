@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# tc1.4: Baseline gNB configuration test for FDD 50 MHz configuration in band 3
+# tid1.1.25: Baseline gNB configuration test for FDD 50 MHz configuration in band 3
 band3_bw50: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -70,7 +70,7 @@ prach_config_1_fdd:
     warnings: 0
   feature_ids: [MVP-FUNC-PHY-16-2]
 
-# tc1.4: FDD 5 MHz in band 3
+# tid1.1.25: FDD 5 MHz in band 3
 band3_bw5:
   <<: *base_config
   gnb:

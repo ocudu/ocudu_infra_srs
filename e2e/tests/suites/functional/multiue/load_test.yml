@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+# tid1.3.-3: 512 UEs baseline
 baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_1000
@@ -34,13 +35,16 @@ baseline: &base_config
     errors: 0
     warnings: 3
 
+# tid1.3.-2: 512 UEs tdd_dl_heavy
 tdd_dl_heavy:
   <<: *base_config
   gnb:
     config: [amf.yml, cell_cfg.yml, 512ue.yml, tdd_63.yml]
     parameters:
       log_level: warning
+  feature_ids: [MVP-FUNC-TDD-16-4]
 
+# tid1.3.-2: 512 UEs tdd_ul_heavy
 tdd_ul_heavy:
   <<: *base_config
   gnb:
