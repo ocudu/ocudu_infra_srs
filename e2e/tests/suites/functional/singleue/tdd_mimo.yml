@@ -13,7 +13,7 @@ mimo_2x2: &base_config
       nof_antennas: 2
       pdcch_decode_threshold: 0
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_wideband.yml]
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_wideband.yml, mimo_rx.yml]
     parameters:
       nof_antennas: 2
   core:
@@ -43,7 +43,7 @@ mimo_4x4:
       nof_antennas: 4
       pdcch_decode_threshold: 0
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_wideband.yml]
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_wideband.yml, mimo_rx.yml]
     parameters:
       nof_antennas: 4
   feature_ids: [MVP-FUNC-MIMO-16-5, MVP-FUNC-PHY-16-7]
