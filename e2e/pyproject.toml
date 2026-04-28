@@ -99,6 +99,7 @@ markers = [
   "MVP-FUNC-MOB-11",
   "MVP-FUNC-MOB-14",
   "MVP-FUNC-MOB-15",
+  "MVP-FUNC-PHY-16-1",
   "MVP-FUNC-PHY-16-2",
   "MVP-FUNC-PHY-16-3",
   "MVP-FUNC-PHY-16-4",
@@ -108,6 +109,7 @@ markers = [
   "MVP-FUNC-PHY-16-10",
   "MVP-FUNC-PHY-16-12",
   "MVP-FUNC-PHY-16-13",
+  "MVP-FUNC-PHY-16-14",
   "MVP-FUNC-PHY-16-15",
   "MVP-FUNC-RACH-16-1",
   "MVP-FUNC-RLM-16-1",
@@ -120,10 +122,12 @@ markers = [
   "MVP-FUNC-SVCS-17-3",
   "MVP-FUNC-TDD-16-1",
   "MVP-FUNC-TDD-16-2",
+  "MVP-FUNC-TDD-16-3",
   "MVP-FUNC-TDD-16-4",
   "MVP-FUNC-TDD-16-5",
   "MVP-FUNC-RANS-16-1",
-  "MVP-FUNC-RANS-16-2"
+  "MVP-FUNC-RANS-16-2",
+  "SRS",
 ]
 minversion = "6.0"
 python_files = [

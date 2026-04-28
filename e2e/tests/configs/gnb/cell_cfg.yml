@@ -13,6 +13,9 @@ cell_cfg:
   pusch:
     dmrs_additional_position: {{dmrs_additional_pos|default(2)}}
 
+expert_phy:
+  pusch_channel_estimator_cfo_compensation: false
+
 pcap:
   ngap_enable: true
   ngap_filename: {{ngap_filename}}

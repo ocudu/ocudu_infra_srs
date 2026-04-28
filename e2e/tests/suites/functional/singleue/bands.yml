@@ -1,0 +1,124 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# tid1.1.29: Baseline band n30
+band_n30: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      band: 30
+      bandwidth: 10
+      dl_nr_arfcn: 471000
+      ssb_nr_arfcn: 470430
+      common_scs: 15
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 2
+      nof_antennas: 4
+      pdcch_decode_threshold: 0
+  gnb:
+    config: [amf.yml, cell_cfg.yml, srs_wideband.yml, prach_config.yml]
+    parameters:
+      cfg_band: 30
+      cfg_earfcn: 471000
+      cfg_common_scs: 15
+      cfg_bandwidth: 10
+      nof_antennas: 4
+      prach_config_index: 209
+  core:
+    config: [baseline.cfg]
+  feature_ids: [SRS]
+  criteria:
+    dl_bitrate: 0
+    ul_bitrate: 0
+    nof_ko_dl: 0
+    nof_ko_ul: 0
+    nof_reestablishments_eq: 0
+    nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    errors: 0
+    warnings: 0
+
+# tid1.1.30: Baseline FR2
+band_fr2:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      band: 261
+      bandwidth: 100
+      dl_nr_arfcn: 2077915
+      ssb_nr_arfcn: 2077435
+      common_scs: 120
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 2
+      nof_antennas: 1
+  gnb:
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
+    parameters:
+      cfg_band: 261
+      cfg_earfcn: 2077915
+      cfg_bandwidth: 100
+      cfg_common_scs: 120
+      nof_antennas: 1
+      prach_config_index: 121
+      zero_correlation_zone: 1
+  feature_ids: [MVP-FUNC-PHY-16-14, MVP-FUNC-TDD-16-3, MVP-FUNC-BW-16-1]
+
+# tid1.1.31: Baseline band n41
+band_n41:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      band: 41
+      bandwidth: 100
+      dl_nr_arfcn: 520002
+      ssb_nr_arfcn: 511950
+      common_scs: 30
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 2
+      nof_antennas: 2
+      pdcch_decode_threshold: 0
+  gnb:
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml]
+    parameters:
+      cfg_band: 41
+      cfg_earfcn: 520002
+      cfg_bandwidth: 100
+      nof_antennas: 2
+  feature_ids: [MVP-FUNC-PHY-16-1]
+
+# tid1.1.32: Baseline band n66
+band_n66:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, udp_bi_chsim.cfg]
+    parameters:
+      band: 66
+      bandwidth: 20
+      dl_nr_arfcn: 430000
+      ssb_nr_arfcn: 428650
+      common_scs: 15
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 2
+      nof_antennas: 1
+  gnb:
+    config: [amf.yml, cell_cfg.yml, pucch_config.yml, srs_wideband.yml, mac_pcap.yml]
+    parameters:
+      cfg_band: 66
+      cfg_earfcn: 430000
+      cfg_common_scs: 15
+      cfg_bandwidth: 20
+      nof_antennas: 1
+      prach_config_index: 16
+      pucch_format: "f1_and_f3"
+      nof_cell_sr_res: 1
+      nof_cell_csi_res: 1
+      resource_set_size: 2
+  feature_ids: [MVP-FUNC-PHY-16-1]

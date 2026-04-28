@@ -4,3 +4,4 @@
 cell_cfg:
   prach:
     prach_config_index: {{prach_config_index|default(0)}}
+    zero_correlation_zone: {{zero_correlation_zone|default(0)}}

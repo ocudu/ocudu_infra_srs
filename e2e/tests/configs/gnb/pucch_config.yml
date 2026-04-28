@@ -4,3 +4,6 @@
 cell_cfg:
   pucch:
     formats: {{pucch_format | default("f1_and_f2")}}
+    resource_set_size: {{resource_set_size|default(8)}}
+    nof_cell_sr_res: {{nof_cell_sr_res|default(7)}}
+    nof_cell_csi_res: {{nof_cell_csi_res|default(7)}}
