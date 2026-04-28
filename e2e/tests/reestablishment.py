@@ -8,7 +8,7 @@ Ping + Reestablishment Tests
 import logging
 from contextlib import contextmanager
 from time import sleep
-from typing import Dict, Generator, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Generator, Optional, Sequence, Tuple, Union
 
 import pytest
 from google.protobuf.wrappers_pb2 import UInt32Value
@@ -46,7 +46,7 @@ from .steps.stub import (
 def test_smoke_sequentially(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_2: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
 ):
@@ -56,7 +56,7 @@ def test_smoke_sequentially(
     _reestablishment_sequentially_ping(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_2,
+        ue_array=ue_multiple(2),
         fivegc=fivegc,
         gnb=gnb,
         band=41,
@@ -82,7 +82,7 @@ def test_smoke_sequentially(
 def test_zmq_sequentially(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_8: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -96,7 +96,7 @@ def test_zmq_sequentially(
     _reestablishment_sequentially_ping(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_8,
+        ue_array=ue_multiple(8),
         fivegc=fivegc,
         gnb=gnb,
         band=band,
@@ -181,7 +181,7 @@ def _reestablishment_sequentially_ping(
 def test_zmq_sequentially_full_rate(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_8: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -200,7 +200,7 @@ def test_zmq_sequentially_full_rate(
     for reest_ue_attach_info_dict, other_ue_attach_info_dict in _iterator_over_attached_ues(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_8,
+        ue_array=ue_multiple(8),
         fivegc=fivegc,
         gnb=gnb,
         band=band,
@@ -343,7 +343,7 @@ def test_zmq_sequentially_full_rate_verify_bitrate(
 def test_zmq_parallel(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_8: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -354,6 +354,7 @@ def test_zmq_parallel(
     """
     ZMQ Ping + Reestablishment
     """
+    ue_8 = ue_multiple(8)
     number_of_reestablishments = 10
     reestablishment_time = 10
 
@@ -410,7 +411,7 @@ def test_zmq_parallel(
 def test_zmq_parallel_full_rate(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_8: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -423,6 +424,7 @@ def test_zmq_parallel_full_rate(
     """
     ZMQ IPerf + Reestablishment
     """
+    ue_8 = ue_multiple(8)
     number_of_reestablishments = 10
     reestablishment_time = 10
 

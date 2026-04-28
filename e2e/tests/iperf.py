@@ -7,7 +7,7 @@ Test Iperf
 
 import logging
 from time import sleep
-from typing import Optional, Sequence, Tuple, Union
+from typing import Callable, Optional, Sequence, Tuple, Union
 
 import pytest
 from google.protobuf.empty_pb2 import Empty
@@ -449,7 +449,7 @@ def test_android_hp(
 def test_zmq_2x2_mimo(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_32: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -461,11 +461,10 @@ def test_zmq_2x2_mimo(
     """
     ZMQ 2x2 mimo IPerfs
     """
-
     _iperf(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_32,
+        ue_array=ue_multiple(32),
         gnb=gnb,
         fivegc=fivegc,
         band=band,
@@ -493,18 +492,17 @@ def test_zmq_2x2_mimo(
 def test_zmq_64_ues(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_64: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
 ):
     """
     ZMQ 2x2 mimo IPerfs
     """
-
     _iperf(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_64,
+        ue_array=ue_multiple(64),
         gnb=gnb,
         fivegc=fivegc,
         band=41,
@@ -604,7 +602,7 @@ def test_zmq_4x4_mimo(
 def test_smoke(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_4: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     direction: IPerfDir,
@@ -613,11 +611,10 @@ def test_smoke(
     """
     ZMQ IPerfs
     """
-
     _iperf(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_4,
+        ue_array=ue_multiple(4),
         gnb=gnb,
         fivegc=fivegc,
         band=41,
@@ -673,7 +670,7 @@ def test_smoke(
 def test_zmq(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_32: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -686,11 +683,10 @@ def test_zmq(
     """
     ZMQ IPerfs
     """
-
     _iperf(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_32,
+        ue_array=ue_multiple(32),
         gnb=gnb,
         fivegc=fivegc,
         band=band,
@@ -735,7 +731,7 @@ def test_zmq(
 def test_zmq_precoding(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_32: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -748,11 +744,10 @@ def test_zmq_precoding(
     """
     ZMQ IPerfs
     """
-
     _iperf(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_32,
+        ue_array=ue_multiple(32),
         gnb=gnb,
         fivegc=fivegc,
         band=band,

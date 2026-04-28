@@ -7,7 +7,7 @@ Attach / Detach Tests
 
 import logging
 from time import sleep
-from typing import Optional, Sequence, Tuple, Union
+from typing import Callable, Optional, Sequence, Tuple, Union
 
 from google.protobuf.wrappers_pb2 import UInt32Value
 from pytest import mark
@@ -39,7 +39,7 @@ BITRATE_THRESHOLD: float = 0.1
 def test_smoke(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_4: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
 ):
@@ -49,7 +49,7 @@ def test_smoke(
     _attach_and_detach_multi_ues(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_4,
+        ue_array=ue_multiple(4),
         gnb=gnb,
         fivegc=fivegc,
         band=41,
@@ -94,7 +94,7 @@ def test_smoke(
 def test_zmq(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_8: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -106,11 +106,10 @@ def test_zmq(
     """
     ZMQ Attach / Detach
     """
-
     _attach_and_detach_multi_ues(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_8,
+        ue_array=ue_multiple(8),
         gnb=gnb,
         fivegc=fivegc,
         band=band,

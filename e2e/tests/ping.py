@@ -7,7 +7,7 @@ Test ping
 
 import logging
 from contextlib import suppress
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 import grpc
 from _pytest.outcomes import Failed
@@ -299,7 +299,7 @@ def test_android_no_drx(
 def test_zmq_32(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_32: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -310,11 +310,10 @@ def test_zmq_32(
     """
     ZMQ Pings
     """
-
     _ping(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_32,
+        ue_array=ue_multiple(32),
         gnb=gnb,
         fivegc=fivegc,
         band=band,
@@ -333,18 +332,17 @@ def test_zmq_32(
 def test_example(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_4: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
 ):
     """
     ZMQ Pings
     """
-
     _ping(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_4,
+        ue_array=ue_multiple(4),
         gnb=gnb,
         fivegc=fivegc,
         band=3,
@@ -410,7 +408,7 @@ def test_example_srsue(
 def test_zmq_64(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_64: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -421,11 +419,10 @@ def test_zmq_64(
     """
     ZMQ Pings
     """
-
     _ping(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_64,
+        ue_array=ue_multiple(64),
         gnb=gnb,
         fivegc=fivegc,
         band=band,
@@ -449,7 +446,7 @@ def test_zmq_64(
 def test_zmq_valgrind(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_4: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -461,6 +458,7 @@ def test_zmq_valgrind(
     - Ignore if the ping fails or ue can't attach
     - Fails only if ue/gnb/5gc crashes
     """
+    ue_4 = ue_multiple(4)
     gnb_stop_timeout = 150
     with suppress(grpc.RpcError, AssertionError, Failed):
         _ping(
@@ -588,7 +586,7 @@ def test_ping_s72_fr2(
 def test_rf_does_not_crash(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_4: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -600,7 +598,7 @@ def test_rf_does_not_crash(
     - Ignore if the ping fails or ue can't attach
     - Fails only if ue/gnb/5gc crashes
     """
-
+    ue_4 = ue_multiple(4)
     with suppress(grpc.RpcError, AssertionError, Failed):
         _ping(
             retina_manager=retina_manager,

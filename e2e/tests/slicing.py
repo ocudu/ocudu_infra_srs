@@ -6,7 +6,7 @@ PUCCH Tests
 """
 
 import logging
-from typing import Tuple
+from typing import Callable, Tuple
 
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
@@ -29,14 +29,14 @@ from .steps.configuration import configure_test_parameters, get_minimum_sample_r
 def test_slicing(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_4: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
 ):
     """
     Test PUCCH (Amarisoft, ZMQ)
     """
-
+    ue_4 = ue_multiple(4)
     band = 78
     common_scs = 30
     bandwidth = 50

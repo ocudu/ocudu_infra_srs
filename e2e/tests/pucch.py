@@ -6,7 +6,7 @@ PUCCH Tests
 """
 
 import logging
-from typing import Tuple
+from typing import Callable, Tuple
 
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
@@ -39,7 +39,7 @@ from .steps.configuration import configure_test_parameters, get_minimum_sample_r
 def test_pucch(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_32: Tuple[UEStub, ...],
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     pucch_formats: str,
@@ -49,7 +49,7 @@ def test_pucch(
     Test PUCCH (Amarisoft, ZMQ)
     """
 
-    ue_array = ue_32
+    ue_array = ue_multiple(32)
 
     band = 41
     common_scs = 30

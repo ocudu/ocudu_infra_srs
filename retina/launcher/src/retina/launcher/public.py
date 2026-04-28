@@ -129,54 +129,48 @@ def ue(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Genera
             _stop_stub(ue_stub, "UE", retina_data)
 
 
-def _generate_ue_fixture(number_of_ues: int) -> Callable:
-    @pytest.fixture
-    # pylint: disable=invalid-name
-    def ue_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData
-    ) -> Generator[Tuple[UEStub, ...], None, None]:
-        """
-        Return multiple UEs
-        """
-        try:
-            ue_stub_array = tuple(retina_manager.get_ue(index) for index in range(number_of_ues))
-            yield ue_stub_array
-        finally:
-            with suppress(NameError, UnboundLocalError):
-                for index, ue_stub in enumerate(ue_stub_array):
-                    _stop_stub(ue_stub, f"UE_{index+1}", retina_data)
+@pytest.fixture
+def ue_multiple(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData
+) -> Generator[Callable[[int], Tuple[UEStub, ...]], None, None]:
+    """
+    Return a factory that creates N UEs
+    """
+    created = []
 
-    return ue_multiple
+    def _factory(count: int) -> Tuple[UEStub, ...]:
+        stub_array = tuple(retina_manager.get_ue(index) for index in range(count))
+        created.append(stub_array)
+        return stub_array
 
+    yield _factory
 
-for n in range(1, 1000 + 1):
-    globals()[f"ue_{n}"] = _generate_ue_fixture(n)
+    for stub_array in created:
+        for index, stub in enumerate(stub_array):
+            _stop_stub(stub, f"UE_{index + 1}", retina_data)
 
 
-def _generate_gnb_fixture(number_of_gnbs: int) -> Callable:
-    @pytest.fixture
-    # pylint: disable=invalid-name
-    def gnb_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-    ) -> Generator[Tuple[GNBStub, ...], None, None]:
-        """
-        Return multiple GNBs
-        """
-        try:
-            gnb_stub_array = tuple(retina_manager.get_gnb(index) for index in range(number_of_gnbs))
-            for cls in DuCriteria.subclasses:
-                cls(criteria, gnb_stub_array)
-            yield gnb_stub_array
-        finally:
-            with suppress(NameError, UnboundLocalError):
-                for index, gnb_stub in enumerate(gnb_stub_array):
-                    _stop_stub(gnb_stub, f"GNB_{index+1}", retina_data)
+@pytest.fixture
+def gnb_multiple(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
+) -> Generator[Callable[[int], Tuple[GNBStub, ...]], None, None]:
+    """
+    Return a factory that creates N GNBs
+    """
+    created = []
 
-    return gnb_multiple
+    def _factory(count: int) -> Tuple[GNBStub, ...]:
+        stub_array = tuple(retina_manager.get_gnb(index) for index in range(count))
+        for cls in DuCriteria.subclasses:
+            cls(criteria, stub_array)
+        created.append(stub_array)
+        return stub_array
 
+    yield _factory
 
-for n in range(1, 64 + 1):
-    globals()[f"gnb_{n}"] = _generate_gnb_fixture(n)
+    for stub_array in created:
+        for index, stub in enumerate(stub_array):
+            _stop_stub(stub, f"GNB_{index + 1}", retina_data)
 
 
 @pytest.fixture
@@ -215,7 +209,7 @@ def du(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
 ) -> Generator[DUStub, None, None]:
     """
-    Return an DU
+    Return a DU
     """
     try:
         du_stub = retina_manager.get_du()
@@ -227,30 +221,27 @@ def du(
             _stop_stub(du_stub, "DU", retina_data)
 
 
-def _generate_du_fixture(number_of_dus: int) -> Callable:
-    @pytest.fixture
-    # pylint: disable=invalid-name
-    def du_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-    ) -> Generator[Tuple[DUStub, ...], None, None]:
-        """
-        Return multiple DUs
-        """
-        try:
-            du_stub_array = tuple(retina_manager.get_du(index) for index in range(number_of_dus))
-            for cls in DuCriteria.subclasses:
-                cls(criteria, du_stub_array)
-            yield du_stub_array
-        finally:
-            with suppress(NameError, UnboundLocalError):
-                for index, du_stub in enumerate(du_stub_array):
-                    _stop_stub(du_stub, f"DU_{index+1}", retina_data)
+@pytest.fixture
+def du_multiple(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
+) -> Generator[Callable[[int], Tuple[DUStub, ...]], None, None]:
+    """
+    Return a factory that creates N DUs
+    """
+    created = []
 
-    return du_multiple
+    def _factory(count: int) -> Tuple[DUStub, ...]:
+        stub_array = tuple(retina_manager.get_du(index) for index in range(count))
+        for cls in DuCriteria.subclasses:
+            cls(criteria, stub_array)
+        created.append(stub_array)
+        return stub_array
 
+    yield _factory
 
-for n in range(1, 64 + 1):
-    globals()[f"du_{n}"] = _generate_du_fixture(n)
+    for stub_array in created:
+        for index, stub in enumerate(stub_array):
+            _stop_stub(stub, f"DU_{index + 1}", retina_data)
 
 
 @pytest.fixture
@@ -270,30 +261,27 @@ def fivegc(
             _stop_stub(fivegc_stub, "5GC", retina_data)
 
 
-def _generate_fivegc_fixture(number_of_dus: int) -> Callable:
-    @pytest.fixture
-    # pylint: disable=invalid-name
-    def fivegc_multiple(
-        retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-    ) -> Generator[Tuple[DUStub, ...], None, None]:
-        """
-        Return multiple DUs
-        """
-        try:
-            fivegc_stub_array = tuple(retina_manager.get_5gc(index) for index in range(number_of_dus))
-            for cls in FiveGcCriteria.subclasses:
-                cls(criteria, fivegc_stub_array)
-            yield fivegc_stub_array
-        finally:
-            with suppress(NameError, UnboundLocalError):
-                for index, fivegc_stub in enumerate(fivegc_stub_array):
-                    _stop_stub(fivegc_stub, f"5GC_{index+1}", retina_data)
+@pytest.fixture
+def fivegc_multiple(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
+) -> Generator[Callable[[int], Tuple[FiveGCStub, ...]], None, None]:
+    """
+    Return a factory that creates N 5GC instances
+    """
+    created = []
 
-    return fivegc_multiple
+    def _factory(count: int) -> Tuple[FiveGCStub, ...]:
+        stub_array = tuple(retina_manager.get_5gc(index) for index in range(count))
+        for cls in FiveGcCriteria.subclasses:
+            cls(criteria, stub_array)
+        created.append(stub_array)
+        return stub_array
 
+    yield _factory
 
-for n in range(1, 64 + 1):
-    globals()[f"fivegc_{n}"] = _generate_fivegc_fixture(n)
+    for stub_array in created:
+        for index, stub in enumerate(stub_array):
+            _stop_stub(stub, f"5GC_{index + 1}", retina_data)
 
 
 @pytest.fixture

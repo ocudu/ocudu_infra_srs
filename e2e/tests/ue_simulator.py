@@ -56,7 +56,7 @@ def test_2gnb(
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
     ue: UEStub,
-    gnb_2: GNBStub,
+    gnb_multiple,
     fivegc: FiveGCStub,
 ):
     """Template test function for UE simulator + 2 gNB + Core"""
@@ -66,7 +66,7 @@ def test_2gnb(
         criteria=criteria,
         test_definition=test_definition,
         ue=ue,
-        gnb_array=gnb_2,
+        gnb_array=gnb_multiple(2),
         fivegc_array=[fivegc],
     )
 
@@ -80,7 +80,7 @@ def test_gnb_2core(
     test_definition: RetinaTestDefinition,
     ue: UEStub,
     gnb: GNBStub,
-    fivegc_2: FiveGCStub,
+    fivegc_multiple,
 ):
     """Template test function for UE simulator + GNB + 2 Core"""
     _ue_simulator(
@@ -90,7 +90,7 @@ def test_gnb_2core(
         test_definition=test_definition,
         ue=ue,
         gnb_array=[gnb],
-        fivegc_array=fivegc_2,
+        fivegc_array=fivegc_multiple(2),
     )
 
 
@@ -103,7 +103,7 @@ def test_cu_2du(
     test_definition: RetinaTestDefinition,
     ue: UEStub,
     cu: CUStub,
-    du_2: DUStub,
+    du_multiple,
     fivegc: FiveGCStub,
 ):
     """Template test function for UE simulator + CU + 2 DU + Core"""
@@ -114,7 +114,7 @@ def test_cu_2du(
         test_definition=test_definition,
         ue=ue,
         cu=cu,
-        du_array=[du_2],
+        du_array=du_multiple(2),
         fivegc_array=[fivegc],
     )
 

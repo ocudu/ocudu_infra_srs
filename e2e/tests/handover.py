@@ -8,7 +8,7 @@ Handover Tests
 import logging
 from contextlib import contextmanager
 from time import sleep
-from typing import Dict, Generator, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Generator, Optional, Sequence, Tuple, Union
 
 import pytest
 from google.protobuf.wrappers_pb2 import UInt32Value
@@ -44,7 +44,7 @@ BITRATE_THRESHOLD: float = 0.1
 def test_smoke_sequentially(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_2: UEStub,
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
 ):
@@ -54,7 +54,7 @@ def test_smoke_sequentially(
     _handover_sequentially(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_2,
+        ue_array=ue_multiple(2),
         fivegc=fivegc,
         gnb_array=[gnb],
         band=41,
@@ -71,7 +71,7 @@ def test_smoke_sequentially(
 def test_s72_sequentially(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_2: UEStub,
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
 ):
@@ -81,7 +81,7 @@ def test_s72_sequentially(
     _handover_sequentially(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_2,
+        ue_array=ue_multiple(2),
         fivegc=fivegc,
         gnb_array=[gnb],
         band=41,
@@ -110,7 +110,7 @@ def test_s72_sequentially(
 def test_zmq_handover_sequentially(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_8: UEStub,
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -124,7 +124,7 @@ def test_zmq_handover_sequentially(
     _handover_sequentially(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=ue_8,
+        ue_array=ue_multiple(8),
         fivegc=fivegc,
         gnb_array=[gnb],
         band=band,
@@ -239,7 +239,7 @@ def _handover_sequentially(
 def test_zmq_handover_parallel(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_32: UEStub,
+    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
     fivegc: FiveGCStub,
     gnb: GNBStub,
     band: int,
@@ -252,6 +252,7 @@ def test_zmq_handover_parallel(
     """
     ZMQ Handover tests
     """
+    ue_32 = ue_multiple(32)
     with _handover_multi_ues(
         retina_manager=retina_manager,
         retina_data=retina_data,
