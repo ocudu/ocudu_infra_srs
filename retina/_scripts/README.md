@@ -111,11 +111,10 @@ Remember to re-build your binary/libs every time you made a change or checkout n
 
 Currently there are five available testbeds:
 
-- zmq_srsue: SRS UE with ZeroMQ
-- zmq_amariue: Amarisoft UE with ZeroMQ
-- zmq_amariue_1cu_2du
-- zmq_amariue_2gnb
-- zmq_ntn
+- zmq_amariue_mme: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Amarisoft 5GC
+- zmq_amariue_open5gs: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs
+- zmq_srsue: srsUE + OCUDU gNB + Open5gs + Flexric
+- zmq_ntn: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs + NTN Channel Emulator
 
 ### Testbed file
 

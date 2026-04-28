@@ -10,12 +10,10 @@
 
 # Available profiles:
 # - builders: Build gnb binary and amari-zmq driver
-# - zmq_srsue: srsUE with ZeroMQ + OCUDU gNB + Open5gs
-# - zmq_amariue: Amarisoft UE with ZeroMQ + OCUDU gNB + Open5gs
-# - zmq_amariue_1cu_2du: Amarisoft UE with ZeroMQ + OCUDU cu + 2 OCUDU du + Open5gs
-# - zmq_amariue_2gnb: Amarisoft UE with ZeroMQ + 2 OCUDU gNBs + Open5gs
-# - zmq_ntn: Amarisoft UE with ZeroMQ + OCUDU gNB + Open5gs + NTN Channel Emulator
-# - zmq_amariue_mme: Amarisoft UE with ZeroMQ + Amarisoft 5GC
+# - zmq_amariue_mme: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Amarisoft 5GC
+# - zmq_amariue_open5gs: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs
+# - zmq_srsue: srsUE + OCUDU gNB + Open5gs + Flexric
+# - zmq_ntn: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs + NTN Channel Emulator
 
 services:
   ocudu-builder:
@@ -84,11 +82,9 @@ services:
     container_name: launcher
     profiles:
       - all
-      - zmq_srsue
-      - zmq_amariue
-      - zmq_amariue_1cu_2du
-      - zmq_amariue_2gnb
       - zmq_amariue_mme
+      - zmq_amariue_open5gs
+      - zmq_srsue
       - zmq_ntn
       - launcher
     image: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
@@ -127,11 +123,9 @@ services:
   agent-image: &agent-image
     profiles:
       - all
-      - zmq_srsue
-      - zmq_amariue
-      - zmq_amariue_1cu_2du
-      - zmq_amariue_2gnb
       - zmq_amariue_mme
+      - zmq_amariue_open5gs
+      - zmq_srsue
       - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/agent:${AGENT_OS_VERSION}
     build:
@@ -162,10 +156,8 @@ services:
     container_name: amarisoft-ue
     profiles:
       - all
-      - zmq_amariue
-      - zmq_amariue_1cu_2du
-      - zmq_amariue_2gnb
       - zmq_amariue_mme
+      - zmq_amariue_open5gs
       - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
     build:
@@ -204,33 +196,6 @@ services:
     x-testbed:
       type: ue
 
-  amarisoft-ue-remote:
-    restart: unless-stopped
-    container_name: amarisoft-ue-remote
-    profiles:
-      - all
-    image: ${RETINA_REGISTRY_URI}/amarisoftue-remote:${RETINA_VERSION}
-    build:
-      context: ../images/amarisoftue_remote
-      args:
-        <<: *variables
-      additional_contexts:
-        agent: "service:agent-image"
-        wheelhouse: "service:wheelhouse"
-    environment:
-      RETINA_IP: &amariue_remote_ip 172.20.0.3
-      RETINA_SECRETS: ${AMARISOFT_REMOTE_UE_IP:-}
-    configs:
-      - source: amari_remote_ue.yml
-        target: /etc/retina/resources/amari_remote_ue.yml
-    volumes: *agent_volumes
-    tmpfs: *agent_tmpfs
-    networks:
-      retina:
-        ipv4_address: *amariue_remote_ip
-    x-testbed:
-      type: ue
-
   srs-ue:
     restart: unless-stopped
     container_name: srs-ue
@@ -252,7 +217,7 @@ services:
     sysctls:
       - net.ipv6.conf.default.disable_ipv6=0
     environment:
-      RETINA_IP: &srsue_ip 172.20.0.4
+      RETINA_IP: &srsue_ip 172.20.0.3
     networks:
       retina:
         ipv4_address: *srsue_ip
@@ -268,10 +233,9 @@ services:
     container_name: ocudu-gnb-1
     profiles:
       - all
-      - zmq_srsue
-      - zmq_amariue
-      - zmq_amariue_2gnb
       - zmq_amariue_mme
+      - zmq_amariue_open5gs
+      - zmq_srsue
       - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
     build:
@@ -287,8 +251,8 @@ services:
       - CAP_SYS_PTRACE
     volumes: *agent_volumes
     tmpfs: *agent_tmpfs
-    environment:
-      RETINA_IP: &gnb0_ip 172.20.0.5
+    environment: &ocudu_env
+      RETINA_IP: &gnb0_ip 172.20.0.4
       PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
     networks:
       retina:
@@ -299,12 +263,9 @@ services:
   ocudu-gnb-2:
     <<: *gnb_service
     container_name: ocudu-gnb-2
-    profiles:
-      - all
-      - zmq_amariue_2gnb
     environment:
-      RETINA_IP: &gnb1_ip 172.20.0.6
-      PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
+      <<: *ocudu_env
+      RETINA_IP: &gnb1_ip 172.20.0.5
     networks:
       retina:
         ipv4_address: *gnb1_ip
@@ -314,9 +275,6 @@ services:
   ocudu-cu:
     <<: *gnb_service
     container_name: ocudu-cu
-    profiles:
-      - all
-      - zmq_amariue_1cu_2du
     image: ${RETINA_REGISTRY_URI}/ocudu-cu:${RETINA_VERSION}
     build:
       context: ../images/ocudu
@@ -327,7 +285,8 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &cu_ip 172.20.0.7
+      <<: *ocudu_env
+      RETINA_IP: &cu_ip 172.20.0.6
     networks:
       retina:
         ipv4_address: *cu_ip
@@ -337,9 +296,6 @@ services:
   ocudu-du-1:
     <<: *gnb_service
     container_name: ocudu-du-1
-    profiles:
-      - all
-      - zmq_amariue_1cu_2du
     image: ${RETINA_REGISTRY_URI}/ocudu-du:${RETINA_VERSION}
     build:
       context: ../images/ocudu
@@ -350,7 +306,8 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &du0_ip 172.20.0.8
+      <<: *ocudu_env
+      RETINA_IP: &du0_ip 172.20.0.7
     networks:
       retina:
         ipv4_address: *du0_ip
@@ -360,9 +317,6 @@ services:
   ocudu-du-2:
     <<: *gnb_service
     container_name: ocudu-du-2
-    profiles:
-      - all
-      - zmq_amariue_1cu_2du
     image: ${RETINA_REGISTRY_URI}/ocudu-du:${RETINA_VERSION}
     build:
       context: ../images/ocudu
@@ -373,50 +327,21 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &du1_ip 172.20.0.9
+      <<: *ocudu_env
+      RETINA_IP: &du1_ip 172.20.0.8
     networks:
       retina:
         ipv4_address: *du1_ip
     x-testbed:
       type: du
 
-  ocudu-gnb-remote:
-    restart: unless-stopped
-    container_name: gnb-remote
-    profiles:
-      - all
-    image: ${RETINA_REGISTRY_URI}/ocudu-remote:${RETINA_VERSION}
-    build:
-      context: ../images/ocudu_remote
-      args:
-        <<: *variables
-      additional_contexts:
-        agent: "service:agent-image"
-        wheelhouse: "service:wheelhouse"
-    volumes: *agent_volumes
-    tmpfs: *agent_tmpfs
-    configs:
-      - source: gnb_remote.yml
-        target: /etc/retina/resources/gnb_remote.yml
-    environment:
-      RETINA_IP: &gnb_remote_ip 172.20.0.10
-      RETINA_SECRETS: ${GNB_REMOTE_IP:-}
-      PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb
-    networks:
-      retina:
-        ipv4_address: *gnb_remote_ip
-    x-testbed:
-      type: gnb
-
   open5gs:
     restart: unless-stopped
     container_name: open5gs
     profiles:
       - all
+      - zmq_amariue_open5gs
       - zmq_srsue
-      - zmq_amariue
-      - zmq_amariue_1cu_2du
-      - zmq_amariue_2gnb
       - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
     build:
@@ -432,7 +357,7 @@ services:
     sysctls:
       - net.ipv6.conf.default.disable_ipv6=0
     environment:
-      RETINA_IP: &open5gs_ip 172.20.0.11
+      RETINA_IP: &open5gs_ip 172.20.0.9
     networks:
       retina:
         ipv4_address: *open5gs_ip
@@ -443,9 +368,13 @@ services:
     x-testbed:
       type: 5gc
 
-  amarisoft-5gc:
+  amarisoft-5gc-1: &mme
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     restart: unless-stopped
-    container_name: amarisoft-5gc
+    container_name: amarisoft-5gc-1
     profiles:
       - all
       - zmq_amariue_mme
@@ -458,7 +387,7 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &amari5gc_ip 172.20.0.12
+      RETINA_IP: &amari5gc1_ip 172.20.0.10
       RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_MME_LICENSE_TAG}
     cap_add:
       - NET_ADMIN # Required for TUN interface creation and iptables
@@ -470,13 +399,23 @@ services:
       - net.ipv4.ip_forward=1 # Required for packet forwarding between UEs and network
     networks:
       retina:
-        ipv4_address: *amari5gc_ip
+        ipv4_address: *amari5gc1_ip
     volumes: *agent_volumes
     tmpfs: *agent_tmpfs
     devices:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
       type: 5gc
+
+  amarisoft-5gc-2:
+    <<: *mme
+    container_name: amarisoft-5gc-2
+    environment:
+      RETINA_IP: &amari5gc2_ip 172.20.0.11
+      RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_MME_LICENSE_TAG}
+    networks:
+      retina:
+        ipv4_address: *amari5gc2_ip
 
   ntn-channel-emulator:
     restart: unless-stopped
@@ -493,7 +432,7 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &emulator_ip 172.20.0.13
+      RETINA_IP: &emulator_ip 172.20.0.12
     networks:
       retina:
         ipv4_address: *emulator_ip
@@ -516,7 +455,7 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &flexric_ip 172.20.0.14
+      RETINA_IP: &flexric_ip 172.20.0.13
     networks:
       retina:
         ipv4_address: *flexric_ip
