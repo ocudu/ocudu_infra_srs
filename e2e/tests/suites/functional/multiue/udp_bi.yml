@@ -15,7 +15,7 @@ baseline: &base_config
       traffic_duration_sec: 180
       log_level: "error"
   gnb:
-    config: [cell_cfg.yml, 512ue.yml, tdd_default.yml]
+    config: [amf.yml, cell_cfg.yml, 512ue.yml, tdd_default.yml]
     parameters:
       log_level: warning
   core:
@@ -37,13 +37,13 @@ baseline: &base_config
 tdd_dl_heavy:
   <<: *base_config
   gnb:
-    config: [cell_cfg.yml, 512ue.yml, tdd_63.yml]
+    config: [amf.yml, cell_cfg.yml, 512ue.yml, tdd_63.yml]
     parameters:
       log_level: warning
 
 tdd_ul_heavy:
   <<: *base_config
   gnb:
-    config: [cell_cfg.yml, 512ue.yml, tdd_27.yml]
+    config: [amf.yml, cell_cfg.yml, 512ue.yml, tdd_27.yml]
     parameters:
       log_level: warning

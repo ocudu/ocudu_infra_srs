@@ -12,7 +12,7 @@ inter_ru_ho: &base_config
       ul_bitrate: 10.0e+3
       nof_ue: &nof_ue 10
   gnb:
-    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, 512ue.yml]
+    config: [amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, 512ue.yml]
   core:
     config: [baseline.cfg]
   criteria:
@@ -35,7 +35,7 @@ reestablishment:
       ul_bitrate: 10.0e+3
       nof_ue: *nof_ue
   gnb:
-    config: [cell_cfg.yml, tdd_default.yml, 512ue.yml]
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, 512ue.yml]
   criteria:
     dl_bitrate: 0
     ul_bitrate: 0

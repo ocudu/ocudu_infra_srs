@@ -11,7 +11,7 @@ slicing: &base_config
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
   gnb:
-    config: [cell_cfg.yml, tdd_default.yml, dual_slice.yml]
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, dual_slice.yml]
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-SVCS-17-3]

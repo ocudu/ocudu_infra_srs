@@ -93,7 +93,7 @@ baseline: &base_config # Test Case
       nof_ue: 1
       test_duration: 100
   gnb:
-    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
+    config: [amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
   # Adding pass/fail criteria to the test
@@ -108,7 +108,7 @@ baseline: &base_config # Test Case
 conditional_ho:
   <<: *base_config
   gnb:
-    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, conditional_ho.yml]
+    config: [amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, conditional_ho.yml]
   feature_ids: [MVP-FUNC-MOB-15]
 ```
 

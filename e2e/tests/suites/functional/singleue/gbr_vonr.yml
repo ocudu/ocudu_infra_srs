@@ -10,7 +10,7 @@ baseline: &base_config
     parameters:
       dl_bitrate: 10.0e+6
   gnb:
-    config: [cell_cfg.yml, tdd_default.yml, vonr_qos.yml]
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, vonr_qos.yml]
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-SVCS-16-8-a, MVP-FUNC-SVCS-16-8-b, MVP-FUNC-SVCS-16-8-c, DU-QOS-1]

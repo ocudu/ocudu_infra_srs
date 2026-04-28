@@ -12,7 +12,7 @@ baseline_gnb: &base_config
       ul_bitrate: 10.0e+6
       test_duration: 3
   gnb:
-    config: [cell_cfg.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-ARCH-INTF-4, MVP-FUNC-ARCH-16-1, MVP-FUNC-PHY-16-3, MVP-FUNC-PHY-16-13, MVP-FUNC-PHY-16-15, MVP-FUNC-BAS-16-2, MVP-FUNC-TDD-16-2, MVP-FUNC-RLM-16-1, MVP-FUNC-RACH-16-1, MVP-FUNC-MOB-9, MVP-FUNC-RLM-16-1, MVP-ARCH-GEN-1, MVP-ARCH-GEN-2, DU-GEN-1, DU-PHY-2, DU-GEN-5, DU-PHY-5, DU-PHY-6, DU-PHY-4, MVP-FUNC-SVCS-17-1, MVP-FUNC-TDD-16-1]
@@ -33,7 +33,7 @@ baseline_gnb: &base_config
 tdd_mixed:
   <<: *base_config
   gnb:
-    config: [cell_cfg.yml, prach_config.yml, tdd_mixed.yml, mac_pcap.yml]
+    config: [amf.yml, cell_cfg.yml, prach_config.yml, tdd_mixed.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 156
   feature_ids: [MVP-FUNC-TDD-16-4]
@@ -52,7 +52,7 @@ tdd_mixed:
 tdd_dl_heavy:
   <<: *base_config
   gnb:
-    config: [cell_cfg.yml, prach_config.yml, tdd_72b.yml, mac_pcap.yml]
+    config: [amf.yml, cell_cfg.yml, prach_config.yml, tdd_72b.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 156
   feature_ids: [MVP-FUNC-TDD-16-5]

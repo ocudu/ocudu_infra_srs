@@ -16,7 +16,7 @@ band3_bw50: &base_config
       band: 3
       bandwidth: 50
   gnb:
-    config: [cell_cfg.yml]
+    config: [amf.yml, cell_cfg.yml]
     parameters:
       cfg_earfcn: 368500
       cfg_bandwidth: 50
@@ -40,7 +40,7 @@ band3_bw50: &base_config
 prach_config_1_fdd:
   <<: *base_config
   gnb:
-    config: [cell_cfg.yml, prach_config.yml]
+    config: [amf.yml, cell_cfg.yml, prach_config.yml]
     parameters:
       cfg_earfcn: 368500
       cfg_bandwidth: 50
@@ -74,7 +74,7 @@ prach_config_1_fdd:
 band3_bw5:
   <<: *base_config
   gnb:
-    config: [cell_cfg.yml]
+    config: [amf.yml, cell_cfg.yml]
     parameters:
       cfg_earfcn: 368500
       cfg_bandwidth: 5

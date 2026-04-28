@@ -33,14 +33,3 @@ metrics:
   layers:
     enable_sched: true
     enable_mac: true
-
-# Baseline single slice configuration
-cu_cp:
-  amf:
-    supported_tracking_areas:
-      - tac: 7
-        plmn_list:
-          - plmn: "00101"
-            tai_slice_support_list:
-              - sst: 1
-                sd: 1
