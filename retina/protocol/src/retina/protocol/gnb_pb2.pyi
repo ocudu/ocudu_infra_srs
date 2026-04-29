@@ -9,7 +9,9 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 """
 
 import builtins
+import collections.abc
 import google.protobuf.descriptor
+import google.protobuf.internal.containers
 import google.protobuf.message
 import retina.protocol.base_pb2
 import sys
@@ -32,17 +34,17 @@ class CUStartInfo(google.protobuf.message.Message):
     @property
     def plmn(self) -> retina.protocol.base_pb2.PLMN: ...
     @property
-    def fivegc_definition(self) -> retina.protocol.base_pb2.FiveGCDefinition: ...
+    def fivegc_definition(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[retina.protocol.base_pb2.FiveGCDefinition]: ...
     @property
     def start_info(self) -> retina.protocol.base_pb2.StartInfo: ...
     def __init__(
         self,
         *,
         plmn: retina.protocol.base_pb2.PLMN | None = ...,
-        fivegc_definition: retina.protocol.base_pb2.FiveGCDefinition | None = ...,
+        fivegc_definition: collections.abc.Iterable[retina.protocol.base_pb2.FiveGCDefinition] | None = ...,
         start_info: retina.protocol.base_pb2.StartInfo | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "plmn", b"plmn", "start_info", b"start_info"]) -> builtins.bool: ...
+    def HasField(self, field_name: typing.Literal["plmn", b"plmn", "start_info", b"start_info"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "plmn", b"plmn", "start_info", b"start_info"]) -> None: ...
 
 Global___CUStartInfo: typing_extensions.TypeAlias = CUStartInfo
@@ -105,7 +107,7 @@ class GNBStartInfo(google.protobuf.message.Message):
     @property
     def plmn(self) -> retina.protocol.base_pb2.PLMN: ...
     @property
-    def fivegc_definition(self) -> retina.protocol.base_pb2.FiveGCDefinition: ...
+    def fivegc_definition(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[retina.protocol.base_pb2.FiveGCDefinition]: ...
     @property
     def ue_definition(self) -> retina.protocol.base_pb2.UEDefinition:
         """Only required in ZMQ mode"""
@@ -120,12 +122,12 @@ class GNBStartInfo(google.protobuf.message.Message):
         self,
         *,
         plmn: retina.protocol.base_pb2.PLMN | None = ...,
-        fivegc_definition: retina.protocol.base_pb2.FiveGCDefinition | None = ...,
+        fivegc_definition: collections.abc.Iterable[retina.protocol.base_pb2.FiveGCDefinition] | None = ...,
         ue_definition: retina.protocol.base_pb2.UEDefinition | None = ...,
         ric_definition: retina.protocol.base_pb2.NearRtRicDefinition | None = ...,
         start_info: retina.protocol.base_pb2.StartInfo | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> builtins.bool: ...
+    def HasField(self, field_name: typing.Literal["plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> None: ...
 
 Global___GNBStartInfo: typing_extensions.TypeAlias = GNBStartInfo

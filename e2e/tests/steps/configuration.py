@@ -488,7 +488,6 @@ def set_config_files(
             if item.parameters:
                 retina_data.test_config[node_type.value]["parameters"] = item.parameters
             if item.items:
-                logging.info(storage.clients[node_type])
                 retina_data.test_config[node_type.value]["node_list"] = [
                     {
                         "name": storage.clients[node_type][i].name,

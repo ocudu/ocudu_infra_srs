@@ -31,9 +31,9 @@ service UE {
 };
 
 message UEStartInfo {
-  repeated DUDefinition du_definition     = 1; // Only required in ZMQ mode
-  FiveGCDefinition      fivegc_definition = 2; // Only required for CotsUEs
-  StartInfo             start_info        = 3;
+  repeated DUDefinition     du_definition     = 1; // Only required in ZMQ mode
+  repeated FiveGCDefinition fivegc_definition = 2; // Only required for CotsUEs
+  StartInfo                 start_info        = 3;
 };
 
 message UEAttachedInfo {

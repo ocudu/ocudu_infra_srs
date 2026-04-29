@@ -69,7 +69,7 @@ class UEStartInfo(google.protobuf.message.Message):
         """Only required in ZMQ mode"""
 
     @property
-    def fivegc_definition(self) -> retina.protocol.base_pb2.FiveGCDefinition:
+    def fivegc_definition(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[retina.protocol.base_pb2.FiveGCDefinition]:
         """Only required for CotsUEs"""
 
     @property
@@ -78,10 +78,10 @@ class UEStartInfo(google.protobuf.message.Message):
         self,
         *,
         du_definition: collections.abc.Iterable[retina.protocol.base_pb2.DUDefinition] | None = ...,
-        fivegc_definition: retina.protocol.base_pb2.FiveGCDefinition | None = ...,
+        fivegc_definition: collections.abc.Iterable[retina.protocol.base_pb2.FiveGCDefinition] | None = ...,
         start_info: retina.protocol.base_pb2.StartInfo | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "start_info", b"start_info"]) -> builtins.bool: ...
+    def HasField(self, field_name: typing.Literal["start_info", b"start_info"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing.Literal["du_definition", b"du_definition", "fivegc_definition", b"fivegc_definition", "start_info", b"start_info"]) -> None: ...
 
 Global___UEStartInfo: typing_extensions.TypeAlias = UEStartInfo

@@ -59,7 +59,7 @@ def test_cots_paging(
     logging.info("Paging Test")
     start_network(ue_array=[ue], gnb_array=[gnb], fivegc_array=[fivegc])
     ue_attach_info_dict = ue_start_and_attach(
-        ue_array=[ue], du_definition=[gnb.GetDefinition(UInt32Value(value=0))], fivegc=fivegc
+        ue_array=[ue], du_definition=[gnb.GetDefinition(UInt32Value(value=0))], fivegc_array=[fivegc]
     )
     ping(ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=10)
     sleep(5)

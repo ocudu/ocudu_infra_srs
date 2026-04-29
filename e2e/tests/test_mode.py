@@ -109,7 +109,7 @@ def test_ue(
             GNBStartInfo(
                 plmn=PLMN(mcc="001", mnc="01"),
                 ue_definition=UEDefinition(zmq_ip=du_def.zmq_ip, zmq_port_array=du_def.zmq_port_array),
-                fivegc_definition=fivegc_def,
+                fivegc_definition=[fivegc_def],
                 start_info=StartInfo(
                     timeout=gnb_startup_timeout,
                     post_commands=(
@@ -302,7 +302,7 @@ def _test_ru(
             GNBStartInfo(
                 plmn=PLMN(mcc="001", mnc="01"),
                 ue_definition=UEDefinition(zmq_port_array=tuple(range(nof_ant))),
-                fivegc_definition=FiveGCDefinition(amf_ip="127.0.0.1", amf_port=38412),
+                fivegc_definition=[FiveGCDefinition(amf_ip="127.0.0.1", amf_port=38412)],
                 start_info=StartInfo(
                     timeout=gnb_startup_timeout,
                     post_commands=("cu_cp amf --no_core 1",),
@@ -390,7 +390,7 @@ def test_mode_many_ues(
             GNBStartInfo(
                 plmn=PLMN(mcc="001", mnc="01"),
                 ue_definition=UEDefinition(zmq_port_array=tuple(range(nof_ant))),
-                fivegc_definition=FiveGCDefinition(amf_ip="127.0.0.1", amf_port=38412),
+                fivegc_definition=[FiveGCDefinition(amf_ip="127.0.0.1", amf_port=38412)],
                 start_info=StartInfo(
                     timeout=gnb_startup_timeout,
                     post_commands=(f"cu_cp amf --no_core 1 {extra_cli_config}",),

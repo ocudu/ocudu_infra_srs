@@ -205,11 +205,11 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
             du_conf_file = self._render(
                 filename=self.DU_CONF_FINAL_NAME,
                 templates={
-                    self.DU_CONF_METRICS_NAME: "",
                     self.DU_CONF_MAIN_NAME: template_defaults.main,
                     self.DU_CONF_DU_NAME: template_defaults.du,
                     self.DU_CONF_RU_NAME: template_defaults.ru,
                     self.DU_QOS_NAME: template_defaults.qos,
+                    self.DU_CONF_METRICS_NAME: "",
                 },
                 values={
                     **get_module_variables(testbed_defaults),

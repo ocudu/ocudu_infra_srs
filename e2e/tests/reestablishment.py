@@ -597,7 +597,7 @@ def _test_reestablishments(
     ue_attach_info_dict = ue_start_and_attach(
         ue_array=ue_array,
         du_definition=[gnb.GetDefinition(UInt32Value(value=0))],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         ue_startup_timeout=ue_startup_timeout,
     )
 

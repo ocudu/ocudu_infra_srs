@@ -299,7 +299,7 @@ Base service provides health checking, version information, and common functiona
 | Field | Type | Label | Description |
 |---|---|---|---|
 | `du_definition` | `DUDefinition` |`repeated`|Only required in ZMQ mode|
-| `fivegc_definition` | `FiveGCDefinition` ||Only required for CotsUEs|
+| `fivegc_definition` | `FiveGCDefinition` |`repeated`|Only required for CotsUEs|
 | `start_info` | `StartInfo` |||
 
 ### Enums
@@ -348,7 +348,7 @@ UE service manages user equipment operations including attachment, movement, and
 | Field | Type | Label | Description |
 |---|---|---|---|
 | `plmn` | `PLMN` |||
-| `fivegc_definition` | `FiveGCDefinition` |||
+| `fivegc_definition` | `FiveGCDefinition` |`repeated`||
 | `start_info` | `StartInfo` |||
 
 #### DUStartInfo
@@ -369,7 +369,7 @@ UE service manages user equipment operations including attachment, movement, and
 | Field | Type | Label | Description |
 |---|---|---|---|
 | `plmn` | `PLMN` |||
-| `fivegc_definition` | `FiveGCDefinition` |||
+| `fivegc_definition` | `FiveGCDefinition` |`repeated`||
 | `ue_definition` | `UEDefinition` ||Only required in ZMQ mode|
 | `ric_definition` | `NearRtRicDefinition` ||if non-empty, E2 is enabled|
 | `start_info` | `StartInfo` |||

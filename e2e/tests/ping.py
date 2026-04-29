@@ -767,7 +767,7 @@ def _ping(
     ue_attach_info_dict = ue_start_and_attach(
         ue_array=ue_array,
         du_definition=[gnb.GetDefinition(UInt32Value(value=0))],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         channel_emulator=channel_emulator,
     )
 
@@ -778,7 +778,7 @@ def _ping(
         for _ in range(reattach_count):
             ue_stop(ue_array=ue_array, retina_data=retina_data)
             ue_attach_info_dict = ue_start_and_attach(
-                ue_array=ue_array, du_definition=[gnb.GetDefinition(UInt32Value(value=0))], fivegc=fivegc
+                ue_array=ue_array, du_definition=[gnb.GetDefinition(UInt32Value(value=0))], fivegc_array=[fivegc]
             )
             ping(
                 ue_attach_info_dict=ue_attach_info_dict,

@@ -87,7 +87,7 @@ class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instanc
     def Start(self, request: UEStartInfo, context: grpc.ServicerContext) -> Empty:
         self.Stop(UInt32Value(value=request.start_info.timeout), context)
 
-        self._epc_mask = request.fivegc_definition.tun_mask
+        self._epc_mask = request.fivegc_definition[0].tun_mask
 
         config_file = self._render(
             filename=self.SRS_CONF_FILE_BASE_NAME,

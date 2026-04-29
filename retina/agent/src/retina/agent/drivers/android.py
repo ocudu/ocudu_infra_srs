@@ -76,8 +76,8 @@ class AndroidUe(UEDriver):
         self._find_device(context)
         self.Stop(UInt32Value(value=request.start_info.timeout), context)
 
-        self._5gc_ip = request.fivegc_definition.tun_ip
-        self._5gc_mask = request.fivegc_definition.tun_mask
+        self._5gc_ip = request.fivegc_definition[0].tun_ip
+        self._5gc_mask = request.fivegc_definition[0].tun_mask
 
         with notify_grpc_exception(context):
             self._set_airplane_mode(False)

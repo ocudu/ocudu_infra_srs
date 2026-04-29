@@ -391,7 +391,7 @@ def _handover_multi_ues(
         raise ValueError("Either gnb or du_array and cu must be provided")
 
     ue_attach_info_dict = ue_start_and_attach(
-        ue_array=ue_array, du_definition=du_definition, fivegc=fivegc, ue_startup_timeout=ue_startup_timeout
+        ue_array=ue_array, du_definition=du_definition, fivegc_array=[fivegc], ue_startup_timeout=ue_startup_timeout
     )
 
     # HO while pings

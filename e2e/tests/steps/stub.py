@@ -25,6 +25,7 @@ from retina.protocol import RanStub
 from retina.protocol.base_pb2 import (
     ChannelEmulatorType,
     DUDefinition,
+    FiveGCDefinition,
     Metrics,
     PingRequest,
     PingResponse,
@@ -148,7 +149,7 @@ def start_and_attach(
     return ue_start_and_attach(
         ue_array=ue_array,
         du_definition=[gnb.GetDefinition(UInt32Value(value=0))],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         ue_startup_timeout=ue_startup_timeout,
         attach_timeout=attach_timeout,
         inter_ue_start_period=inter_ue_start_period,
@@ -218,10 +219,11 @@ def start_network(
         if ue_def.zmq_ip is not None:
             ue_def_for_gnb = ue_def
 
+    fivegc_definition: List[FiveGCDefinition] = []
     for fivegc in fivegc_array:
         with handle_start_error(name=f"5GC [{id(fivegc)}]"):
             # 5GC Start
-            fivegc_definition = fivegc.GetDefinition(Empty())
+            fivegc_definition.append(fivegc.GetDefinition(Empty()))
             fivegc.Start(
                 FiveGCStartInfo(
                     plmn=plmn,
@@ -311,7 +313,7 @@ def ue_start_and_attach(
     *,  # This enforces keyword-only arguments
     ue_array: Sequence[UEStub],
     du_definition: Sequence[DUDefinition],
-    fivegc: FiveGCStub,
+    fivegc_array: Sequence[FiveGCStub],
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     attach_timeout: int = ATTACH_TIMEOUT,
     inter_ue_start_period: int = INTER_UE_START_PERIOD,
@@ -321,7 +323,7 @@ def ue_start_and_attach(
     Start an array of UEs and wait until attached to already running gnb and 5gc
     """
 
-    ue_start(ue_array, du_definition, fivegc, ue_startup_timeout, inter_ue_start_period, channel_emulator)
+    ue_start(ue_array, du_definition, fivegc_array, ue_startup_timeout, inter_ue_start_period, channel_emulator)
 
     # Attach in parallel
     ue_attach_task_dict: Dict[UEStub, grpc.Future] = {
@@ -345,7 +347,7 @@ def ue_start_and_attach(
 def ue_start(
     ue_array: Sequence[UEStub],
     du_definition: Sequence[DUDefinition],
-    fivegc: FiveGCStub,
+    fivegc_array: Sequence[FiveGCStub],
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     inter_ue_start_period: int = INTER_UE_START_PERIOD,
     channel_emulator: Optional[ChannelEmulatorStub] = None,
@@ -360,12 +362,13 @@ def ue_start(
         du_definition[0].zmq_ip = channel_emulator_definition.zmq_ip
         du_definition[0].zmq_port_array[0] = channel_emulator_definition.dl_zmq_port
 
+    fivegc_definition = [f.GetDefinition(Empty()) for f in fivegc_array]
     for ue_stub in ue_array:
         with handle_start_error(name=f"UE [{id(ue_stub)}]"):
             ue_stub.Start(
                 UEStartInfo(
                     du_definition=du_definition,
-                    fivegc_definition=fivegc.GetDefinition(Empty()),
+                    fivegc_definition=fivegc_definition,
                     start_info=StartInfo(timeout=ue_startup_timeout),
                 )
             )
@@ -979,7 +982,7 @@ def multi_ue_mobility_iperf(
     ue_attach_info_dict = ue_start_and_attach(
         ue_array=ue_array,
         du_definition=[gnb.GetDefinition(UInt32Value(value=idx)) for idx, gnb in enumerate(gnb_array)],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
     )
 
     # HO while iPerf

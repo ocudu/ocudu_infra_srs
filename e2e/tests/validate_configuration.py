@@ -136,7 +136,7 @@ def run_config(
         GNBStartInfo(
             plmn=plmn,
             ue_definition=UEDefinition(),
-            fivegc_definition=fivegc_def,
+            fivegc_definition=[fivegc_def],
             start_info=StartInfo(
                 timeout=timeout,
                 post_commands=(f"log --filename stdout {extra_config}",),

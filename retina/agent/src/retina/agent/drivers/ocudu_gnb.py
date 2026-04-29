@@ -117,18 +117,18 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
         gnb_conf_file = self._render(
             filename=self.GNB_CONF_FINAL_NAME,
             templates={
-                self.GNB_CONF_AMF_NAME: "",
-                self.GNB_CONF_METRICS_NAME: "",
                 self.GNB_CONF_MAIN_NAME: template_defaults.main,
                 self.GNB_CONF_CU_NAME: template_defaults.cu,
                 self.GNB_CONF_DU_NAME: template_defaults.du,
                 self.GNB_CONF_RU_NAME: template_defaults.ru,
                 self.GNB_CONF_QOS_NAME: template_defaults.qos,
+                self.GNB_CONF_AMF_NAME: "",
+                self.GNB_CONF_METRICS_NAME: "",
             },
             values={
                 **get_module_variables(testbed_defaults),
                 **get_module_variables(gnb_defaults),
-                **self._cu.get_parameters(fivegc_definition=request.fivegc_definition, plmn=request.plmn),
+                **self._cu.get_parameters(fivegc_definition=list(request.fivegc_definition), plmn=request.plmn),
                 **self._du.get_parameters(
                     ue_definition=request.ue_definition,
                     gnb_du_id=gnb_defaults.gnb_du_id,

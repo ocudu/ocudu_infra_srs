@@ -64,7 +64,7 @@ def test_slicing(
 
     start_network(ue_array=ue_4, gnb_array=[gnb], fivegc_array=[fivegc])
     ue_attach_info_dict = ue_start_and_attach(
-        ue_array=ue_4, du_definition=[gnb.GetDefinition(UInt32Value(value=0))], fivegc=fivegc
+        ue_array=ue_4, du_definition=[gnb.GetDefinition(UInt32Value(value=0))], fivegc_array=[fivegc]
     )
     slice1_ue_rnti = ue_attach_info_dict[ue_4[0]].rnti
 

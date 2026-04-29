@@ -163,7 +163,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         if not self._any_virtual_ue_already_started:
             self._stop_unlock(UInt32Value(value=request.start_info.timeout), context.peer())
 
-            self._5gc_mask = request.fivegc_definition.tun_mask
+            self._5gc_mask = request.fivegc_definition[0].tun_mask
 
             if testbed_defaults.type == "ru":
                 if len(testbed_defaults.ru_network_interface) != len(testbed_defaults.ru_du_mac_addr):
@@ -262,7 +262,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                         )
                     ),
                     "subnet_prefix": str(
-                        ipaddress.ip_network(f"{request.fivegc_definition.tun_ip}/16", False).network_address
+                        ipaddress.ip_network(f"{request.fivegc_definition[0].tun_ip}/16", False).network_address
                     ).replace(".0", ""),
                     # HW related cell info
                     "cell_ru_cfg": (

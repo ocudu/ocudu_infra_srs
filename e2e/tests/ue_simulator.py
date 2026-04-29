@@ -154,7 +154,7 @@ def _ue_simulator(
     ue_start(
         ue_array=(ue,),
         du_definition=du_definition,
-        fivegc=fivegc_array[0],
+        fivegc_array=fivegc_array,
     )
 
     # Wait until UE stops

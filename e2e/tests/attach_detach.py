@@ -172,7 +172,7 @@ def _attach_and_detach_multi_ues(
     ue_attach_info_dict = ue_start_and_attach(
         ue_array=ue_array,
         du_definition=[gnb.GetDefinition(UInt32Value(value=0))],
-        fivegc=fivegc,
+        fivegc_array=[fivegc],
         ue_startup_timeout=ue_startup_timeout,
     )
 
@@ -204,7 +204,7 @@ def _attach_and_detach_multi_ues(
         ue_stop(ue_array=ue_array_to_attach, retina_data=retina_data, ue_stop_timeout=ue_stop_timeout)
         sleep(ue_settle_time)
         ue_attach_info_dict = ue_start_and_attach(
-            ue_array=ue_array_to_attach, du_definition=[gnb.GetDefinition(UInt32Value(value=0))], fivegc=fivegc
+            ue_array=ue_array_to_attach, du_definition=[gnb.GetDefinition(UInt32Value(value=0))], fivegc_array=[fivegc]
         )
     # final stop will be triggered by teardown
 

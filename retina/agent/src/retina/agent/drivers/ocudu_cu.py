@@ -6,7 +6,7 @@ OCUDU CU Agent
 """
 
 import socket
-from typing import Any, Dict
+from typing import Any, Dict, Sequence
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
@@ -59,8 +59,7 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
         version: str = self._parse_sut_version(output, self.CU_VERSION_REGEX)
         return version
 
-    # pylint: disable=too-many-arguments, too-many-positional-arguments
-    def get_parameters(self, *, fivegc_definition: FiveGCDefinition, plmn: PLMN) -> Dict[str, Any]:
+    def get_parameters(self, *, fivegc_definition: Sequence[FiveGCDefinition], plmn: PLMN) -> Dict[str, Any]:
         """
         Return parameters for config templates
         """
@@ -69,8 +68,7 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
             "f1ap_filename": self.get_filepath_in_report_folder(gnb_defaults.f1ap_filename),
             "e1ap_filename": self.get_filepath_in_report_folder(gnb_defaults.e1ap_filename),
             "n3_filename": self.get_filepath_in_report_folder(gnb_defaults.n3_filename),
-            "fivegc_ip": fivegc_definition.amf_ip,
-            "fivegc_port": fivegc_definition.amf_port,
+            "fivegc_definition": list(fivegc_definition),
             "gnb_id": gnb_defaults.gnb_id,
             "gnb_id_bit_length": gnb_defaults.gnb_id_bit_length,
             "cell_array": get_cell_array(num_cells=gnb_defaults.num_cells, cell_offset=gnb_defaults.cell_offset),
@@ -93,15 +91,15 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
             cu_conf_file = self._render(
                 filename=self.CU_CONF_FINAL_NAME,
                 templates={
-                    self.CU_CONF_AMF_NAME: "",
                     self.CU_CONF_MAIN_NAME: template_defaults.main,
                     self.CU_CONF_CU_NAME: template_defaults.cu,
                     self.CU_CONF_QOS_NAME: template_defaults.qos,
+                    self.CU_CONF_AMF_NAME: "",
                 },
                 values={
                     **get_module_variables(testbed_defaults),
                     **get_module_variables(gnb_defaults),
-                    **self.get_parameters(fivegc_definition=request.fivegc_definition, plmn=request.plmn),
+                    **self.get_parameters(fivegc_definition=list(request.fivegc_definition), plmn=request.plmn),
                     "log_filename": self.get_filepath_in_report_folder(self.CU_LOG_FILENAME),
                     "cu_ip": cu_def.cu_ip,
                 },

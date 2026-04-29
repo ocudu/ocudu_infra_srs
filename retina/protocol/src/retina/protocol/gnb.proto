@@ -33,9 +33,9 @@ service GNB {
 };
 
 message CUStartInfo {
-  PLMN             plmn              = 1;
-  FiveGCDefinition fivegc_definition = 2;
-  StartInfo        start_info        = 3;
+  PLMN                      plmn              = 1;
+  repeated FiveGCDefinition fivegc_definition = 2;
+  StartInfo                 start_info        = 3;
 }
 
 message DUStartInfo {
@@ -50,9 +50,9 @@ message DUStartInfo {
 }
 
 message GNBStartInfo {
-  PLMN                plmn              = 1;
-  FiveGCDefinition    fivegc_definition = 2;
-  UEDefinition        ue_definition     = 3; // Only required in ZMQ mode
-  NearRtRicDefinition ric_definition    = 4; // if non-empty, E2 is enabled
-  StartInfo           start_info        = 5;
+  PLMN                      plmn              = 1;
+  repeated FiveGCDefinition fivegc_definition = 2;
+  UEDefinition              ue_definition     = 3; // Only required in ZMQ mode
+  NearRtRicDefinition       ric_definition    = 4; // if non-empty, E2 is enabled
+  StartInfo                 start_info        = 5;
 };
