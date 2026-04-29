@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  tdd_ul_dl_cfg:
+    dl_ul_tx_period: 5
+    nof_dl_slots: 3
+    nof_ul_slots: 1
+    nof_dl_symbols: 10
+    nof_ul_symbols: 2
