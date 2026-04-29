@@ -37,5 +37,5 @@ if ! docker buildx version >/dev/null 2>&1; then
 fi
 
 # Run agents
-docker compose --profile ${RETINA_PROFILE} up --detach
+docker compose --profile ${RETINA_PROFILE} up "$@" --detach
 docker compose --profile ${RETINA_PROFILE} logs --follow --since 0s --timestamps

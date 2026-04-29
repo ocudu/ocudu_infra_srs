@@ -288,16 +288,10 @@ You can add `--help` to see pytet's help, with info about how to select test and
 
 ## 6. Retina Development
 
-If you modify **retina** locally you'll need to create those images locally. Do it by adding a `-build` to your docker compose up call.
+If retina dependencies and/or containers Dockerfile have been modified, you'll need to recreate the images locally. Do it by adding a `--build` flag to the script.
 
 ```bash
-docker compose --profile zmq_amariue up --build
-```
-
-You can just re-build the image your want, for example:
-
-```bash
-docker compose up launcher --build
+$RETINA_PATH/_scripts/retina_local.sh --build
 ```
 
 ### Change Amarisoft version

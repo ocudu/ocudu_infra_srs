@@ -91,6 +91,7 @@ services:
     build:
       context: ../
       dockerfile: launcher/Dockerfile
+      network: host # dl.k8s.io sometimes can't be resolved in build network
       args: &variables
         RETINA_REGISTRY_URI: ${RETINA_REGISTRY_URI}
         RETINA_VERSION: ${RETINA_VERSION}
