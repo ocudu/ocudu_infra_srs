@@ -17,8 +17,6 @@ expert_phy:
   pusch_channel_estimator_cfo_compensation: false
 
 pcap:
-  ngap_enable: true
-  ngap_filename: {{ngap_filename}}
   rlc_enable: true
   rlc_rb_type: srb
   rlc_filename: {{rlc_filename}}
