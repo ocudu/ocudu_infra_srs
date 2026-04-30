@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# inter-DU HO intra-frequency
+baseline: &base_config
+  template: ue_simulator.test_cu_2du
+  request: zmq_1cu2du
+  core:
+    config: [baseline.cfg]
+  ue:
+    config: [2cell_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: &nof_ue 1
+      num_cells: 2
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+  cu:
+    config: [log.yml, amf.yml, mobility.yml]
+  du:
+    items:
+      - config: [cell_cfg.yml, 1cell.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_du_id_cfg: 0
+          pci_cfg: 1
+          sector_id_cfg: 0
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+      - config: [cell_cfg.yml, 1cell.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_du_id_cfg: 1
+          pci_cfg: 2
+          sector_id_cfg: 1
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 5 # allow some KOs due to SR false alarms during UE reconfiguration
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_handovers_ge: 20 # calculated based on the test_duration
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0

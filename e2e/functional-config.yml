@@ -44,6 +44,22 @@ inter_cu_ho:
     KEYWORDS: "functional.mobility.inter_cu_ho."
     TESTBED: dynamic
 
+inter_du_ho:
+  stage: mobility
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.mobility.inter_du_ho."
+    TESTBED: dynamic
+
 inter_ru_ho:
   stage: mobility
   extends: .functional_e2e
