@@ -3,8 +3,8 @@
 
 cu_cp:
   amf:
-    addrs: {{fivegc_definition[0].amf_ip}}
-    port: {{fivegc_definition[0].amf_port}}
+    addrs: {{fivegc_definition.0.amf_ip}}
+    port: {{fivegc_definition.0.amf_port}}
     bind_addrs: {{ip}}
     supported_tracking_areas:
       - tac: 7
@@ -14,8 +14,8 @@ cu_cp:
               - sst: 1
                 sd: 1
   extra_amfs:
-    - addr: {{fivegc_definition[1].amf_ip}}
-      port: {{fivegc_definition[1].amf_port}}
+    - addr: {{fivegc_definition.1.amf_ip}}
+      port: {{fivegc_definition.1.amf_port}}
       bind_addr: {{ip}}
       supported_tracking_areas:
         - tac: 7
@@ -26,4 +26,3 @@ cu_cp:
                   sd: 1
 cell_cfg:
   additional_plmns: 00102
-

@@ -4,7 +4,7 @@
 # MOCN test
 mocn: &base_config
   template: ue_simulator.test_gnb_2core
-  request: zmq_mme
+  request: zmq_2mme
   ue:
     config: [1cell.cfg, mocn.cfg]
   gnb:
