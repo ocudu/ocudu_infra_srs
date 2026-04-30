@@ -357,3 +357,18 @@ Or, directly call the prune command
 ```bash
 docker system prune
 ```
+
+
+### Could not initialize RF driver
+
+If your AmariUE fails to start with:
+```bash
+Could not load '/opt/lteue/trx_ocudu.so' (/opt/lteue/trx_ocudu.so: cannot read file data: Is a directory)
+Could not initialize RF driver
+...
+```
+When using [fish-shell](https://fishshell.com/) the UID and GID are not set but as the containers use volumes to create the build files on your local system, the UID and GID are passed to the containers. To fix this you manually need to run:
+```bash
+export UID=$(id -u)
+export GID=$(id -g)
+```
