@@ -20,15 +20,15 @@ baseline:
   core:
     config: [baseline.cfg]
   criteria:
-    dl_bitrate: 10.0e+3
-    ul_bitrate: 10.0e+3
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_pdu_session_establishment_accept_eq: *nof_ue
-    nof_reestablishments_eq: 0
-    nof_handovers_eq: 0
-    max_late_dl_harqs: 0
-    max_late_ul_harqs: 0
-    nof_error_indications: 0
-    errors: 0
-    warnings: 3
+    du.dl_bitrate_gt: 10.0e+3
+    du.ul_bitrate_gt: 10.0e+3
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_reestablishments_eq: 0
+    du.nof_handovers_eq: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le_le: 0
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 3

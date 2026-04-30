@@ -15,7 +15,7 @@ from retina.launcher.criteria import DuCriteria
 # pylint: disable=invalid-name,missing-function-docstring,too-few-public-methods
 
 
-class dl_bitrate(DuCriteria):
+class dl_bitrate_gt(DuCriteria):
     """DL Bitrate"""
 
     operator_method = operator.gt
@@ -24,7 +24,7 @@ class dl_bitrate(DuCriteria):
         return mean(s.GetMetrics(Empty()).dl_bitrate for s in self._stub_array)
 
 
-class ul_bitrate(DuCriteria):
+class ul_bitrate_gt(DuCriteria):
     """UL Bitrate"""
 
     operator_method = operator.gt
@@ -33,7 +33,7 @@ class ul_bitrate(DuCriteria):
         return mean(s.GetMetrics(Empty()).ul_bitrate for s in self._stub_array)
 
 
-class nof_ko_dl(DuCriteria):
+class nof_ko_dl_le(DuCriteria):
     """DL KOs"""
 
     operator_method = operator.le
@@ -42,7 +42,7 @@ class nof_ko_dl(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_ko_dl for s in self._stub_array)
 
 
-class nof_ko_ul(DuCriteria):
+class nof_ko_ul_le(DuCriteria):
     """UL KOs"""
 
     operator_method = operator.le
@@ -51,7 +51,7 @@ class nof_ko_ul(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_ko_ul for s in self._stub_array)
 
 
-class max_late_dl_harqs(DuCriteria):
+class max_late_dl_harqs_le(DuCriteria):
     """Late DL HARQs"""
 
     operator_method = operator.le
@@ -60,7 +60,7 @@ class max_late_dl_harqs(DuCriteria):
         return sum(s.GetMetrics(Empty()).max_late_dl_harqs for s in self._stub_array)
 
 
-class max_late_ul_harqs(DuCriteria):
+class max_late_ul_harqs_le(DuCriteria):
     """Late UL HARQs"""
 
     operator_method = operator.le
@@ -69,7 +69,7 @@ class max_late_ul_harqs(DuCriteria):
         return sum(s.GetMetrics(Empty()).max_late_ul_harqs for s in self._stub_array)
 
 
-class nof_error_indications(DuCriteria):
+class nof_error_indications_le(DuCriteria):
     """Error indications"""
 
     operator_method = operator.le
@@ -78,7 +78,7 @@ class nof_error_indications(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_error_indications for s in self._stub_array)
 
 
-class nof_pucch_f0f1_invalid_harqs(DuCriteria):
+class nof_pucch_f0f1_invalid_harqs_le(DuCriteria):
     """PUCCH f0/f1 HARQs"""
 
     operator_method = operator.le
@@ -123,7 +123,7 @@ class nof_handovers_ge(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_handovers for s in self._stub_array)
 
 
-class errors(DuCriteria):
+class errors_le(DuCriteria):
     """Errors"""
 
     operator_method = operator.le
@@ -132,7 +132,7 @@ class errors(DuCriteria):
         return sum(s.Stop.with_call(UInt32Value(value=15), timeout=15)[0].error_count for s in self._stub_array)
 
 
-class warnings(DuCriteria):
+class warnings_le(DuCriteria):
     """Warnings"""
 
     operator_method = operator.le
@@ -213,7 +213,7 @@ class nof_rrc_resume_request_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_rrc_resume_request for s in self._stub_array)
 
 
-class nof_rrc_resume_request_geq(DuCriteria):
+class nof_rrc_resume_request_ge(DuCriteria):
     """RRC Resume Request"""
 
     operator_method = operator.ge
@@ -231,7 +231,7 @@ class nof_rrc_suspend_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_rrc_suspend for s in self._stub_array)
 
 
-class nof_rrc_suspend_geq(DuCriteria):
+class nof_rrc_suspend_ge(DuCriteria):
     """RRC Suspend (suspendConfig)"""
 
     operator_method = operator.ge
@@ -240,7 +240,7 @@ class nof_rrc_suspend_geq(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_rrc_suspend for s in self._stub_array)
 
 
-class nof_sib1_geq(DuCriteria):
+class nof_sib1_ge(DuCriteria):
     """SIB1 transmissions"""
 
     operator_method = operator.ge
@@ -249,7 +249,7 @@ class nof_sib1_geq(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_sib1_transmissions for s in self._stub_array)
 
 
-class nof_sib2_geq(DuCriteria):
+class nof_sib2_ge(DuCriteria):
     """SIB2 transmissions"""
 
     operator_method = operator.ge
@@ -258,7 +258,7 @@ class nof_sib2_geq(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_sib2_transmissions for s in self._stub_array)
 
 
-class nof_sib3_geq(DuCriteria):
+class nof_sib3_ge(DuCriteria):
     """SIB3 transmissions"""
 
     operator_method = operator.ge
@@ -267,7 +267,7 @@ class nof_sib3_geq(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_sib3_transmissions for s in self._stub_array)
 
 
-class nof_sib4_geq(DuCriteria):
+class nof_sib4_ge(DuCriteria):
     """SIB4 transmissions"""
 
     operator_method = operator.ge
@@ -276,7 +276,7 @@ class nof_sib4_geq(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_sib4_transmissions for s in self._stub_array)
 
 
-class nof_sib5_geq(DuCriteria):
+class nof_sib5_ge(DuCriteria):
     """SIB5 transmissions"""
 
     operator_method = operator.ge
@@ -285,7 +285,7 @@ class nof_sib5_geq(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_sib5_transmissions for s in self._stub_array)
 
 
-class nof_sib8_geq(DuCriteria):
+class nof_sib8_ge(DuCriteria):
     """SIB8 transmissions"""
 
     operator_method = operator.ge
@@ -294,7 +294,7 @@ class nof_sib8_geq(DuCriteria):
         return sum(s.GetMetrics(Empty()).nof_sib8_transmissions for s in self._stub_array)
 
 
-class dl_avg_ri_geq(DuCriteria):
+class dl_avg_ri_ge(DuCriteria):
     """DL avg RI"""
 
     operator_method = operator.ge
@@ -303,7 +303,7 @@ class dl_avg_ri_geq(DuCriteria):
         return mean(s.GetMetrics(Empty()).dl_avg_ri for s in self._stub_array)
 
 
-class ul_avg_ri_geq(DuCriteria):
+class ul_avg_ri_ge(DuCriteria):
     """UL avg RI"""
 
     operator_method = operator.ge

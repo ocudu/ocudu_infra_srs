@@ -22,7 +22,7 @@ class nof_pdu_session_establishment_accept_eq(FiveGcCriteria):
         return sum(s.GetMetrics(Empty()).nof_pdu_session_establishment_accept for s in self._stub_array)
 
 
-class nof_pdu_session_establishment_accept_geq(FiveGcCriteria):
+class nof_pdu_session_establishment_accept_ge(FiveGcCriteria):
     """PDU Session Establishment Accept"""
 
     operator_method = operator.ge

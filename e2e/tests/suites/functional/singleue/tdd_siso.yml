@@ -17,17 +17,17 @@ baseline_gnb: &base_config
     config: [baseline.cfg]
   feature_ids: [MVP-ARCH-INTF-4, MVP-FUNC-ARCH-16-1, MVP-FUNC-PHY-16-3, MVP-FUNC-PHY-16-13, MVP-FUNC-PHY-16-15, MVP-FUNC-BAS-16-2, MVP-FUNC-TDD-16-1, MVP-FUNC-TDD-16-2, MVP-FUNC-RLM-16-1, MVP-FUNC-RACH-16-1, MVP-FUNC-MOB-9, MVP-FUNC-RLM-16-1, MVP-ARCH-GEN-1, MVP-ARCH-GEN-2, DU-GEN-1, DU-PHY-2, DU-GEN-5, DU-PHY-5, DU-PHY-6, DU-PHY-4, MVP-FUNC-SVCS-17-1]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: 1
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
-    nof_sib1_geq: 1
-    nof_sib2_geq: 1
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
+    du.nof_sib1_ge: 1
+    du.nof_sib2_ge: 1
 
 # tid1.1.4: Mixed TDD pattern 6:4 DDDSUUUUDD
 tdd_mixed:
@@ -38,15 +38,15 @@ tdd_mixed:
       prach_config_index: 156
   feature_ids: [MVP-FUNC-TDD-16-4]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: 1
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
 
 # tid1.1.3: DL Heavy TDD pattern 6:4 DDDSUUDDDD
 tdd_dl_heavy:
@@ -57,12 +57,12 @@ tdd_dl_heavy:
       prach_config_index: 156
   feature_ids: [MVP-FUNC-TDD-16-5]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: 1
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0

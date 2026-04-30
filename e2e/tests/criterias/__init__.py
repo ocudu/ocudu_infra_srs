@@ -5,4 +5,4 @@
 Registers all criteria subclasses by importing their definition modules.
 """
 
-from . import du, fivegc, viavi
+from . import core, du, viavi

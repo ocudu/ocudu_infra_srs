@@ -53,7 +53,7 @@ class Criteria(ABC):  # pylint: disable=too-few-public-methods
     @property
     def criteria_id(self) -> str:
         """Unique criteria ID derived from the class qualified name."""
-        return type(self).__qualname__
+        return type(self).__module__.rsplit(".", maxsplit=1)[-1] + "." + type(self).__qualname__
 
     @final
     @property

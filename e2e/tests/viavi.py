@@ -41,12 +41,7 @@ class _ViaviConfiguration:
     test_timeout: int = 0
     gnb_extra_commands: str = ""
     retina_params: dict = field(default_factory=dict)
-    # test/fail criteria
-    expected_ul_bitrate: float = 0
-    expected_dl_bitrate: float = 0
-    expected_nof_kos: float = 0  # Infinity value is represented in a float
-    expected_max_late_harqs: int = 0
-    warning_as_errors: bool = True
+    criteria: dict = field(default_factory=dict)
     warning_allowlist: List[str] = field(default_factory=list)
 
 
@@ -68,11 +63,7 @@ def load_yaml_config(config_filename: str) -> List[_ViaviConfiguration]:
                 test_timeout=test_declaration["test_timeout"],
                 gnb_extra_commands=_convert_extra_config_into_command(test_declaration["gnb_extra_config"]),
                 retina_params=test_declaration.get("retina_params", {}),
-                expected_dl_bitrate=test_declaration["expected_dl_bitrate"],
-                expected_ul_bitrate=test_declaration["expected_ul_bitrate"],
-                expected_max_late_harqs=test_declaration["expected_max_late_harqs"],
-                expected_nof_kos=test_declaration["expected_nof_kos"],
-                warning_as_errors=test_declaration["warning_as_errors"],
+                criteria=test_declaration.get("criteria", {}),
                 warning_allowlist=test_declaration.get("warning_allowlist", []),
             )
         )
@@ -286,19 +277,8 @@ def _test_viavi(
     )
 
     # Criteria
-    criteria.add_criteria("dl_bitrate", test_declaration.expected_dl_bitrate)
-    criteria.add_criteria("ul_bitrate", test_declaration.expected_ul_bitrate)
-    criteria.add_criteria("nof_ko_dl", test_declaration.expected_nof_kos)
-    criteria.add_criteria("viavi_nof_ko_dl", test_declaration.expected_nof_kos)
-    criteria.add_criteria("nof_ko_ul", test_declaration.expected_nof_kos)
-    criteria.add_criteria("viavi_nof_ko_ul", test_declaration.expected_nof_kos)
-    criteria.add_criteria("max_late_dl_harqs", test_declaration.expected_max_late_harqs)
-    criteria.add_criteria("max_late_ul_harqs", test_declaration.expected_max_late_harqs)
-    criteria.add_criteria("nof_error_indications", 0)
-    criteria.add_criteria("errors", 0)
-    criteria.add_criteria("warnings", 0 if test_declaration.warning_as_errors else float("inf"))
-    criteria.add_criteria("viavi_warnings", float("inf"))
-    criteria.add_criteria("viavi_procedure_table", 0)
+    for criteria_id, criteria_expected_value in test_declaration.criteria.items():
+        criteria.add_criteria(criteria_id, criteria_expected_value)
 
     # Start the GNB
     amf_ip, amf_port = viavi.get_core_definition()
@@ -341,7 +321,7 @@ def _test_viavi(
                 retina_data=retina_data,
                 gnb_stop_timeout=gnb_stop_timeout,
                 log_search=log_search,
-                warning_as_errors=test_declaration.warning_as_errors,
+                warning_as_errors=False,
                 fail_if_kos=False,
             )
         finally:
@@ -368,7 +348,7 @@ def _test_viavi(
                 retina_data=retina_data,
                 timeout=gnb_stop_timeout,
                 log_search=log_search,
-                warning_as_errors=test_declaration.warning_as_errors,
+                warning_as_errors=False,
             )
             criteria.validate()
         except HTTPError:

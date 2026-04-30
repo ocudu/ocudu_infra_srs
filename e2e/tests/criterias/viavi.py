@@ -12,7 +12,7 @@ from retina.launcher.criteria import ViaviCriteria
 # pylint: disable=invalid-name,missing-function-docstring,too-few-public-methods
 
 
-class viavi_nof_ko_dl(ViaviCriteria):
+class nof_ko_dl_le(ViaviCriteria):
     """DL KOs (viavi)"""
 
     operator_method = operator.le
@@ -21,7 +21,7 @@ class viavi_nof_ko_dl(ViaviCriteria):
         return self._stub_array.get_test_kpis().dl_data.num_tbs_errors
 
 
-class viavi_nof_ko_ul(ViaviCriteria):
+class nof_ko_ul_le(ViaviCriteria):
     """UL KOs (viavi)"""
 
     operator_method = operator.le
@@ -30,7 +30,7 @@ class viavi_nof_ko_ul(ViaviCriteria):
         return self._stub_array.get_test_kpis().ul_data.num_tbs_nack
 
 
-class viavi_warnings(ViaviCriteria):
+class warnings_lt(ViaviCriteria):
     """Viavi Warnings"""
 
     operator_method = operator.lt
@@ -39,7 +39,7 @@ class viavi_warnings(ViaviCriteria):
         return len(self._stub_array.get_test_kpis().warning_array)
 
 
-class viavi_procedure_table(ViaviCriteria):
+class procedure_table_eq(ViaviCriteria):
     """Procedure table"""
 
     operator_method = operator.eq

@@ -18,19 +18,19 @@ baseline: &base_config
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14, MVP-FUNC-BAS-16-2, DU-GEN-2-a]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 5 # allow some KOs due to SR false alarms during UE reconfiguration
-    nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: *nof_ue
-    nof_handovers_ge: 20 # calculated based on the test_duration
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
-    t312_eq: 1
-    nof_sib3_geq: 1
-    nof_sib4_geq: 1
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 5 # allow some KOs due to SR false alarms during UE reconfiguration
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_handovers_ge: 20 # calculated based on the test_duration
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
+    du.t312_eq: 1
+    du.nof_sib3_ge: 1
+    du.nof_sib4_ge: 1
 
 # tid1.2.9: inter-RU conditional HO
 conditional_ho:
@@ -48,16 +48,16 @@ conditional_ho:
       trigger_handover: false
   feature_ids: [MVP-FUNC-MOB-15]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: *nof_ue
-    nof_handovers_ge: 20 # calculated based on the test_duration
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_handovers_ge: 20 # calculated based on the test_duration
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
 
 # tid1.2.12: cfra_ho
 cfra_ho:
@@ -75,13 +75,13 @@ cfra_ho:
       trigger_handover: false
   feature_ids: [DU-GEN-2-b]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: *nof_ue
-    nof_handovers_ge: 20 # calculated based on the test_duration
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_handovers_ge: 20 # calculated based on the test_duration
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0

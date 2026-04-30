@@ -16,14 +16,14 @@ inter_ru_ho: &base_config
   core:
     config: [baseline.cfg]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: *nof_ue
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
 
 # tid1.3.6: Multiple UEs doing Reestablishments
 reestablishment:
@@ -37,10 +37,10 @@ reestablishment:
   gnb:
     config: [amf.yml, cell_cfg.yml, tdd_default.yml, 512ue.yml]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_reestablishments_ge: 50
-    nof_pdu_session_establishment_accept_eq: *nof_ue
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_reestablishments_ge: 50
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0

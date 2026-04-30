@@ -26,15 +26,15 @@ band3_bw50: &base_config
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-PHY-16-12, MVP-FUNC-BW-16-1]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: 1
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
 
 # tid1.1.26: FDD 50 MHz with PRACH config 1
 prach_config_1_fdd:
@@ -59,15 +59,15 @@ prach_config_1_fdd:
       bandwidth: 50
       test_duration: 3
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_reestablishments_eq: 0
-    nof_pdu_session_establishment_accept_eq: 1
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
   feature_ids: [MVP-FUNC-PHY-16-2]
 
 # tid1.1.25: FDD 5 MHz in band 3

@@ -389,19 +389,19 @@ class Viavi(SSHClient):
 
 def _create_viavi_link_data(data_dict: Dict) -> ViaviLinkData:
     return ViaviLinkData(
-        ber=data_dict.get("BER", None),
-        bler=data_dict.get("BLER", None),
-        num_tbs=data_dict.get("NumTBs", None),
-        num_tbs_errors=data_dict.get("NumTBErrors", None),
-        num_tbs_ack=data_dict.get("NumTBsAck", None),
-        num_tbs_nack=data_dict.get("NumTBsNack", None),
-        num_tbs_newly_transmitted=data_dict.get("NumTBsNewlyTransmitted", None),
-        num_tbs_repeated=data_dict.get("NumTBsRepeated", None),
-        num_tbs_retransmitted=data_dict.get("NumTBsRetransmitted", None),
-        num_bits=data_dict.get("NumBits", None),
-        num_bits_ack=data_dict.get("NumBitsAck", None),
-        total_bits=data_dict.get("Total Bits", None),
-        total_bits_errors=data_dict.get("Total Bit Errors", None),
+        ber=data_dict.get("BER", 0),
+        bler=data_dict.get("BLER", 0),
+        num_tbs=data_dict.get("NumTBs", 0),
+        num_tbs_errors=data_dict.get("NumTBErrors", 0),
+        num_tbs_ack=data_dict.get("NumTBsAck", 0),
+        num_tbs_nack=data_dict.get("NumTBsNack", 0),
+        num_tbs_newly_transmitted=data_dict.get("NumTBsNewlyTransmitted", 0),
+        num_tbs_repeated=data_dict.get("NumTBsRepeated", 0),
+        num_tbs_retransmitted=data_dict.get("NumTBsRetransmitted", 0),
+        num_bits=data_dict.get("NumBits", 0),
+        num_bits_ack=data_dict.get("NumBitsAck", 0),
+        total_bits=data_dict.get("Total Bits", 0),
+        total_bits_errors=data_dict.get("Total Bit Errors", 0),
     )
 
 

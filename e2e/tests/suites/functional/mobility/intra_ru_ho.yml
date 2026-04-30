@@ -16,16 +16,16 @@ key_regen: &base_config
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-MOB-1-a]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_handovers_eq: 1
-    nof_reestablishments_eq: 0
-    nof_error_indications: 0
-    nof_pdu_session_establishment_accept_geq: 25
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_handovers_eq: 1
+    du.nof_reestablishments_eq: 0
+    du.nof_error_indications_le: 0
+    core.nof_pdu_session_establishment_accept_ge: 25
+    du.errors_le: 0
+    du.warnings_le: 0
 
 # tid1.2.6: TAU request test
 # TODO: verify that the TAU request has been actually sent
@@ -38,12 +38,12 @@ tau_request:
       ul_bitrate: 1.0e+6
   feature_ids: [CU-GEN-7]
   criteria:
-    dl_bitrate: 0
-    ul_bitrate: 0
-    nof_ko_dl: 0
-    nof_ko_ul: 0
-    nof_handovers_eq: 0
-    nof_reestablishments_eq: 0
-    nof_error_indications: 0
-    errors: 0
-    warnings: 0
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_handovers_eq: 0
+    du.nof_reestablishments_eq: 0
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
