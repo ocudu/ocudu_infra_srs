@@ -175,6 +175,18 @@ pucch_14:
       pucch_format: "f1_and_f4"
   feature_ids: [DU-PHY-1]
 
+pucch_intraslot:
+  <<: *base_config
+  gnb:
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, pucch_config_intraslot.yml, mac_pcap.yml]
+  feature_ids: [DU-PHY-9]
+
+pdsch_vrb:
+  <<: *base_config
+  gnb:
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, pdsch_vrb.yml, mac_pcap.yml]
+  feature_ids: [DU-PHY-8]
+
 # tid1.1.17: DMRS Additional pos 1 test
 dmrs_1:
   <<: *base_config
