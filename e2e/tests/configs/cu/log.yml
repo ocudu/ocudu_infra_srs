@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Baseline log and PCAP config
+log:
+  hex_max_size: 32
+  all_level: warning
+  lib_level: debug
+  config_level: info
+  cu_level: debug
+  f1ap_level: debug
+  f1ap_json_enabled: true
+  e1ap_level: debug
+  e1ap_json_enabled: true
+  rrc_level: debug
+  ngap_level: debug
+  xnap_level: debug
+  sec_level: info
+
+pcap:
+  ngap_enable: true
+  ngap_filename: {{ngap_filename}}
+  f1ap_enable: true
+  f1ap_filename: {{f1ap_filename}}
+  e1ap_enable: true
+  e1ap_filename: {{e1ap_filename}}

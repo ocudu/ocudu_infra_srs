@@ -10,8 +10,4 @@ cu_cp:
           - plmn: "00101"
             tai_slice_support_list:
               - sst: 1
-                # sd: 0
-
-pcap:
-  ngap_enable: true
-  ngap_filename: {{ngap_filename}}
+                sd: 1
