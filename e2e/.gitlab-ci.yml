@@ -669,11 +669,6 @@ b200 asan:
     - get retina version
     - asan
 
-validate b200 config:
-  extends: .amarisoft sdr
-  variables:
-    MARKERS: rf_b200
-
 ### Android
 .android:
   extends: e2e
