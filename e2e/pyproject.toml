@@ -70,6 +70,8 @@ markers = [
   "CU-GEN-3",
   "CU-GEN-7",
   "DU-GEN-1",
+  "DU-GEN-2-a",
+  "DU-GEN-2-b",
   "DU-GEN-5",
   "DU-GEN-10",
   "DU-PHY-1",
