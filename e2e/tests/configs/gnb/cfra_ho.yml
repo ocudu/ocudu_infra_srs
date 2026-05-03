@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  prach:
+    total_nof_ra_preambles: 48
+    nof_cb_preambles_per_ssb: 44 # or less, but multiple of 4
+    cfra_enabled: true
