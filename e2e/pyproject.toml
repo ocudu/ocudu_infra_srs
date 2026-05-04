@@ -132,7 +132,6 @@ markers = [
   "MVP-FUNC-TDD-16-5",
   "MVP-FUNC-RANS-16-1",
   "MVP-FUNC-RANS-16-2",
-  "SRS",
 ]
 minversion = "6.0"
 python_files = [
