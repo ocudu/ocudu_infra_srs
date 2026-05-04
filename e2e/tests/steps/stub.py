@@ -1359,7 +1359,7 @@ def _get_metrics_msg(
     if fail_if_kos:
         with suppress(grpc.RpcError):
             metrics: Metrics = stub.GetMetrics(Empty())
-            nof_kos = metrics.nof_ko_dl + metrics.nof_ko_ul
+            nof_kos = metrics.aggregate.nof_ko_dl + metrics.aggregate.nof_ko_ul
             if nof_kos and fail_if_kos:
                 return f"{name} has {nof_kos} KOs / retrxs"
     return ""

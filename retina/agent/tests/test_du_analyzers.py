@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 """
-Unit tests for DU JSON metrics analyzers: GeneralMetricsAnalyzer and PerUePeakAverageAnalyzer.
+Unit tests for DU JSON metrics analyzers: DuMetricsAnalyzer and DuCellAnalyzer.
 """
 
 import unittest
 
-from retina.agent.features.json_metrics.du_general import GeneralMetricsAnalyzer
-from retina.agent.features.json_metrics.du_peak_average import PerUePeakAverageAnalyzer, _MovingAverage
+from retina.agent.features.json_metrics.du_cell import DuCellAnalyzer
+from retina.agent.features.json_metrics.du_metrics import DuMetricsAnalyzer, _MovingAverage
 
 # ── Timestamps ────────────────────────────────────────────────────────────────
 
@@ -118,25 +118,23 @@ class TestMovingAverage(unittest.TestCase):
             ma.get_average(-1)
 
 
-# ── TestGeneralMetricsAnalyzer — Bitrate ─────────────────────────────────────
+# ── TestDuMetricsAnalyzer — Bitrate ──────────────────────────────────────────
 
 
-class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
+class TestDuMetricsAnalyzerBitrate(unittest.TestCase):
     """
-    Bitrate uses a time-weighted moving average.
+    Aggregate bitrate uses a time-weighted moving average.
 
     After record at T0: dl_bitrate = dl_brate (t_beginning == 0 on first sample).
     After record at T1: dl_bitrate = (prev * t_old + dl_brate * t_new) / t_beginning.
     Because t_old = (T0 - T0) = 0, the second sample completely replaces the first.
     From the third record onwards, both older and newer samples contribute.
 
-    Note: _update_bitrate is called once per cell, all at the same timestamp within
-    a record. The second cell therefore sees t_new = 0 and its value is ignored.
-    Only the last cell in a record effectively contributes to each record's update.
+    Note: _update_agg_bitrate is called once per record with the total across all cells.
     """
 
     def setUp(self):
-        self.a = GeneralMetricsAnalyzer()
+        self.a = DuMetricsAnalyzer()
 
     def test_bitrate_single_record_single_ue(self):
         self.a.process(
@@ -145,8 +143,8 @@ class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
             )
         )
         m = self.a.report()
-        self.assertAlmostEqual(m.dl_bitrate, 100.0)
-        self.assertAlmostEqual(m.ul_bitrate, 200.0)
+        self.assertAlmostEqual(m.aggregate.dl_bitrate, 100.0)
+        self.assertAlmostEqual(m.aggregate.ul_bitrate, 200.0)
 
     def test_bitrate_two_records_second_replaces_first(self):
         # t_old=0 on the second call → second sample overrides the first completely.
@@ -161,8 +159,8 @@ class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
             )
         )
         m = self.a.report()
-        self.assertAlmostEqual(m.dl_bitrate, 300.0)
-        self.assertAlmostEqual(m.ul_bitrate, 50.0)
+        self.assertAlmostEqual(m.aggregate.dl_bitrate, 300.0)
+        self.assertAlmostEqual(m.aggregate.ul_bitrate, 50.0)
 
     def test_bitrate_three_records_weighted_average(self):
         # T0: dl=100 (sets first sample)
@@ -177,7 +175,7 @@ class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
         self.a.process(
             make_record(_T3, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=100.0)])])
         )
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 500.0 / 3.0, places=5)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 500.0 / 3.0, places=5)
 
     def test_bitrate_multiple_ues_summed_within_cell(self):
         self.a.process(
@@ -191,7 +189,7 @@ class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
                 ],
             )
         )
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 600.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 600.0)
 
     def test_bitrate_multiple_ues_multiple_records_weighted(self):
         # T0: 2 UEs, total dl=300. T1: 2 UEs, total dl=500.
@@ -231,11 +229,10 @@ class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
                 ],
             )
         )
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 600.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 600.0)
 
     def test_bitrate_multiple_cells_summed(self):
-        # UE bitrates from all cells are summed before the time-weighted update,
-        # so _update_bitrate is called once per record with the aggregate total.
+        # UE bitrates from all cells are summed before the time-weighted update.
         self.a.process(
             make_record(
                 _T0,
@@ -251,7 +248,7 @@ class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
             )
         )
         # After record 1: dl_bitrate = 300 + 700 = 1000 (t_beginning=0 → direct assignment).
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 1000.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 1000.0)
 
         self.a.process(
             make_record(
@@ -268,7 +265,7 @@ class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
             )
         )
         # After record 2: total=1000, same as before → (1000×0 + 1000×1) / 1 = 1000.
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 1000.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 1000.0)
 
     def test_bitrate_empty_ue_list_before_first_connection(self):
         # A record with no cell_metrics and an empty ue_list is skipped entirely.
@@ -277,52 +274,52 @@ class TestGeneralMetricsAnalyzerBitrate(unittest.TestCase):
         self.a.process(
             make_record(_T1, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=500.0)])])
         )
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 500.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 500.0)
 
     def test_bitrate_empty_at_start_and_end(self):
         # Empty metrics - this one is ignored
         self.a.process(make_record(_T0, [make_cell(ue_list=[])]))
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 0)
 
         # Empty metrics - This will be the start time to calculate the bitrate (because the next report is not empty)
         self.a.process(make_record(_T1, [make_cell(ue_list=[])]))
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 0)
 
         # First record with values - Start time to calculate the bitrate is previous report (T1)
         self.a.process(
             make_record(_T3, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=50.0)])])
         )
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 50.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 50.0)
 
         # Second record - ((T3-T1)*50 + (T4-T3)*500) / (T4-T1) = 600/3 = 200
         self.a.process(
             make_record(_T4, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=500.0)])])
         )
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 200.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 200.0)
 
         # Third record - ((T3-T1)*50 + (T4-T3) * 500) / (T5-T1) = 1200/4 = 300
         self.a.process(
             make_record(_T5, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=600.0)])])
         )
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 300.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 300.0)
 
         # Empty record at the end - NOT ignored - ((T3-T1)*50 + (T4-T3) * 500) / (T6-T1) = 1200/5 = 240
         self.a.process(make_record(_T6, [make_cell(ue_list=[])]))
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 240.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 240.0)
 
     def test_bitrate_zero_when_only_cell_metrics_no_ue_list(self):
         self.a.process(make_record(_T0, [make_cell(cell_metrics=make_cell_metrics())]))
-        self.assertAlmostEqual(self.a.report().dl_bitrate, 0.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 0.0)
 
 
-# ── TestGeneralMetricsAnalyzer — KOs ─────────────────────────────────────────
+# ── TestDuMetricsAnalyzer — KOs ───────────────────────────────────────────────
 
 
-class TestGeneralMetricsAnalyzerKOs(unittest.TestCase):
+class TestDuMetricsAnalyzerKOs(unittest.TestCase):
     """nof_ko_dl / nof_ko_ul are cumulative sums across all UEs and records."""
 
     def setUp(self):
-        self.a = GeneralMetricsAnalyzer()
+        self.a = DuMetricsAnalyzer()
 
     def test_ko_from_single_ue(self):
         self.a.process(
@@ -331,8 +328,8 @@ class TestGeneralMetricsAnalyzerKOs(unittest.TestCase):
             )
         )
         m = self.a.report()
-        self.assertEqual(m.nof_ko_dl, 3)
-        self.assertEqual(m.nof_ko_ul, 5)
+        self.assertEqual(m.aggregate.nof_ko_dl, 3)
+        self.assertEqual(m.aggregate.nof_ko_ul, 5)
 
     def test_ko_multiple_ues_summed_within_record(self):
         self.a.process(
@@ -346,7 +343,7 @@ class TestGeneralMetricsAnalyzerKOs(unittest.TestCase):
                 ],
             )
         )
-        self.assertEqual(self.a.report().nof_ko_dl, 6)
+        self.assertEqual(self.a.report().aggregate.nof_ko_dl, 6)
 
     def test_ko_accumulates_across_records(self):
         for ts in (_T0, _T1):
@@ -356,8 +353,8 @@ class TestGeneralMetricsAnalyzerKOs(unittest.TestCase):
                 )
             )
         m = self.a.report()
-        self.assertEqual(m.nof_ko_dl, 10)
-        self.assertEqual(m.nof_ko_ul, 4)
+        self.assertEqual(m.aggregate.nof_ko_dl, 10)
+        self.assertEqual(m.aggregate.nof_ko_ul, 4)
 
     def test_ko_multiple_cells_summed(self):
         self.a.process(
@@ -369,7 +366,7 @@ class TestGeneralMetricsAnalyzerKOs(unittest.TestCase):
                 ],
             )
         )
-        self.assertEqual(self.a.report().nof_ko_dl, 12)
+        self.assertEqual(self.a.report().aggregate.nof_ko_dl, 12)
 
     def test_ko_multiple_ues_multiple_cells_multiple_records(self):
         # 2 cells × 2 UEs each × 2 records, each nok=1 → total = 2×2×2 = 8
@@ -386,20 +383,20 @@ class TestGeneralMetricsAnalyzerKOs(unittest.TestCase):
                     ],
                 )
             )
-        self.assertEqual(self.a.report().nof_ko_dl, 8)
+        self.assertEqual(self.a.report().aggregate.nof_ko_dl, 8)
 
 
-# ── TestGeneralMetricsAnalyzer — Error indications ───────────────────────────
+# ── TestDuCellAnalyzer — Error indications ────────────────────────────────────
 
 
-class TestGeneralMetricsAnalyzerErrorIndications(unittest.TestCase):
+class TestDuCellAnalyzerErrorIndications(unittest.TestCase):
     """
     The first cell_metrics report is skipped to discard a spurious error
     the DU emits at startup. All subsequent records are accumulated.
     """
 
     def setUp(self):
-        self.a = GeneralMetricsAnalyzer()
+        self.a = DuCellAnalyzer()
 
     def _record(self, ts, errors):
         return make_record(
@@ -408,42 +405,42 @@ class TestGeneralMetricsAnalyzerErrorIndications(unittest.TestCase):
 
     def test_first_record_always_skipped(self):
         self.a.process(self._record(_T0, 99))
-        self.assertEqual(self.a.report().nof_error_indications, 0)
+        self.assertEqual(self.a.report().du.nof_error_indications, 0)
 
     def test_second_record_counted(self):
         self.a.process(self._record(_T0, 99))
         self.a.process(self._record(_T1, 3))
-        self.assertEqual(self.a.report().nof_error_indications, 3)
+        self.assertEqual(self.a.report().du.nof_error_indications, 3)
 
     def test_accumulates_across_records(self):
         self.a.process(self._record(_T0, 0))
         self.a.process(self._record(_T1, 3))
         self.a.process(self._record(_T2, 5))
-        self.assertEqual(self.a.report().nof_error_indications, 8)
+        self.assertEqual(self.a.report().du.nof_error_indications, 8)
 
 
-# ── TestGeneralMetricsAnalyzer — Late HARQs ──────────────────────────────────
+# ── TestDuCellAnalyzer — Late HARQs ──────────────────────────────────────────
 
 
-class TestGeneralMetricsAnalyzerLateHarqs(unittest.TestCase):
+class TestDuCellAnalyzerLateHarqs(unittest.TestCase):
     """max_late_dl_harqs / max_late_ul_harqs are running maximums."""
 
     def setUp(self):
-        self.a = GeneralMetricsAnalyzer()
+        self.a = DuCellAnalyzer()
 
     def test_max_late_dl_harqs(self):
         for ts, late_dl in ((_T0, 10), (_T1, 30), (_T2, 5)):
             self.a.process(
                 make_record(ts, [make_cell(cell_metrics=make_cell_metrics(late_dl=late_dl), ue_list=[make_ue(1)])])
             )
-        self.assertEqual(self.a.report().max_late_dl_harqs, 30)
+        self.assertEqual(self.a.report().du.max_late_dl_harqs, 30)
 
     def test_max_late_ul_harqs(self):
         for ts, late_ul in ((_T0, 5), (_T1, 2), (_T2, 8)):
             self.a.process(
                 make_record(ts, [make_cell(cell_metrics=make_cell_metrics(late_ul=late_ul), ue_list=[make_ue(1)])])
             )
-        self.assertEqual(self.a.report().max_late_ul_harqs, 8)
+        self.assertEqual(self.a.report().du.max_late_ul_harqs, 8)
 
     def test_max_late_dl_across_cells(self):
         self.a.process(
@@ -455,7 +452,7 @@ class TestGeneralMetricsAnalyzerLateHarqs(unittest.TestCase):
                 ],
             )
         )
-        self.assertEqual(self.a.report().max_late_dl_harqs, 20)
+        self.assertEqual(self.a.report().du.max_late_dl_harqs, 20)
 
     def test_max_late_ul_across_cells_and_records(self):
         self.a.process(
@@ -475,13 +472,13 @@ class TestGeneralMetricsAnalyzerLateHarqs(unittest.TestCase):
                 ],
             )
         )
-        self.assertEqual(self.a.report().max_late_ul_harqs, 7)
+        self.assertEqual(self.a.report().du.max_late_ul_harqs, 7)
 
 
-# ── TestGeneralMetricsAnalyzer — PUCCH invalid counts ────────────────────────
+# ── TestDuMetricsAnalyzer — PUCCH invalid counts ─────────────────────────────
 
 
-class TestGeneralMetricsAnalyzerPucch(unittest.TestCase):
+class TestDuMetricsAnalyzerPucch(unittest.TestCase):
     """
     PUCCH values are accumulated from the PREVIOUS record's ue_list,
     excluding any RNTI that had a ue_create/ue_reconf/ue_rem event recently.
@@ -492,7 +489,7 @@ class TestGeneralMetricsAnalyzerPucch(unittest.TestCase):
     """
 
     def setUp(self):
-        self.a = GeneralMetricsAnalyzer()
+        self.a = DuMetricsAnalyzer()
 
     def _process(self, ts, ue_specs, events=None):
         """Process one record. ue_specs = [(rnti, f0f1), ...]."""
@@ -504,17 +501,17 @@ class TestGeneralMetricsAnalyzerPucch(unittest.TestCase):
     def test_first_record_not_accumulated(self):
         # No prev_ue_list yet → PUCCH cannot be counted.
         self._process(_T0, [(1, 10)])
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 0)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 0)
 
     def test_second_record_adds_prev_ue_list(self):
         self._process(_T0, [(1, 7)])
         self._process(_T1, [(1, 0)])
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 7)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 7)
 
     def test_multiple_ues_summed(self):
         self._process(_T0, [(1, 3), (2, 5)])
         self._process(_T1, [(1, 0), (2, 0)])
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 8)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 8)
 
     def test_accumulates_across_records(self):
         # Record 1 pucch=4, record 2 pucch=6, record 3 triggers accumulation of both.
@@ -522,7 +519,7 @@ class TestGeneralMetricsAnalyzerPucch(unittest.TestCase):
         self._process(_T1, [(1, 6)])
         self._process(_T2, [(1, 0)])
         # Record 2 adds record1's value (4); record 3 adds record2's value (6).
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 10)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 10)
 
     def test_f2f3f4_harq_and_csi_fields(self):
         self.a.process(
@@ -537,8 +534,8 @@ class TestGeneralMetricsAnalyzerPucch(unittest.TestCase):
         )
         self.a.process(make_record(_T1, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1)])]))
         m = self.a.report()
-        self.assertEqual(m.nof_pucch_f2f3f4_invalid_harqs, 3)
-        self.assertEqual(m.nof_pucch_f2f3f4_invalid_csis, 7)
+        self.assertEqual(m.aggregate.nof_pucch_f2f3f4_invalid_harqs, 3)
+        self.assertEqual(m.aggregate.nof_pucch_f2f3f4_invalid_csis, 7)
 
     def test_excluded_after_ue_create(self):
         # Event at record 2 → excluded at records 2 and 3 → included from record 4.
@@ -547,24 +544,24 @@ class TestGeneralMetricsAnalyzerPucch(unittest.TestCase):
         self._process(_T2, [(1, 10)])
         self._process(_T3, [(1, 10)])
         # Record 4 adds record3's pucch=10; records 2 and 3 were excluded.
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 10)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 10)
 
     def test_excluded_after_ue_rem(self):
         self._process(_T0, [(1, 10)])
         self._process(_T1, [(1, 10)], events=[make_event(1, "ue_rem")])
         self._process(_T2, [(1, 10)])
         # After 3 records: rnti=1 still excluded at record 3 → total=0.
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 0)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 0)
 
     def test_excluded_for_exactly_two_reports_then_included(self):
         self._process(_T0, [(1, 10)])
         self._process(_T1, [(1, 10)], events=[make_event(1, "ue_create")])
         self._process(_T2, [(1, 10)])
         # Records 2 and 3: both excluded → still 0.
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 0)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 0)
         # Record 4: exclusion lifted → adds record3's pucch=10.
         self._process(_T3, [(1, 10)])
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 10)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 10)
 
     def test_unaffected_ue_counted_during_exclusion_window(self):
         # rnti=1 has an event; rnti=2 is unaffected → only rnti=2 is accumulated.
@@ -573,7 +570,7 @@ class TestGeneralMetricsAnalyzerPucch(unittest.TestCase):
         self._process(_T2, [(1, 10), (2, 5)])
         # Records 2 and 3: rnti=1 excluded, rnti=2 included.
         # Record 2 adds rnti=2 pucch=5; record 3 adds rnti=2 pucch=5 → total=10.
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 10)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 10)
 
     def test_multiple_cells_pucch_summed(self):
         self.a.process(
@@ -594,22 +591,22 @@ class TestGeneralMetricsAnalyzerPucch(unittest.TestCase):
                 ],
             )
         )
-        self.assertEqual(self.a.report().nof_pucch_f0f1_invalid_harqs, 8)
+        self.assertEqual(self.a.report().aggregate.nof_pucch_f0f1_invalid_harqs, 8)
 
 
-# ── TestPerUePeakAverageAnalyzer ──────────────────────────────────────────────
+# ── TestDuMetricsAnalyzer — Per-UE peak/average ───────────────────────────────
 
 
-class TestPerUePeakAverageAnalyzer(unittest.TestCase):
+class TestDuMetricsAnalyzerPerUe(unittest.TestCase):
     """
-    PerUePeakAverageAnalyzer tracks per-RNTI 5/15/30-sample peak moving averages.
+    DuMetricsAnalyzer tracks per-RNTI 5/15/30-sample peak moving averages.
 
     The 'peak' for each window is the maximum value that window's average has
     ever reached — it never decreases.
     """
 
     def setUp(self):
-        self.a = PerUePeakAverageAnalyzer()
+        self.a = DuMetricsAnalyzer()
 
     def _process(self, cells):
         self.a.process(make_record(_T0, cells))

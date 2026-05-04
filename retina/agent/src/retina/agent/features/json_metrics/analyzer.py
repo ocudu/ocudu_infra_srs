@@ -114,14 +114,14 @@ def _main():
     parser = argparse.ArgumentParser(
         description="Run metrics analyzers on a metrics file and print results.",
         epilog="Example: python -m retina.agent.features.json_metrics.analyzer "
-        "metrics.json du_general.GeneralMetricsAnalyzer",
+        "metrics.json du_metrics.DuMetricsAnalyzer",
     )
     parser.add_argument("json_file", help="Path to the metrics json file")
     parser.add_argument(
         "analyzers",
         nargs="+",
         metavar="module.ClassName",
-        help='Analyzer specs relative to this package, e.g. "du_general.GeneralMetricsAnalyzer"',
+        help='Analyzer specs relative to this package, e.g. "du_metrics.DuMetricsAnalyzer"',
     )
     args = parser.parse_args()
 

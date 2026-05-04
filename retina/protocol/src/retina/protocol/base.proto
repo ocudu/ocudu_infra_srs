@@ -133,63 +133,81 @@ message StopResponse {
   string warning_msg   = 5;
 };
 
-message Metrics {
-  double dl_bitrate = 1;
-  double ul_bitrate = 2;
-  uint64 nof_ko_dl  = 3;
-  uint64 nof_ko_ul  = 4;
+message UeMetrics {
+  // UE identification
+  uint32 rnti = 1;
+  uint32 pci  = 2;
 
-  uint32 nof_reestablishments_request  = 5;
-  uint32 nof_reestablishments_complete = 6;
-  uint32 nof_handovers                 = 7;
+  // Throughput
+  double dl_bitrate = 3;
+  double ul_bitrate = 4;
 
-  uint32 nof_pucch_f0f1_invalid_harqs   = 8;
-  uint32 nof_pucch_f2f3f4_invalid_harqs = 9;
-  uint32 nof_pucch_f2f3f4_invalid_csis  = 10;
+  // Peak moving-average bitrates (5 / 15 / 30 samples)
+  double dl_av_5_samples  = 5;
+  double dl_av_15_samples = 6;
+  double dl_av_30_samples = 7;
+  double ul_av_5_samples  = 8;
+  double ul_av_15_samples = 9;
+  double ul_av_30_samples = 10;
 
-  uint32 nof_error_indications = 11;
-  uint64 max_late_dl_harqs     = 12;
-  uint64 max_late_ul_harqs     = 13;
+  // Link quality
+  uint64 nof_ko_dl = 11;
+  uint64 nof_ko_ul = 12;
 
-  uint32 nof_lates   = 14;
-  uint32 nof_under   = 15;
-  uint32 nof_seq_err = 16;
+  // PUCCH
+  uint32 nof_pucch_f0f1_invalid_harqs   = 13;
+  uint32 nof_pucch_f2f3f4_invalid_harqs = 14;
+  uint32 nof_pucch_f2f3f4_invalid_csis  = 15;
 
-  repeated UeMetrics ue_array = 17;
+  // RRC events
+  uint32 nof_reestablishments_request  = 16;
+  uint32 nof_reestablishments_complete = 17;
+  uint32 nof_handovers                 = 18;
+  uint32 nof_rrc_suspend               = 19;
+  uint32 nof_rrc_resume_request        = 20;
 
-  uint32 nof_sib1_transmissions = 30;
-  uint32 nof_sib2_transmissions = 18;
-  uint32 nof_sib3_transmissions = 19;
-  uint32 nof_sib4_transmissions = 20;
-  uint32 nof_sib5_transmissions = 21;
-  uint32 nof_sib8_transmissions = 22;
-  uint32 nof_paging_messages    = 23;
-
-  uint32 nof_pdu_session_establishment_accept = 32;
-  uint32 nof_5gs_nas_service_accept           = 33;
-  uint32 nof_ng_paging                        = 34;
-  uint32 nof_rrc_suspend                      = 35;
-  uint32 nof_rrc_resume_request               = 36;
-
-  int32 prach_configuration_index   = 24;
-  int32 transform_precoder          = 25;
-  int32 drx_long_cycle_start_offset = 26;
-  int32 t312                        = 27;
-  int32 c_srs                       = 28;
-  int32 b_srs                       = 29;
-
-  double dl_avg_ri = 37;
-  double ul_avg_ri = 38;
-
-  uint32 nof_tau_request = 39;
+  // Rank indicator
+  double dl_avg_ri = 21;
+  double ul_avg_ri = 22;
 };
 
-message UeMetrics {
-  uint32 rnti             = 1;
-  double dl_av_5_samples  = 2;
-  double dl_av_15_samples = 3;
-  double dl_av_30_samples = 4;
-  double ul_av_5_samples  = 5;
-  double ul_av_15_samples = 6;
-  double ul_av_30_samples = 7;
+message DuMetrics {
+  uint32 nof_error_indications = 1;
+  uint64 max_late_dl_harqs     = 2;
+  uint64 max_late_ul_harqs     = 3;
+  uint32 nof_lates             = 4;
+  uint32 nof_under             = 5;
+  uint32 nof_seq_err           = 6;
+};
+
+message CuMetrics {
+  uint32 nof_sib1_transmissions = 1;
+  uint32 nof_sib2_transmissions = 2;
+  uint32 nof_sib3_transmissions = 3;
+  uint32 nof_sib4_transmissions = 4;
+  uint32 nof_sib5_transmissions = 5;
+  uint32 nof_sib8_transmissions = 6;
+  uint32 nof_paging_messages    = 7;
+
+  int32 prach_configuration_index   = 8;
+  int32 transform_precoder          = 9;
+  int32 drx_long_cycle_start_offset = 10;
+  int32 t312                        = 11;
+  int32 c_srs                       = 12;
+  int32 b_srs                       = 13;
+};
+
+message CoreMetrics {
+  uint32 nof_pdu_session_establishment_accept = 1;
+  uint32 nof_5gs_nas_service_accept           = 2;
+  uint32 nof_ng_paging                        = 3;
+  uint32 nof_tau_request                      = 4;
+};
+
+message Metrics {
+  UeMetrics          aggregate = 1;
+  repeated UeMetrics ue_array  = 2;
+  DuMetrics          du        = 3;
+  CuMetrics          cu        = 4;
+  CoreMetrics        core      = 5;
 };

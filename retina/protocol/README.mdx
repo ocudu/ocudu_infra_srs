@@ -27,12 +27,50 @@ import TOCInline from '@theme/TOCInline';
 | `dl_zmq_port` | `uint32` |||
 | `ul_zmq_port` | `uint32` |||
 
+#### CoreMetrics
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `nof_pdu_session_establishment_accept` | `uint32` |||
+| `nof_5gs_nas_service_accept` | `uint32` |||
+| `nof_ng_paging` | `uint32` |||
+| `nof_tau_request` | `uint32` |||
+
+#### CuMetrics
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `nof_sib1_transmissions` | `uint32` |||
+| `nof_sib2_transmissions` | `uint32` |||
+| `nof_sib3_transmissions` | `uint32` |||
+| `nof_sib4_transmissions` | `uint32` |||
+| `nof_sib5_transmissions` | `uint32` |||
+| `nof_sib8_transmissions` | `uint32` |||
+| `nof_paging_messages` | `uint32` |||
+| `prach_configuration_index` | `int32` |||
+| `transform_precoder` | `int32` |||
+| `drx_long_cycle_start_offset` | `int32` |||
+| `t312` | `int32` |||
+| `c_srs` | `int32` |||
+| `b_srs` | `int32` |||
+
 #### DUDefinition
 
 | Field | Type | Label | Description |
 |---|---|---|---|
 | `zmq_ip` | `string` ||Empty if not zmq mode|
 | `zmq_port_array` | `uint32` |`repeated`||
+
+#### DuMetrics
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `nof_error_indications` | `uint32` |||
+| `max_late_dl_harqs` | `uint64` |||
+| `max_late_ul_harqs` | `uint64` |||
+| `nof_lates` | `uint32` |||
+| `nof_under` | `uint32` |||
+| `nof_seq_err` | `uint32` |||
 
 #### FiveGCDefinition
 
@@ -54,44 +92,11 @@ import TOCInline from '@theme/TOCInline';
 
 | Field | Type | Label | Description |
 |---|---|---|---|
-| `dl_bitrate` | `double` |||
-| `ul_bitrate` | `double` |||
-| `nof_ko_dl` | `uint64` |||
-| `nof_ko_ul` | `uint64` |||
-| `nof_reestablishments_request` | `uint32` |||
-| `nof_reestablishments_complete` | `uint32` |||
-| `nof_handovers` | `uint32` |||
-| `nof_pucch_f0f1_invalid_harqs` | `uint32` |||
-| `nof_pucch_f2f3f4_invalid_harqs` | `uint32` |||
-| `nof_pucch_f2f3f4_invalid_csis` | `uint32` |||
-| `nof_error_indications` | `uint32` |||
-| `max_late_dl_harqs` | `uint64` |||
-| `max_late_ul_harqs` | `uint64` |||
-| `nof_lates` | `uint32` |||
-| `nof_under` | `uint32` |||
-| `nof_seq_err` | `uint32` |||
+| `aggregate` | `UeMetrics` |||
 | `ue_array` | `UeMetrics` |`repeated`||
-| `nof_sib1_transmissions` | `uint32` |||
-| `nof_sib2_transmissions` | `uint32` |||
-| `nof_sib3_transmissions` | `uint32` |||
-| `nof_sib4_transmissions` | `uint32` |||
-| `nof_sib5_transmissions` | `uint32` |||
-| `nof_sib8_transmissions` | `uint32` |||
-| `nof_paging_messages` | `uint32` |||
-| `nof_pdu_session_establishment_accept` | `uint32` |||
-| `nof_5gs_nas_service_accept` | `uint32` |||
-| `nof_ng_paging` | `uint32` |||
-| `nof_rrc_suspend` | `uint32` |||
-| `nof_rrc_resume_request` | `uint32` |||
-| `prach_configuration_index` | `int32` |||
-| `transform_precoder` | `int32` |||
-| `drx_long_cycle_start_offset` | `int32` |||
-| `t312` | `int32` |||
-| `c_srs` | `int32` |||
-| `b_srs` | `int32` |||
-| `dl_avg_ri` | `double` |||
-| `ul_avg_ri` | `double` |||
-| `nof_tau_request` | `uint32` |||
+| `du` | `DuMetrics` |||
+| `cu` | `CuMetrics` |||
+| `core` | `CoreMetrics` |||
 
 #### NearRtRicDefinition
 
@@ -191,13 +196,28 @@ import TOCInline from '@theme/TOCInline';
 
 | Field | Type | Label | Description |
 |---|---|---|---|
-| `rnti` | `uint32` |||
-| `dl_av_5_samples` | `double` |||
+| `rnti` | `uint32` ||UE identification|
+| `pci` | `uint32` |||
+| `dl_bitrate` | `double` ||Throughput|
+| `ul_bitrate` | `double` |||
+| `dl_av_5_samples` | `double` ||Peak moving-average bitrates (5 / 15 / 30 samples)|
 | `dl_av_15_samples` | `double` |||
 | `dl_av_30_samples` | `double` |||
 | `ul_av_5_samples` | `double` |||
 | `ul_av_15_samples` | `double` |||
 | `ul_av_30_samples` | `double` |||
+| `nof_ko_dl` | `uint64` ||Link quality|
+| `nof_ko_ul` | `uint64` |||
+| `nof_pucch_f0f1_invalid_harqs` | `uint32` ||PUCCH|
+| `nof_pucch_f2f3f4_invalid_harqs` | `uint32` |||
+| `nof_pucch_f2f3f4_invalid_csis` | `uint32` |||
+| `nof_reestablishments_request` | `uint32` ||RRC events|
+| `nof_reestablishments_complete` | `uint32` |||
+| `nof_handovers` | `uint32` |||
+| `nof_rrc_suspend` | `uint32` |||
+| `nof_rrc_resume_request` | `uint32` |||
+| `dl_avg_ri` | `double` ||Rank indicator|
+| `ul_avg_ri` | `double` |||
 
 ### Enums
 

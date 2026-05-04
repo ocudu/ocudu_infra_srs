@@ -109,15 +109,15 @@ def test_pucch(
 
     metrics: Metrics = gnb.GetMetrics(Empty())
     invalid_pucchs = (
-        metrics.nof_pucch_f0f1_invalid_harqs > 0
-        or metrics.nof_pucch_f2f3f4_invalid_harqs > 0
-        or metrics.nof_pucch_f2f3f4_invalid_csis > 0
+        metrics.aggregate.nof_pucch_f0f1_invalid_harqs > 0
+        or metrics.aggregate.nof_pucch_f2f3f4_invalid_harqs > 0
+        or metrics.aggregate.nof_pucch_f2f3f4_invalid_csis > 0
     )
 
     if invalid_pucchs:
         fail(
             f"Invalid PUCCH transmissions during the test: "
-            f"harq_{f0_or_f1}={metrics.nof_pucch_f0f1_invalid_harqs} "
-            f"harq_{f2_or_f3_or_f4}={metrics.nof_pucch_f2f3f4_invalid_harqs} "
-            f"csi_{f2_or_f3_or_f4}={metrics.nof_pucch_f2f3f4_invalid_csis}"
+            f"harq_{f0_or_f1}={metrics.aggregate.nof_pucch_f0f1_invalid_harqs} "
+            f"harq_{f2_or_f3_or_f4}={metrics.aggregate.nof_pucch_f2f3f4_invalid_harqs} "
+            f"csi_{f2_or_f3_or_f4}={metrics.aggregate.nof_pucch_f2f3f4_invalid_csis}"
         )

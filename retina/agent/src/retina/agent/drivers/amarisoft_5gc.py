@@ -13,7 +13,15 @@ from typing import List, Type
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import FiveGCDefinition, Metrics, PLMN, StopResponse, Subscriber, SubscriberArray
+from retina.protocol.base_pb2 import (
+    CoreMetrics,
+    FiveGCDefinition,
+    Metrics,
+    PLMN,
+    StopResponse,
+    Subscriber,
+    SubscriberArray,
+)
 from retina.protocol.fivegc_pb2 import FiveGCStartInfo
 
 from retina.agent.drivers.amarisoft_ws import AmarisoftBaseDriver, AmarisoftWebSocket
@@ -119,9 +127,11 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
             self._websocket.quit()
             counters = stats.get("counters", {}).get("messages", {})
             self._metrics = Metrics(
-                nof_pdu_session_establishment_accept=counters.get("5gs_nas_pdu_session_establishment_accept", 0),
-                nof_5gs_nas_service_accept=counters.get("5gs_nas_service_accept", 0),
-                nof_ng_paging=counters.get("ng_paging", 0),
+                core=CoreMetrics(
+                    nof_pdu_session_establishment_accept=counters.get("5gs_nas_pdu_session_establishment_accept", 0),
+                    nof_5gs_nas_service_accept=counters.get("5gs_nas_service_accept", 0),
+                    nof_ng_paging=counters.get("ng_paging", 0),
+                )
             )
         return super().Stop(request, context)
 

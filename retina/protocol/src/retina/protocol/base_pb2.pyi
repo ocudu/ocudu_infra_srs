@@ -406,26 +406,124 @@ class StopResponse(google.protobuf.message.Message):
 Global___StopResponse: typing_extensions.TypeAlias = StopResponse
 
 @typing.final
-class Metrics(google.protobuf.message.Message):
+class UeMetrics(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
+    RNTI_FIELD_NUMBER: builtins.int
+    PCI_FIELD_NUMBER: builtins.int
     DL_BITRATE_FIELD_NUMBER: builtins.int
     UL_BITRATE_FIELD_NUMBER: builtins.int
+    DL_AV_5_SAMPLES_FIELD_NUMBER: builtins.int
+    DL_AV_15_SAMPLES_FIELD_NUMBER: builtins.int
+    DL_AV_30_SAMPLES_FIELD_NUMBER: builtins.int
+    UL_AV_5_SAMPLES_FIELD_NUMBER: builtins.int
+    UL_AV_15_SAMPLES_FIELD_NUMBER: builtins.int
+    UL_AV_30_SAMPLES_FIELD_NUMBER: builtins.int
     NOF_KO_DL_FIELD_NUMBER: builtins.int
     NOF_KO_UL_FIELD_NUMBER: builtins.int
-    NOF_REESTABLISHMENTS_REQUEST_FIELD_NUMBER: builtins.int
-    NOF_REESTABLISHMENTS_COMPLETE_FIELD_NUMBER: builtins.int
-    NOF_HANDOVERS_FIELD_NUMBER: builtins.int
     NOF_PUCCH_F0F1_INVALID_HARQS_FIELD_NUMBER: builtins.int
     NOF_PUCCH_F2F3F4_INVALID_HARQS_FIELD_NUMBER: builtins.int
     NOF_PUCCH_F2F3F4_INVALID_CSIS_FIELD_NUMBER: builtins.int
+    NOF_REESTABLISHMENTS_REQUEST_FIELD_NUMBER: builtins.int
+    NOF_REESTABLISHMENTS_COMPLETE_FIELD_NUMBER: builtins.int
+    NOF_HANDOVERS_FIELD_NUMBER: builtins.int
+    NOF_RRC_SUSPEND_FIELD_NUMBER: builtins.int
+    NOF_RRC_RESUME_REQUEST_FIELD_NUMBER: builtins.int
+    DL_AVG_RI_FIELD_NUMBER: builtins.int
+    UL_AVG_RI_FIELD_NUMBER: builtins.int
+    rnti: builtins.int
+    """UE identification"""
+    pci: builtins.int
+    dl_bitrate: builtins.float
+    """Throughput"""
+    ul_bitrate: builtins.float
+    dl_av_5_samples: builtins.float
+    """Peak moving-average bitrates (5 / 15 / 30 samples)"""
+    dl_av_15_samples: builtins.float
+    dl_av_30_samples: builtins.float
+    ul_av_5_samples: builtins.float
+    ul_av_15_samples: builtins.float
+    ul_av_30_samples: builtins.float
+    nof_ko_dl: builtins.int
+    """Link quality"""
+    nof_ko_ul: builtins.int
+    nof_pucch_f0f1_invalid_harqs: builtins.int
+    """PUCCH"""
+    nof_pucch_f2f3f4_invalid_harqs: builtins.int
+    nof_pucch_f2f3f4_invalid_csis: builtins.int
+    nof_reestablishments_request: builtins.int
+    """RRC events"""
+    nof_reestablishments_complete: builtins.int
+    nof_handovers: builtins.int
+    nof_rrc_suspend: builtins.int
+    nof_rrc_resume_request: builtins.int
+    dl_avg_ri: builtins.float
+    """Rank indicator"""
+    ul_avg_ri: builtins.float
+    def __init__(
+        self,
+        *,
+        rnti: builtins.int = ...,
+        pci: builtins.int = ...,
+        dl_bitrate: builtins.float = ...,
+        ul_bitrate: builtins.float = ...,
+        dl_av_5_samples: builtins.float = ...,
+        dl_av_15_samples: builtins.float = ...,
+        dl_av_30_samples: builtins.float = ...,
+        ul_av_5_samples: builtins.float = ...,
+        ul_av_15_samples: builtins.float = ...,
+        ul_av_30_samples: builtins.float = ...,
+        nof_ko_dl: builtins.int = ...,
+        nof_ko_ul: builtins.int = ...,
+        nof_pucch_f0f1_invalid_harqs: builtins.int = ...,
+        nof_pucch_f2f3f4_invalid_harqs: builtins.int = ...,
+        nof_pucch_f2f3f4_invalid_csis: builtins.int = ...,
+        nof_reestablishments_request: builtins.int = ...,
+        nof_reestablishments_complete: builtins.int = ...,
+        nof_handovers: builtins.int = ...,
+        nof_rrc_suspend: builtins.int = ...,
+        nof_rrc_resume_request: builtins.int = ...,
+        dl_avg_ri: builtins.float = ...,
+        ul_avg_ri: builtins.float = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["dl_av_15_samples", b"dl_av_15_samples", "dl_av_30_samples", b"dl_av_30_samples", "dl_av_5_samples", b"dl_av_5_samples", "dl_avg_ri", b"dl_avg_ri", "dl_bitrate", b"dl_bitrate", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_rrc_resume_request", b"nof_rrc_resume_request", "nof_rrc_suspend", b"nof_rrc_suspend", "pci", b"pci", "rnti", b"rnti", "ul_av_15_samples", b"ul_av_15_samples", "ul_av_30_samples", b"ul_av_30_samples", "ul_av_5_samples", b"ul_av_5_samples", "ul_avg_ri", b"ul_avg_ri", "ul_bitrate", b"ul_bitrate"]) -> None: ...
+
+Global___UeMetrics: typing_extensions.TypeAlias = UeMetrics
+
+@typing.final
+class DuMetrics(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     NOF_ERROR_INDICATIONS_FIELD_NUMBER: builtins.int
     MAX_LATE_DL_HARQS_FIELD_NUMBER: builtins.int
     MAX_LATE_UL_HARQS_FIELD_NUMBER: builtins.int
     NOF_LATES_FIELD_NUMBER: builtins.int
     NOF_UNDER_FIELD_NUMBER: builtins.int
     NOF_SEQ_ERR_FIELD_NUMBER: builtins.int
-    UE_ARRAY_FIELD_NUMBER: builtins.int
+    nof_error_indications: builtins.int
+    max_late_dl_harqs: builtins.int
+    max_late_ul_harqs: builtins.int
+    nof_lates: builtins.int
+    nof_under: builtins.int
+    nof_seq_err: builtins.int
+    def __init__(
+        self,
+        *,
+        nof_error_indications: builtins.int = ...,
+        max_late_dl_harqs: builtins.int = ...,
+        max_late_ul_harqs: builtins.int = ...,
+        nof_lates: builtins.int = ...,
+        nof_under: builtins.int = ...,
+        nof_seq_err: builtins.int = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_seq_err", b"nof_seq_err", "nof_under", b"nof_under"]) -> None: ...
+
+Global___DuMetrics: typing_extensions.TypeAlias = DuMetrics
+
+@typing.final
+class CuMetrics(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     NOF_SIB1_TRANSMISSIONS_FIELD_NUMBER: builtins.int
     NOF_SIB2_TRANSMISSIONS_FIELD_NUMBER: builtins.int
     NOF_SIB3_TRANSMISSIONS_FIELD_NUMBER: builtins.int
@@ -433,36 +531,12 @@ class Metrics(google.protobuf.message.Message):
     NOF_SIB5_TRANSMISSIONS_FIELD_NUMBER: builtins.int
     NOF_SIB8_TRANSMISSIONS_FIELD_NUMBER: builtins.int
     NOF_PAGING_MESSAGES_FIELD_NUMBER: builtins.int
-    NOF_PDU_SESSION_ESTABLISHMENT_ACCEPT_FIELD_NUMBER: builtins.int
-    NOF_5GS_NAS_SERVICE_ACCEPT_FIELD_NUMBER: builtins.int
-    NOF_NG_PAGING_FIELD_NUMBER: builtins.int
-    NOF_RRC_SUSPEND_FIELD_NUMBER: builtins.int
-    NOF_RRC_RESUME_REQUEST_FIELD_NUMBER: builtins.int
     PRACH_CONFIGURATION_INDEX_FIELD_NUMBER: builtins.int
     TRANSFORM_PRECODER_FIELD_NUMBER: builtins.int
     DRX_LONG_CYCLE_START_OFFSET_FIELD_NUMBER: builtins.int
     T312_FIELD_NUMBER: builtins.int
     C_SRS_FIELD_NUMBER: builtins.int
     B_SRS_FIELD_NUMBER: builtins.int
-    DL_AVG_RI_FIELD_NUMBER: builtins.int
-    UL_AVG_RI_FIELD_NUMBER: builtins.int
-    NOF_TAU_REQUEST_FIELD_NUMBER: builtins.int
-    dl_bitrate: builtins.float
-    ul_bitrate: builtins.float
-    nof_ko_dl: builtins.int
-    nof_ko_ul: builtins.int
-    nof_reestablishments_request: builtins.int
-    nof_reestablishments_complete: builtins.int
-    nof_handovers: builtins.int
-    nof_pucch_f0f1_invalid_harqs: builtins.int
-    nof_pucch_f2f3f4_invalid_harqs: builtins.int
-    nof_pucch_f2f3f4_invalid_csis: builtins.int
-    nof_error_indications: builtins.int
-    max_late_dl_harqs: builtins.int
-    max_late_ul_harqs: builtins.int
-    nof_lates: builtins.int
-    nof_under: builtins.int
-    nof_seq_err: builtins.int
     nof_sib1_transmissions: builtins.int
     nof_sib2_transmissions: builtins.int
     nof_sib3_transmissions: builtins.int
@@ -470,42 +544,15 @@ class Metrics(google.protobuf.message.Message):
     nof_sib5_transmissions: builtins.int
     nof_sib8_transmissions: builtins.int
     nof_paging_messages: builtins.int
-    nof_pdu_session_establishment_accept: builtins.int
-    nof_5gs_nas_service_accept: builtins.int
-    nof_ng_paging: builtins.int
-    nof_rrc_suspend: builtins.int
-    nof_rrc_resume_request: builtins.int
     prach_configuration_index: builtins.int
     transform_precoder: builtins.int
     drx_long_cycle_start_offset: builtins.int
     t312: builtins.int
     c_srs: builtins.int
     b_srs: builtins.int
-    dl_avg_ri: builtins.float
-    ul_avg_ri: builtins.float
-    nof_tau_request: builtins.int
-    @property
-    def ue_array(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[Global___UeMetrics]: ...
     def __init__(
         self,
         *,
-        dl_bitrate: builtins.float = ...,
-        ul_bitrate: builtins.float = ...,
-        nof_ko_dl: builtins.int = ...,
-        nof_ko_ul: builtins.int = ...,
-        nof_reestablishments_request: builtins.int = ...,
-        nof_reestablishments_complete: builtins.int = ...,
-        nof_handovers: builtins.int = ...,
-        nof_pucch_f0f1_invalid_harqs: builtins.int = ...,
-        nof_pucch_f2f3f4_invalid_harqs: builtins.int = ...,
-        nof_pucch_f2f3f4_invalid_csis: builtins.int = ...,
-        nof_error_indications: builtins.int = ...,
-        max_late_dl_harqs: builtins.int = ...,
-        max_late_ul_harqs: builtins.int = ...,
-        nof_lates: builtins.int = ...,
-        nof_under: builtins.int = ...,
-        nof_seq_err: builtins.int = ...,
-        ue_array: collections.abc.Iterable[Global___UeMetrics] | None = ...,
         nof_sib1_transmissions: builtins.int = ...,
         nof_sib2_transmissions: builtins.int = ...,
         nof_sib3_transmissions: builtins.int = ...,
@@ -513,54 +560,70 @@ class Metrics(google.protobuf.message.Message):
         nof_sib5_transmissions: builtins.int = ...,
         nof_sib8_transmissions: builtins.int = ...,
         nof_paging_messages: builtins.int = ...,
-        nof_pdu_session_establishment_accept: builtins.int = ...,
-        nof_5gs_nas_service_accept: builtins.int = ...,
-        nof_ng_paging: builtins.int = ...,
-        nof_rrc_suspend: builtins.int = ...,
-        nof_rrc_resume_request: builtins.int = ...,
         prach_configuration_index: builtins.int = ...,
         transform_precoder: builtins.int = ...,
         drx_long_cycle_start_offset: builtins.int = ...,
         t312: builtins.int = ...,
         c_srs: builtins.int = ...,
         b_srs: builtins.int = ...,
-        dl_avg_ri: builtins.float = ...,
-        ul_avg_ri: builtins.float = ...,
-        nof_tau_request: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "dl_avg_ri", b"dl_avg_ri", "dl_bitrate", b"dl_bitrate", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_5gs_nas_service_accept", b"nof_5gs_nas_service_accept", "nof_error_indications", b"nof_error_indications", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_lates", b"nof_lates", "nof_ng_paging", b"nof_ng_paging", "nof_paging_messages", b"nof_paging_messages", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_rrc_resume_request", b"nof_rrc_resume_request", "nof_rrc_suspend", b"nof_rrc_suspend", "nof_seq_err", b"nof_seq_err", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_tau_request", b"nof_tau_request", "nof_under", b"nof_under", "prach_configuration_index", b"prach_configuration_index", "t312", b"t312", "transform_precoder", b"transform_precoder", "ue_array", b"ue_array", "ul_avg_ri", b"ul_avg_ri", "ul_bitrate", b"ul_bitrate"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "nof_paging_messages", b"nof_paging_messages", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "prach_configuration_index", b"prach_configuration_index", "t312", b"t312", "transform_precoder", b"transform_precoder"]) -> None: ...
 
-Global___Metrics: typing_extensions.TypeAlias = Metrics
+Global___CuMetrics: typing_extensions.TypeAlias = CuMetrics
 
 @typing.final
-class UeMetrics(google.protobuf.message.Message):
+class CoreMetrics(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    RNTI_FIELD_NUMBER: builtins.int
-    DL_AV_5_SAMPLES_FIELD_NUMBER: builtins.int
-    DL_AV_15_SAMPLES_FIELD_NUMBER: builtins.int
-    DL_AV_30_SAMPLES_FIELD_NUMBER: builtins.int
-    UL_AV_5_SAMPLES_FIELD_NUMBER: builtins.int
-    UL_AV_15_SAMPLES_FIELD_NUMBER: builtins.int
-    UL_AV_30_SAMPLES_FIELD_NUMBER: builtins.int
-    rnti: builtins.int
-    dl_av_5_samples: builtins.float
-    dl_av_15_samples: builtins.float
-    dl_av_30_samples: builtins.float
-    ul_av_5_samples: builtins.float
-    ul_av_15_samples: builtins.float
-    ul_av_30_samples: builtins.float
+    NOF_PDU_SESSION_ESTABLISHMENT_ACCEPT_FIELD_NUMBER: builtins.int
+    NOF_5GS_NAS_SERVICE_ACCEPT_FIELD_NUMBER: builtins.int
+    NOF_NG_PAGING_FIELD_NUMBER: builtins.int
+    NOF_TAU_REQUEST_FIELD_NUMBER: builtins.int
+    nof_pdu_session_establishment_accept: builtins.int
+    nof_5gs_nas_service_accept: builtins.int
+    nof_ng_paging: builtins.int
+    nof_tau_request: builtins.int
     def __init__(
         self,
         *,
-        rnti: builtins.int = ...,
-        dl_av_5_samples: builtins.float = ...,
-        dl_av_15_samples: builtins.float = ...,
-        dl_av_30_samples: builtins.float = ...,
-        ul_av_5_samples: builtins.float = ...,
-        ul_av_15_samples: builtins.float = ...,
-        ul_av_30_samples: builtins.float = ...,
+        nof_pdu_session_establishment_accept: builtins.int = ...,
+        nof_5gs_nas_service_accept: builtins.int = ...,
+        nof_ng_paging: builtins.int = ...,
+        nof_tau_request: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["dl_av_15_samples", b"dl_av_15_samples", "dl_av_30_samples", b"dl_av_30_samples", "dl_av_5_samples", b"dl_av_5_samples", "rnti", b"rnti", "ul_av_15_samples", b"ul_av_15_samples", "ul_av_30_samples", b"ul_av_30_samples", "ul_av_5_samples", b"ul_av_5_samples"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_5gs_nas_service_accept", b"nof_5gs_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_tau_request", b"nof_tau_request"]) -> None: ...
 
-Global___UeMetrics: typing_extensions.TypeAlias = UeMetrics
+Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
+
+@typing.final
+class Metrics(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    AGGREGATE_FIELD_NUMBER: builtins.int
+    UE_ARRAY_FIELD_NUMBER: builtins.int
+    DU_FIELD_NUMBER: builtins.int
+    CU_FIELD_NUMBER: builtins.int
+    CORE_FIELD_NUMBER: builtins.int
+    @property
+    def aggregate(self) -> Global___UeMetrics: ...
+    @property
+    def ue_array(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[Global___UeMetrics]: ...
+    @property
+    def du(self) -> Global___DuMetrics: ...
+    @property
+    def cu(self) -> Global___CuMetrics: ...
+    @property
+    def core(self) -> Global___CoreMetrics: ...
+    def __init__(
+        self,
+        *,
+        aggregate: Global___UeMetrics | None = ...,
+        ue_array: collections.abc.Iterable[Global___UeMetrics] | None = ...,
+        du: Global___DuMetrics | None = ...,
+        cu: Global___CuMetrics | None = ...,
+        core: Global___CoreMetrics | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu", b"cu", "du", b"du"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu", b"cu", "du", b"du", "ue_array", b"ue_array"]) -> None: ...
+
+Global___Metrics: typing_extensions.TypeAlias = Metrics

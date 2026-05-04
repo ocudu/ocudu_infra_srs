@@ -326,10 +326,10 @@ def _test_ru(
     )
 
     metrics: Metrics = gnb.GetMetrics(Empty())
-    if metrics.dl_bitrate < min_dl_bitrate:
-        pytest.fail(f"Low DL Bitrate: {metrics.dl_bitrate} [< {min_dl_bitrate}]")
-    if metrics.ul_bitrate < min_ul_bitrate:
-        pytest.fail(f"Low UL Bitrate: {metrics.ul_bitrate} [< {min_ul_bitrate}]")
+    if metrics.aggregate.dl_bitrate < min_dl_bitrate:
+        pytest.fail(f"Low DL Bitrate: {metrics.aggregate.dl_bitrate} [< {min_dl_bitrate}]")
+    if metrics.aggregate.ul_bitrate < min_ul_bitrate:
+        pytest.fail(f"Low UL Bitrate: {metrics.aggregate.ul_bitrate} [< {min_ul_bitrate}]")
 
 
 @mark.test_mode_many_ues

@@ -31,8 +31,8 @@ from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.gnb import DUDriver
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.gnb_report import transform_metrics
-from retina.agent.features.json_metrics.du_general import GeneralMetricsAnalyzer
-from retina.agent.features.json_metrics.du_peak_average import PerUePeakAverageAnalyzer
+from retina.agent.features.json_metrics.du_cell import DuCellAnalyzer
+from retina.agent.features.json_metrics.du_metrics import DuMetricsAnalyzer
 from retina.agent.features.pcap.analyzer import run_analyzers
 from retina.agent.features.pcap.rrc import (
     DrxLongCycleAnalyzer,
@@ -52,7 +52,7 @@ from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
 from retina.agent.tools.threading import join_thread
 
-_WS_ANALYZER_ARRAY = (GeneralMetricsAnalyzer, PerUePeakAverageAnalyzer)
+_WS_ANALYZER_ARRAY = (DuMetricsAnalyzer, DuCellAnalyzer)
 _MAC_PCAP_ANALYZER_ARRAY = (
     ReestablishmentAnalyzer,
     PrachConfigIndexAnalyzer,

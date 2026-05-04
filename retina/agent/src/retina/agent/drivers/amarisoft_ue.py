@@ -12,10 +12,10 @@ import math
 import os
 from contextlib import suppress
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from threading import Lock
 from time import sleep
-from typing import Dict, Generator, Optional, Tuple
+from typing import Dict, Generator, Optional, Set, Tuple
 
 import grpc
 import websocket
@@ -28,6 +28,7 @@ from retina.agent.drivers.amarisoft_ws import AmarisoftBaseDriver, AmarisoftWebS
 from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.ue import SubscriberWithStatus, UEDriver
 from retina.agent.features.executor import LocalExecutor, SshExecutor
+from retina.agent.features.json_metrics.amarisoft_ue_metrics import AmarisoftUeMetricsAnalyzer
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import template_defaults, testbed_defaults, ue_defaults
 from retina.agent.templates import template_path
@@ -52,14 +53,6 @@ class _CellInfo:
 class _RFSplit72Info:
     interface: str = ""
     du_mac_addr: str = ""
-
-
-@dataclass
-class _AmarisoftMetrics:
-    rnti: int
-    metrics: Metrics
-    time_first: datetime
-    time_last: datetime
 
 
 # pylint: disable=too-many-instance-attributes
@@ -92,7 +85,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         self._subscriber_count: int = 0
         self._amarisoft_lock: Lock = Lock()
         self._metrics_lock: Lock = Lock()
-        self._metrics_dict: Dict[str, Dict[int, _AmarisoftMetrics]] = {}
+        self._ue_analyzer: AmarisoftUeMetricsAnalyzer = AmarisoftUeMetricsAnalyzer()
+        self._peer_ue_ids: Dict[str, Set[Tuple[int, int]]] = {}  # peer -> set of (rnti, pci)
 
     def _get_binary_name(self) -> str:
         return "lteue"
@@ -304,7 +298,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             except (ConnectionRefusedError, ConnectionResetError) as err:
                 raise ChildProcessError("Process has died") from err
 
-            self._metrics_dict.clear()
+            self._ue_analyzer = AmarisoftUeMetricsAnalyzer()
+            self._peer_ue_ids.clear()
 
             with suppress(BrokenPipeError, AttributeError):
                 # Enter (stop previous command) + t
@@ -328,8 +323,6 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             logging.info("Power on user with id %s", subscriber_id)
         else:
             logging.info("Test Simulation Mode")
-
-        self._metrics_dict[context.peer()] = {}
 
         if not self._check_alive_thread.is_alive():
             raise ChildProcessError("Process has died")
@@ -500,11 +493,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                 old_messages = self._parse_messages(ue_info["counters"]["messages"])
                 break
 
-            # Get current pci (dict key is pci, sort by most recently updated)
-            old_cell_pci = max(
-                self._metrics_dict[context.peer()].items(),
-                key=lambda kv: kv[1].time_last,
-            )[0]
+            # Get current pci (most recently updated cell)
+            old_cell_pci = self._latest_pci(context.peer())
 
             # Wait until HO completed
             timeout_msg = f"Timeout reached. UE {subscriber_id} is still connected to cell pci={old_cell_pci}"
@@ -521,10 +511,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     diff_nof_reconfiguration_complete = (
                         new_messages.nof_reconfiguration_complete - old_messages.nof_reconfiguration_complete
                     )
-                    new_cell_pci = max(
-                        self._metrics_dict[context.peer()].items(),
-                        key=lambda kv: kv[1].time_last,
-                    )[0]
+                    new_cell_pci = self._latest_pci(context.peer())
 
                     # Validation
                     if new_cell_pci != old_cell_pci:
@@ -549,10 +536,6 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                                 previous_messages=old_messages,
                                 last_messages=new_messages,
                             )
-                        with self._metrics_lock:
-                            for cell_info in ue_info["cells"]:
-                                ue_metric = self._metrics_dict[context.peer()][cell_info["pci"]]
-                                ue_metric.metrics.nof_handovers += 1
                         logging.info(
                             "UE %s successfully HO from cell pci=%s to cell pci=%s (msg id %s)",
                             subscriber_id,
@@ -781,97 +764,31 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             timeout_handler.not_reached()
 
     def _parse_metrics(self, context_peer: str, metric_info: Dict):
-        timestamp = datetime.fromtimestamp(metric_info["utc"], tz=timezone.utc)
-        for ue_info in metric_info["ue_list"]:
-            for cell_info in ue_info["cells"]:
-                if cell_info["pci"] not in self._metrics_dict[context_peer]:
-                    self._metrics_dict[context_peer][cell_info["pci"]] = _AmarisoftMetrics(
-                        rnti=ue_info.get("rnti", 0),
-                        metrics=Metrics(
-                            nof_ko_dl=ue_info["dl_err_count"] + ue_info["dl_retx_count"],
-                            dl_bitrate=ue_info["dl_bitrate"],
-                            nof_ko_ul=ue_info["ul_retx_count"],
-                            ul_bitrate=ue_info["ul_bitrate"],
-                            nof_reestablishments_complete=ue_info["counters"]["messages"].get(
-                                "nr_rrc_reconfiguration_complete", 0
-                            ),
-                        ),
-                        time_first=timestamp,
-                        time_last=timestamp,
-                    )
-                else:
-                    ue_metric = self._metrics_dict[context_peer][cell_info["pci"]]
-
-                    ue_metric.metrics.nof_ko_dl += ue_info["dl_err_count"] + ue_info["dl_retx_count"]
-                    ue_metric.metrics.nof_ko_ul += ue_info["ul_retx_count"]
-
-                    t_old = (ue_metric.time_last - ue_metric.time_first).total_seconds()
-                    t_new = (timestamp - ue_metric.time_last).total_seconds()
-                    t_beginning = (timestamp - ue_metric.time_first).total_seconds()
-
-                    if t_beginning:
-                        ue_metric.metrics.dl_bitrate = (
-                            (ue_metric.metrics.dl_bitrate * t_old) + (ue_info["dl_bitrate"] * t_new)
-                        ) / t_beginning
-                        ue_metric.metrics.ul_bitrate = (
-                            (ue_metric.metrics.ul_bitrate * t_old) + (ue_info["ul_bitrate"] * t_new)
-                        ) / t_beginning
-
-                    ue_metric.time_last = timestamp
-
-                    ue_metric.metrics.nof_reestablishments_complete = ue_info["counters"]["messages"].get(
-                        "nr_rrc_reconfiguration_complete", 0
-                    )
+        subscriber_id = self._subscriber_client_dict[context_peer].subscriber_id
+        self._ue_analyzer.process(metric_info)
+        subscriber_ue_list = [u for u in metric_info.get("ue_list", []) if u.get("ue_id") == subscriber_id]
+        peer_ids = self._peer_ue_ids.setdefault(context_peer, set())
+        for ue_info in subscriber_ue_list:
+            rnti = ue_info.get("rnti", 0)
+            for cell_info in ue_info.get("cells", []):
+                peer_ids.add((rnti, cell_info["pci"]))
 
     def _get_stats(self) -> Dict:
         if self._websocket is None:
             raise ChildProcessError("Process has died")
         stats = self._websocket.send_command_and_wait_response(message="stats", samples=False, rf=False)
-        self._parse_stats(stats)
+        self._ue_analyzer.process(stats)
         return stats
 
-    def _parse_stats(self, stats_dict: Dict):
-        if not stats_dict:
-            return {}
-        if "stats" not in self._metrics_dict:
-            self._metrics_dict["stats"] = {}
-        self._metrics_dict["stats"][0] = _AmarisoftMetrics(
-            rnti=0,
-            time_first=datetime.now(),
-            time_last=datetime.now(),
-            metrics=Metrics(
-                dl_bitrate=sum(cell["dl_bitrate"] for cell in stats_dict["cells"].values()),
-                ul_bitrate=sum(cell["ul_bitrate"] for cell in stats_dict["cells"].values()),
-                nof_ko_dl=sum(cell["dl_err_count"] + cell["dl_retx_count"] for cell in stats_dict["cells"].values()),
-                nof_ko_ul=sum(cell["ul_retx_count"] for cell in stats_dict["cells"].values()),
-                nof_handovers=stats_dict["counters"]["messages"].get("handover_success", 0),
-                nof_reestablishments_complete=stats_dict["counters"]["messages"].get(
-                    "nr_rrc_reconfiguration_complete", 0
-                ),
-                nof_pdu_session_establishment_accept=stats_dict["counters"]["messages"].get(
-                    "5gs_nas_pdu_session_establishment_accept", 0
-                ),
-            ),
-        )
+    def _latest_pci(self, peer: str) -> Optional[int]:
+        ue_id = self._ue_analyzer.latest_ue_id(self._peer_ue_ids.get(peer, set()))
+        return ue_id[1] if ue_id is not None else None  # ue_id = (rnti, pci)
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         metrics = super().GetMetrics(request, context)
-        if "stats" in self._metrics_dict and 0 in self._metrics_dict["stats"]:
-            ue_metrics_iter: tuple[_AmarisoftMetrics, ...] = (self._metrics_dict["stats"][0],)
-        else:
-            ue_metrics_iter = tuple(
-                self._metrics_dict[context.peer()].values()
-                if context.peer() in self._metrics_dict
-                else (ue_metric for ue_dict in self._metrics_dict.values() for ue_metric in ue_dict.values())
-            )
-        for ue_metric in ue_metrics_iter:
-            metrics.dl_bitrate += ue_metric.metrics.dl_bitrate
-            metrics.ul_bitrate += ue_metric.metrics.ul_bitrate
-            metrics.nof_ko_dl += ue_metric.metrics.nof_ko_dl
-            metrics.nof_ko_ul += ue_metric.metrics.nof_ko_ul
-            metrics.nof_handovers += ue_metric.metrics.nof_handovers
-            metrics.nof_reestablishments_complete += ue_metric.metrics.nof_reestablishments_complete
-            metrics.nof_pdu_session_establishment_accept += ue_metric.metrics.nof_pdu_session_establishment_accept
+        peer = context.peer()
+        ue_ids = self._peer_ue_ids.get(peer) if peer in self._subscriber_client_dict else None
+        metrics.MergeFrom(self._ue_analyzer.report(ue_ids))
         return metrics
 
 

@@ -356,12 +356,12 @@ def _log_metrics(
 ) -> None:
     try:
         metrics: Metrics = stub.GetMetrics(Empty())
-        if metrics.nof_lates:
-            logging.warning("%s has %s UHD Lates", name, metrics.nof_lates)
-        if metrics.nof_under:
-            logging.warning("%s has %s UHD Underflows", name, metrics.nof_under)
-        if metrics.nof_seq_err:
-            logging.warning("%s has %s UHD Sequence errors", name, metrics.nof_seq_err)
+        if metrics.du.nof_lates:
+            logging.warning("%s has %s UHD Lates", name, metrics.du.nof_lates)
+        if metrics.du.nof_under:
+            logging.warning("%s has %s UHD Underflows", name, metrics.du.nof_under)
+        if metrics.du.nof_seq_err:
+            logging.warning("%s has %s UHD Sequence errors", name, metrics.du.nof_seq_err)
     except grpc.RpcError:
         logging.error("%s metrics couldn't be recovered.", name)
 

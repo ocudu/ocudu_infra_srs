@@ -5,7 +5,7 @@
 5G NR RRC-layer pcap analyzers.
 """
 
-from retina.protocol.base_pb2 import Metrics
+from retina.protocol.base_pb2 import CuMetrics, Metrics, UeMetrics
 
 from retina.agent.features.pcap.analyzer import PcapAnalyzer
 
@@ -37,7 +37,7 @@ class HandoverAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(nof_handovers=self._count)
+        return Metrics(aggregate=UeMetrics(nof_handovers=self._count))
 
 
 class PrachConfigIndexAnalyzer(PcapAnalyzer):
@@ -69,7 +69,7 @@ class PrachConfigIndexAnalyzer(PcapAnalyzer):
                 pass
 
     def report(self) -> Metrics:
-        return Metrics(prach_configuration_index=self._prach_config_index)
+        return Metrics(cu=CuMetrics(prach_configuration_index=self._prach_config_index))
 
 
 class SibAnalyzer(PcapAnalyzer):
@@ -112,12 +112,14 @@ class SibAnalyzer(PcapAnalyzer):
 
     def report(self) -> Metrics:
         return Metrics(
-            nof_sib1_transmissions=self._counts[1],
-            nof_sib2_transmissions=self._counts[2],
-            nof_sib3_transmissions=self._counts[3],
-            nof_sib4_transmissions=self._counts[4],
-            nof_sib5_transmissions=self._counts[5],
-            nof_sib8_transmissions=self._counts[8],
+            cu=CuMetrics(
+                nof_sib1_transmissions=self._counts[1],
+                nof_sib2_transmissions=self._counts[2],
+                nof_sib3_transmissions=self._counts[3],
+                nof_sib4_transmissions=self._counts[4],
+                nof_sib5_transmissions=self._counts[5],
+                nof_sib8_transmissions=self._counts[8],
+            )
         )
 
 
@@ -141,7 +143,7 @@ class TransformPrecoderAnalyzer(PcapAnalyzer):
         self._enabled = True
 
     def report(self) -> Metrics:
-        return Metrics(transform_precoder=self._enabled)
+        return Metrics(cu=CuMetrics(transform_precoder=self._enabled))
 
 
 class SrsFreqDomainAnalyzer(PcapAnalyzer):
@@ -179,7 +181,7 @@ class SrsFreqDomainAnalyzer(PcapAnalyzer):
             pass
 
     def report(self) -> Metrics:
-        return Metrics(c_srs=self._c_srs, b_srs=self._b_srs)
+        return Metrics(cu=CuMetrics(c_srs=self._c_srs, b_srs=self._b_srs))
 
 
 class T312Analyzer(PcapAnalyzer):
@@ -205,7 +207,7 @@ class T312Analyzer(PcapAnalyzer):
                 pass
 
     def report(self) -> Metrics:
-        return Metrics(t312=self._value)
+        return Metrics(cu=CuMetrics(t312=self._value))
 
 
 class DrxLongCycleAnalyzer(PcapAnalyzer):
@@ -232,7 +234,7 @@ class DrxLongCycleAnalyzer(PcapAnalyzer):
                 pass
 
     def report(self) -> Metrics:
-        return Metrics(drx_long_cycle_start_offset=self._value)
+        return Metrics(cu=CuMetrics(drx_long_cycle_start_offset=self._value))
 
 
 class PagingAnalyzer(PcapAnalyzer):
@@ -253,7 +255,7 @@ class PagingAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(nof_paging_messages=self._count)
+        return Metrics(cu=CuMetrics(nof_paging_messages=self._count))
 
 
 class SuspendConfigAnalyzer(PcapAnalyzer):
@@ -275,7 +277,7 @@ class SuspendConfigAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(nof_rrc_suspend=self._count)
+        return Metrics(aggregate=UeMetrics(nof_rrc_suspend=self._count))
 
 
 class ResumeRequestAnalyzer(PcapAnalyzer):
@@ -296,7 +298,7 @@ class ResumeRequestAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(nof_rrc_resume_request=self._count)
+        return Metrics(aggregate=UeMetrics(nof_rrc_resume_request=self._count))
 
 
 class ReestablishmentAnalyzer(PcapAnalyzer):
@@ -318,6 +320,4 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
         self._completion_count += 1
 
     def report(self) -> Metrics:
-        return Metrics(
-            nof_reestablishments_complete=self._completion_count,
-        )
+        return Metrics(aggregate=UeMetrics(nof_reestablishments_complete=self._completion_count))

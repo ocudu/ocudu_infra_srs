@@ -971,7 +971,7 @@ def _iperf(
 
     metrics: Metrics = gnb.GetMetrics(Empty())
 
-    if metrics.dl_bitrate + metrics.ul_bitrate <= 0:
+    if metrics.aggregate.dl_bitrate + metrics.aggregate.ul_bitrate <= 0:
         pytest.fail("No traffic detected in GNB metrics")
 
     if assess_bitrate and protocol == IPerfProto.UDP:

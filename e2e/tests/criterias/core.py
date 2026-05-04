@@ -19,7 +19,7 @@ class nof_pdu_session_establishment_accept_eq(FiveGcCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).nof_pdu_session_establishment_accept for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).core.nof_pdu_session_establishment_accept for s in self._stub_array)
 
 
 class nof_pdu_session_establishment_accept_ge(FiveGcCriteria):
@@ -28,7 +28,7 @@ class nof_pdu_session_establishment_accept_ge(FiveGcCriteria):
     operator_method = operator.ge
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).nof_pdu_session_establishment_accept for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).core.nof_pdu_session_establishment_accept for s in self._stub_array)
 
 
 class nof_5gs_nas_service_accept_eq(FiveGcCriteria):
@@ -37,7 +37,7 @@ class nof_5gs_nas_service_accept_eq(FiveGcCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).nof_5gs_nas_service_accept for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).core.nof_5gs_nas_service_accept for s in self._stub_array)
 
 
 class nof_ng_paging_eq(FiveGcCriteria):
@@ -46,4 +46,4 @@ class nof_ng_paging_eq(FiveGcCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).nof_ng_paging for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).core.nof_ng_paging for s in self._stub_array)

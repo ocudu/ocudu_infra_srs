@@ -21,7 +21,7 @@ import grpc
 import psutil
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import Metrics, StopResponse
+from retina.protocol.base_pb2 import DuMetrics, Metrics, StopResponse
 from retina.protocol.exit_codes import exit_code_to_message
 
 from retina.agent.drivers.base import BaseDriver
@@ -306,7 +306,9 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         log_cgroups_warnings_and_errors()
-        return Metrics(nof_lates=self._nof_lates, nof_under=self._nof_under, nof_seq_err=self._nof_seq_err)
+        return Metrics(
+            du=DuMetrics(nof_lates=self._nof_lates, nof_under=self._nof_under, nof_seq_err=self._nof_seq_err)
+        )
 
 
 #########

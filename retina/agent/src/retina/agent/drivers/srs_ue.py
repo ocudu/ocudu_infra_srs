@@ -18,7 +18,7 @@ from typing import Optional, Tuple
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition
+from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition, UeMetrics
 from retina.protocol.ue_pb2 import UEAttachedInfo, UEStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
@@ -215,16 +215,18 @@ class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instanc
                     timestamp = datetime.datetime.fromtimestamp(int(ue_info["time"]) / 1000, tz=datetime.timezone.utc)
                     if self._ue_metric_time_first is None:
                         self._ue_metric = Metrics(
-                            nof_ko_dl=int(float(ue_info["dl_bler"])),
-                            dl_bitrate=float(ue_info["dl_brate"]),
-                            nof_ko_ul=int(ue_info["ul_bler"]),
-                            ul_bitrate=float(ue_info["ul_brate"]),
+                            aggregate=UeMetrics(
+                                nof_ko_dl=int(float(ue_info["dl_bler"])),
+                                dl_bitrate=float(ue_info["dl_brate"]),
+                                nof_ko_ul=int(ue_info["ul_bler"]),
+                                ul_bitrate=float(ue_info["ul_brate"]),
+                            )
                         )
                         self._ue_metric_time_first = timestamp
                         self._ue_metric_time_last = timestamp
                     else:
-                        self._ue_metric.nof_ko_dl += int(float(ue_info["dl_bler"]))
-                        self._ue_metric.nof_ko_ul += int(float(ue_info["ul_bler"]))
+                        self._ue_metric.aggregate.nof_ko_dl += int(float(ue_info["dl_bler"]))
+                        self._ue_metric.aggregate.nof_ko_ul += int(float(ue_info["ul_bler"]))
 
                         if self._ue_metric_time_last is None:
                             self._ue_metric_time_last = self._ue_metric_time_first
@@ -233,11 +235,11 @@ class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instanc
                         t_new = (timestamp - self._ue_metric_time_last).total_seconds()
                         t_beginning = (timestamp - self._ue_metric_time_first).total_seconds()
 
-                        self._ue_metric.dl_bitrate = (
-                            (self._ue_metric.dl_bitrate * t_old) + (float(ue_info["dl_brate"]) * t_new)
+                        self._ue_metric.aggregate.dl_bitrate = (
+                            (self._ue_metric.aggregate.dl_bitrate * t_old) + (float(ue_info["dl_brate"]) * t_new)
                         ) / t_beginning
-                        self._ue_metric.ul_bitrate = (
-                            (self._ue_metric.ul_bitrate * t_old) + (float(ue_info["ul_brate"]) * t_new)
+                        self._ue_metric.aggregate.ul_bitrate = (
+                            (self._ue_metric.aggregate.ul_bitrate * t_old) + (float(ue_info["ul_brate"]) * t_new)
                         ) / t_beginning
 
                         self._ue_metric_time_last = timestamp
