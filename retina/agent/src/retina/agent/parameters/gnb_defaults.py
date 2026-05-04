@@ -132,3 +132,4 @@ class Sib19Params(TypedDict, total=False):  # total=False makes keys optional
 
 ntn_enable: bool = False
 sib19: Sib19Params = {}
+time_multiplier: float = 0

@@ -4,6 +4,8 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+MME_TIME_MULTIPLIER="${MME_TIME_MULTIPLIER:-1}"
+
 ifname="$1"     # Interface name
 index="$2"      # Network index (PDN index)
 apn="$3"        # Access point name
@@ -48,12 +50,12 @@ if [ "$type" = "ipv4" ] ; then
     echo '1' > /proc/sys/net/ipv6/conf/"$ifname"/disable_ipv6 2>/dev/null || sysctl -w net.ipv6.conf."$ifname".disable_ipv6=1 2>/dev/null || true
 
     # run ltesim_server
-    echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3000"
-    /opt/ltemme/ltesim_server -a $tun_ip_prefix.$first_subnet.1:3000 &
-    echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3001"
-    /opt/ltemme/ltesim_server -a $tun_ip_prefix.$first_subnet.1:3001 &
-    echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3002"
-    /opt/ltemme/ltesim_server -a $tun_ip_prefix.$first_subnet.1:3002 &
+    echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3000 with -S $MME_TIME_MULTIPLIER"
+    /opt/ltemme/ltesim_server -S "$MME_TIME_MULTIPLIER" -a $tun_ip_prefix.$first_subnet.1:3000 &
+    echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3001 with -S $MME_TIME_MULTIPLIER"
+    /opt/ltemme/ltesim_server -S "$MME_TIME_MULTIPLIER" -a $tun_ip_prefix.$first_subnet.1:3001 &
+    echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3002 with -S $MME_TIME_MULTIPLIER"
+    /opt/ltemme/ltesim_server -S "$MME_TIME_MULTIPLIER" -a $tun_ip_prefix.$first_subnet.1:3002 &
 else
 
     ll="$5"     # ipv6 link local address

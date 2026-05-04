@@ -27,3 +27,4 @@ tun_mask: int = 16
 apn: str = "internet"
 ims_mode: str = ""  # enabled, not_registering
 slices: List[int] = []
+time_multiplier: float = 1

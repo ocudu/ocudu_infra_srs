@@ -23,6 +23,8 @@ ru_sdr:
   {% endif %}
   sync: {{sync}}
   time_alignment_calibration: {{time_alignment_calibration}}
+  expert_cfg:
+    low_phy_dl_throttling: {{time_multiplier}}
 {% endif %}
 
 {% if lcores_eal_args %}

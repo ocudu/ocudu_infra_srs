@@ -60,6 +60,10 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
     def Start(self, request: FiveGCStartInfo, context: grpc.ServicerContext) -> Empty:
         self.Stop(UInt32Value(value=request.start_info.timeout), context)
 
+        with notify_grpc_exception(context):
+            if fivegc_defaults.time_multiplier != 1:
+                raise ValueError("Open5gs doesn't support time simulation")
+
         config_file = self._render(
             filename=self.OPEN5G_CONF_FILE_BASE_NAME,
             templates={self.OPEN5G_CONF_FILE_BASE_NAME: template_defaults.main},
