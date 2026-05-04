@@ -134,7 +134,8 @@ If you are going to use Amarisoft, you need to setup the following env variables
 
 ```bash
 export AMARISOFT_LICENSE_IP=your_license_server_ip
-export AMARISOFT_LICENSE_TAG=your_tag
+export AMARISOFT_UE_LICENSE_TAG=your_ue_tag
+export AMARISOFT_MME_LICENSE_TAG=your_mme_tag
 ```
 
 ```bash
@@ -282,7 +283,7 @@ PASSED                                                                          
 ==================================================================== 1 passed, 202 deselected in 36.28s =====================================================================
 ```
 
-You can now access the test report in your PC inside your gnb folder: `$OCUDU_PATH/tests/e2e/log/report.html`.
+You can now access the test report in your PC inside your `ocudu-infra-srs` folder: `$OCUDU_INFRA_SRS_PATH/tests/e2e/log/report.html`.
 
 You can add `--help` to see pytet's help, with info about how to select test and useful options like `--collect-only`
 
