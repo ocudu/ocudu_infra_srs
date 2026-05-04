@@ -14,7 +14,6 @@ slicing: &base_config
     config: [amf.yml, cell_cfg.yml, tdd_default.yml, dual_slice.yml]
   core:
     config: [baseline.cfg]
-  feature_ids: [MVP-FUNC-SVCS-17-3]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
