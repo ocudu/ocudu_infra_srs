@@ -30,7 +30,7 @@ baseline: &base_config
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_eq: 0
     du.max_late_dl_harqs_le: 0
-    du.max_late_ul_harqs_le_le: 0
+    du.max_late_ul_harqs_le: 0
     du.nof_error_indications_le: 0
     du.errors_le: 0
     du.warnings_le: 3
