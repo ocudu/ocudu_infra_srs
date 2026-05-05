@@ -37,6 +37,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     tshark \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Add Wireshark profiles for NR-MAC
+RUN mkdir -p /root/.config/wireshark/profiles
+COPY agent/tshark-profiles/nr-mac /root/.config/wireshark/profiles/nr-mac
+
 # Copy iperf
 ENV PATH="${PATH}:/opt/iperf/bin"
 COPY --from=iperf_builder /opt/iperf /opt/iperf

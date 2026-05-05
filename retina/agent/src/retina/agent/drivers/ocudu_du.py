@@ -361,7 +361,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                     run_analyzers(
                         mac_pcap_filename,
                         tuple(analyzer_cls() for analyzer_cls in _MAC_PCAP_ANALYZER_ARRAY),
-                        "--enable-heuristic mac_nr_udp",
+                        "-C nr-mac",
                     )
                 )
                 self._metrics_parsing_done = True
