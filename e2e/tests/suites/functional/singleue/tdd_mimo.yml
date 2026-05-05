@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# tid1.1.27: TDD MIMO 2x2 configuration test
+# TDD MIMO 2x2 configuration test
 mimo_2x2: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -32,7 +32,7 @@ mimo_2x2: &base_config
     du.errors_le: 0
     du.warnings_le: 0
 
-# tid1.1.28: TDD MIMO 4x4 configuration test
+# TDD MIMO 4x4 configuration test
 mimo_4x4:
   <<: *base_config
   ue:

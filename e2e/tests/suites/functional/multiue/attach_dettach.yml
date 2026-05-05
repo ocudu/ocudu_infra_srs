@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# tid1.3.0
+# Attach/dettach stability, management of fallback scheduler, correct addition and removal of UEs
 baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -25,13 +25,13 @@ baseline: &base_config
     du.errors_le: 0
     du.warnings_le: 0
 
-# tid1.3.1
+# Attach/dettach stability, management of fallback scheduler, correct addition and removal of UEs
 dl_heavy_tdd:
   <<: *base_config
   gnb:
     config: [amf.yml, cell_cfg.yml, 512ue.yml, tdd_72.yml]
 
-# tid1.3.2
+# Attach/dettach stability, management of fallback scheduler, correct addition and removal of UEs
 ul_heavy_tdd:
   <<: *base_config
   gnb:

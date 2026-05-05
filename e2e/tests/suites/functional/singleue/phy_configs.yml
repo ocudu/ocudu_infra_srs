@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# tid1.1.5: PRACH format 0 configuration test
+# PRACH format 0 configuration test
 prach_config_0: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -30,7 +30,7 @@ prach_config_0: &base_config
     du.warnings_le: 0
     du.prach_configuration_index_eq: 159
 
-# tid1.1.6: PRACH format 1 configuration test
+# PRACH format 1 configuration test
 prach_config_1:
   <<: *base_config
   gnb:
@@ -50,7 +50,7 @@ prach_config_1:
     du.warnings_le: 0
     du.prach_configuration_index_eq: 162
 
-# tid1.1.7: PRACH format A3 configuration test
+# PRACH format A3 configuration test
 prach_config_a3:
   <<: *base_config
   gnb:
@@ -70,7 +70,7 @@ prach_config_a3:
     du.warnings_le: 0
     du.prach_configuration_index_eq: 110
 
-# tid1.1.8: PRACH format C0 configuration test
+# PRACH format C0 configuration test
 prach_config_c0:
   <<: *base_config
   gnb:
@@ -90,7 +90,7 @@ prach_config_c0:
     du.warnings_le: 0
     du.prach_configuration_index_eq: 180
 
-# tid1.1.9: PRACH format C2 configuration test
+# PRACH format C2 configuration test
 prach_config_c2:
   <<: *base_config
   gnb:
@@ -110,21 +110,21 @@ prach_config_c2:
     du.prach_configuration_index_eq: 189
   feature_ids: [MVP-FUNC-PHY-16-2]
 
-# tid1.1.10: SRS Aperiodic configuration test
+# SRS Aperiodic configuration test
 srs_aperiodic:
   <<: *base_config
   gnb:
     config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_aperiodic.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-PHY-16-4]
 
-# tid1.1.11: SRS Wideband configuration test
+# SRS Wideband configuration test
 srs_wideband:
   <<: *base_config
   gnb:
     config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_wideband.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-PHY-16-5]
 
-# tid1.1.12: SRS Narrowband configuration test
+# SRS Narrowband configuration test
 srs_narrowband:
   <<: *base_config
   gnb:
@@ -141,14 +141,14 @@ srs_narrowband:
     du.errors_le: 0
     du.warnings_le: 0
 
-# tid1.1.14: Aperiodic CSI configuration test
+# Aperiodic CSI configuration test
 aperiodic_csi:
   <<: *base_config
   gnb:
     config: [amf.yml, cell_cfg.yml, tdd_default.yml, aperiodic_csi.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-MIMO-16-1]
 
-# tid1.1.15: PUCCH Format 0/2 test
+# PUCCH Format 0/2 test
 pucch_02:
   <<: *base_config
   gnb:
@@ -166,7 +166,7 @@ pucch_13:
       pucch_format: "f1_and_f3"
   feature_ids: [DU-PHY-1]
 
-# tid1.1.16: PUCCH Format 1/4 test
+# PUCCH Format 1/4 test
 pucch_14:
   <<: *base_config
   gnb:
@@ -175,19 +175,21 @@ pucch_14:
       pucch_format: "f1_and_f4"
   feature_ids: [DU-PHY-1]
 
+# PUCCH Format 1/2 with intraslot FH
 pucch_intraslot:
   <<: *base_config
   gnb:
     config: [amf.yml, cell_cfg.yml, tdd_default.yml, pucch_config_intraslot.yml, mac_pcap.yml]
   feature_ids: [DU-PHY-9]
 
+# PDSCH VRB
 pdsch_vrb:
   <<: *base_config
   gnb:
     config: [amf.yml, cell_cfg.yml, tdd_default.yml, pdsch_vrb.yml, mac_pcap.yml]
   feature_ids: [DU-PHY-8]
 
-# tid1.1.17: DMRS Additional pos 1 test
+# DMRS Additional pos 1 test
 dmrs_1:
   <<: *base_config
   gnb:
@@ -197,7 +199,7 @@ dmrs_1:
       dmrs_additional_pos: 1
   feature_ids: [DU-PHY-3]
 
-# tid1.1.17: DMRS Additional pos 2 test
+# DMRS Additional pos 2 test
 dmrs_2:
   <<: *base_config
   gnb:
@@ -207,7 +209,7 @@ dmrs_2:
       dmrs_additional_pos: 2
   feature_ids: [DU-PHY-3]
 
-# tid1.1.18: DMRS Additional pos 3 test
+# DMRS Additional pos 3 test
 dmrs_3:
   <<: *base_config
   gnb:
@@ -217,7 +219,7 @@ dmrs_3:
       dmrs_additional_pos: 3
   feature_ids: [DU-PHY-3]
 
-# tid1.1.19: UL DFT-based precoding test
+# UL DFT-based precoding test
 precoding:
   <<: *base_config
   gnb:

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# tid1.3.3: Multiple UEs doing random Handovers
+# Multiple UEs doing random Handovers
 inter_ru_ho: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -25,7 +25,7 @@ inter_ru_ho: &base_config
     du.errors_le: 0
     du.warnings_le: 0
 
-# tid1.3.6: Multiple UEs doing Reestablishments
+# Multiple UEs doing Reestablishments
 reestablishment:
   <<: *base_config
   ue:

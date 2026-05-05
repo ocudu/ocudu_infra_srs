@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# tid1.2.17: Intra-RU Reestablishment test (same cell)
-intra_ru:
+# Intra-RU Reestablishment test (same cell)
+intra_ru: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
