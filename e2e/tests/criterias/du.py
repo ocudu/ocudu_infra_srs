@@ -310,3 +310,31 @@ class ul_avg_ri_ge(DuCriteria):
 
     def callback(self):
         return mean(s.GetMetrics(Empty()).aggregate.ul_avg_ri for s in self._stub_array)
+
+
+class dl_ue_avg_bitrate(DuCriteria):
+    """DL UE average bitrate"""
+
+    @property
+    def expected(self):
+        return True
+
+    def callback(self):
+        du = self._stub_array[0]
+        ues_tput = [ue.dl_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
+        expected_tput = [item["value"] for item in self._input]
+        return all(a > b for a, b in zip(ues_tput, expected_tput))
+
+
+class ul_ue_avg_bitrate(DuCriteria):
+    """UL UE average bitrate"""
+
+    @property
+    def expected(self):
+        return True
+
+    def callback(self):
+        du = self._stub_array[0]
+        ues_tput = [ue.ul_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
+        expected_tput = [item["value"] for item in self._input]
+        return all(a > b for a, b in zip(ues_tput, expected_tput))

@@ -579,10 +579,12 @@ class CoreMetrics(google.protobuf.message.Message):
     NOF_5GS_NAS_SERVICE_ACCEPT_FIELD_NUMBER: builtins.int
     NOF_NG_PAGING_FIELD_NUMBER: builtins.int
     NOF_TAU_REQUEST_FIELD_NUMBER: builtins.int
+    NOF_PDU_SESSION_RESOURCE_MODIFY_REQUEST_FIELD_NUMBER: builtins.int
     nof_pdu_session_establishment_accept: builtins.int
     nof_5gs_nas_service_accept: builtins.int
     nof_ng_paging: builtins.int
     nof_tau_request: builtins.int
+    nof_pdu_session_resource_modify_request: builtins.int
     def __init__(
         self,
         *,
@@ -590,8 +592,9 @@ class CoreMetrics(google.protobuf.message.Message):
         nof_5gs_nas_service_accept: builtins.int = ...,
         nof_ng_paging: builtins.int = ...,
         nof_tau_request: builtins.int = ...,
+        nof_pdu_session_resource_modify_request: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_5gs_nas_service_accept", b"nof_5gs_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_tau_request", b"nof_tau_request"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_5gs_nas_service_accept", b"nof_5gs_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_resource_modify_request", b"nof_pdu_session_resource_modify_request", "nof_tau_request", b"nof_tau_request"]) -> None: ...
 
 Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
 

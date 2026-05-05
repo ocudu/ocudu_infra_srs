@@ -22,6 +22,15 @@ class nof_pdu_session_establishment_accept_eq(FiveGcCriteria):
         return sum(s.GetMetrics(Empty()).core.nof_pdu_session_establishment_accept for s in self._stub_array)
 
 
+class nof_pdu_session_resource_modify_request_eq(FiveGcCriteria):
+    """PDU Session Modification Request"""
+
+    operator_method = operator.eq
+
+    def callback(self):
+        return sum(s.GetMetrics(Empty()).core.nof_pdu_session_resource_modify_request for s in self._stub_array)
+
+
 class nof_pdu_session_establishment_accept_ge(FiveGcCriteria):
     """PDU Session Establishment Accept"""
 
