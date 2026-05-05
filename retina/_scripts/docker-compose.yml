@@ -238,12 +238,11 @@ services:
       - zmq_amariue_open5gs
       - zmq_srsue
       - zmq_ntn
-    image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
     build:
       context: ../images/ocudu
       args:
         <<: *variables
-        RETINA_AGENT: ocudu-gnb # ocudu-gnb, ocudu-cudu, ocudu-cu, ocudu-du
       additional_contexts:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
@@ -253,6 +252,7 @@ services:
     volumes: *agent_volumes
     tmpfs: *agent_tmpfs
     environment: &ocudu_env
+      RETINA_AGENT: ocudu-gnb # ocudu-gnb, ocudu-cudu, ocudu-cu, ocudu-du
       RETINA_IP: &gnb0_ip 172.20.0.4
       PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
     networks:
@@ -276,17 +276,17 @@ services:
   ocudu-cu:
     <<: *gnb_service
     container_name: ocudu-cu
-    image: ${RETINA_REGISTRY_URI}/ocudu-cu:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
     build:
       context: ../images/ocudu
       args:
         <<: *variables
-        RETINA_AGENT: ocudu-cu
       additional_contexts:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
       <<: *ocudu_env
+      RETINA_AGENT: ocudu-cu
       RETINA_IP: &cu_ip 172.20.0.6
     networks:
       retina:
@@ -297,17 +297,17 @@ services:
   ocudu-du-1:
     <<: *gnb_service
     container_name: ocudu-du-1
-    image: ${RETINA_REGISTRY_URI}/ocudu-du:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
     build:
       context: ../images/ocudu
       args:
         <<: *variables
-        RETINA_AGENT: ocudu-du
       additional_contexts:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
       <<: *ocudu_env
+      RETINA_AGENT: ocudu-du
       RETINA_IP: &du0_ip 172.20.0.7
     networks:
       retina:
@@ -318,17 +318,17 @@ services:
   ocudu-du-2:
     <<: *gnb_service
     container_name: ocudu-du-2
-    image: ${RETINA_REGISTRY_URI}/ocudu-du:${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
     build:
       context: ../images/ocudu
       args:
         <<: *variables
-        RETINA_AGENT: ocudu-du
       additional_contexts:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
       <<: *ocudu_env
+      RETINA_AGENT: ocudu-du
       RETINA_IP: &du1_ip 172.20.0.8
     networks:
       retina:

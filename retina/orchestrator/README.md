@@ -9,7 +9,7 @@ A Retina request file is a YAML document describing an array of pods (containers
 ```yml
 - name: ocudu-gnb
   type: gnb
-  image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 6
@@ -23,6 +23,7 @@ A Retina request file is a YAML document describing an array of pods (containers
   resources:
     - type: zmq
   environment:
+    - RETINA_AGENT: ocudu-gnb
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:

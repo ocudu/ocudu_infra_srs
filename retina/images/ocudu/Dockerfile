@@ -35,8 +35,6 @@ ENV RTSAN_OPTIONS="halt_on_error=false:suppress_equal_stacks=true"
 
 ADD ocudu_entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/ocudu_entrypoint.sh"]
-ARG RETINA_AGENT=ocudu-gnb
-ENV RETINA_AGENT=$RETINA_AGENT
 
 # Install retina
 COPY --from=wheelhouse /src/wheelhouse /app/

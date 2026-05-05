@@ -3,7 +3,7 @@
 
 - name: ocudu-gnb
   type: gnb
-  image: ${RETINA_REGISTRY_URI}/ocudu-gnb:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 100%
@@ -26,6 +26,7 @@
     - type: ru
       model: viavi
   environment:
+    - RETINA_AGENT: ocudu-gnb
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb_split_7_2
     - LD_LIBRARY_PATH: /opt/rohc/lib/:/opt/dpdk/${DPDK_VERSION}/lib/x86_64-linux-gnu/
   shared_files:

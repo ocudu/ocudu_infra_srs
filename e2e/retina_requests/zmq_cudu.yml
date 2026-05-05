@@ -23,7 +23,7 @@
 
 - name: ocudu-gnb
   type: gnb
-  image: ${RETINA_REGISTRY_URI}/ocudu-cudu:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 20%
@@ -35,6 +35,7 @@
     - type: zmq
       dummy: true
   environment:
+    - RETINA_AGENT: ocudu-cudu
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/cu:${OCUDU_PATH}/build_retina/apps/du
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:

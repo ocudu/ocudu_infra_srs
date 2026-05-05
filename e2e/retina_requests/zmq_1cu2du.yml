@@ -23,7 +23,7 @@
 
 - name: ocudu-cu
   type: cu
-  image: ${RETINA_REGISTRY_URI}/ocudu-cu:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 10%
@@ -35,6 +35,7 @@
     - type: zmq
       dummy: true
   environment:
+    - RETINA_AGENT: ocudu-cu
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/cu
     - LD_LIBRARY_PATH: /opt/rohc/lib/
   shared_files:
@@ -44,7 +45,7 @@
 
 - name: ocudu-du-1
   type: du
-  image: ${RETINA_REGISTRY_URI}/ocudu-du:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 10%
@@ -56,6 +57,7 @@
     - type: zmq
       dummy: true
   environment:
+    - RETINA_AGENT: ocudu-du
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/du
   shared_files:
     - local_path: ${OCUDU_PATH}/build_retina/apps/du/odu
@@ -76,6 +78,7 @@
     - type: zmq
       dummy: true
   environment:
+    - RETINA_AGENT: ocudu-du
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/du
   shared_files:
     - local_path: ${OCUDU_PATH}/build_retina/apps/du/odu

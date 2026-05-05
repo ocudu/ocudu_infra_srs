@@ -321,18 +321,12 @@ retina containers [ntn-channel-emulator]:
 retina containers [ocudu]:
   extends: .retina containers images
   variables:
-    NAME: ocudu-${DRIVER}
+    NAME: ocudu
     CONTEXT: retina/images/ocudu
     BUILDER_IMAGE_NAME: builder-ubuntu-24.04:${DOCKER_BUILDER_VERSION}
     BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};BUILDER_IMAGE=${OCUDU_REGISTRY_URI}/${BUILDER_IMAGE_NAME};RETINA_AGENT=${NAME}
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "100G"
     KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "100G"
-  parallel:
-    matrix:
-      - DRIVER: gnb
-      - DRIVER: cudu
-      - DRIVER: cu
-      - DRIVER: du
 
 retina containers [open5gs]:
   extends: .retina containers images
