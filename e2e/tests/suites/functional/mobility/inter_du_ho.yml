@@ -46,3 +46,52 @@ baseline: &base_config
     du.nof_error_indications_le: 0
     du.errors_le: 0
     du.warnings_le: 0
+
+# tid1.2.8: inter-RU, inter-DU HO FR1 to FR2 inter-frequency with measurement gap
+fr1_fr2:
+  <<: *base_config
+  ue:
+    config: [2cell_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: *nof_ue
+      num_cells: 2
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+  cu:
+    config: [log.yml, amf.yml, mobility.yml]
+  du:
+    items:
+      - config: [cell_cfg.yml, 1cell.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_du_id_cfg: 0
+          pci_cfg: 1
+          sector_id_cfg: 0
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+      - config: [cell_cfg.yml, 1cell.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
+        parameters: # FR2 config parameters
+          gnb_du_id_cfg: 1
+          pci_cfg: 2
+          cfg_earfcn: 2074171
+          cfg_band: 261
+          cfg_common_scs: 120
+          cfg_bandwidth: 100
+          prach_config_index: 121
+          sector_id_cfg: 1
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+  feature_ids: [MVP-FUNC-MOB-2-b, MVP-FUNC-MOB-2-c, DU-GEN-9]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 5 # allow some KOs due to SR false alarms during UE reconfiguration
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_handovers_ge: 20 # calculated based on the test_duration
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
