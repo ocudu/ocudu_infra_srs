@@ -31,7 +31,7 @@ class _SecretFilter(logging.Filter):
         if secret is None:
             return
         secret = secret.strip()
-        if secret and secret not in self._NOT_REDACT_ARRAY:
+        if len(secret) > 1 and secret not in self._NOT_REDACT_ARRAY:
             self._secrets.add(secret)
 
     def redact(self, value: Optional[str]) -> Optional[str]:
