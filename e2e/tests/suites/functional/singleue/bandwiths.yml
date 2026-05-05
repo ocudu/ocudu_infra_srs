@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Baseline band n256 at 5 MHz
+bw_fdd_ntn_5: &base_config
+  template: ue_simulator.test_gnb
+  feature_ids: [skip]
+  # tc1.4
+
+# Baseline band n41 at 10 MHz
+bw_tdd_10:
+  <<: *base_config
+  feature_ids: [skip]
+
+# Baseline band n66 at 20 MHz
+bw_fdd_20:
+  <<: *base_config
+  feature_ids: [skip]
+
+# Baseline band n41 at 50 MHz
+bw_tdd_50:
+  <<: *base_config
+  feature_ids: [skip]

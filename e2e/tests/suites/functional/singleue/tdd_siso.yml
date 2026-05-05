@@ -29,6 +29,11 @@ baseline_gnb: &base_config
     du.nof_sib1_ge: 1
     du.nof_sib2_ge: 1
 
+# E1 and F1 interfaces. Separated CU-UP, CU-CP and DU
+baseline_cu_du:
+  <<: *base_config
+  feature_ids: [skip, MVP-ARCH-INTF-6, MVP-ARCH-INTF-7, MVP-ARCH-INTF-9, MVP-ARCH-INTF-10, MVP-ARCH-INTF-11]
+
 # Mixed TDD pattern 6:4 DDDSUUUUDD
 tdd_mixed:
   <<: *base_config

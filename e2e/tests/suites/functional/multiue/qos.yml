@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# GBR bearer, QoS Scheduler 2UEs different 5QI
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  feature_ids: [skip, MVP-FUNC-SVCS-16-8-b, MVP-FUNC-SVCS-16-8-c, DU-QOS-1]
+
+# Slicing resource sharing and partitioning
+dedicated_prb:
+  <<: *base_config
+  feature_ids: [skip]

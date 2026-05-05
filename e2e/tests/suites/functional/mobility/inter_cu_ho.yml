@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# inter-CU HO, changing the CU-UP
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  feature_ids: [skip, MVP-FUNC-MOB-1-e, MVP-FUNC-MOB-4]
+  # tc1.9	rc9.1/2...
+
+# inter-CU HO, same CU-UP
+same_cu_up:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-MOB-1-d]
+
+# inter-CU HO, changing the CU-UP between FR1 and FR2
+fr1_fr2:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-MOB-2-d]
+
+# inter-CU HO, same CU-UP  between FR1 and FR2
+fr1_fr2_same_cu_up:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-MOB-2-e]
+
+# Xn HO
+xn_ho:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-MOB-3]

@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Slicing resource sharing and partitioning
+reserved_prb: &base_config
+  template: ue_simulator.test_gnb
+  feature_ids: [skip, MVP-FUNC-SVCS-17-3-d, MVP-FUNC-SVCS-17-3-e]
+  # tc2.7	rc1
+
+# Slicing resource sharing and partitioning
+dedicated_prb:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-SVCS-17-3-d, MVP-FUNC-SVCS-17-3-e]
+
+# Slice-aware Reselection
+slice_reselection:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-SVCS-17-3-a]
+
+# Slice-specific RACH configuration
+slice_rach_config:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-SVCS-17-3-b]
+
+# Slice specific MBR
+different_mbr:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-SVCS-17-3-c]

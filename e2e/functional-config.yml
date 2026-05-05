@@ -12,6 +12,38 @@ spec:
       default: dev
       description: "OCUDU reference branch or tag."
 ---
+idle_ho:
+  stage: mobility
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.mobility.idle_ho."
+    TESTBED: dynamic
+
+inter_cu_ho:
+  stage: mobility
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.mobility.inter_cu_ho."
+    TESTBED: dynamic
+
 inter_ru_ho:
   stage: mobility
   extends: .functional_e2e
@@ -124,6 +156,38 @@ ping:
     KEYWORDS: "functional.multiue.ping."
     TESTBED: dynamic
 
+qos:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.multiue.qos."
+    TESTBED: dynamic
+
+slice:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.multiue.slice."
+    TESTBED: dynamic
+
 bands:
   stage: singleue
   extends: .functional_e2e
@@ -138,6 +202,38 @@ bands:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: "functional.singleue.bands."
+    TESTBED: dynamic
+
+bandwiths:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.singleue.bandwiths."
+    TESTBED: dynamic
+
+capabilities:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.singleue.capabilities."
     TESTBED: dynamic
 
 cmas:
@@ -202,6 +298,22 @@ mocn:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     KEYWORDS: "functional.singleue.mocn."
+    TESTBED: dynamic
+
+nrppa:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.singleue.nrppa."
     TESTBED: dynamic
 
 phy_configs:

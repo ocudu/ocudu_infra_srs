@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# 256QAM UE capability
+no_256qam: &base_config
+  template: ue_simulator.test_gnb
+  feature_ids: [skip, MVP-FUNC-PHY-16-15]
+  # tc1.4
+
+# Lower antenna supported
+ue_less_layers:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-MIMO-16-5]
+
+# No MIMO supported
+ue_no_mimo:
+  <<: *base_config
+  feature_ids: [skip, MVP-FUNC-MIMO-16-5]

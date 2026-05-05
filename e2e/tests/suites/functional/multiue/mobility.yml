@@ -25,6 +25,16 @@ inter_ru_ho: &base_config
     du.errors_le: 0
     du.warnings_le: 0
 
+# Handover stability
+inter_du_ho:
+  <<: *base_config
+  feature_ids: [skip]
+
+# Handover stability
+inter_cu_ho:
+  <<: *base_config
+  feature_ids: [skip]
+
 # Multiple UEs doing Reestablishments
 reestablishment:
   <<: *base_config
