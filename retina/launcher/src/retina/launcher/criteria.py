@@ -12,6 +12,9 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, ClassVar, Dict, final, List, Sequence
 
 import pytest
+from retina.protocol.fivegc_pb2_grpc import FiveGC
+from retina.protocol.gnb_pb2_grpc import DUStub
+from retina.viavi.client import Viavi
 from rich.console import Console
 from rich.table import Table
 
@@ -156,6 +159,7 @@ class DuCriteria(Criteria):  # pylint: disable=too-few-public-methods
     """Base class for DU/gNB pass/fail criteria definitions."""
 
     subclasses: ClassVar[List[type]] = []
+    _stub_array: Sequence[DUStub]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -166,6 +170,7 @@ class FiveGcCriteria(Criteria):  # pylint: disable=too-few-public-methods
     """Base class for 5GC pass/fail criteria definitions."""
 
     subclasses: ClassVar[List[type]] = []
+    _stub_array: Sequence[FiveGC]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -176,6 +181,7 @@ class ViaviCriteria(Criteria):  # pylint: disable=too-few-public-methods
     """Base class for Viavi pass/fail criteria definitions."""
 
     subclasses: ClassVar[List[type]] = []
+    _stub_array: Viavi
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)

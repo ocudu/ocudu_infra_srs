@@ -17,8 +17,8 @@ class nof_ko_dl_le(ViaviCriteria):
 
     operator_method = operator.le
 
-    def callback(self):
-        return self._stub_array.get_test_kpis().dl_data.num_tbs_errors
+    def callback(self) -> int:
+        return v if (v := self._stub_array.get_test_kpis().dl_data.num_tbs_errors) is not None else 0
 
 
 class nof_ko_ul_le(ViaviCriteria):
@@ -26,8 +26,8 @@ class nof_ko_ul_le(ViaviCriteria):
 
     operator_method = operator.le
 
-    def callback(self):
-        return self._stub_array.get_test_kpis().ul_data.num_tbs_nack
+    def callback(self) -> int:
+        return v if (v := self._stub_array.get_test_kpis().ul_data.num_tbs_nack) is not None else 0
 
 
 class warnings_lt(ViaviCriteria):
@@ -35,7 +35,7 @@ class warnings_lt(ViaviCriteria):
 
     operator_method = operator.lt
 
-    def callback(self):
+    def callback(self) -> int:
         return len(self._stub_array.get_test_kpis().warning_array)
 
 

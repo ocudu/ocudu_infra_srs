@@ -70,9 +70,9 @@ warn_return_any = false
 warn_unused_configs = true
 
 [tool.pylint]
-load-plugins = "pylint_pytest"
-disable = ["no-name-in-module"]
+disable = ["no-name-in-module", "wrong-import-order"]
 ignore-signatures = true
+load-plugins = "pylint_pytest"
 max-line-length = 120
 
 [tool.coverage.run]
