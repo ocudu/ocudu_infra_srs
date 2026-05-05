@@ -245,7 +245,7 @@ tests:
       viavi.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
       du.errors_le: 0
-      du.warnings_le: inf
+      du.warnings_le: .inf
       viavi.warnings_lt: .inf
       viavi.procedure_table_eq: 0
     warning_allowlist:
@@ -737,7 +737,7 @@ tests:
       viavi.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
       du.errors_le: 0
-      du.warnings_le: inf
+      du.warnings_le: .inf
       viavi.warnings_lt: .inf
       viavi.procedure_table_eq: 0
     warning_allowlist:
