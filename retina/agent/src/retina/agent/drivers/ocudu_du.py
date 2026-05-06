@@ -370,7 +370,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                     run_analyzers(
                         rlc_pcap_filename,
                         tuple(analyzer_cls() for analyzer_cls in _RLC_PCAP_ANALYZER_ARRAY),
-                        "--enable-heuristic rlc_nr_udp",
+                        "-C nr-rlc",
                     )
                 )
                 self._metrics_parsing_done = True

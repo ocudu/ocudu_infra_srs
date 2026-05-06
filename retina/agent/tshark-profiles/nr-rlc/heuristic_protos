@@ -1,0 +1,6 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+rlc_lte_udp,0
+rlc_nr_udp,1
+rlc_udp,0
