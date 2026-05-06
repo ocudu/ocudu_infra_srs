@@ -16,7 +16,7 @@ baseline: &base_config
     config: [amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
-  feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14, MVP-FUNC-BAS-16-2, DU-GEN-2-a]
+  feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14, MVP-FUNC-BAS-16-2, DU-GEN-2-a, CU-GEN-5]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
