@@ -1,16 +1,20 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+gnb_id_bit_length: 32
 gnb_du_id: {{gnb_du_id_cfg|default(0)}}
 
 
 cell_cfg:
+  pci: {{pci_cfg|default(1)}}
   nof_antennas_dl: {{nof_antennas|default(1)}}
   nof_antennas_ul: {{nof_antennas|default(1)}}
   dl_arfcn: {{cfg_earfcn|default(626668)}}
   band: {{cfg_band|default(78)}}
   channel_bandwidth_MHz: {{cfg_bandwidth|default(100)}}
   common_scs: {{cfg_common_scs|default(30)}}
+  sector_id: {{sector_id_cfg|default(0)}}
+  plmn: {{plmn_cfg|default("00101")}}
   pdsch:
     dmrs_additional_position: {{dmrs_additional_pos|default(2)}}
   pusch:

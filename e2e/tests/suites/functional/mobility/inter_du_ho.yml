@@ -21,20 +21,21 @@ baseline: &base_config
     config: [cu_cp_log.yml, amf.yml, mobility.yml]
   du:
     items:
-      - config: [cell_cfg.yml, 1cell.yml, tdd_default.yml, sib2345.yml]
+      - config: [cell_cfg.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_du_id_cfg: 0
           pci_cfg: 1
           sector_id_cfg: 0
           nof_antennas_dl: 1
           nof_antennas_ul: 1
-      - config: [cell_cfg.yml, 1cell.yml, tdd_default.yml, sib2345.yml]
+      - config: [cell_cfg.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_du_id_cfg: 1
           pci_cfg: 2
           sector_id_cfg: 1
           nof_antennas_dl: 1
           nof_antennas_ul: 1
+  feature_ids: [DU-GEN-9]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -50,28 +51,16 @@ baseline: &base_config
 # tid1.2.8: inter-RU, inter-DU HO FR1 to FR2 inter-frequency with measurement gap
 fr1_fr2:
   <<: *base_config
-  ue:
-    config: [2cell_chsim.cfg, handover.cfg]
-    parameters:
-      dl_bitrate: 1.0e+6
-      ul_bitrate: 1.0e+6
-      test_duration: 100
-      nof_ue: *nof_ue
-      num_cells: 2
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
-  cu:
-    config: [cu_cp_log.yml, amf.yml, mobility.yml]
   du:
     items:
-      - config: [cell_cfg.yml, 1cell.yml, tdd_default.yml, sib2345.yml]
+      - config: [cell_cfg.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_du_id_cfg: 0
           pci_cfg: 1
           sector_id_cfg: 0
           nof_antennas_dl: 1
           nof_antennas_ul: 1
-      - config: [cell_cfg.yml, 1cell.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
+      - config: [cell_cfg.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters: # FR2 config parameters
           gnb_du_id_cfg: 1
           pci_cfg: 2

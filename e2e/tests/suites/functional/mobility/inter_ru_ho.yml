@@ -32,11 +32,6 @@ baseline: &base_config
     du.nof_sib3_ge: 1
     du.nof_sib4_ge: 1
 
-# inter-RU, inter-DU HO between FR1 and FR2
-fr1_fr2:
-  <<: *base_config
-  feature_ids: [skip, MVP-FUNC-MOB-2-b, MVP-FUNC-MOB-2-c, DU-GEN-9]
-
 # inter-RU conditional HO
 conditional_ho:
   <<: *base_config
