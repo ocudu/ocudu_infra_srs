@@ -47,7 +47,7 @@ spec:
       type: string
       description: "Retina group to use."
       rules:
-        - if: $[[ inputs.testbed ]] =~ /zmq/
+        - if: '"$[[ inputs.testbed ]]" !~ /^(zmq|dynamic)/'
           default: zmq
         - if: $[[ inputs.testbed ]] =~ /s72/
           default: s72
