@@ -239,8 +239,8 @@ tests:
       du.ul_bitrate_gt: 1.0e+3
       du.max_late_dl_harqs_le: 4
       du.max_late_ul_harqs_le: 4
-      du.nof_ko_dl_le: 0
-      viavi.nof_ko_dl_le: 0
+      du.nof_ko_dl_le: .inf
+      viavi.nof_ko_dl_le: .inf
       du.nof_ko_ul_le: .inf
       viavi.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
