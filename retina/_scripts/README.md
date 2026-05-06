@@ -21,8 +21,7 @@ export AMARISOFT_MME_LICENSE_TAG=your_mme_tag
 export RETINA_PROFILE=zmq_amariue_mme
 
 # Build gnb and zmq driver (call it when you change gnb code and first time)
-cd $RETINA_PATH/_scripts
-docker compose --profile builders up
+$RETINA_PATH/_scripts/build_ocudu.sh
 
 # Run the test
 $RETINA_PATH/_scripts/retina_local.sh
