@@ -5,17 +5,18 @@
 log:
   hex_max_size: 32
   all_level: warning
-  lib_level: debug
-  config_level: info
-  cu_level: debug
-  f1ap_level: debug
-  f1ap_json_enabled: true
-  e1ap_level: debug
-  e1ap_json_enabled: true
-  rrc_level: debug
-  ngap_level: debug
-  xnap_level: debug
-  sec_level: info
+  lib_level: warning
+  config_level: warning
+  cu_level: warning
+  f1ap_level: warning
+  f1ap_json_enabled: false
+  e1ap_level: warning
+  e1ap_json_enabled: false
+  rrc_level: warning
+  pdcp_level: warning
+  ngap_level: warning
+  xnap_level: warning
+  sec_level: warning
 
 pcap:
   ngap_enable: true

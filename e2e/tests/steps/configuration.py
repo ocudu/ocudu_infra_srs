@@ -510,7 +510,12 @@ def _build_templates(stack: contextlib.ExitStack, node_cfg: _NodeConfig, config_
 
     merged = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))  # pylint: disable=consider-using-with
     for cfg_file in config_files:
-        merged.write((Path(__file__).parent.parent / "configs" / node_cfg.attr / cfg_file).read_text(encoding="UTF-8"))
+        if node_cfg.attr in ["du", "cu"]:
+            merged.write((Path(__file__).parent.parent / "configs" / "gnb" / cfg_file).read_text(encoding="UTF-8"))
+        else:
+            merged.write(
+                (Path(__file__).parent.parent / "configs" / node_cfg.attr / cfg_file).read_text(encoding="UTF-8")
+            )
         merged.write("\n")
     merged.flush()
 

@@ -13,7 +13,7 @@ paging: &base_config
       nof_paging: &nof_paging 2
       log_level: warning
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters: &s72_parameters
       log_level: warning
       warning_allowlist:
@@ -39,7 +39,7 @@ paging: &base_config
 drx:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       drx_long_cycle: 80
       <<: *s72_parameters
@@ -62,7 +62,7 @@ drx:
 edrx:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       <<: *s72_parameters
   feature_ids: [DU-GEN-10]
@@ -101,7 +101,7 @@ rrc_inactive_t308_expire:
       nof_paging: 1
       log_level: warning
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       <<: *s72_parameters
   feature_ids: [MVP-FUNC-MOB-10]

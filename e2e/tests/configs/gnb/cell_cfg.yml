@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+gnb_du_id: {{gnb_du_id_cfg|default(0)}}
+
+
 cell_cfg:
   nof_antennas_dl: {{nof_antennas|default(1)}}
   nof_antennas_ul: {{nof_antennas|default(1)}}
@@ -24,7 +27,6 @@ pcap:
 log:
   all_level: info
   rlc_level: warning
-  pdcp_level: warning
   config_level: debug
 
 metrics:
@@ -35,4 +37,3 @@ metrics:
     enable_sched: true
     enable_mac: true
     enable_du_proc: true
-    enable_executor: true

@@ -11,7 +11,3 @@ cu_cp:
             tai_slice_support_list:
               - sst: 1
                 sd: 1
-
-pcap:
-  ngap_enable: true
-  ngap_filename: {{ngap_filename}}

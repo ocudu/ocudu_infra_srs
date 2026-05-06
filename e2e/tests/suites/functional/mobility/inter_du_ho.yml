@@ -18,7 +18,7 @@ baseline: &base_config
       nof_antennas_dl: 1
       nof_antennas_ul: 1
   cu:
-    config: [log.yml, amf.yml, mobility.yml]
+    config: [cu_cp_log.yml, amf.yml, mobility.yml]
   du:
     items:
       - config: [cell_cfg.yml, 1cell.yml, tdd_default.yml, sib2345.yml]
@@ -61,7 +61,7 @@ fr1_fr2:
       nof_antennas_dl: 1
       nof_antennas_ul: 1
   cu:
-    config: [log.yml, amf.yml, mobility.yml]
+    config: [cu_cp_log.yml, amf.yml, mobility.yml]
   du:
     items:
       - config: [cell_cfg.yml, 1cell.yml, tdd_default.yml, sib2345.yml]

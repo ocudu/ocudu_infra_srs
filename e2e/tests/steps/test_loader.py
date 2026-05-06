@@ -126,9 +126,9 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
         for cfg_file in instance.ue.config:
             all_configs.append(Path(__file__).parent.parent / "configs" / "ue" / cfg_file)
         for cfg_file in instance.cu.config:
-            all_configs.append(Path(__file__).parent.parent / "configs" / "cu" / cfg_file)
+            all_configs.append(Path(__file__).parent.parent / "configs" / "gnb" / cfg_file)
         for cfg_file in instance.du.config:
-            all_configs.append(Path(__file__).parent.parent / "configs" / "du" / cfg_file)
+            all_configs.append(Path(__file__).parent.parent / "configs" / "gnb" / cfg_file)
         for cfg_file in instance.gnb.config:
             all_configs.append(Path(__file__).parent.parent / "configs" / "gnb" / cfg_file)
         for cfg_file in instance.core.config:
