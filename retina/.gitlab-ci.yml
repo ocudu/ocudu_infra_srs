@@ -190,7 +190,7 @@ retina publish wheel:
     CACHE: "true"
     CACHE_MODE: max
     VERSION: ${RETINA_VERSION}
-    AGENT_OS_VERSION: "noble-20260217"
+    AGENT_OS_VERSION: "noble-20260410"
     FLEXRIC_VERSION: "br-flexric" # NOTE: there is only version 1.0.0 but very old
     NTN_CHANNEL_EMULATOR_VERSION: d15635f3
     OPEN5GS_VERSION: "2.7.6"
