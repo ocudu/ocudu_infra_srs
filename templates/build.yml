@@ -192,14 +192,15 @@ include:
       cd ${OCUDU_DIR}
       rm -Rf ${OCUDU_DIR}/${OCUDU_BUILD_DIR}
       cp -r ${CI_PROJECT_DIR}/${OCUDU_BUILD_DIR} ${OCUDU_DIR}/${OCUDU_BUILD_DIR}
-      echo "OCUDU build size is" $(du -hs ${OCUDU_BUILD_DIR} | cut -f1)
+    - |
+      echo "OCUDU artifacts:"
+      find ${OCUDU_BUILD_DIR} -type f -executable -exec du -h {} + 2>/dev/null | sort -rh
   cache: $[[ inputs.cache ]]
   artifacts:
     paths:
       - ocudu
     exclude:
       - ocudu/.git/**/*
-      - ocudu/plugins/enterprise/.git/**/*
       - ocudu/ccache/**/*
     expire_in: 3 days
   needs: $[[ inputs.needs ]]

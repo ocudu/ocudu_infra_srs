@@ -157,12 +157,15 @@ release with deb info:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables: &release_with_deb_info_vars
     OS: ubuntu-24.04
-    OCUDU_TARGET: ocu odu gnb
     COMPILER: gcc
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMARCH=x86-64-v3
       -DASSERT_LEVEL=PARANOID
     TEST_MODE: none
+  parallel: &release_with_deb_info_parallel # Splitting it in different jobs because binaries size in relwithdeb was greater than 1 gb
+    matrix:
+      - OCUDU_TARGET: ocucp ocuup ocu odu
+      - OCUDU_TARGET: gnb
 
 release with deb info cached:
   extends: build
@@ -173,6 +176,8 @@ release with deb info cached:
       allow_failure: true
   variables:
     <<: *release_with_deb_info_vars
+  parallel:
+    <<: *release_with_deb_info_parallel
 
 debug:
   extends: build
@@ -237,16 +242,6 @@ dpdk rtsan avx512:
       -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
       -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
     TEST_MODE: none
-
-dpdk rtsan avx512 cached:
-  extends: build
-  retry: 2
-  rules:
-    - <<: *on_mr_e2e_pipeline
-      when: manual
-      allow_failure: true
-  variables:
-    <<: *dpdk_rtsan_avx512_variables
 
 ### Functional
 .functional_e2e:

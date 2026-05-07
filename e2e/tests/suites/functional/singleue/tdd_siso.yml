@@ -31,8 +31,37 @@ baseline_gnb: &base_config
 
 # E1 and F1 interfaces. Separated CU-UP, CU-CP and DU
 baseline_cu_du:
-  <<: *base_config
-  feature_ids: [skip, MVP-ARCH-INTF-6, MVP-ARCH-INTF-7, MVP-ARCH-INTF-9, MVP-ARCH-INTF-10, MVP-ARCH-INTF-11]
+  template: ue_simulator.test_cucp_cuup
+  request: zmq_cucp_cuup
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 3
+  cu_cp:
+    config: [amf.yml, cu_cp_log.yml]
+  cu_up:
+    config: []
+  du:
+    config: [cell_cfg.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
+    parameters:
+      gnb_id_bit_length_cfg: 22
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-ARCH-INTF-6, MVP-ARCH-INTF-7, MVP-ARCH-INTF-9, MVP-ARCH-INTF-10, MVP-ARCH-INTF-11]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
+    du.nof_sib1_ge: 1
+    du.nof_sib2_ge: 1
 
 # Mixed TDD pattern 6:4 DDDSUUUUDD
 tdd_mixed:

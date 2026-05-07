@@ -58,6 +58,7 @@ markers = [
   "zmq_mme",
   "zmq_2mme",
   "zmq_1000",
+  "zmq_cucp_cuup",
   "test_mode",
   "test_mode_acc100",
   "test_mode_not_crash",

@@ -33,6 +33,8 @@ services:
         "builder.sh",
         "-b",
         "build_retina",
+        "-m",
+        "ocucp ocuup ocu odu gnb",
         "-c",
         "gcc",
         "-DBUILD_TESTING=False",

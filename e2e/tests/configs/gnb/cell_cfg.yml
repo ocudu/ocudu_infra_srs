@@ -1,9 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-gnb_id_bit_length: 32
+gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
 gnb_du_id: {{gnb_du_id_cfg|default(0)}}
-
 
 cell_cfg:
   pci: {{pci_cfg|default(1)}}
