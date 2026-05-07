@@ -193,12 +193,6 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             logging.info("Starting a new log folder at %s", self._current_report_folder)
         return self._current_report_folder
 
-    def set_current_report_folder(self, report_folder: Path):
-        """
-        Set current report folder
-        """
-        self._current_report_folder = report_folder
-
     def get_filepath_in_report_folder(self, filename: str) -> str:
         """
         Create the file `filename` in the current report folder
@@ -228,7 +222,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         # Get conf file content
         file_content = ""
         for basename, content in templates.items():
-            if not content:
+            if not content and basename:
                 # Get original template if not overwritten
                 with template_path(basename, add_ext=True).open("r", encoding="utf-8") as tmp_file_descriptor:
                     content = tmp_file_descriptor.read()

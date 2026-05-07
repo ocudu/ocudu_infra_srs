@@ -168,7 +168,7 @@ services:
       args:
         <<: *variables
     environment:
-      RETINA_IP: &amariue_ip 172.20.0.2
+      RETINA_IP: &amariue_ip 172.20.0.10
       RETINA_PORTS: 50064 50065 50066 50067 50068 50069 50070 50071 50072 50073 50074 50075 50076 50077 50078 50079 50080 50081 50082 50083 50084 50085 50086 50087 50088 50089 50090 50091 50092 50093 50094 50095 50096 50097 50098 50099 50100 50101 50102 50103 50104 50105 50106 50107 50108 50109 50110 50111 50112 50113 50114 50115 50116 50117 50118 50119 50120 50121 50122 50123 50124 50125 50126 50127
       RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_UE_LICENSE_TAG}
     configs:
@@ -217,7 +217,7 @@ services:
     sysctls:
       - net.ipv6.conf.default.disable_ipv6=0
     environment:
-      RETINA_IP: &srsue_ip 172.20.0.3
+      RETINA_IP: &srsue_ip 172.20.0.11
     networks:
       retina:
         ipv4_address: *srsue_ip
@@ -252,8 +252,8 @@ services:
     tmpfs: *agent_tmpfs
     environment: &ocudu_env
       RETINA_AGENT: ocudu-gnb
-      RETINA_IP: &gnb0_ip 172.20.0.4
-      PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
+      RETINA_IP: &gnb0_ip 172.20.0.20
+      PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/cu_cp:/builds/ocudu/ocudu/build_retina/apps/cu_up:/builds/ocudu/ocudu/build_retina/apps/du
     networks:
       retina:
         ipv4_address: *gnb0_ip
@@ -265,7 +265,7 @@ services:
     container_name: ocudu-gnb-2
     environment:
       <<: *ocudu_env
-      RETINA_IP: &gnb1_ip 172.20.0.5
+      RETINA_IP: &gnb1_ip 172.20.0.21
     networks:
       retina:
         ipv4_address: *gnb1_ip
@@ -275,39 +275,49 @@ services:
   ocudu-cu:
     <<: *gnb_service
     container_name: ocudu-cu
-    image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
-    build:
-      context: ../images/ocudu
-      args:
-        <<: *variables
-      additional_contexts:
-        agent: "service:agent-image"
-        wheelhouse: "service:wheelhouse"
     environment:
       <<: *ocudu_env
       RETINA_AGENT: ocudu-cu
-      RETINA_IP: &cu_ip 172.20.0.6
+      RETINA_IP: &cu_ip 172.20.0.30
     networks:
       retina:
         ipv4_address: *cu_ip
     x-testbed:
       type: cu
 
+  ocudu-cu-cp:
+    <<: *gnb_service
+    container_name: ocudu-cu-cp
+    environment:
+      <<: *ocudu_env
+      RETINA_AGENT: ocudu-cu-cp
+      RETINA_IP: &cu_cp_ip 172.20.0.40
+    networks:
+      retina:
+        ipv4_address: *cu_cp_ip
+    x-testbed:
+      type: cu_cp
+
+  ocudu-cu-up:
+    <<: *gnb_service
+    container_name: ocudu-cu-up
+    environment:
+      <<: *ocudu_env
+      RETINA_AGENT: ocudu-cu-up
+      RETINA_IP: &cu_up_ip 172.20.0.50
+    networks:
+      retina:
+        ipv4_address: *cu_up_ip
+    x-testbed:
+      type: cu_up
+
   ocudu-du-1:
     <<: *gnb_service
     container_name: ocudu-du-1
-    image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
-    build:
-      context: ../images/ocudu
-      args:
-        <<: *variables
-      additional_contexts:
-        agent: "service:agent-image"
-        wheelhouse: "service:wheelhouse"
     environment:
       <<: *ocudu_env
       RETINA_AGENT: ocudu-du
-      RETINA_IP: &du0_ip 172.20.0.7
+      RETINA_IP: &du0_ip 172.20.0.60
     networks:
       retina:
         ipv4_address: *du0_ip
@@ -317,18 +327,10 @@ services:
   ocudu-du-2:
     <<: *gnb_service
     container_name: ocudu-du-2
-    image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
-    build:
-      context: ../images/ocudu
-      args:
-        <<: *variables
-      additional_contexts:
-        agent: "service:agent-image"
-        wheelhouse: "service:wheelhouse"
     environment:
       <<: *ocudu_env
       RETINA_AGENT: ocudu-du
-      RETINA_IP: &du1_ip 172.20.0.8
+      RETINA_IP: &du1_ip 172.20.0.61
     networks:
       retina:
         ipv4_address: *du1_ip
@@ -357,7 +359,7 @@ services:
     sysctls:
       - net.ipv6.conf.default.disable_ipv6=0
     environment:
-      RETINA_IP: &open5gs_ip 172.20.0.9
+      RETINA_IP: &open5gs_ip 172.20.0.70
     networks:
       retina:
         ipv4_address: *open5gs_ip
@@ -387,7 +389,7 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &amari5gc1_ip 172.20.0.10
+      RETINA_IP: &amari5gc1_ip 172.20.0.71
       RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_MME_LICENSE_TAG}
     cap_add:
       - NET_ADMIN # Required for TUN interface creation and iptables
@@ -411,7 +413,7 @@ services:
     <<: *mme
     container_name: amarisoft-5gc-2
     environment:
-      RETINA_IP: &amari5gc2_ip 172.20.0.11
+      RETINA_IP: &amari5gc2_ip 172.20.0.72
       RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_MME_LICENSE_TAG}
     networks:
       retina:
@@ -432,7 +434,7 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &emulator_ip 172.20.0.12
+      RETINA_IP: &emulator_ip 172.20.0.80
     networks:
       retina:
         ipv4_address: *emulator_ip
@@ -455,7 +457,7 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &flexric_ip 172.20.0.13
+      RETINA_IP: &flexric_ip 172.20.0.90
     networks:
       retina:
         ipv4_address: *flexric_ip

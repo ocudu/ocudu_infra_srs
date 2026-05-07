@@ -32,6 +32,8 @@ class NodeTypeEnum(Enum):
     UE = "ue"
     GNB = "gnb"
     CU = "cu"
+    CU_CP = "cu_cp"
+    CU_UP = "cu_up"
     DU = "du"
     FIVEGC = "5gc"
     RIC = "ric"

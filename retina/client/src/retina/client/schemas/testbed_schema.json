@@ -40,6 +40,8 @@
                         "ue",
                         "gnb",
                         "cu",
+                        "cu_cp",
+                        "cu_up",
                         "du",
                         "5gc",
                         "ric",

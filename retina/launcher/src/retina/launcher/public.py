@@ -204,6 +204,32 @@ def cu(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Genera
 
 
 @pytest.fixture
+def cu_cp(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Generator[CUStub, None, None]:
+    """
+    Return a CU-CP
+    """
+    try:
+        cu_cp_stub = retina_manager.get_cu_cp()
+        yield cu_cp_stub
+    finally:
+        with suppress(NameError, UnboundLocalError):
+            _stop_stub(cu_cp_stub, "CU-CP", retina_data)
+
+
+@pytest.fixture
+def cu_up(retina_manager: RetinaTestManager, retina_data: RetinaTestData) -> Generator[CUStub, None, None]:
+    """
+    Return a CU-UP
+    """
+    try:
+        cu_up_stub = retina_manager.get_cu_up()
+        yield cu_up_stub
+    finally:
+        with suppress(NameError, UnboundLocalError):
+            _stop_stub(cu_up_stub, "CU-UP", retina_data)
+
+
+@pytest.fixture
 # pylint: disable=invalid-name
 def du(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable

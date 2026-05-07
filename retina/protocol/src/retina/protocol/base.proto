@@ -56,9 +56,14 @@ message SubscriberArray {
   repeated Subscriber value = 1;
 };
 
-message CUDefinition {
-  string cu_ip   = 1;
-  uint32 cu_port = 2;
+message CUCPDefinition {
+  string cucp_ip   = 1;
+  uint32 cucp_port = 2;
+};
+
+message CUUPDefinition {
+  string cuup_ip = 1;
+  uint32 e1_port = 2;
 };
 
 message DUDefinition {
@@ -178,23 +183,21 @@ message DuMetrics {
   uint32 nof_lates             = 4;
   uint32 nof_under             = 5;
   uint32 nof_seq_err           = 6;
-};
 
-message CuMetrics {
-  uint32 nof_sib1_transmissions = 1;
-  uint32 nof_sib2_transmissions = 2;
-  uint32 nof_sib3_transmissions = 3;
-  uint32 nof_sib4_transmissions = 4;
-  uint32 nof_sib5_transmissions = 5;
-  uint32 nof_sib8_transmissions = 6;
-  uint32 nof_paging_messages    = 7;
+  uint32 nof_sib1_transmissions = 7;
+  uint32 nof_sib2_transmissions = 8;
+  uint32 nof_sib3_transmissions = 9;
+  uint32 nof_sib4_transmissions = 10;
+  uint32 nof_sib5_transmissions = 11;
+  uint32 nof_sib8_transmissions = 12;
+  uint32 nof_paging_messages    = 13;
 
-  int32 prach_configuration_index   = 8;
-  int32 transform_precoder          = 9;
-  int32 drx_long_cycle_start_offset = 10;
-  int32 t312                        = 11;
-  int32 c_srs                       = 12;
-  int32 b_srs                       = 13;
+  int32 prach_configuration_index   = 14;
+  int32 transform_precoder          = 15;
+  int32 drx_long_cycle_start_offset = 16;
+  int32 t312                        = 17;
+  int32 c_srs                       = 18;
+  int32 b_srs                       = 19;
 };
 
 message CoreMetrics {
@@ -209,6 +212,5 @@ message Metrics {
   UeMetrics          aggregate = 1;
   repeated UeMetrics ue_array  = 2;
   DuMetrics          du        = 3;
-  CuMetrics          cu        = 4;
-  CoreMetrics        core      = 5;
+  CoreMetrics        core      = 4;
 };

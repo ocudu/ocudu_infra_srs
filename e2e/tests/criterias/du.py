@@ -147,7 +147,7 @@ class prach_configuration_index_eq(DuCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.prach_configuration_index for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.prach_configuration_index for s in self._stub_array)
 
 
 class transform_precoder_eq(DuCriteria):
@@ -156,7 +156,7 @@ class transform_precoder_eq(DuCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.transform_precoder for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.transform_precoder for s in self._stub_array)
 
 
 class c_srs_eq(DuCriteria):
@@ -165,7 +165,7 @@ class c_srs_eq(DuCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.c_srs for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.c_srs for s in self._stub_array)
 
 
 class b_srs_eq(DuCriteria):
@@ -174,7 +174,7 @@ class b_srs_eq(DuCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.b_srs for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.b_srs for s in self._stub_array)
 
 
 class t312_eq(DuCriteria):
@@ -183,7 +183,7 @@ class t312_eq(DuCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.t312 for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.t312 for s in self._stub_array)
 
 
 class drx_long_cycle_eq(DuCriteria):
@@ -192,7 +192,7 @@ class drx_long_cycle_eq(DuCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.drx_long_cycle_start_offset for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.drx_long_cycle_start_offset for s in self._stub_array)
 
 
 class nof_paging_eq(DuCriteria):
@@ -201,7 +201,7 @@ class nof_paging_eq(DuCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.nof_paging_messages for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.nof_paging_messages for s in self._stub_array)
 
 
 class nof_rrc_resume_request_eq(DuCriteria):
@@ -246,7 +246,7 @@ class nof_sib1_ge(DuCriteria):
     operator_method = operator.ge
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.nof_sib1_transmissions for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.nof_sib1_transmissions for s in self._stub_array)
 
 
 class nof_sib2_ge(DuCriteria):
@@ -255,7 +255,7 @@ class nof_sib2_ge(DuCriteria):
     operator_method = operator.ge
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.nof_sib2_transmissions for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.nof_sib2_transmissions for s in self._stub_array)
 
 
 class nof_sib3_ge(DuCriteria):
@@ -264,7 +264,7 @@ class nof_sib3_ge(DuCriteria):
     operator_method = operator.ge
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.nof_sib3_transmissions for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.nof_sib3_transmissions for s in self._stub_array)
 
 
 class nof_sib4_ge(DuCriteria):
@@ -273,7 +273,7 @@ class nof_sib4_ge(DuCriteria):
     operator_method = operator.ge
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.nof_sib4_transmissions for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.nof_sib4_transmissions for s in self._stub_array)
 
 
 class nof_sib5_ge(DuCriteria):
@@ -282,7 +282,7 @@ class nof_sib5_ge(DuCriteria):
     operator_method = operator.ge
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.nof_sib5_transmissions for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.nof_sib5_transmissions for s in self._stub_array)
 
 
 class nof_sib8_ge(DuCriteria):
@@ -291,7 +291,7 @@ class nof_sib8_ge(DuCriteria):
     operator_method = operator.ge
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu.nof_sib8_transmissions for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).du.nof_sib8_transmissions for s in self._stub_array)
 
 
 class dl_avg_ri_ge(DuCriteria):

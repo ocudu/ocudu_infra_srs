@@ -3,17 +3,21 @@ SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 #}
 
+gnb_id: {{gnb_id}}
+
 log:
   filename: {{log_filename}}
   all_level: {{log_level}}
   lib_level: {{log_level}}
   config_level: debug
 
-gnb_id: {{gnb_id}}
+metrics:
+  enable_log: true
 
+{# DU #}
 {%+ if du_ip +%}
 f1ap:
-  addrs: {{cu_ip}}
+  addrs: {{cucp_ip}}
   bind_addrs: {{du_ip}}
 f1u:
   bind_port: {{f1u_port}}
@@ -21,10 +25,13 @@ f1u:
   socket:
     -
       bind_addr: {{du_ip}}
-{% elif cu_ip %}
+{% else %}
+
+{# CU #}
+{%+ if cucp_ip and cucp_ip == cuup_ip +%}
 cu_cp:
   f1ap:
-    bind_addrs: {{cu_ip}}
+    bind_addrs: {{cucp_ip}}
     procedure_timeout: 10000
   rrc:
     rrc_procedure_guard_time_ms: 10000
@@ -34,8 +41,35 @@ cu_up:
     peer_port: {{f1u_port}}
     socket:
       -
-        bind_addr: {{cu_ip}}
+        bind_addr: {{cuup_ip}}
 {% endif %}
 
-metrics:
-  enable_log: true
+{# CU-CP #}
+{%+ if cucp_ip and not cuup_ip +%}
+cu_cp:
+  f1ap:
+    bind_addrs: {{cucp_ip}}
+    procedure_timeout: 10000
+  rrc:
+    rrc_procedure_guard_time_ms: 10000
+  e1ap:
+    bind_addrs: {{cucp_ip}}
+{% endif %}
+
+{# CU-UP #}
+{% if cuup_ip and cucp_ip != cuup_ip %}
+cu_up:
+  f1u:
+    bind_port: {{f1u_port}}
+    peer_port: {{f1u_port}}
+    socket:
+      - bind_addr: {{cuup_ip}}
+  e1ap:
+    addrs: {{cucp_ip}}
+    bind_addrs: {{cuup_ip}}
+  ngu:
+    socket:
+      - bind_addr: {{cuup_ip}}
+{% endif %}
+
+{% endif %}

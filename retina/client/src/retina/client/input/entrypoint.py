@@ -180,6 +180,22 @@ class RetinaEntrypoint:
         """
         return self._get_item(self._testbed_service.get_cu, *args, **kwargs)
 
+    def get_cu_cp(self, *args, **kwargs) -> CUStub:
+        """
+        Return a cu-cp stub in the specified index.
+        If not exists, raises an Exception.
+        If `push_config` is set, it will send the configured parameters to the client
+        """
+        return self._get_item(self._testbed_service.get_cu_cp, *args, **kwargs)
+
+    def get_cu_up(self, *args, **kwargs) -> CUStub:
+        """
+        Return a cu-up stub in the specified index.
+        If not exists, raises an Exception.
+        If `push_config` is set, it will send the configured parameters to the client
+        """
+        return self._get_item(self._testbed_service.get_cu_up, *args, **kwargs)
+
     def get_du(self, *args, **kwargs) -> DUStub:
         """
         Return a du stub in the specified index.

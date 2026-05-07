@@ -152,22 +152,40 @@ class SubscriberArray(google.protobuf.message.Message):
 Global___SubscriberArray: typing_extensions.TypeAlias = SubscriberArray
 
 @typing.final
-class CUDefinition(google.protobuf.message.Message):
+class CUCPDefinition(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    CU_IP_FIELD_NUMBER: builtins.int
-    CU_PORT_FIELD_NUMBER: builtins.int
-    cu_ip: builtins.str
-    cu_port: builtins.int
+    CUCP_IP_FIELD_NUMBER: builtins.int
+    CUCP_PORT_FIELD_NUMBER: builtins.int
+    cucp_ip: builtins.str
+    cucp_port: builtins.int
     def __init__(
         self,
         *,
-        cu_ip: builtins.str = ...,
-        cu_port: builtins.int = ...,
+        cucp_ip: builtins.str = ...,
+        cucp_port: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["cu_ip", b"cu_ip", "cu_port", b"cu_port"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["cucp_ip", b"cucp_ip", "cucp_port", b"cucp_port"]) -> None: ...
 
-Global___CUDefinition: typing_extensions.TypeAlias = CUDefinition
+Global___CUCPDefinition: typing_extensions.TypeAlias = CUCPDefinition
+
+@typing.final
+class CUUPDefinition(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    CUUP_IP_FIELD_NUMBER: builtins.int
+    E1_PORT_FIELD_NUMBER: builtins.int
+    cuup_ip: builtins.str
+    e1_port: builtins.int
+    def __init__(
+        self,
+        *,
+        cuup_ip: builtins.str = ...,
+        e1_port: builtins.int = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["cuup_ip", b"cuup_ip", "e1_port", b"e1_port"]) -> None: ...
+
+Global___CUUPDefinition: typing_extensions.TypeAlias = CUUPDefinition
 
 @typing.final
 class DUDefinition(google.protobuf.message.Message):
@@ -500,30 +518,6 @@ class DuMetrics(google.protobuf.message.Message):
     NOF_LATES_FIELD_NUMBER: builtins.int
     NOF_UNDER_FIELD_NUMBER: builtins.int
     NOF_SEQ_ERR_FIELD_NUMBER: builtins.int
-    nof_error_indications: builtins.int
-    max_late_dl_harqs: builtins.int
-    max_late_ul_harqs: builtins.int
-    nof_lates: builtins.int
-    nof_under: builtins.int
-    nof_seq_err: builtins.int
-    def __init__(
-        self,
-        *,
-        nof_error_indications: builtins.int = ...,
-        max_late_dl_harqs: builtins.int = ...,
-        max_late_ul_harqs: builtins.int = ...,
-        nof_lates: builtins.int = ...,
-        nof_under: builtins.int = ...,
-        nof_seq_err: builtins.int = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_seq_err", b"nof_seq_err", "nof_under", b"nof_under"]) -> None: ...
-
-Global___DuMetrics: typing_extensions.TypeAlias = DuMetrics
-
-@typing.final
-class CuMetrics(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
     NOF_SIB1_TRANSMISSIONS_FIELD_NUMBER: builtins.int
     NOF_SIB2_TRANSMISSIONS_FIELD_NUMBER: builtins.int
     NOF_SIB3_TRANSMISSIONS_FIELD_NUMBER: builtins.int
@@ -537,6 +531,12 @@ class CuMetrics(google.protobuf.message.Message):
     T312_FIELD_NUMBER: builtins.int
     C_SRS_FIELD_NUMBER: builtins.int
     B_SRS_FIELD_NUMBER: builtins.int
+    nof_error_indications: builtins.int
+    max_late_dl_harqs: builtins.int
+    max_late_ul_harqs: builtins.int
+    nof_lates: builtins.int
+    nof_under: builtins.int
+    nof_seq_err: builtins.int
     nof_sib1_transmissions: builtins.int
     nof_sib2_transmissions: builtins.int
     nof_sib3_transmissions: builtins.int
@@ -553,6 +553,12 @@ class CuMetrics(google.protobuf.message.Message):
     def __init__(
         self,
         *,
+        nof_error_indications: builtins.int = ...,
+        max_late_dl_harqs: builtins.int = ...,
+        max_late_ul_harqs: builtins.int = ...,
+        nof_lates: builtins.int = ...,
+        nof_under: builtins.int = ...,
+        nof_seq_err: builtins.int = ...,
         nof_sib1_transmissions: builtins.int = ...,
         nof_sib2_transmissions: builtins.int = ...,
         nof_sib3_transmissions: builtins.int = ...,
@@ -567,9 +573,9 @@ class CuMetrics(google.protobuf.message.Message):
         c_srs: builtins.int = ...,
         b_srs: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "nof_paging_messages", b"nof_paging_messages", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "prach_configuration_index", b"prach_configuration_index", "t312", b"t312", "transform_precoder", b"transform_precoder"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_paging_messages", b"nof_paging_messages", "nof_seq_err", b"nof_seq_err", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_under", b"nof_under", "prach_configuration_index", b"prach_configuration_index", "t312", b"t312", "transform_precoder", b"transform_precoder"]) -> None: ...
 
-Global___CuMetrics: typing_extensions.TypeAlias = CuMetrics
+Global___DuMetrics: typing_extensions.TypeAlias = DuMetrics
 
 @typing.final
 class CoreMetrics(google.protobuf.message.Message):
@@ -605,7 +611,6 @@ class Metrics(google.protobuf.message.Message):
     AGGREGATE_FIELD_NUMBER: builtins.int
     UE_ARRAY_FIELD_NUMBER: builtins.int
     DU_FIELD_NUMBER: builtins.int
-    CU_FIELD_NUMBER: builtins.int
     CORE_FIELD_NUMBER: builtins.int
     @property
     def aggregate(self) -> Global___UeMetrics: ...
@@ -614,8 +619,6 @@ class Metrics(google.protobuf.message.Message):
     @property
     def du(self) -> Global___DuMetrics: ...
     @property
-    def cu(self) -> Global___CuMetrics: ...
-    @property
     def core(self) -> Global___CoreMetrics: ...
     def __init__(
         self,
@@ -623,10 +626,9 @@ class Metrics(google.protobuf.message.Message):
         aggregate: Global___UeMetrics | None = ...,
         ue_array: collections.abc.Iterable[Global___UeMetrics] | None = ...,
         du: Global___DuMetrics | None = ...,
-        cu: Global___CuMetrics | None = ...,
         core: Global___CoreMetrics | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu", b"cu", "du", b"du"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu", b"cu", "du", b"du", "ue_array", b"ue_array"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "du", b"du"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "du", b"du", "ue_array", b"ue_array"]) -> None: ...
 
 Global___Metrics: typing_extensions.TypeAlias = Metrics

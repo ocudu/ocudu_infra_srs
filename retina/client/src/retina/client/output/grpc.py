@@ -23,7 +23,7 @@ from retina.protocol.base_pb2 import Parameter
 from retina.protocol.base_pb2_grpc import BaseStub
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import CUStub, DUStub, GNBStub
+from retina.protocol.gnb_pb2_grpc import CUCPStub, CUStub, CUUPStub, DUStub, GNBStub
 from retina.protocol.ric_pb2_grpc import NearRtRicStub
 from retina.protocol.ue_pb2_grpc import UEStub
 
@@ -40,6 +40,8 @@ class GrpcAdaptor(CommunicationPort):
         "ue": UEStub,
         "gnb": GNBStub,
         "cu": CUStub,
+        "cu_cp": CUCPStub,
+        "cu_up": CUUPStub,
         "du": DUStub,
         "5gc": FiveGCStub,
         "ric": NearRtRicStub,

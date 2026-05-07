@@ -13,6 +13,12 @@
         "cu": {
             "$ref": "#/$defs/node_type"
         },
+        "cu_cp": {
+            "$ref": "#/$defs/node_type"
+        },
+        "cu_up": {
+            "$ref": "#/$defs/node_type"
+        },
         "du": {
             "$ref": "#/$defs/node_type"
         },

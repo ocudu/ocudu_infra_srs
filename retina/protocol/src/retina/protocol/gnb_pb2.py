@@ -30,23 +30,31 @@ from google.protobuf import wrappers_pb2 as google_dot_protobuf_dot_wrappers__pb
 from retina.protocol import base_pb2 as retina_dot_protocol_dot_base__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19retina/protocol/gnb.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x1aretina/protocol/base.proto\"p\n\x0b\x43UStartInfo\x12\x13\n\x04plmn\x18\x01 \x01(\x0b\x32\x05.PLMN\x12,\n\x11\x66ivegc_definition\x18\x02 \x03(\x0b\x32\x11.FiveGCDefinition\x12\x1e\n\nstart_info\x18\x03 \x01(\x0b\x32\n.StartInfo\"\xf7\x01\n\x0b\x44UStartInfo\x12\x11\n\tgnb_du_id\x18\x01 \x01(\x04\x12\x13\n\x04plmn\x18\x02 \x01(\x0b\x32\x05.PLMN\x12\x11\n\tnum_cells\x18\x03 \x01(\r\x12\x13\n\x0b\x63\x65ll_offset\x18\x04 \x01(\r\x12$\n\rcu_definition\x18\x05 \x01(\x0b\x32\r.CUDefinition\x12$\n\rue_definition\x18\x06 \x01(\x0b\x32\r.UEDefinition\x12,\n\x0eric_definition\x18\x07 \x01(\x0b\x32\x14.NearRtRicDefinition\x12\x1e\n\nstart_info\x18\x08 \x01(\x0b\x32\n.StartInfo\"\xc5\x01\n\x0cGNBStartInfo\x12\x13\n\x04plmn\x18\x01 \x01(\x0b\x32\x05.PLMN\x12,\n\x11\x66ivegc_definition\x18\x02 \x03(\x0b\x32\x11.FiveGCDefinition\x12$\n\rue_definition\x18\x03 \x01(\x0b\x32\r.UEDefinition\x12,\n\x0eric_definition\x18\x04 \x01(\x0b\x32\x14.NearRtRicDefinition\x12\x1e\n\nstart_info\x18\x05 \x01(\x0b\x32\n.StartInfo2o\n\x02\x43U\x12\x38\n\rGetDefinition\x12\x16.google.protobuf.Empty\x1a\r.CUDefinition\"\x00\x12/\n\x05Start\x12\x0c.CUStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x32u\n\x02\x44U\x12>\n\rGetDefinition\x12\x1c.google.protobuf.UInt32Value\x1a\r.DUDefinition\"\x00\x12/\n\x05Start\x12\x0c.DUStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x32w\n\x03GNB\x12>\n\rGetDefinition\x12\x1c.google.protobuf.UInt32Value\x1a\r.DUDefinition\"\x00\x12\x30\n\x05Start\x12\r.GNBStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19retina/protocol/gnb.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x1aretina/protocol/base.proto\"r\n\rCUCPStartInfo\x12\x13\n\x04plmn\x18\x01 \x01(\x0b\x32\x05.PLMN\x12,\n\x11\x66ivegc_definition\x18\x02 \x03(\x0b\x32\x11.FiveGCDefinition\x12\x1e\n\nstart_info\x18\x03 \x01(\x0b\x32\n.StartInfo\"\x87\x01\n\rCUUPStartInfo\x12(\n\x0f\x63ucp_definition\x18\x01 \x01(\x0b\x32\x0f.CUCPDefinition\x12,\n\x11\x66ivegc_definition\x18\x02 \x03(\x0b\x32\x11.FiveGCDefinition\x12\x1e\n\nstart_info\x18\x03 \x01(\x0b\x32\n.StartInfo\"p\n\x0b\x43UStartInfo\x12\x13\n\x04plmn\x18\x01 \x01(\x0b\x32\x05.PLMN\x12,\n\x11\x66ivegc_definition\x18\x02 \x03(\x0b\x32\x11.FiveGCDefinition\x12\x1e\n\nstart_info\x18\x03 \x01(\x0b\x32\n.StartInfo\"\xfb\x01\n\x0b\x44UStartInfo\x12\x11\n\tgnb_du_id\x18\x01 \x01(\x04\x12\x13\n\x04plmn\x18\x02 \x01(\x0b\x32\x05.PLMN\x12\x11\n\tnum_cells\x18\x03 \x01(\r\x12\x13\n\x0b\x63\x65ll_offset\x18\x04 \x01(\r\x12(\n\x0f\x63ucp_definition\x18\x05 \x01(\x0b\x32\x0f.CUCPDefinition\x12$\n\rue_definition\x18\x06 \x01(\x0b\x32\r.UEDefinition\x12,\n\x0eric_definition\x18\x07 \x01(\x0b\x32\x14.NearRtRicDefinition\x12\x1e\n\nstart_info\x18\x08 \x01(\x0b\x32\n.StartInfo\"\xc5\x01\n\x0cGNBStartInfo\x12\x13\n\x04plmn\x18\x01 \x01(\x0b\x32\x05.PLMN\x12,\n\x11\x66ivegc_definition\x18\x02 \x03(\x0b\x32\x11.FiveGCDefinition\x12$\n\rue_definition\x18\x03 \x01(\x0b\x32\r.UEDefinition\x12,\n\x0eric_definition\x18\x04 \x01(\x0b\x32\x14.NearRtRicDefinition\x12\x1e\n\nstart_info\x18\x05 \x01(\x0b\x32\n.StartInfo2u\n\x04\x43UCP\x12:\n\rGetDefinition\x12\x16.google.protobuf.Empty\x1a\x0f.CUCPDefinition\"\x00\x12\x31\n\x05Start\x12\x0e.CUCPStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x32u\n\x04\x43UUP\x12:\n\rGetDefinition\x12\x16.google.protobuf.Empty\x1a\x0f.CUUPDefinition\"\x00\x12\x31\n\x05Start\x12\x0e.CUUPStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x32q\n\x02\x43U\x12:\n\rGetDefinition\x12\x16.google.protobuf.Empty\x1a\x0f.CUCPDefinition\"\x00\x12/\n\x05Start\x12\x0c.CUStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x32u\n\x02\x44U\x12>\n\rGetDefinition\x12\x1c.google.protobuf.UInt32Value\x1a\r.DUDefinition\"\x00\x12/\n\x05Start\x12\x0c.DUStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x32w\n\x03GNB\x12>\n\rGetDefinition\x12\x1c.google.protobuf.UInt32Value\x1a\r.DUDefinition\"\x00\x12\x30\n\x05Start\x12\r.GNBStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'retina.protocol.gnb_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_CUSTARTINFO']._serialized_start=118
-  _globals['_CUSTARTINFO']._serialized_end=230
-  _globals['_DUSTARTINFO']._serialized_start=233
-  _globals['_DUSTARTINFO']._serialized_end=480
-  _globals['_GNBSTARTINFO']._serialized_start=483
-  _globals['_GNBSTARTINFO']._serialized_end=680
-  _globals['_CU']._serialized_start=682
-  _globals['_CU']._serialized_end=793
-  _globals['_DU']._serialized_start=795
-  _globals['_DU']._serialized_end=912
-  _globals['_GNB']._serialized_start=914
-  _globals['_GNB']._serialized_end=1033
+  _globals['_CUCPSTARTINFO']._serialized_start=118
+  _globals['_CUCPSTARTINFO']._serialized_end=232
+  _globals['_CUUPSTARTINFO']._serialized_start=235
+  _globals['_CUUPSTARTINFO']._serialized_end=370
+  _globals['_CUSTARTINFO']._serialized_start=372
+  _globals['_CUSTARTINFO']._serialized_end=484
+  _globals['_DUSTARTINFO']._serialized_start=487
+  _globals['_DUSTARTINFO']._serialized_end=738
+  _globals['_GNBSTARTINFO']._serialized_start=741
+  _globals['_GNBSTARTINFO']._serialized_end=938
+  _globals['_CUCP']._serialized_start=940
+  _globals['_CUCP']._serialized_end=1057
+  _globals['_CUUP']._serialized_start=1059
+  _globals['_CUUP']._serialized_end=1176
+  _globals['_CU']._serialized_start=1178
+  _globals['_CU']._serialized_end=1291
+  _globals['_DU']._serialized_start=1293
+  _globals['_DU']._serialized_end=1410
+  _globals['_GNB']._serialized_start=1412
+  _globals['_GNB']._serialized_end=1531
 # @@protoc_insertion_point(module_scope)

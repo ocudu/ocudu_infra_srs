@@ -75,7 +75,11 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._cu = OcuduCu(*args, **kwargs)
+        self._cu.get_current_report_folder = self.get_current_report_folder
+        self._cu._cu_cp.get_current_report_folder = self.get_current_report_folder
+        self._cu._cu_up.get_current_report_folder = self.get_current_report_folder
         self._du = OcuduDu(*args, **kwargs)
+        self._du.get_current_report_folder = self.get_current_report_folder
 
     def _get_sut_version(self) -> str:
         output = tuple(
@@ -92,9 +96,6 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
 
     def Start(self, request: GNBStartInfo, context: grpc.ServicerContext) -> Empty:
         self.Stop(UInt32Value(value=request.start_info.timeout), context)
-
-        self._cu.set_current_report_folder(self.get_current_report_folder())
-        self._du.set_current_report_folder(self.get_current_report_folder())
 
         if testbed_defaults.type == "ru":
             if not (

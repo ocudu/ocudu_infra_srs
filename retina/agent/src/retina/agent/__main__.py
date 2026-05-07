@@ -25,11 +25,17 @@ from retina.protocol.channel_emulator_pb2_grpc import (
 )
 from retina.protocol.fivegc_pb2_grpc import add_FiveGCServicer_to_server, FiveGC, FiveGCServicer
 from retina.protocol.gnb_pb2_grpc import (
+    add_CUCPServicer_to_server,
     add_CUServicer_to_server,
+    add_CUUPServicer_to_server,
     add_DUServicer_to_server,
     add_GNBServicer_to_server,
     CU,
+    CUCP,
+    CUCPServicer,
     CUServicer,
+    CUUP,
+    CUUPServicer,
     DU,
     DUServicer,
     GNB,
@@ -47,6 +53,8 @@ from retina.agent.drivers.flexric import LocalFlexricRic
 from retina.agent.drivers.health import RetinaHealth
 from retina.agent.drivers.ntn_channel_emulator import LocalNtnChannelEmulator
 from retina.agent.drivers.ocudu_cu import LocalOcuduCu
+from retina.agent.drivers.ocudu_cu_cp import LocalOcuduCuCp
+from retina.agent.drivers.ocudu_cu_up import LocalOcuduCuUp
 from retina.agent.drivers.ocudu_du import LocalOcuduDu
 from retina.agent.drivers.ocudu_gnb import LocalOcuduGnb, RemoteOcuduGnb
 from retina.agent.drivers.open5gs_5gc import LocalOpen5gs5gc
@@ -60,6 +68,8 @@ _DRIVER_CODENAME_DICT: Dict[str, BaseDriver] = {
     "ocudu-gnb": LocalOcuduGnb,
     "ocudu-gnb-remote": RemoteOcuduGnb,
     "ocudu-cu": LocalOcuduCu,
+    "ocudu-cu-cp": LocalOcuduCuCp,
+    "ocudu-cu-up": LocalOcuduCuUp,
     "ocudu-du": LocalOcuduDu,
     "srs-ue": LocalSrsUe,
     "open5gs-5gc": LocalOpen5gs5gc,
@@ -153,9 +163,15 @@ def _agent_factory(
     if isinstance(retina_servicer, GNBServicer):
         health_servicer.set(GNB.__name__, HealthCheckResponse.SERVING)
         add_GNBServicer_to_server(retina_servicer, server)
+    if isinstance(retina_servicer, CUCPServicer):
+        health_servicer.set(CUCP.__name__, HealthCheckResponse.SERVING)
+        add_CUCPServicer_to_server(retina_servicer, server)
     if isinstance(retina_servicer, CUServicer):
         health_servicer.set(CU.__name__, HealthCheckResponse.SERVING)
         add_CUServicer_to_server(retina_servicer, server)
+    if isinstance(retina_servicer, CUUPServicer):
+        health_servicer.set(CUUP.__name__, HealthCheckResponse.SERVING)
+        add_CUUPServicer_to_server(retina_servicer, server)
     if isinstance(retina_servicer, DUServicer):
         health_servicer.set(DU.__name__, HealthCheckResponse.SERVING)
         add_DUServicer_to_server(retina_servicer, server)

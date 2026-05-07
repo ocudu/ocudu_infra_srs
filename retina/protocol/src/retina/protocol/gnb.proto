@@ -8,10 +8,26 @@ import "google/protobuf/wrappers.proto";
 
 import "retina/protocol/base.proto";
 
+// CUCP service manages the Control Plane part of the CU in the E1 split architecture
+service CUCP {
+  // Get the F1AP endpoint of the CU-CP, used by the DU to connect
+  rpc GetDefinition(google.protobuf.Empty) returns (CUCPDefinition) {};
+  // Start the CU-CP. Raise an error if can't be started.
+  rpc Start(CUCPStartInfo) returns (google.protobuf.Empty) {};
+};
+
+// CUUP service manages the User Plane part of the CU in the E1 split architecture
+service CUUP {
+  // Get the E1AP endpoint of the CU-UP, used by the CU-CP to connect
+  rpc GetDefinition(google.protobuf.Empty) returns (CUUPDefinition) {};
+  // Start the CU-UP. Raise an error if can't be started.
+  rpc Start(CUUPStartInfo) returns (google.protobuf.Empty) {};
+};
+
 // CU service manages the Centralized Unit of the gNB split architecture
 service CU {
   // Get Basic information about the CU, like public ip or IDs
-  rpc GetDefinition(google.protobuf.Empty) returns (CUDefinition) {};
+  rpc GetDefinition(google.protobuf.Empty) returns (CUCPDefinition) {};
   // Start the CU. Raise an error if can't be started.
   rpc Start(CUStartInfo) returns (google.protobuf.Empty) {};
 };
@@ -32,6 +48,18 @@ service GNB {
   rpc Start(GNBStartInfo) returns (google.protobuf.Empty) {};
 };
 
+message CUCPStartInfo {
+  PLMN                      plmn              = 1;
+  repeated FiveGCDefinition fivegc_definition = 2;
+  StartInfo                 start_info        = 3;
+}
+
+message CUUPStartInfo {
+  CUCPDefinition            cucp_definition   = 1;
+  repeated FiveGCDefinition fivegc_definition = 2;
+  StartInfo                 start_info        = 3;
+}
+
 message CUStartInfo {
   PLMN                      plmn              = 1;
   repeated FiveGCDefinition fivegc_definition = 2;
@@ -39,14 +67,14 @@ message CUStartInfo {
 }
 
 message DUStartInfo {
-  uint64              gnb_du_id      = 1;
-  PLMN                plmn           = 2;
-  uint32              num_cells      = 3;
-  uint32              cell_offset    = 4;
-  CUDefinition        cu_definition  = 5;
-  UEDefinition        ue_definition  = 6; // Only required in ZMQ mode
-  NearRtRicDefinition ric_definition = 7; // if non-empty, E2 is enabled
-  StartInfo           start_info     = 8;
+  uint64              gnb_du_id       = 1;
+  PLMN                plmn            = 2;
+  uint32              num_cells       = 3;
+  uint32              cell_offset     = 4;
+  CUCPDefinition      cucp_definition = 5;
+  UEDefinition        ue_definition   = 6; // Only required in ZMQ mode
+  NearRtRicDefinition ric_definition  = 7; // if non-empty, E2 is enabled
+  StartInfo           start_info      = 8;
 }
 
 message GNBStartInfo {

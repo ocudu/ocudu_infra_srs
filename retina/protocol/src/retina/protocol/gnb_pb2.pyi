@@ -25,6 +25,56 @@ else:
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing.final
+class CUCPStartInfo(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    PLMN_FIELD_NUMBER: builtins.int
+    FIVEGC_DEFINITION_FIELD_NUMBER: builtins.int
+    START_INFO_FIELD_NUMBER: builtins.int
+    @property
+    def plmn(self) -> retina.protocol.base_pb2.PLMN: ...
+    @property
+    def fivegc_definition(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[retina.protocol.base_pb2.FiveGCDefinition]: ...
+    @property
+    def start_info(self) -> retina.protocol.base_pb2.StartInfo: ...
+    def __init__(
+        self,
+        *,
+        plmn: retina.protocol.base_pb2.PLMN | None = ...,
+        fivegc_definition: collections.abc.Iterable[retina.protocol.base_pb2.FiveGCDefinition] | None = ...,
+        start_info: retina.protocol.base_pb2.StartInfo | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["plmn", b"plmn", "start_info", b"start_info"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "plmn", b"plmn", "start_info", b"start_info"]) -> None: ...
+
+Global___CUCPStartInfo: typing_extensions.TypeAlias = CUCPStartInfo
+
+@typing.final
+class CUUPStartInfo(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    CUCP_DEFINITION_FIELD_NUMBER: builtins.int
+    FIVEGC_DEFINITION_FIELD_NUMBER: builtins.int
+    START_INFO_FIELD_NUMBER: builtins.int
+    @property
+    def cucp_definition(self) -> retina.protocol.base_pb2.CUCPDefinition: ...
+    @property
+    def fivegc_definition(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[retina.protocol.base_pb2.FiveGCDefinition]: ...
+    @property
+    def start_info(self) -> retina.protocol.base_pb2.StartInfo: ...
+    def __init__(
+        self,
+        *,
+        cucp_definition: retina.protocol.base_pb2.CUCPDefinition | None = ...,
+        fivegc_definition: collections.abc.Iterable[retina.protocol.base_pb2.FiveGCDefinition] | None = ...,
+        start_info: retina.protocol.base_pb2.StartInfo | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["cucp_definition", b"cucp_definition", "start_info", b"start_info"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["cucp_definition", b"cucp_definition", "fivegc_definition", b"fivegc_definition", "start_info", b"start_info"]) -> None: ...
+
+Global___CUUPStartInfo: typing_extensions.TypeAlias = CUUPStartInfo
+
+@typing.final
 class CUStartInfo(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -57,7 +107,7 @@ class DUStartInfo(google.protobuf.message.Message):
     PLMN_FIELD_NUMBER: builtins.int
     NUM_CELLS_FIELD_NUMBER: builtins.int
     CELL_OFFSET_FIELD_NUMBER: builtins.int
-    CU_DEFINITION_FIELD_NUMBER: builtins.int
+    CUCP_DEFINITION_FIELD_NUMBER: builtins.int
     UE_DEFINITION_FIELD_NUMBER: builtins.int
     RIC_DEFINITION_FIELD_NUMBER: builtins.int
     START_INFO_FIELD_NUMBER: builtins.int
@@ -67,7 +117,7 @@ class DUStartInfo(google.protobuf.message.Message):
     @property
     def plmn(self) -> retina.protocol.base_pb2.PLMN: ...
     @property
-    def cu_definition(self) -> retina.protocol.base_pb2.CUDefinition: ...
+    def cucp_definition(self) -> retina.protocol.base_pb2.CUCPDefinition: ...
     @property
     def ue_definition(self) -> retina.protocol.base_pb2.UEDefinition:
         """Only required in ZMQ mode"""
@@ -85,13 +135,13 @@ class DUStartInfo(google.protobuf.message.Message):
         plmn: retina.protocol.base_pb2.PLMN | None = ...,
         num_cells: builtins.int = ...,
         cell_offset: builtins.int = ...,
-        cu_definition: retina.protocol.base_pb2.CUDefinition | None = ...,
+        cucp_definition: retina.protocol.base_pb2.CUCPDefinition | None = ...,
         ue_definition: retina.protocol.base_pb2.UEDefinition | None = ...,
         ric_definition: retina.protocol.base_pb2.NearRtRicDefinition | None = ...,
         start_info: retina.protocol.base_pb2.StartInfo | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["cu_definition", b"cu_definition", "plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["cell_offset", b"cell_offset", "cu_definition", b"cu_definition", "gnb_du_id", b"gnb_du_id", "num_cells", b"num_cells", "plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["cucp_definition", b"cucp_definition", "plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["cell_offset", b"cell_offset", "cucp_definition", b"cucp_definition", "gnb_du_id", b"gnb_du_id", "num_cells", b"num_cells", "plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> None: ...
 
 Global___DUStartInfo: typing_extensions.TypeAlias = DUStartInfo
 

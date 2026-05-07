@@ -107,6 +107,12 @@ class TestbedService(TestbedPort):
     def get_cu(self, index: int = 0) -> CUStub:
         return self._get_item(NodeTypeEnum.CU, index)
 
+    def get_cu_cp(self, index: int = 0) -> CUStub:
+        return self._get_item(NodeTypeEnum.CU_CP, index)
+
+    def get_cu_up(self, index: int = 0) -> CUStub:
+        return self._get_item(NodeTypeEnum.CU_UP, index)
+
     def get_du(self, index: int = 0) -> DUStub:
         return self._get_item(NodeTypeEnum.DU, index)
 

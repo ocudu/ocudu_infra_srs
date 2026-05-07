@@ -13,6 +13,9 @@ from retina.agent.app.parameter_manager import convert_to_parameter_source, Para
 
 convert_to_parameter_source(__name__, ParameterNamespace.GNB)
 convert_to_parameter_source(__name__, ParameterNamespace.CU)
+convert_to_parameter_source(__name__, ParameterNamespace.CU_CP)
+convert_to_parameter_source(__name__, ParameterNamespace.CU_UP)
+convert_to_parameter_source(__name__, ParameterNamespace.CU)
 convert_to_parameter_source(__name__, ParameterNamespace.DU)
 
 
@@ -80,7 +83,6 @@ enable_dddsu: bool = False
 warning_allowlist: List[str] = []
 enable_drx: bool = False
 cu_cp_inactivity_timer: int = -1
-cu_ip: str = ""  # Keep it empty to use ip provided by testbed
 pucch_formats: str = "f1_and_f2"
 request_pdu_session_timeout: int = -1
 rrc_procedure_guard_time_ms: int = -1

@@ -67,6 +67,20 @@ class TestbedPort:
         """
 
     @abstractmethod
+    def get_cu_cp(self, index: int = 0) -> CUStub:
+        """
+        Return a cu-cp stub in the specified index.
+        If not exists, raises an Exception.
+        """
+
+    @abstractmethod
+    def get_cu_up(self, index: int = 0) -> CUStub:
+        """
+        Return a cu-up stub in the specified index.
+        If not exists, raises an Exception.
+        """
+
+    @abstractmethod
     def get_du(self, index: int = 0) -> DUStub:
         """
         Return a du stub in the specified index.

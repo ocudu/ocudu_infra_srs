@@ -223,7 +223,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                         ric_definition=request.ric_definition,
                     ),
                     "log_filename": self.get_filepath_in_report_folder(self.DU_LOG_FILENAME),
-                    "cu_ip": request.cu_definition.cu_ip,
+                    "cucp_ip": request.cucp_definition.cucp_ip,
                     "du_ip": testbed_defaults.ip,
                 },
             )

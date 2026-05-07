@@ -10,11 +10,35 @@ from abc import ABCMeta
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import CUDefinition, DUDefinition
-from retina.protocol.gnb_pb2_grpc import CUServicer, DUServicer, GNBServicer
+from retina.protocol.base_pb2 import CUCPDefinition, CUUPDefinition, DUDefinition
+from retina.protocol.gnb_pb2_grpc import CUCPServicer, CUServicer, CUUPServicer, DUServicer, GNBServicer
 
 from retina.agent.drivers.base import BaseDriver
 from retina.agent.parameters import gnb_defaults, testbed_defaults
+
+
+class CUCPDriver(CUCPServicer, BaseDriver, metaclass=ABCMeta):
+    """
+    CU-CP Base Driver
+    """
+
+    def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> CUCPDefinition:
+        return CUCPDefinition(
+            cucp_ip=testbed_defaults.ip,
+            cucp_port=38472,  # F1AP port, see TS 38.472, section 7.
+        )
+
+
+class CUUPDriver(CUUPServicer, BaseDriver, metaclass=ABCMeta):
+    """
+    CU-UP Base Driver
+    """
+
+    def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> CUUPDefinition:
+        return CUUPDefinition(
+            cuup_ip=testbed_defaults.ip,
+            e1_port=38462,  # E1AP port, see TS 38.463.
+        )
 
 
 class CUDriver(CUServicer, BaseDriver, metaclass=ABCMeta):
@@ -22,10 +46,10 @@ class CUDriver(CUServicer, BaseDriver, metaclass=ABCMeta):
     CU Base Driver
     """
 
-    def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> CUDefinition:
-        return CUDefinition(
-            cu_ip=gnb_defaults.cu_ip if gnb_defaults.cu_ip else testbed_defaults.ip,
-            cu_port=38472,  # F1AP port, see TS 38.472, section 7.
+    def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> CUCPDefinition:
+        return CUCPDefinition(
+            cucp_ip=testbed_defaults.ip,
+            cucp_port=38472,  # F1AP port, see TS 38.472, section 7.
         )
 
 

@@ -5,7 +5,7 @@
 5G NR RRC-layer pcap analyzers.
 """
 
-from retina.protocol.base_pb2 import CuMetrics, Metrics, UeMetrics
+from retina.protocol.base_pb2 import DuMetrics, Metrics, UeMetrics
 
 from retina.agent.features.pcap.analyzer import PcapAnalyzer
 
@@ -69,7 +69,7 @@ class PrachConfigIndexAnalyzer(PcapAnalyzer):
                 pass
 
     def report(self) -> Metrics:
-        return Metrics(cu=CuMetrics(prach_configuration_index=self._prach_config_index))
+        return Metrics(du=DuMetrics(prach_configuration_index=self._prach_config_index))
 
 
 class SibAnalyzer(PcapAnalyzer):
@@ -112,7 +112,7 @@ class SibAnalyzer(PcapAnalyzer):
 
     def report(self) -> Metrics:
         return Metrics(
-            cu=CuMetrics(
+            du=DuMetrics(
                 nof_sib1_transmissions=self._counts[1],
                 nof_sib2_transmissions=self._counts[2],
                 nof_sib3_transmissions=self._counts[3],
@@ -143,7 +143,7 @@ class TransformPrecoderAnalyzer(PcapAnalyzer):
         self._enabled = True
 
     def report(self) -> Metrics:
-        return Metrics(cu=CuMetrics(transform_precoder=self._enabled))
+        return Metrics(du=DuMetrics(transform_precoder=self._enabled))
 
 
 class SrsFreqDomainAnalyzer(PcapAnalyzer):
@@ -181,7 +181,7 @@ class SrsFreqDomainAnalyzer(PcapAnalyzer):
             pass
 
     def report(self) -> Metrics:
-        return Metrics(cu=CuMetrics(c_srs=self._c_srs, b_srs=self._b_srs))
+        return Metrics(du=DuMetrics(c_srs=self._c_srs, b_srs=self._b_srs))
 
 
 class T312Analyzer(PcapAnalyzer):
@@ -207,7 +207,7 @@ class T312Analyzer(PcapAnalyzer):
                 pass
 
     def report(self) -> Metrics:
-        return Metrics(cu=CuMetrics(t312=self._value))
+        return Metrics(du=DuMetrics(t312=self._value))
 
 
 class DrxLongCycleAnalyzer(PcapAnalyzer):
@@ -234,7 +234,7 @@ class DrxLongCycleAnalyzer(PcapAnalyzer):
                 pass
 
     def report(self) -> Metrics:
-        return Metrics(cu=CuMetrics(drx_long_cycle_start_offset=self._value))
+        return Metrics(du=DuMetrics(drx_long_cycle_start_offset=self._value))
 
 
 class PagingAnalyzer(PcapAnalyzer):
@@ -255,7 +255,7 @@ class PagingAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(cu=CuMetrics(nof_paging_messages=self._count))
+        return Metrics(du=DuMetrics(nof_paging_messages=self._count))
 
 
 class SuspendConfigAnalyzer(PcapAnalyzer):

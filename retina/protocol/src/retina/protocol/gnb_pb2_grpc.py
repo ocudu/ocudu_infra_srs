@@ -31,6 +31,246 @@ if _version_not_supported:
     )
 
 
+class CUCPStub(object):
+    """CUCP service manages the Control Plane part of the CU in the E1 split architecture
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.GetDefinition = channel.unary_unary(
+                '/CUCP/GetDefinition',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=retina_dot_protocol_dot_base__pb2.CUCPDefinition.FromString,
+                _registered_method=True)
+        self.Start = channel.unary_unary(
+                '/CUCP/Start',
+                request_serializer=retina_dot_protocol_dot_gnb__pb2.CUCPStartInfo.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                _registered_method=True)
+
+
+class CUCPServicer(object):
+    """CUCP service manages the Control Plane part of the CU in the E1 split architecture
+    """
+
+    def GetDefinition(self, request, context):
+        """Get the F1AP endpoint of the CU-CP, used by the DU to connect
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Start(self, request, context):
+        """Start the CU-CP. Raise an error if can't be started.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_CUCPServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'GetDefinition': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetDefinition,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=retina_dot_protocol_dot_base__pb2.CUCPDefinition.SerializeToString,
+            ),
+            'Start': grpc.unary_unary_rpc_method_handler(
+                    servicer.Start,
+                    request_deserializer=retina_dot_protocol_dot_gnb__pb2.CUCPStartInfo.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'CUCP', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('CUCP', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class CUCP(object):
+    """CUCP service manages the Control Plane part of the CU in the E1 split architecture
+    """
+
+    @staticmethod
+    def GetDefinition(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/CUCP/GetDefinition',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            retina_dot_protocol_dot_base__pb2.CUCPDefinition.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Start(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/CUCP/Start',
+            retina_dot_protocol_dot_gnb__pb2.CUCPStartInfo.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class CUUPStub(object):
+    """CUUP service manages the User Plane part of the CU in the E1 split architecture
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.GetDefinition = channel.unary_unary(
+                '/CUUP/GetDefinition',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=retina_dot_protocol_dot_base__pb2.CUUPDefinition.FromString,
+                _registered_method=True)
+        self.Start = channel.unary_unary(
+                '/CUUP/Start',
+                request_serializer=retina_dot_protocol_dot_gnb__pb2.CUUPStartInfo.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                _registered_method=True)
+
+
+class CUUPServicer(object):
+    """CUUP service manages the User Plane part of the CU in the E1 split architecture
+    """
+
+    def GetDefinition(self, request, context):
+        """Get the E1AP endpoint of the CU-UP, used by the CU-CP to connect
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Start(self, request, context):
+        """Start the CU-UP. Raise an error if can't be started.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_CUUPServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'GetDefinition': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetDefinition,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=retina_dot_protocol_dot_base__pb2.CUUPDefinition.SerializeToString,
+            ),
+            'Start': grpc.unary_unary_rpc_method_handler(
+                    servicer.Start,
+                    request_deserializer=retina_dot_protocol_dot_gnb__pb2.CUUPStartInfo.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'CUUP', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('CUUP', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class CUUP(object):
+    """CUUP service manages the User Plane part of the CU in the E1 split architecture
+    """
+
+    @staticmethod
+    def GetDefinition(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/CUUP/GetDefinition',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            retina_dot_protocol_dot_base__pb2.CUUPDefinition.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Start(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/CUUP/Start',
+            retina_dot_protocol_dot_gnb__pb2.CUUPStartInfo.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
 class CUStub(object):
     """CU service manages the Centralized Unit of the gNB split architecture
     """
@@ -44,7 +284,7 @@ class CUStub(object):
         self.GetDefinition = channel.unary_unary(
                 '/CU/GetDefinition',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-                response_deserializer=retina_dot_protocol_dot_base__pb2.CUDefinition.FromString,
+                response_deserializer=retina_dot_protocol_dot_base__pb2.CUCPDefinition.FromString,
                 _registered_method=True)
         self.Start = channel.unary_unary(
                 '/CU/Start',
@@ -77,7 +317,7 @@ def add_CUServicer_to_server(servicer, server):
             'GetDefinition': grpc.unary_unary_rpc_method_handler(
                     servicer.GetDefinition,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                    response_serializer=retina_dot_protocol_dot_base__pb2.CUDefinition.SerializeToString,
+                    response_serializer=retina_dot_protocol_dot_base__pb2.CUCPDefinition.SerializeToString,
             ),
             'Start': grpc.unary_unary_rpc_method_handler(
                     servicer.Start,
@@ -112,7 +352,7 @@ class CU(object):
             target,
             '/CU/GetDefinition',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            retina_dot_protocol_dot_base__pb2.CUDefinition.FromString,
+            retina_dot_protocol_dot_base__pb2.CUCPDefinition.FromString,
             options,
             channel_credentials,
             insecure,
