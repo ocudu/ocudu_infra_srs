@@ -23,7 +23,6 @@ addopts = [
   "--only-rerun=exit code 66",
   "--only-rerun=Viavi API call timed out",
   "--only-rerun=time-out in waiting for Cell Frame Boundary detection",
-  "--only-rerun=failed to start",
 ]
 filterwarnings = [
   "ignore:HTTPResponse.getheaders:DeprecationWarning",

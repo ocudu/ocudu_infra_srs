@@ -455,16 +455,19 @@ def nr_arfcn_to_freq(nr_arfcn: int) -> float:
 
 
 class _NodeConfig(NamedTuple):
-    attr: str  # attribute on RetinaTestDefinition and configs/ subdirectory
+    attr: str  # attribute on RetinaTestDefinition
+    config_folder: str  # Config folder
     templates: list  # template names expected by the retina API
 
 
 _NODE_CONFIGS: Dict[storage.NodeTypeEnum, _NodeConfig] = {
-    storage.NodeTypeEnum.UE: _NodeConfig("ue", ["ue"]),
-    storage.NodeTypeEnum.CU: _NodeConfig("cu", ["cu", "qos"]),
-    storage.NodeTypeEnum.DU: _NodeConfig("du", ["du", "qos"]),
-    storage.NodeTypeEnum.GNB: _NodeConfig("gnb", ["cu", "du", "qos"]),
-    storage.NodeTypeEnum.FIVEGC: _NodeConfig("core", ["core", "ims"]),
+    storage.NodeTypeEnum.UE: _NodeConfig("ue", "ue", ["ue"]),
+    storage.NodeTypeEnum.CU: _NodeConfig("cu", "gnb", ["cu", "qos"]),
+    storage.NodeTypeEnum.CU_CP: _NodeConfig("cu_cp", "gnb", ["cu", "qos"]),
+    storage.NodeTypeEnum.CU_UP: _NodeConfig("cu_up", "gnb", ["cu", "qos"]),
+    storage.NodeTypeEnum.DU: _NodeConfig("du", "gnb", ["du", "qos"]),
+    storage.NodeTypeEnum.GNB: _NodeConfig("gnb", "gnb", ["cu", "du", "qos"]),
+    storage.NodeTypeEnum.FIVEGC: _NodeConfig("core", "core", ["core", "ims"]),
 }
 
 
@@ -510,12 +513,9 @@ def _build_templates(stack: contextlib.ExitStack, node_cfg: _NodeConfig, config_
 
     merged = stack.enter_context(tempfile.NamedTemporaryFile(mode="w+"))  # pylint: disable=consider-using-with
     for cfg_file in config_files:
-        if node_cfg.attr in ["du", "cu"]:
-            merged.write((Path(__file__).parent.parent / "configs" / "gnb" / cfg_file).read_text(encoding="UTF-8"))
-        else:
-            merged.write(
-                (Path(__file__).parent.parent / "configs" / node_cfg.attr / cfg_file).read_text(encoding="UTF-8")
-            )
+        merged.write(
+            (Path(__file__).parent.parent / "configs" / node_cfg.config_folder / cfg_file).read_text(encoding="UTF-8")
+        )
         merged.write("\n")
     merged.flush()
 

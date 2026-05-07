@@ -43,6 +43,8 @@ _TEST_DEFINITION_SCHEMA: Dict = {
         "criteria": {"type": "object", "additionalProperties": {}},
         "ue": {"$ref": "#/$defs/node_type_definition"},
         "cu": {"$ref": "#/$defs/node_type_definition"},
+        "cu_cp": {"$ref": "#/$defs/node_type_definition"},
+        "cu_up": {"$ref": "#/$defs/node_type_definition"},
         "du": {"$ref": "#/$defs/node_type_definition"},
         "gnb": {"$ref": "#/$defs/node_type_definition"},
         "core": {"$ref": "#/$defs/node_type_definition"},
@@ -100,6 +102,8 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
     # Configs
     ue: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
     cu: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
+    cu_cp: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
+    cu_up: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
     du: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
     gnb: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
     core: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
@@ -116,6 +120,8 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
                 criteria=data.get("criteria", {}),
                 ue=RetinaNodeTypeDefinition.from_dict(data.get("ue", {})),
                 cu=RetinaNodeTypeDefinition.from_dict(data.get("cu", {})),
+                cu_cp=RetinaNodeTypeDefinition.from_dict(data.get("cu_cp", {})),
+                cu_up=RetinaNodeTypeDefinition.from_dict(data.get("cu_up", {})),
                 du=RetinaNodeTypeDefinition.from_dict(data.get("du", {})),
                 gnb=RetinaNodeTypeDefinition.from_dict(data.get("gnb", {})),
                 core=RetinaNodeTypeDefinition.from_dict(data.get("core", {})),
@@ -125,11 +131,13 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
         all_configs = []
         for cfg_file in instance.ue.config:
             all_configs.append(Path(__file__).parent.parent / "configs" / "ue" / cfg_file)
-        for cfg_file in instance.cu.config:
-            all_configs.append(Path(__file__).parent.parent / "configs" / "gnb" / cfg_file)
-        for cfg_file in instance.du.config:
-            all_configs.append(Path(__file__).parent.parent / "configs" / "gnb" / cfg_file)
-        for cfg_file in instance.gnb.config:
+        for cfg_file in (
+            *instance.cu.config,
+            *instance.cu_cp.config,
+            *instance.cu_up.config,
+            *instance.du.config,
+            *instance.gnb.config,
+        ):
             all_configs.append(Path(__file__).parent.parent / "configs" / "gnb" / cfg_file)
         for cfg_file in instance.core.config:
             all_configs.append(Path(__file__).parent.parent / "configs" / "core" / cfg_file)

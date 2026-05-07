@@ -39,8 +39,8 @@ from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.exit_codes import exit_code_to_message
 from retina.protocol.fivegc_pb2 import FiveGCStartInfo, IPerfResponse
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2 import CUStartInfo, DUStartInfo, GNBStartInfo
-from retina.protocol.gnb_pb2_grpc import CUStub, DUStub, GNBStub
+from retina.protocol.gnb_pb2 import CUCPStartInfo, CUStartInfo, CUUPStartInfo, DUStartInfo, GNBStartInfo
+from retina.protocol.gnb_pb2_grpc import CUCPStub, CUStub, CUUPStub, DUStub, GNBStub
 from retina.protocol.ric_pb2 import KpmMonXappRequest, NearRtRicStartInfo, RcXappRequest
 from retina.protocol.ric_pb2_grpc import NearRtRicStub
 from retina.protocol.ue_pb2 import (
@@ -167,13 +167,15 @@ def _get_hplmn(imsi: str) -> PLMN:
     return hplmn
 
 
-# pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-branches
+# pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-branches,too-many-statements
 def start_network(
     *,  # This enforces keyword-only arguments
     ue_array: Sequence[UEStub],
     fivegc_array: Sequence[FiveGCStub],
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
+    cu_cp: Optional[CUCPStub] = None,
+    cu_up_array: Optional[Sequence[CUUPStub]] = None,
     du_array: Optional[Sequence[DUStub]] = None,
     gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
     fivegc_startup_timeout: int = FIVEGC_STARTUP_TIMEOUT,
@@ -188,14 +190,17 @@ def start_network(
     channel_emulator: Optional[ChannelEmulatorStub] = None,
 ):
     """
-    Start Network (5GC + gNB/CU+DU + RIC(optional))
+    Start Network (5GC + gNB/CU+DU/CUCP+CUUP+DU + RIC(optional))
     """
 
-    if gnb_array and (cu or du_array):
-        pytest.fail("Either gNB or CU and DU array must be provided, not both")
+    if gnb_array and (cu or cu_cp or du_array):
+        pytest.fail("Either gNB or CU/CUCP and DU array must be provided, not both")
 
-    if (cu and not du_array) or (not cu and du_array):
+    if (cu and not du_array) or (not cu and du_array and not cu_cp):
         pytest.fail("CU and DU must be provided together")
+
+    if (cu_cp and not cu_up_array) or (not cu_cp and cu_up_array):
+        pytest.fail("CUCP and CUUP array must be provided together")
 
     ue_def_for_gnb = UEDefinition()
     for ue_stub in ue_array:
@@ -269,8 +274,9 @@ def start_network(
                 )
         return
 
-    if cu and du_array:
-        cu_def_for_du = cu.GetDefinition(Empty())
+    cucp_definition = None
+    if cu:
+        cucp_definition = cu.GetDefinition(Empty())
         with handle_start_error(name=f"CU [{id(cu)}]"):
             # CU Start
             cu.Start(
@@ -285,8 +291,36 @@ def start_network(
                 )
             )
 
-        du_id = 0
-        for du_stub in du_array:
+    if cu_cp:
+        cucp_definition = cu_cp.GetDefinition(Empty())
+        with handle_start_error(name=f"CU-CP [{id(cu_cp)}]"):
+            # CU-CP Start
+            cu_cp.Start(
+                CUCPStartInfo(
+                    plmn=plmn,
+                    fivegc_definition=fivegc_definition,
+                    start_info=StartInfo(
+                        timeout=gnb_startup_timeout,
+                    ),
+                )
+            )
+
+    if cu_up_array:
+        for cu_up in cu_up_array:
+            with handle_start_error(name=f"CU-UP [{id(cu_up)}]"):
+                # CU-UP Start
+                cu_up.Start(
+                    CUUPStartInfo(
+                        cucp_definition=cucp_definition,
+                        fivegc_definition=fivegc_definition,
+                        start_info=StartInfo(
+                            timeout=gnb_startup_timeout,
+                        ),
+                    )
+                )
+
+    if du_array:
+        for du_id, du_stub in enumerate(du_array):
             with handle_start_error(name=f"DU [{id(du_stub)}]"):
                 # DU Start
                 du_stub.Start(
@@ -295,7 +329,7 @@ def start_network(
                         plmn=plmn,
                         num_cells=1,
                         cell_offset=du_id,
-                        cu_definition=cu_def_for_du,
+                        cucp_definition=cucp_definition,
                         ue_definition=ue_def_for_gnb,
                         ric_definition=ric_definition,
                         start_info=StartInfo(
@@ -305,8 +339,6 @@ def start_network(
                         ),
                     )
                 )
-
-            du_id += 1
 
 
 def ue_start_and_attach(
@@ -1135,6 +1167,8 @@ def stop(
     retina_data: RetinaTestData,
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
+    cu_cp: Optional[CUCPStub] = None,
+    cu_up_array: Optional[Sequence[CUUPStub]] = None,
     du_array: Optional[Sequence[DUStub]] = None,
     fivegc_array: Optional[Sequence[FiveGCStub]] = None,
     ue_stop_timeout: int = 0,  # Auto
@@ -1203,6 +1237,29 @@ def stop(
         error_message, _ = _stop_stub(
             stub=cu,
             name="CU",
+            retina_data=retina_data,
+            timeout=gnb_stop_timeout,
+            log_search=log_search,
+            warning_as_errors=warning_as_errors,
+        )
+        error_msg_array.append(error_message)
+
+    if cu_up_array is not None:
+        for index, cu_up in enumerate(cu_up_array):
+            error_message, _ = _stop_stub(
+                stub=cu_up,
+                name=f"CU-UP_{index+1}",
+                retina_data=retina_data,
+                timeout=gnb_stop_timeout,
+                log_search=log_search,
+                warning_as_errors=warning_as_errors,
+            )
+            error_msg_array.append(error_message)
+
+    if cu_cp is not None:
+        error_message, _ = _stop_stub(
+            stub=cu_cp,
+            name="CU-CP",
             retina_data=retina_data,
             timeout=gnb_stop_timeout,
             log_search=log_search,
