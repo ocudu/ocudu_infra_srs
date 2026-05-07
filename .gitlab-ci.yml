@@ -61,7 +61,6 @@ spec:
         - viavi
         - zmq_1cu2du
         - zmq_2gnb
-        - zmq_cudu
         - zmq_mme
         - zmq_ntn
         - zmq_ric

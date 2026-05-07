@@ -251,7 +251,7 @@ services:
     volumes: *agent_volumes
     tmpfs: *agent_tmpfs
     environment: &ocudu_env
-      RETINA_AGENT: ocudu-gnb # ocudu-gnb, ocudu-cudu, ocudu-cu, ocudu-du
+      RETINA_AGENT: ocudu-gnb
       RETINA_IP: &gnb0_ip 172.20.0.4
       PATH: ${CONTAINER_PATH}:/builds/ocudu/ocudu/build_retina/apps/gnb:/builds/ocudu/ocudu/build_retina/apps/cu:/builds/ocudu/ocudu/build_retina/apps/du
     networks:

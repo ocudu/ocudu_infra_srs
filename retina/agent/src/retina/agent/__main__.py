@@ -47,7 +47,6 @@ from retina.agent.drivers.flexric import LocalFlexricRic
 from retina.agent.drivers.health import RetinaHealth
 from retina.agent.drivers.ntn_channel_emulator import LocalNtnChannelEmulator
 from retina.agent.drivers.ocudu_cu import LocalOcuduCu
-from retina.agent.drivers.ocudu_cudu import LocalOcuduCuDu
 from retina.agent.drivers.ocudu_du import LocalOcuduDu
 from retina.agent.drivers.ocudu_gnb import LocalOcuduGnb, RemoteOcuduGnb
 from retina.agent.drivers.open5gs_5gc import LocalOpen5gs5gc
@@ -60,7 +59,6 @@ _DRIVER_CODENAME_DICT: Dict[str, BaseDriver] = {
     "android": AdbAndroidUE,
     "ocudu-gnb": LocalOcuduGnb,
     "ocudu-gnb-remote": RemoteOcuduGnb,
-    "ocudu-cudu": LocalOcuduCuDu,
     "ocudu-cu": LocalOcuduCu,
     "ocudu-du": LocalOcuduDu,
     "srs-ue": LocalSrsUe,

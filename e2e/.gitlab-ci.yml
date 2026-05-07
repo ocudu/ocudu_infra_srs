@@ -499,33 +499,6 @@ gnb 64UE:
     FILE_OR_DIR: tests/iperf.py
     KEYWORDS: "64"
 
-cudu 8UE:
-  extends: .amarisoft_zmq
-  timeout: 2h
-  variables:
-    TESTBED: zmq_cudu
-    MARKERS: "zmq and not smoke"
-    FILE_OR_DIR: tests/reestablishment.py
-    KEYWORDS: sequentially
-
-cudu 32UE:
-  extends: .amarisoft_zmq
-  timeout: 2h
-  variables:
-    TESTBED: zmq_cudu
-    FILE_OR_DIR: tests/iperf.py
-    KEYWORDS: "tcp and not band:3 and bandwidth:50 and not precoding"
-    MARKERS: "zmq and not smoke"
-
-cudu 64UE:
-  extends: .amarisoft_zmq
-  timeout: 3h
-  variables:
-    TESTBED: zmq_cudu
-    FILE_OR_DIR: tests/ping.py
-    KEYWORDS: "64"
-    MARKERS: "zmq and not smoke"
-
 ### Amarisoft s72
 .amarisoft s72:
   extends: e2e
