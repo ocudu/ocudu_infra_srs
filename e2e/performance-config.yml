@@ -12,18 +12,3 @@ spec:
       default: dev
       description: "OCUDU reference branch or tag."
 ---
-paging:
-  stage: mobility
-  extends: .performance_e2e
-  rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
-  variables:
-    KEYWORDS: "performance.mobility.paging."
-    TESTBED: dynamic

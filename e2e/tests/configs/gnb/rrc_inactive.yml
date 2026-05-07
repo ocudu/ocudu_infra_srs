@@ -3,5 +3,5 @@
 
 cu_cp:
   enable_rrc_inactive: true
-  inactivity_timer: 1
+  inactivity_timer: 2
   t380: 5

@@ -92,6 +92,22 @@ intra_ru_ho:
     KEYWORDS: "functional.mobility.intra_ru_ho."
     TESTBED: dynamic
 
+paging:
+  stage: mobility
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.mobility.paging."
+    TESTBED: dynamic
+
 reestablishment:
   stage: mobility
   extends: .functional_e2e

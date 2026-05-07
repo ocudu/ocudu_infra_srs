@@ -1,0 +1,119 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# tid2.2.22: Paging test
+paging: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, paging.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_paging: &nof_paging 1
+  gnb:
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
+    parameters:
+      time_multiplier: &time_multiplier 10
+  core:
+    config: [baseline.cfg]
+    parameters:
+      time_multiplier: *time_multiplier
+  feature_ids: [MVP-FUNC-MOB-11]
+  criteria:
+    du.dl_bitrate: 0
+    du.ul_bitrate: 0
+    du.nof_ko_dl: 0
+    du.nof_ko_ul: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_5gs_nas_service_accept_eq: *nof_paging
+    core.nof_ng_paging_eq: *nof_paging
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications: 0
+    du.nof_paging_eq: 2 # the DU sends 2x Paging messages per NG paging
+    du.errors: 0
+    du.warnings: 0
+
+# tid2.2.23: DRX test
+drx:
+  <<: *base_config
+  gnb:
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
+    parameters:
+      drx_long_cycle: 80
+      time_multiplier: *time_multiplier
+  feature_ids: [MVP-FUNC-SVCS-16-6]
+  criteria:
+    du.dl_bitrate: 0
+    du.ul_bitrate: 0
+    du.nof_ko_dl: 0
+    du.nof_ko_ul: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    nof_error_indications: 0
+    du.errors: 0
+    du.warnings: 0
+    core.nof_ng_paging_eq: *nof_paging
+    du.nof_paging_eq: 2  # the DU sends 2x Paging messages per NG paging
+    du.drx_long_cycle_eq: 7 # this is the coded value that corresponds to 80 ms
+
+# tid2.2.24: eDRX test
+edrx:
+  <<: *base_config
+  gnb:
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
+    parameters:
+      time_multiplier: *time_multiplier
+  feature_ids: [DU-GEN-10]
+
+# tid2.2.25: MT-Initiated Access
+mt_initiate:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, mt_initiate.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_paging: *nof_paging
+  feature_ids: [MVP-FUNC-MOB-11]
+  criteria:
+    du.dl_bitrate: 0
+    du.ul_bitrate: 0
+    du.nof_ko_dl: 0
+    du.nof_ko_ul: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    core.nof_error_indications: 0
+    du.errors: 0
+    du.warnings: 0
+    core.nof_ng_paging_eq: 0
+    du.nof_paging_eq: 0
+
+# tid2.2.26: RRC Inactive
+rrc_inactive:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, paging.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_paging: 1
+      log_level: debug
+  gnb:
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    parameters:
+      time_multiplier: *time_multiplier
+  feature_ids: [MVP-FUNC-MOB-10]
+  criteria:
+    du.dl_bitrate: 0
+    du.ul_bitrate: 0
+    du.nof_ko_dl: 0
+    du.nof_ko_ul: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications: 0
+    du.errors: 0
+    du.warnings: 0
+    du.nof_paging_eq: 2
+    du.nof_rrc_suspend_eq: 1
+    du.nof_rrc_resume_request_eq: 1
