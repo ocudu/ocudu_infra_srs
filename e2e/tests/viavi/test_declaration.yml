@@ -479,6 +479,53 @@ tests:
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
+
+  - id: "32UE ideal UDP attach-detach fast with traffic tdd 7u2d"
+    campaign_filename: *campaign_filename
+    test_name: "32UE ideal UDP attach-detach with traffic fast"
+    test_timeout: *test_timeout
+    # Configuration
+    gnb_extra_config:
+      <<: *base_config
+      cell_cfg:
+        <<: *base_cell_cfg
+        pucch:
+          <<: *base_cell_cfg_pucch
+          sr_period_ms: 20
+          nof_cell_sr_res: 30
+        tdd_ul_dl_cfg:
+          dl_ul_tx_period: 10
+          nof_dl_slots: 2
+          nof_dl_symbols: 10
+          nof_ul_slots: 7
+          nof_ul_symbols: 0
+        pdcch:
+          common:
+            ss1_n_candidates: 0 0 2 0 0
+      expert_execution:
+        <<: *base_expert_execution
+        threads:
+          <<: *base_expert_execution_threads
+          upper_phy:
+            max_pucch_concurrency: 1
+            max_pusch_and_srs_concurrency: 4
+    # Pass / Fail Criteria
+    criteria:
+      du.dl_bitrate_gt: 14.0e+3
+      du.ul_bitrate_gt: 1.0e+3
+      du.max_late_dl_harqs_le: 4
+      du.max_late_ul_harqs_le: 4
+      du.nof_ko_dl_le: 2
+      viavi.nof_ko_dl_le: 2
+      du.nof_ko_ul_le: 2
+      viavi.nof_ko_ul_le: 2
+      du.nof_error_indications_le: 0
+      du.errors_le: 0
+      du.warnings_le: 0
+      viavi.warnings_lt: .inf
+      viavi.procedure_table_eq: 0
+    warning_allowlist: *base_warning_allowlist
+
   - id: "32UE ideal UDP attach-detach with traffic tdd 6u3d"
     campaign_filename: *campaign_filename
     test_name: "32UE ideal UDP attach-detach with traffic conservative"
