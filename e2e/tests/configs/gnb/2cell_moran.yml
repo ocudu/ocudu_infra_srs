@@ -7,12 +7,14 @@ cells:
   -
     # Cell 1
     pci: 1                              # Set the Physcial Cell ID
+    sector_id: 0
     plmn: 00101
     prach:
       prach_root_sequence_index: 0        # Set the PRACH root sequence index
   -
     # Cell 2
     pci: 2                              # Set the Physcial Cell ID
+    sector_id: 0
     plmn: 00102
     prach:
       prach_root_sequence_index: 64

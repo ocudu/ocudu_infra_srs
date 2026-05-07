@@ -7,10 +7,12 @@ cells:
   -
     # Cell 1
     pci: 1
+    sector_id: 0
     prach:
       prach_root_sequence_index: 0
   -
     # Cell 2
     pci: 2
+    sector_id: 1
     prach:
       prach_root_sequence_index: 64
