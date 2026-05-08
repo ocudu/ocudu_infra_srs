@@ -13,7 +13,8 @@ from typing import Any, Callable, ClassVar, Dict, final, List, Sequence
 
 import pytest
 from retina.protocol.fivegc_pb2_grpc import FiveGC
-from retina.protocol.gnb_pb2_grpc import DUStub
+from retina.protocol.gnb_pb2_grpc import CUStub, DUStub
+from retina.protocol.ue_pb2_grpc import UEStub
 from retina.viavi.client import Viavi
 from rich.console import Console
 from rich.table import Table
@@ -33,6 +34,8 @@ _OPERATOR_SYMBOLS = {
 def _number_to_str(value: Any) -> str:
     if isinstance(value, bool):
         return "yes" if value else "no"
+    if isinstance(value, (tuple, list)):
+        return "[" + ", ".join(map(_number_to_str, value)) + "]"
     if not isinstance(value, (int, float)):
         return str(value)
     if value in (float("inf"), float("-inf")):
@@ -48,9 +51,10 @@ class Criteria(ABC):  # pylint: disable=too-few-public-methods
 
     def __init__(self, table: "CriteriaTable", stub_array: Sequence) -> None:
         self._stub_array = stub_array
+        self._table = table
         self._input: Any = None
         self.__result: Any = _UNSET
-        table.register(self)
+        self._table.register(self)
 
     @final
     @property
@@ -155,6 +159,59 @@ class CriteriaTable:
             pytest.fail("Test didn't pass the following criteria: " + ", ".join(failures))
 
 
+class UeCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for UE pass/fail criteria definitions."""
+
+    subclasses: ClassVar[List[type]] = []
+    _stub_array: Sequence[UEStub]
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        UeCriteria.subclasses.append(cls)
+
+
+class CuCpCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for CU-CP pass/fail criteria definitions."""
+
+    subclasses: ClassVar[List[type]] = []
+    _stub_array: Sequence[CUStub]
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        CuCpCriteria.subclasses.append(cls)
+
+
+class CuUpCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for CU-UP pass/fail criteria definitions."""
+
+    subclasses: ClassVar[List[type]] = []
+    _stub_array: Sequence[CUStub]
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        CuUpCriteria.subclasses.append(cls)
+
+
+class CuCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for CU criteria that aggregate across cu_cp and cu_up."""
+
+    subclasses: ClassVar[List[type]] = []
+
+    def __init__(self, table: "CriteriaTable") -> None:
+        super().__init__(table, ())
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        CuCriteria.subclasses.append(cls)
+
+    def callback(self) -> Any:
+        name = type(self).__qualname__
+        for cid, c in self._table._criteria.items():  # pylint: disable=protected-access
+            if any(cid == f"{p}.{name}" for p in ("cu_cp", "cu_up")):
+                return c.result
+        raise ValueError(f"No cu_cp or cu_up criteria registered for {name!r}")
+
+
 class DuCriteria(Criteria):  # pylint: disable=too-few-public-methods
     """Base class for DU/gNB pass/fail criteria definitions."""
 
@@ -164,6 +221,26 @@ class DuCriteria(Criteria):  # pylint: disable=too-few-public-methods
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         DuCriteria.subclasses.append(cls)
+
+
+class GnbCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for gNB criteria that aggregate across cu_cp, cu_up, and du."""
+
+    subclasses: ClassVar[List[type]] = []
+
+    def __init__(self, table: "CriteriaTable") -> None:
+        super().__init__(table, ())
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        GnbCriteria.subclasses.append(cls)
+
+    def callback(self) -> Any:
+        name = type(self).__qualname__
+        for cid, c in self._table._criteria.items():  # pylint: disable=protected-access
+            if any(cid == f"{p}.{name}" for p in ("cu_cp", "cu_up", "du")):
+                return c.result
+        raise ValueError(f"No cu_cp, cu_up or du criteria registered for {name!r}")
 
 
 class FiveGcCriteria(Criteria):  # pylint: disable=too-few-public-methods
@@ -186,3 +263,34 @@ class ViaviCriteria(Criteria):  # pylint: disable=too-few-public-methods
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         ViaviCriteria.subclasses.append(cls)
+
+
+class AllCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for criteria that aggregate across all registered component criteria with the same name."""
+
+    subclasses: ClassVar[List[type]] = []
+
+    def __init__(self, table: "CriteriaTable") -> None:
+        super().__init__(table, ())
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        AllCriteria.subclasses.append(cls)
+
+    def callback(self) -> int:
+        results = []
+        seen_stubs: set = set()
+        for cid, c in self._table._criteria.items():  # pylint: disable=protected-access
+            if not c._stub_array:  # pylint: disable=protected-access
+                continue
+            if not cid.endswith("." + type(self).__qualname__):
+                continue
+            stub_key = id(c._stub_array)  # pylint: disable=protected-access
+            if stub_key not in seen_stubs:
+                seen_stubs.add(stub_key)
+                results.append(c.result)
+        return self.all_callback(results)
+
+    @abstractmethod
+    def all_callback(self, result_array: Sequence[Any]) -> Any:
+        """Function than receives the result of all criteria with the same criteria_id and generate the all result"""
