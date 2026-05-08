@@ -33,8 +33,8 @@ band3_bw50: &base_config
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # FDD 50 MHz with PRACH config 1
 prach_config_1_fdd:
@@ -66,8 +66,8 @@ prach_config_1_fdd:
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
   feature_ids: [MVP-FUNC-PHY-16-2]
 
 # FDD 5 MHz in band 3

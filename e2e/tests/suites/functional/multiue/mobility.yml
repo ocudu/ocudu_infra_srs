@@ -22,8 +22,8 @@ inter_ru_ho: &base_config
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # tid1.3.4: Handover stability
 inter_du_ho:
@@ -68,8 +68,8 @@ inter_du_ho:
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_ge: 200 # calculated based on the test_duration
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # Handover stability
 inter_cu_ho:
@@ -93,5 +93,5 @@ reestablishment:
     du.nof_reestablishments_ge: 50
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0

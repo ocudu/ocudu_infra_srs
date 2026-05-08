@@ -30,8 +30,8 @@ mocn: &base_config
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 2 # there are 2 UEs, one per PLMN
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # MORAN test
 moran:

@@ -26,8 +26,8 @@ baseline: &base_config
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_ge: 20 # calculated based on the test_duration
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
     du.t312_eq: 1
     du.nof_sib3_ge: 1
     du.nof_sib4_ge: 1
@@ -56,8 +56,8 @@ conditional_ho:
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_ge: 20 # calculated based on the test_duration
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # cfra_ho
 cfra_ho:
@@ -83,5 +83,5 @@ cfra_ho:
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_ge: 20 # calculated based on the test_duration
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0

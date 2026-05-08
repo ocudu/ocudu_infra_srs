@@ -22,8 +22,8 @@ baseline: &base_config
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 50 # nof_ue * nof_cycles
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # Attach/dettach stability, management of fallback scheduler, correct addition and removal of UEs
 dl_heavy_tdd:

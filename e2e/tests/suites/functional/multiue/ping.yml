@@ -30,5 +30,5 @@ baseline:
     du.max_late_dl_harqs_le: 0
     du.max_late_ul_harqs_le: 0
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 3
+    all.errors_le: 0
+    all.warnings_le: 3

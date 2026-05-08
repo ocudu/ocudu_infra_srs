@@ -91,9 +91,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: &base_warning_allowlist
       - missed incoming User-Plane PRACH messages
@@ -116,9 +115,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -139,9 +137,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -168,9 +165,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -194,9 +190,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist:
       - missed incoming User-Plane PRACH messages
@@ -220,9 +215,8 @@ tests:
       du.nof_ko_ul_le: .inf
       viavi.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: .inf
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: .inf
       viavi.procedure_table_eq: 0
     warning_allowlist:
       - Tracing thread cannot keep up
@@ -244,9 +238,8 @@ tests:
       du.nof_ko_ul_le: .inf
       viavi.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: .inf
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: .inf
       viavi.procedure_table_eq: 0
     warning_allowlist:
       - Tracing thread cannot keep up
@@ -268,9 +261,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -291,9 +283,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -316,9 +307,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -339,9 +329,8 @@ tests:
       viavi.nof_ko_ul_le: .inf
       du.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: .inf
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: .inf
       viavi.procedure_table_eq: 0
     warning_allowlist:
       - Tracing thread cannot keep up
@@ -363,9 +352,8 @@ tests:
       du.nof_ko_ul_le: .inf
       viavi.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: .inf
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: .inf
       viavi.procedure_table_eq: 0
     warning_allowlist:
       - Tracing thread cannot keep up
@@ -387,9 +375,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -427,9 +414,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -473,9 +459,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -520,9 +505,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -566,9 +550,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -618,9 +601,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -657,9 +639,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -680,9 +661,8 @@ tests:
       du.nof_ko_ul_le: .inf
       viavi.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -703,9 +683,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -726,9 +705,8 @@ tests:
       du.nof_ko_ul_le: 2
       viavi.nof_ko_ul_le: 2
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -758,9 +736,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: *base_warning_allowlist
 
@@ -783,9 +760,8 @@ tests:
       du.nof_ko_ul_le: .inf
       viavi.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: .inf
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: .inf
       viavi.procedure_table_eq: 0
     warning_allowlist:
       - Tracing thread cannot keep up
@@ -807,9 +783,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist:
       - Tracing thread cannot keep up
@@ -831,9 +806,8 @@ tests:
       du.nof_ko_ul_le: 0
       viavi.nof_ko_ul_le: 0
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist:
       - Tracing thread cannot keep up
@@ -867,9 +841,8 @@ tests:
       du.nof_ko_ul_le: .inf
       viavi.nof_ko_ul_le: .inf
       du.nof_error_indications_le: 0
-      du.errors_le: 0
-      du.warnings_le: 0
-      viavi.warnings_lt: .inf
+      all.errors_le: 0
+      all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist:
       - Tracing thread cannot keep up

@@ -38,8 +38,8 @@ band_n30: &base_config
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # Baseline FR2
 band_fr2:

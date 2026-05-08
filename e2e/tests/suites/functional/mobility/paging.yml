@@ -31,8 +31,8 @@ paging: &base_config
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     du.nof_paging_eq: 2 # the DU sends 2x Paging messages per NG paging
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # tid2.2.23: DRX test
 drx:
@@ -51,8 +51,8 @@ drx:
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
     core.nof_ng_paging_eq: *nof_paging
     du.nof_paging_eq: 2  # the DU sends 2x Paging messages per NG paging
     du.drx_long_cycle_eq: 7 # this is the coded value that corresponds to 80 ms
@@ -84,8 +84,8 @@ mt_initiate:
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
     core.nof_ng_paging_eq: 0
     du.nof_paging_eq: 0
 
@@ -112,8 +112,8 @@ rrc_inactive:
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.warnings_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
     du.nof_paging_eq: 2
     du.nof_rrc_suspend_eq: 1
     du.nof_rrc_resume_request_eq: 1
