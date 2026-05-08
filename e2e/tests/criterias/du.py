@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 """
-DU/gNB pass/fail criteria definitions
+DU pass/fail criteria definitions
 """
 
 import operator

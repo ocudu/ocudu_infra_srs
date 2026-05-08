@@ -30,7 +30,7 @@ class nof_ko_ul_le(ViaviCriteria):
         return v if (v := self._stub_array.get_test_kpis().ul_data.num_tbs_nack) is not None else 0
 
 
-class warnings_lt(ViaviCriteria):
+class warnings_le(ViaviCriteria):
     """Viavi Warnings"""
 
     operator_method = operator.lt
