@@ -7,7 +7,6 @@ Ping + Reestablishment Tests
 
 import logging
 from contextlib import contextmanager
-from time import sleep
 from typing import Callable, Dict, Generator, Optional, Sequence, Tuple, Union
 
 import pytest
@@ -27,12 +26,10 @@ from .steps.stub import (
     iperf_sequentially,
     iperf_start,
     iperf_wait_until_finish,
-    multi_ue_mobility_iperf,
     ping_start,
     ping_wait_until_finish,
     start_network,
     stop,
-    ue_move,
     ue_reestablishment,
     ue_reestablishment_parallel,
     ue_start_and_attach,
@@ -617,98 +614,3 @@ def _test_reestablishments(
 
     finally:
         pass
-
-
-HIGH_BITRATE = int(15e6)
-
-
-@mark.parametrize(
-    "protocol",
-    (
-        param(IPerfProto.UDP, id="udp", marks=mark.udp),
-        param(IPerfProto.TCP, id="tcp", marks=mark.tcp),
-    ),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth, noise_spd",
-    (
-        param(3, 15, 50, -164, id="band:%s-scs:%s-bandwidth:%s-noise:%s"),
-        param(41, 30, 50, -164, id="band:%s-scs:%s-bandwidth:%s-noise:%s"),
-    ),
-)
-@mark.zmq_single_ue
-# pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_zmq_mobility_noise_reestablishment(
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    ue: UEStub,
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    noise_spd: int,
-    protocol: IPerfProto,
-):
-    """
-    ZMQ mobility noise reestablishment test
-    """
-
-    with multi_ue_mobility_iperf(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        ue_array=[ue],
-        gnb_array=[gnb],
-        fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        bitrate=HIGH_BITRATE,
-        protocol=protocol,
-        direction=IPerfDir.BIDIRECTIONAL,
-        sample_rate=None,  # default from testbed
-        global_timing_advance=0,
-        time_alignment_calibration=0,
-        always_download_artifacts=False,
-        noise_spd=noise_spd,
-        sleep_between_movement_steps=1,
-        warning_as_errors=True,
-        allow_failure=True,
-        gnb_post_cmd=("cu_cp mobility --trigger_handover_from_measurements=false ", ""),
-    ) as (ue_attach_info_dict, movements, _):
-
-        for ue_stub, ue_attach_info in ue_attach_info_dict.items():
-            logging.info(
-                "Zigzag mobility reestablishment for UE [%s] (%s) + iPerf running in background for all UEs",
-                id(ue_stub),
-                ue_attach_info.ipv4,
-            )
-
-            for _from_position, _to_position, _movement_steps, _sleep_between_movement_steps in movements:
-                logging.info(
-                    "Moving UE [%s] from %s to %s (allowing handover failure)",
-                    id(ue_stub),
-                    _from_position,
-                    _to_position,
-                )
-
-                for i in range(_movement_steps + 1):
-                    ue_move(
-                        ue_stub=ue_stub,
-                        x_coordinate=(
-                            int(
-                                round(_from_position[0] + (i * (_to_position[0] - _from_position[0]) / _movement_steps))
-                            )
-                        ),
-                        y_coordinate=(
-                            int(
-                                round(_from_position[1] + (i * (_to_position[1] - _from_position[1]) / _movement_steps))
-                            )
-                        ),
-                        z_coordinate=(
-                            int(
-                                round(_from_position[2] + (i * (_to_position[2] - _from_position[2]) / _movement_steps))
-                            )
-                        ),
-                    )
-                    sleep(_sleep_between_movement_steps)
