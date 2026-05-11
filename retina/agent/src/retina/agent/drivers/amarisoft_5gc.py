@@ -100,8 +100,6 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
 
         self.start_sut(
             *(item for pre_cmd in request.start_info.pre_commands for item in pre_cmd.split(" ")),
-            "env",
-            f"MME_TIME_MULTIPLIER={1 / fivegc_defaults.time_multiplier}",
             self._get_binary_name(),
             "-S",
             str(1 / fivegc_defaults.time_multiplier),
@@ -109,6 +107,7 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
             *(item for post_cmd in request.start_info.post_commands for item in post_cmd.split(" ")),
             dryrun=request.start_info.dryrun,
             logfile=logfile,
+            extra_env={"MME_TIME_MULTIPLIER": str(1 / fivegc_defaults.time_multiplier)},
         )
 
         if not request.start_info.dryrun:

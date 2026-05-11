@@ -82,7 +82,9 @@ class Executor(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def create_process(self, *cmd: str, logfile: Optional[TextIO] = None) -> psutil.Popen:
+    def create_process(
+        self, *cmd: str, logfile: Optional[TextIO] = None, extra_env: Optional[dict] = None
+    ) -> psutil.Popen:
         """
         Creates a process and returns it.
         """
@@ -190,7 +192,9 @@ class LocalExecutor(Executor, metaclass=ABCMeta):
             if return_code and raise_if_exit_code:
                 raise ChildProcessError(return_code)
 
-    def create_process(self, *cmd: str, logfile: Optional[TextIO] = None) -> psutil.Popen:
+    def create_process(
+        self, *cmd: str, logfile: Optional[TextIO] = None, extra_env: Optional[dict] = None
+    ) -> psutil.Popen:
         """
         Creates a process and returns it.
         """
@@ -201,6 +205,7 @@ class LocalExecutor(Executor, metaclass=ABCMeta):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
+            env={**os.environ, **extra_env} if extra_env else None,
         )
         if logfile is not None:
             Thread(target=_tee_output, args=(process.stdout, logfile, sys.stdout), daemon=True).start()
@@ -394,13 +399,16 @@ class AdbExecutor(LocalExecutor):
         for line in local_executor.run_binary("adb", "devices"):
             logging.debug(line)
 
-    def create_process(self, *cmd: str, logfile: Optional[TextIO] = None) -> psutil.Popen:
+    def create_process(
+        self, *cmd: str, logfile: Optional[TextIO] = None, extra_env: Optional[dict] = None
+    ) -> psutil.Popen:
         logging.info("Executed %s", " ".join(cmd))
 
         if not self._adb_ready:
             self._check_and_update_adbkey()
             self._adb_ready = True
 
+        env_args = tuple(f"{k}={v}" for k, v in (extra_env or {}).items())
         # Replace ()"exec-out", "su", "-c",) for ("shell", ) for nonroot devices
         return super().create_process(
             "adb",
@@ -409,6 +417,7 @@ class AdbExecutor(LocalExecutor):
             "exec-out",
             "su",
             "-c",
+            *env_args,
             *cmd,
             logfile=logfile,
         )
@@ -501,9 +510,14 @@ class SshExecutor(LocalExecutor):
                 return stdout.read().decode().strip()
         raise FileNotFoundError(f"Can not found '{binary_name}' in path")
 
-    def create_process(self, *cmd: str, logfile: Optional[TextIO] = None) -> psutil.Popen:
+    def create_process(
+        self, *cmd: str, logfile: Optional[TextIO] = None, extra_env: Optional[dict] = None
+    ) -> psutil.Popen:
         binary_name, *binary_params = cmd
-        return _RemoteProcess(self._ssh, self.find_in_path(binary_name), *binary_params, logfile=logfile)
+        env_prefix = " ".join(f"{k}={v}" for k, v in (extra_env or {}).items())
+        return _RemoteProcess(
+            self._ssh, self.find_in_path(binary_name), *binary_params, logfile=logfile, env_prefix=env_prefix
+        )
 
 
 def _download_sftp_dir(sftp: paramiko.SFTPClient, remote_dir: Path, local_dir: Path):
@@ -539,10 +553,14 @@ class _RemoteProcess:
         ssh: paramiko.SSHClient,
         *cmd: str,
         logfile: Optional[TextIO],
+        env_prefix: str = "",
     ):
 
         self._ssh = ssh
-        self.stdin, self.stdout, self.stderr = self._ssh.exec_command(" ".join(cmd))
+        cmd_str = " ".join(cmd)
+        if env_prefix:
+            cmd_str = f"{env_prefix} {cmd_str}"
+        self.stdin, self.stdout, self.stderr = self._ssh.exec_command(cmd_str)
         self._logfile = logfile
 
         self.pid = None

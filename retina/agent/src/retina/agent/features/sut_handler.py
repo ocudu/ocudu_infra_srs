@@ -78,7 +78,7 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         """True if the process is still alive"""
         return bool(self._executor.is_process_alive(self._process))
 
-    def start_sut(self, *cmd: str, logfile: str, dryrun: bool = False) -> None:
+    def start_sut(self, *cmd: str, logfile: str, dryrun: bool = False, extra_env: Optional[dict] = None) -> None:
         """
         Start the sut using the given `cmd`
         :param cmd
@@ -91,7 +91,7 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         logging.info("CMD executed: %s", " ".join(cmd))
         if not dryrun:
             self._nof_lates = self._nof_under = self._nof_seq_err = 0
-            self._start_binary(*cmd, logfile=logfile)
+            self._start_binary(*cmd, logfile=logfile, extra_env=extra_env)
 
             self._check_alive_thread = Thread(target=self._check_alive)
             self._check_alive_event = Event()
@@ -105,13 +105,13 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         join_thread(self._check_alive_thread)
         return self._stop_binary(stop_timeout)
 
-    def _start_binary(self, *cmd: str, logfile: str) -> None:
+    def _start_binary(self, *cmd: str, logfile: str, extra_env: Optional[dict] = None) -> None:
         """
         Start the process local or remotely
         :param cmd
         """
         self._logfile_descriptor = open(logfile, "w", encoding="utf-8")  # pylint: disable=consider-using-with
-        self._process = self._executor.create_process(*cmd, logfile=self._logfile_descriptor)
+        self._process = self._executor.create_process(*cmd, logfile=self._logfile_descriptor, extra_env=extra_env)
 
     def _check_alive(self) -> None:
         """
