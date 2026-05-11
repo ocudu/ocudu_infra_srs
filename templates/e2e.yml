@@ -46,13 +46,13 @@ spec:
       type: string
       description: "Retina group to use."
       rules:
-        - if: '"$[[ inputs.testbed ]]" !~ /^(zmq|dynamic)/'
+        - if: $[[ inputs.testbed ]] =~ /^(zmq|dynamic|test_mode_ue)/
           default: zmq
         - if: $[[ inputs.testbed ]] =~ /s72/
           default: s72
-        - if: $[[ inputs.testbed ]] =~ /viavi/
+        - if: $[[ inputs.testbed ]] =~ /^(viavi|test_mode_ru)/
           default: viavi
-        - if: $[[ inputs.testbed ]] =~ /rf/
+        - if: $[[ inputs.testbed ]] =~ /^(rf|android)/
           default: rf
     markers:
       type: string
