@@ -6,6 +6,7 @@ Amarisoft 5GC Agent
 """
 
 import ipaddress
+import json
 import logging
 from contextlib import suppress
 from typing import List, Type
@@ -42,6 +43,7 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
     AMARISOFT_MME_STDOUT_NAME: str = "stdout_mme"
     AMARISOFT_MME_TUN_SH = "amarisoft_mme_tun.sh"
     AMARISOFT_MME_START_TIMEOUT: int = 6
+    _METRICS_ENCODING: str = "utf-8"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -128,6 +130,19 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
         with suppress(AttributeError):
             stats = self._websocket.send_command_and_wait_response(message="stats", samples=False, rf=False)
             self._websocket.quit()
+            # Save metrics into file
+            if stats:
+                with open(
+                    self.get_filepath_in_report_folder(fivegc_defaults.metrics_filename_json),
+                    "a+",
+                    encoding=self._METRICS_ENCODING,
+                ) as fd:
+                    fd.write("[")
+                    fd.write(json.dumps(stats))
+                    fd.write("]")
+                    fd.flush()
+                logging.error("Written in file")
+            # Generate gRPC metrics
             counters = stats.get("counters", {}).get("messages", {})
             self._metrics = Metrics(
                 core=CoreMetrics(

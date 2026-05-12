@@ -28,3 +28,4 @@ apn: str = "internet"
 ims_mode: str = ""  # enabled, not_registering
 slices: List[int] = []
 time_multiplier: float = 1
+metrics_filename_json: str = "metrics.json"
