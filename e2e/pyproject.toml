@@ -51,6 +51,7 @@ markers = [
   "rf_not_crash",
   "reattach",
   "zmq_1cu2du",
+  "zmq_2gnb",
   "zmq_2x2_mimo",
   "zmq_srsue",
   "zmq_ric",

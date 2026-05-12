@@ -73,8 +73,51 @@ inter_du_ho:
 
 # Handover stability
 inter_cu_ho:
-  <<: *base_config
-  feature_ids: [skip]
+  template: ue_simulator.test_2gnb
+  request: zmq_2gnb
+  core:
+    config: [baseline.cfg]
+    parameters:
+      log_level: "debug"
+  ue:
+    config: [2cell_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: *nof_ue
+      num_cells: 2
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+  gnb:
+    items:
+      - config: [cu_cp_log.yml, amf.yml, gnb_base.yml, inter_cu_mobility_1.yml, cell_cfg.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_id: 411
+          ran_node_name_cfg: "ocudu01"
+          pci_cfg: 1
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 0
+      - config: [cu_cp_log.yml, amf.yml, gnb_base.yml, inter_cu_mobility_2.yml, cell_cfg.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_id: 412
+          ran_node_name_cfg: "ocudu02"
+          pci_cfg: 2
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 1
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 5 # allow some KOs due to SR false alarms during UE reconfiguration
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    ue.nof_handovers_ge: 200 # calculated based on the test_duration
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
 
 # Multiple UEs doing Reestablishments
 reestablishment:
