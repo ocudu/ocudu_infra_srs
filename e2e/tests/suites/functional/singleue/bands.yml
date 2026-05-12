@@ -94,7 +94,7 @@ band_n41:
   feature_ids: [MVP-FUNC-PHY-16-1]
 
 # Baseline band n66
-band_n66:
+band_n66: 
   <<: *base_config
   ue:
     config: [1cell_chsim.cfg, udp_bi_chsim.cfg]
@@ -122,3 +122,56 @@ band_n66:
       nof_cell_csi_res: 1
       resource_set_size: 2
   feature_ids: [MVP-FUNC-PHY-16-1]
+
+# 4T4R DL for mid bands authorized in North America (2.1GHz)
+band_na_4t4r_dl:
+  <<: *base_config
+  request: zmq_1000
+  ue:
+    config: [1cell_chsim.cfg, udp_bi_chsim.cfg]
+    parameters:
+      band: 66       # n66 (FDD) is available in the US and the DL carrier is on 2.11-2.2GHz
+      bandwidth: 20
+      dl_nr_arfcn: 430000
+      ssb_nr_arfcn: 428650
+      common_scs: 15
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 2
+      nof_antennas: 4
+      pdcch_decode_threshold: 0
+  gnb:
+    config: [amf.yml, cell_cfg.yml]
+    parameters:
+      cfg_band: 66   # n66 (FDD) is available in the UE and the DL carrier is on 2.11-2.2GHz
+      cfg_earfcn: 430000
+      cfg_common_scs: 15
+      cfg_bandwidth: 20
+      nof_antennas: 4
+  feature_ids: [MVP-FUNC-PHY-16-8]
+
+# 2T2R UL for mid bands authorized in North America (1.8GHz)
+band_na_2t2r_ul:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      band: 25       # n25 (FDD) is available in the US and the UL carrier is on 1.85-1.915GHz.
+      bandwidth: 20
+      dl_nr_arfcn: 392000
+      ssb_nr_arfcn: 390530
+      common_scs: 15
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 2
+      nof_antennas: 2
+      pdcch_decode_threshold: 0
+  gnb:
+    config: [amf.yml, cell_cfg.yml]
+    parameters:
+      cfg_band: 25    # n25 (FDD) is available in the US and the UL carrier is on 1.85-1.915GHz.
+      cfg_earfcn: 392000
+      cfg_common_scs: 15
+      cfg_bandwidth: 20
+      nof_antennas: 2
+  feature_ids: [MVP-FUNC-PHY-16-11]
