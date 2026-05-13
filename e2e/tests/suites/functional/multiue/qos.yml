@@ -16,7 +16,7 @@ baseline: &base_config
       common_scs: 15
       band: 3
       bandwidth: 10
-      test_duration: 10
+      test_duration: 20
   gnb:
     config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, tdd_default.yml, vonr_qos.yml]
     parameters:
@@ -26,8 +26,11 @@ baseline: &base_config
       cfg_bandwidth: 10
       cfg_band: 3
       cfg_common_scs: 15
+      time_multiplier: 2
   core:
     config: [baseline.cfg]
+    parameters:
+      time_multiplier: 2
   feature_ids: [MVP-FUNC-SVCS-16-8-b, MVP-FUNC-SVCS-16-8-c, DU-QOS-1]
   criteria:
     du.nof_ko_dl_le: 0
