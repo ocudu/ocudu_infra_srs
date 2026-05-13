@@ -2,7 +2,13 @@
 
 This folder contains E2E test sources, configurations and testbed definitions, alongside the GitLab CI code to replicate SRS scheduled pipelines.
 
-## Prerequisites
+## Test Definitions
+
+Check [tests](tests/README.md) folder to know more about the E2E Testing approach, how tests are written and designed.
+
+## GitLab Pipelines
+
+### Prerequisites
 
 **Amarisoft ZMQ Configuration**: When the E2E testbed is configured for Amarisoft and ZMQ, the pipeline will automatically attempt to build the ZMQ driver alongside the normal build process. This requires following variables:
 
@@ -18,9 +24,9 @@ This folder contains E2E test sources, configurations and testbed definitions, a
 
 For detailed configuration options, see the [build and E2E component documentation](../templates/README.md).
 
-## GitLab Pipelines
-
 ### Scheduled Pipelines
+
+- functional
 
 ### Manual Pipeline
 

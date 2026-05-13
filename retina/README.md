@@ -8,20 +8,6 @@ Retina uses Kubernetes as its orchestration platform. Kubernetes is a popular op
 
 To handle complex distributed infrastructures, Retina deploys agents in each node the test is going to use, configured to handle some specific software. The main node, where the test will be launched, will create a client for each one of those agents and connect to them through TCP/IP.
 
-Retina architecture has been designed with the following ideas in mind:
-
-- Testing Infrastructure should be:
-  - Scalable
-  - Replicable
-  - Transparent for the user
-  - Able to handle tests running in:
-    - Developer PC
-    - On-prem Laboratory
-    - Cloud provider
-- Do one thing and do it well
-  - Split orchestration, test and infrastructure management
-  - Reuse existing tools for each phase
-
 Retina uses [pytest](https://docs.pytest.org/) as test framework. Tests are written in python using pytest fixtures and syntax.
 
 ## Index

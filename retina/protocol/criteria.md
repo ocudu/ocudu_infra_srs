@@ -1,4 +1,4 @@
-# How to Add a New Criteria
+# How to Add a New Metric
 
 | Step | Where | What to do |
 | ---- | ---- | ---------- |
@@ -15,14 +15,14 @@ Add the new field to the `Metrics` message in [base.proto](./src/retina/protocol
 ```protobuf
 message Metrics {
   ...
-  uint32 nof_mew_metric = 18;  // next free number after ue_array = 17
+  uint32 nof_new_metric = 18;  // next free number after ue_array = 17
 };
 ```
 
 **Rules:**
 
 - Never reuse a field number, even for removed fields.
-- Use the smallest numeric type that fits (`uint32` for counters, `double` for rates).
+- Use the smallest numeric type that fits: `uint32` for counters (0 = none found), `int32` for config values (-1 = not found/not captured), `double` for rates.
 - If the metric is per-UE rather than aggregate, add it to `UeMetrics` instead.
 
 Then regenerate the Python bindings:
@@ -35,14 +35,12 @@ cd retina/protocol && tox -e grpc
 
 ### 2a. JSON WebSocket
 
-Analyzers are located at the [agent code](../agent/src/retina/agent/features/json_metrics/__init__.py)
-
 **If the new field fits naturally in an existing analyzer**, add it to an existing one, f.e.:
 `retina/agent/src/retina/agent/features/json_metrics/du_general.py`:
 
 ```python
 # inside GeneralMetricsAnalyzer.process(), in the cell_metrics block:
-self._metrics.nof_mew_metric += cell_info["cell_metrics"]["mew_metric"]
+self._metrics.nof_new_metric += cell_info["cell_metrics"]["new_metric"]
 ```
 
 **If the new field warrants its own file** (e.g. it has non-trivial state), create it and implement JsonMetricsAnalyzer:
@@ -59,10 +57,10 @@ class NewAnalyzer(JsonMetricsAnalyzer):
     def process(self, metric_info: dict) -> None:
         for cell_info in metric_info.get("cells", []):
             if "cell_metrics" in cell_info and cell_info["cell_metrics"]:
-                self._count += cell_info["cell_metrics"]["mew_metric"]
+                self._count += cell_info["cell_metrics"]["new_metric"]
 
     def report(self) -> Metrics:
-        return Metrics(nof_mew_metric=self._count)
+        return Metrics(nof_new_metric=self._count)
 ```
 
 Then register the new analyzer in the driver (f.e. `retina/agent/src/retina/agent/drivers/ocudu_du.py` for du metrics):
@@ -75,40 +73,66 @@ _WS_ANALYZER_ARRAY = (GeneralMetricsAnalyzer, PerUePeakAverageAnalyzer, NewAnaly
 
 ### 2b. PCAP
 
-Use this when the data comes from packet captures.
+Use this when the data comes from packet captures. The DU produces two kinds of pcap files:
 
-Create a new analyzer at the [agent code](../agent/src/retina/agent/features/pcap/__init__.py)
+| pcap type | File | Enabled by |
+| --- | --- | --- |
+| **RLC pcap** | `rlc.pcap` | `rlc_enable: true` in gNB config |
+| **MAC pcap** | `mac.pcap` | `mac_pcap_enable: true` in gNB config |
+
+#### PcapAnalyzer base class
 
 ```python
-# retina/agent/features/pcap/new_metric.py
-from retina.protocol.base_pb2 import Metrics
-from retina.agent.features.pcap.analyzer import PcapAnalyzer
-
-class NewAnalyzer(PcapAnalyzer):
-    def __init__(self) -> None:
-        self._count = 0
-
+class PcapAnalyzer(ABC):
     @property
-    def tshark_params(self):
-        return ("--enable-heuristic", "rlc_nr_udp")
+    def tshark_params(self) -> Tuple[str, ...]:
+        return ()   # Override for RLC: return ("--enable-heuristic", "rlc_nr_udp")
 
     @property
     def display_filter(self) -> str:
-        return "nr-rrc.rachConfigCommon_element"  # example filter
+        return ""   # tshark display filter, e.g. "nr-rrc.prach_ConfigurationIndex"
 
-    def process(self, packet) -> None:
-        self._count += 1
+    @abstractmethod
+    def process(self, packet) -> None: ...   # called per matching packet
 
-    def report(self) -> Metrics:
-        return Metrics(nof_mew_metric=self._count)
+    @abstractmethod
+    def report(self) -> Metrics: ...         # called once at end; return Metrics(field=value)
 ```
 
-Then add it to the driver, f.e. in `ocudu_du.py`:
+`run_analyzers(pcap_file, analyzers)` (in `analyzer.py`) runs all analyzers against the file and returns merged `Metrics`.
+
+#### Implement your analyzer
 
 ```python
-from retina.agent.features.pcap.rach import NewAnalyzer
+class MyNewAnalyzer(PcapAnalyzer):
+    def __init__(self) -> None:
+        self._value: int = -1   # use 0 for counters
 
-_RLC_PCAP_ANALYZER_ARRAY = (ReestablishmentAnalyzer, HandoverAnalyzer, NewAnalyzer)
+    @property
+    def display_filter(self) -> str:
+        return "nr-rrc.some_Field"
+
+    def process(self, packet) -> None:
+        if self._value < 0:   # capture first occurrence
+            try:
+                self._value = int(packet["NR-RRC"].some_field)
+            except (AttributeError, KeyError, ValueError):
+                pass
+
+    def report(self) -> Metrics:
+        return Metrics(my_new_field=self._value)
+```
+
+> **pyshark field naming**: tshark display filter names (e.g. `nr-rrc.prach_ConfigurationIndex`) become lowercase with no hyphens/dots in pyshark (e.g. `packet["NR-RRC"].prach_configurationindex`).
+
+#### Register it in `ocudu_du.py`
+
+Add it to `_MAC_PCAP_ANALYZER_ARRAY` or `_RLC_PCAP_ANALYZER_ARRAY`
+
+```python
+from retina.agent.features.pcap.rrc import ..., MyNewAnalyzer
+
+_MAC_PCAP_ANALYZER_ARRAY = (..., MyNewAnalyzer)
 ```
 
 ## 3. Register the criteria in the launcher
@@ -117,28 +141,22 @@ File: `retina/launcher/src/retina/launcher/public.py`, function `_register_du_cr
 
 Add a `register_available_criteria` call in the [launcher code](../launcher/src/retina/launcher/public.py#_register_du_criteria) with:
 
-- **`criteria_id`**: snake_case key used in tests to activate this criterion. Use same name than the metric field to make the mapping easier.
+- **`criteria_id`**: snake_case key used in tests to activate this criterion. Use same name as the metric field (plus the operator suffix) to make the mapping easier.
 - **`name`**: human-readable label shown in the pass/fail table.
 - **`callback`**: lambda that calls `GetMetrics` and returns the scalar value to compare.
-- **`operator_method`**: comparison direction (`operator.le` for "must be ≤", `operator.gt` for
-  "must be >", `operator.eq` / `operator.ge` for exact/minimum counts).
+- **`operator_method`**: comparison direction (`operator.le` for "must be ≤", `operator.gt` for "must be >", `operator.eq` / `operator.ge` for exact/minimum counts).
 
 ```python
 criteria.register_available_criteria(
-    "nof_mew_metric",
+    "nof_new_metric_le",
     "New metric",
-    lambda: sum(gnb_stub.GetMetrics(Empty()).nof_mew_metric for gnb_stub in du_or_gnb_array),
+    lambda: sum(s.GetMetrics(Empty()).nof_new_metric for s in du_or_gnb_array),
     operator.le,
 )
 ```
 
+**Timing:** criteria lambdas are evaluated during `criteria.validate()`, which the test calls **after** `Stop()`. By then `Stop()` has been called on the agent, finalising all pcap files and populating `self._metrics` via `extract_metrics()`.
+
 ## 4. Use the criteria in a test
 
-When defining the test case, write down the criteria_id and the expected value.
-
-```yml
-baseline:
-  template: ...
-  criteria:
-    nof_mew_metric: 17
-```
+Check the [test documentation about criteria](../../e2e/tests/README.md#criteria)
