@@ -16,4 +16,3 @@ dedicated_prb:
 slice_reselection:
   <<: *base_config
   feature_ids: [skip, MVP-FUNC-SVCS-17-3-a]
-
