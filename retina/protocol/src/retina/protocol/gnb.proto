@@ -42,16 +42,17 @@ service DU {
 
 // GNB service manages the monolithic gNodeB base station
 service GNB {
-  // Get Basic information about the GNB, like public ip or IDs
-  rpc GetDefinition(google.protobuf.UInt32Value) returns (DUDefinition) {};
+  // Get Basic information about the GNB, combining DU (ZMQ) and CU-CP endpoints
+  rpc GetDefinition(google.protobuf.UInt32Value) returns (GNBDefinition) {};
   // Start the GNB. Raise an error if can't be started.
   rpc Start(GNBStartInfo) returns (google.protobuf.Empty) {};
 };
 
 message CUCPStartInfo {
-  PLMN                      plmn              = 1;
-  repeated FiveGCDefinition fivegc_definition = 2;
-  StartInfo                 start_info        = 3;
+  PLMN                      plmn                     = 1;
+  repeated FiveGCDefinition fivegc_definition        = 2;
+  StartInfo                 start_info               = 3;
+  repeated CUCPDefinition   neighbor_cucp_definition = 4;
 }
 
 message CUUPStartInfo {
@@ -61,7 +62,7 @@ message CUUPStartInfo {
 }
 
 message CUStartInfo {
-  PLMN                      plmn              = 1;
+  PLMN                     plmn              = 1;
   repeated FiveGCDefinition fivegc_definition = 2;
   StartInfo                 start_info        = 3;
 }
@@ -78,9 +79,10 @@ message DUStartInfo {
 }
 
 message GNBStartInfo {
-  PLMN                      plmn              = 1;
-  repeated FiveGCDefinition fivegc_definition = 2;
-  UEDefinition              ue_definition     = 3; // Only required in ZMQ mode
-  NearRtRicDefinition       ric_definition    = 4; // if non-empty, E2 is enabled
-  StartInfo                 start_info        = 5;
+  PLMN                      plmn                     = 1;
+  repeated FiveGCDefinition fivegc_definition        = 2;
+  UEDefinition              ue_definition            = 3; // Only required in ZMQ mode
+  NearRtRicDefinition       ric_definition           = 4; // if non-empty, E2 is enabled
+  StartInfo                 start_info               = 5;
+  repeated CUCPDefinition   neighbor_cucp_definition = 6;
 };

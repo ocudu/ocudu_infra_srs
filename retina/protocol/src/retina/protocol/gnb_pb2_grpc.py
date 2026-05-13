@@ -524,7 +524,7 @@ class GNBStub(object):
         self.GetDefinition = channel.unary_unary(
                 '/GNB/GetDefinition',
                 request_serializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.SerializeToString,
-                response_deserializer=retina_dot_protocol_dot_base__pb2.DUDefinition.FromString,
+                response_deserializer=retina_dot_protocol_dot_base__pb2.GNBDefinition.FromString,
                 _registered_method=True)
         self.Start = channel.unary_unary(
                 '/GNB/Start',
@@ -538,7 +538,7 @@ class GNBServicer(object):
     """
 
     def GetDefinition(self, request, context):
-        """Get Basic information about the GNB, like public ip or IDs
+        """Get Basic information about the GNB, combining DU (ZMQ) and CU-CP endpoints
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -557,7 +557,7 @@ def add_GNBServicer_to_server(servicer, server):
             'GetDefinition': grpc.unary_unary_rpc_method_handler(
                     servicer.GetDefinition,
                     request_deserializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.FromString,
-                    response_serializer=retina_dot_protocol_dot_base__pb2.DUDefinition.SerializeToString,
+                    response_serializer=retina_dot_protocol_dot_base__pb2.GNBDefinition.SerializeToString,
             ),
             'Start': grpc.unary_unary_rpc_method_handler(
                     servicer.Start,
@@ -592,7 +592,7 @@ class GNB(object):
             target,
             '/GNB/GetDefinition',
             google_dot_protobuf_dot_wrappers__pb2.UInt32Value.SerializeToString,
-            retina_dot_protocol_dot_base__pb2.DUDefinition.FromString,
+            retina_dot_protocol_dot_base__pb2.GNBDefinition.FromString,
             options,
             channel_credentials,
             insecure,

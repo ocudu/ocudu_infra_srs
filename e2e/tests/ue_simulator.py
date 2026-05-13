@@ -182,7 +182,7 @@ def _ue_simulator(
     )
 
     if gnb_array:
-        du_definition = [gnb.GetDefinition(UInt32Value(value=idx)) for idx, gnb in enumerate(gnb_array)]
+        du_definition = [gnb.GetDefinition(UInt32Value(value=idx)).du_definition for idx, gnb in enumerate(gnb_array)]
     elif du_array:
         du_definition = [du.GetDefinition(UInt32Value(value=idx)) for idx, du in enumerate(du_array)]
     else:

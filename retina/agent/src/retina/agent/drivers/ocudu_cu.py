@@ -11,7 +11,7 @@ from typing import Any, Dict, Sequence
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import FiveGCDefinition, PLMN
+from retina.protocol.base_pb2 import CUCPDefinition, FiveGCDefinition, PLMN
 from retina.protocol.gnb_pb2 import CUStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
@@ -67,12 +67,22 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
         version: str = self._parse_sut_version(output, self.CU_VERSION_REGEX)
         return version
 
-    def get_parameters(self, *, fivegc_definition: Sequence[FiveGCDefinition], plmn: PLMN) -> Dict[str, Any]:
+    def get_parameters(
+        self,
+        *,
+        fivegc_definition: Sequence[FiveGCDefinition],
+        plmn: PLMN,
+        neighbor_cucp_definition: Sequence[CUCPDefinition] = (),
+    ) -> Dict[str, Any]:
         """
         Return parameters for config templates
         """
         return {
-            **self._cu_cp.get_parameters(fivegc_definition=fivegc_definition, plmn=plmn),
+            **self._cu_cp.get_parameters(
+                fivegc_definition=fivegc_definition,
+                plmn=plmn,
+                neighbor_cucp_definition=neighbor_cucp_definition,
+            ),
             **self._cu_up.get_parameters(fivegc_definition=fivegc_definition),
         }
 

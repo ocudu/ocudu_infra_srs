@@ -129,7 +129,11 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
             values={
                 **get_module_variables(testbed_defaults),
                 **get_module_variables(gnb_defaults),
-                **self._cu.get_parameters(fivegc_definition=list(request.fivegc_definition), plmn=request.plmn),
+                **self._cu.get_parameters(
+                    fivegc_definition=list(request.fivegc_definition),
+                    plmn=request.plmn,
+                    neighbor_cucp_definition=list(request.neighbor_cucp_definition),
+                ),
                 **self._du.get_parameters(
                     ue_definition=request.ue_definition,
                     gnb_du_id=gnb_defaults.gnb_du_id,

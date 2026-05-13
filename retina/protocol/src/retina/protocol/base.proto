@@ -71,6 +71,11 @@ message DUDefinition {
   repeated uint32 zmq_port_array = 2;
 };
 
+message GNBDefinition {
+  DUDefinition   du_definition   = 1;
+  CUCPDefinition cucp_definition = 2;
+};
+
 message FiveGCDefinition {
   string amf_ip   = 1;
   uint32 amf_port = 2;

@@ -31,21 +31,25 @@ class CUCPStartInfo(google.protobuf.message.Message):
     PLMN_FIELD_NUMBER: builtins.int
     FIVEGC_DEFINITION_FIELD_NUMBER: builtins.int
     START_INFO_FIELD_NUMBER: builtins.int
+    NEIGHBOR_CUCP_DEFINITION_FIELD_NUMBER: builtins.int
     @property
     def plmn(self) -> retina.protocol.base_pb2.PLMN: ...
     @property
     def fivegc_definition(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[retina.protocol.base_pb2.FiveGCDefinition]: ...
     @property
     def start_info(self) -> retina.protocol.base_pb2.StartInfo: ...
+    @property
+    def neighbor_cucp_definition(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[retina.protocol.base_pb2.CUCPDefinition]: ...
     def __init__(
         self,
         *,
         plmn: retina.protocol.base_pb2.PLMN | None = ...,
         fivegc_definition: collections.abc.Iterable[retina.protocol.base_pb2.FiveGCDefinition] | None = ...,
         start_info: retina.protocol.base_pb2.StartInfo | None = ...,
+        neighbor_cucp_definition: collections.abc.Iterable[retina.protocol.base_pb2.CUCPDefinition] | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["plmn", b"plmn", "start_info", b"start_info"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "plmn", b"plmn", "start_info", b"start_info"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "neighbor_cucp_definition", b"neighbor_cucp_definition", "plmn", b"plmn", "start_info", b"start_info"]) -> None: ...
 
 Global___CUCPStartInfo: typing_extensions.TypeAlias = CUCPStartInfo
 
@@ -154,6 +158,7 @@ class GNBStartInfo(google.protobuf.message.Message):
     UE_DEFINITION_FIELD_NUMBER: builtins.int
     RIC_DEFINITION_FIELD_NUMBER: builtins.int
     START_INFO_FIELD_NUMBER: builtins.int
+    NEIGHBOR_CUCP_DEFINITION_FIELD_NUMBER: builtins.int
     @property
     def plmn(self) -> retina.protocol.base_pb2.PLMN: ...
     @property
@@ -168,6 +173,8 @@ class GNBStartInfo(google.protobuf.message.Message):
 
     @property
     def start_info(self) -> retina.protocol.base_pb2.StartInfo: ...
+    @property
+    def neighbor_cucp_definition(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[retina.protocol.base_pb2.CUCPDefinition]: ...
     def __init__(
         self,
         *,
@@ -176,8 +183,9 @@ class GNBStartInfo(google.protobuf.message.Message):
         ue_definition: retina.protocol.base_pb2.UEDefinition | None = ...,
         ric_definition: retina.protocol.base_pb2.NearRtRicDefinition | None = ...,
         start_info: retina.protocol.base_pb2.StartInfo | None = ...,
+        neighbor_cucp_definition: collections.abc.Iterable[retina.protocol.base_pb2.CUCPDefinition] | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["fivegc_definition", b"fivegc_definition", "neighbor_cucp_definition", b"neighbor_cucp_definition", "plmn", b"plmn", "ric_definition", b"ric_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> None: ...
 
 Global___GNBStartInfo: typing_extensions.TypeAlias = GNBStartInfo

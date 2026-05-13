@@ -18,7 +18,7 @@ from pytest import mark, param
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts
-from retina.protocol.base_pb2 import DUDefinition, FiveGCDefinition, Metrics, PLMN, StartInfo, UEDefinition
+from retina.protocol.base_pb2 import FiveGCDefinition, GNBDefinition, Metrics, PLMN, StartInfo, UEDefinition
 from retina.protocol.fivegc_pb2 import FiveGCStartInfo
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2 import GNBStartInfo
@@ -104,11 +104,13 @@ def test_ue(
         )
 
     with handle_start_error(name=f"GNB [{id(gnb)}]"):
-        du_def: DUDefinition = gnb.GetDefinition(UInt32Value(value=0))
+        gnb_def: GNBDefinition = gnb.GetDefinition(UInt32Value(value=0))
         gnb.Start(
             GNBStartInfo(
                 plmn=PLMN(mcc="001", mnc="01"),
-                ue_definition=UEDefinition(zmq_ip=du_def.zmq_ip, zmq_port_array=du_def.zmq_port_array),
+                ue_definition=UEDefinition(
+                    zmq_ip=gnb_def.du_definition.zmq_ip, zmq_port_array=gnb_def.du_definition.zmq_port_array
+                ),
                 fivegc_definition=[fivegc_def],
                 start_info=StartInfo(
                     timeout=gnb_startup_timeout,

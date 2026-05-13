@@ -208,6 +208,27 @@ class DUDefinition(google.protobuf.message.Message):
 Global___DUDefinition: typing_extensions.TypeAlias = DUDefinition
 
 @typing.final
+class GNBDefinition(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    DU_DEFINITION_FIELD_NUMBER: builtins.int
+    CUCP_DEFINITION_FIELD_NUMBER: builtins.int
+    @property
+    def du_definition(self) -> Global___DUDefinition: ...
+    @property
+    def cucp_definition(self) -> Global___CUCPDefinition: ...
+    def __init__(
+        self,
+        *,
+        du_definition: Global___DUDefinition | None = ...,
+        cucp_definition: Global___CUCPDefinition | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["cucp_definition", b"cucp_definition", "du_definition", b"du_definition"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["cucp_definition", b"cucp_definition", "du_definition", b"du_definition"]) -> None: ...
+
+Global___GNBDefinition: typing_extensions.TypeAlias = GNBDefinition
+
+@typing.final
 class FiveGCDefinition(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 

@@ -11,7 +11,7 @@ from typing import Any, Dict, Sequence
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import FiveGCDefinition, PLMN
+from retina.protocol.base_pb2 import CUCPDefinition, FiveGCDefinition, PLMN
 from retina.protocol.gnb_pb2 import CUCPStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
@@ -56,7 +56,13 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
         )
         return self._parse_sut_version(output, self.CUCP_VERSION_REGEX)
 
-    def get_parameters(self, *, fivegc_definition: Sequence[FiveGCDefinition], plmn: PLMN) -> Dict[str, Any]:
+    def get_parameters(
+        self,
+        *,
+        fivegc_definition: Sequence[FiveGCDefinition],
+        plmn: PLMN,
+        neighbor_cucp_definition: Sequence[CUCPDefinition] = (),
+    ) -> Dict[str, Any]:
         """
         Return parameters for config templates
         """
@@ -69,6 +75,7 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
             "cell_array": get_cell_array(num_cells=gnb_defaults.num_cells, cell_offset=gnb_defaults.cell_offset),
             "mcc": plmn.mcc,
             "mnc": plmn.mnc,
+            "neighbor_cucp_definition": list(neighbor_cucp_definition),
         }
 
     def Start(self, request: CUCPStartInfo, context: grpc.ServicerContext) -> Empty:
@@ -93,7 +100,11 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
                 values={
                     **get_module_variables(testbed_defaults),
                     **get_module_variables(gnb_defaults),
-                    **self.get_parameters(fivegc_definition=list(request.fivegc_definition), plmn=request.plmn),
+                    **self.get_parameters(
+                        fivegc_definition=list(request.fivegc_definition),
+                        plmn=request.plmn,
+                        neighbor_cucp_definition=list(request.neighbor_cucp_definition),
+                    ),
                     "log_filename": self.get_filepath_in_report_folder(self.CUCP_LOG_FILENAME),
                     "cucp_ip": testbed_defaults.ip,
                 },

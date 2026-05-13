@@ -92,7 +92,7 @@ def start_ntn_channel_emulator(
         if ue_def.zmq_ip is not None:
             ue_def_for_gnb = ue_def
 
-    du_definition = gnb.GetDefinition(UInt32Value(value=0))
+    du_definition = gnb.GetDefinition(UInt32Value(value=0)).du_definition
     channel_emulator_start_info = ChannelEmulatorStartInfo(
         du_definition=du_definition,
         ue_definition=ue_def_for_gnb,
@@ -148,7 +148,7 @@ def start_and_attach(
 
     return ue_start_and_attach(
         ue_array=ue_array,
-        du_definition=[gnb.GetDefinition(UInt32Value(value=0))],
+        du_definition=[gnb.GetDefinition(UInt32Value(value=0)).du_definition],
         fivegc_array=[fivegc],
         ue_startup_timeout=ue_startup_timeout,
         attach_timeout=attach_timeout,
@@ -256,7 +256,8 @@ def start_network(
             logging.info("RIC: %s", MessageToString(ric_definition, indent=2))
 
     if gnb_array:
-        for gnb in gnb_array:
+        gnb_definitions = [gnb.GetDefinition(UInt32Value(value=idx)) for idx, gnb in enumerate(gnb_array)]
+        for idx, gnb in enumerate(gnb_array):
             with handle_start_error(name=f"GNB [{id(gnb)}]"):
                 # GNB Start
                 gnb.Start(
@@ -265,6 +266,7 @@ def start_network(
                         ue_definition=ue_def_for_gnb,
                         fivegc_definition=fivegc_definition,
                         ric_definition=ric_definition,
+                        neighbor_cucp_definition=[d.cucp_definition for i, d in enumerate(gnb_definitions) if i != idx],
                         start_info=StartInfo(
                             timeout=gnb_startup_timeout,
                             pre_commands=gnb_pre_cmd,
@@ -1013,7 +1015,7 @@ def multi_ue_mobility_iperf(
 
     ue_attach_info_dict = ue_start_and_attach(
         ue_array=ue_array,
-        du_definition=[gnb.GetDefinition(UInt32Value(value=idx)) for idx, gnb in enumerate(gnb_array)],
+        du_definition=[gnb.GetDefinition(UInt32Value(value=idx)).du_definition for idx, gnb in enumerate(gnb_array)],
         fivegc_array=[fivegc],
     )
 

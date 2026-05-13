@@ -84,6 +84,13 @@ import TOCInline from '@theme/TOCInline';
 | `tun_ip` | `string` |||
 | `tun_mask` | `uint32` |||
 
+#### GNBDefinition
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `du_definition` | `DUDefinition` |||
+| `cucp_definition` | `CUCPDefinition` |||
+
 #### IPerfServer
 
 | Field | Type | Label | Description |
@@ -372,6 +379,7 @@ UE service manages user equipment operations including attachment, movement, and
 | `plmn` | `PLMN` |||
 | `fivegc_definition` | `FiveGCDefinition` |`repeated`||
 | `start_info` | `StartInfo` |||
+| `neighbor_cucp_definition` | `CUCPDefinition` |`repeated`||
 
 #### CUStartInfo
 
@@ -411,6 +419,7 @@ UE service manages user equipment operations including attachment, movement, and
 | `ue_definition` | `UEDefinition` ||Only required in ZMQ mode|
 | `ric_definition` | `NearRtRicDefinition` ||if non-empty, E2 is enabled|
 | `start_info` | `StartInfo` |||
+| `neighbor_cucp_definition` | `CUCPDefinition` |`repeated`||
 
 ### Services
 
@@ -456,7 +465,7 @@ GNB service manages the monolithic gNodeB base station
 
 | Method | Request | Response | Streaming | Description |
 |---|---|---|---|---|
-| `GetDefinition` | `.google.protobuf.UInt32Value` | `.DUDefinition` |No|Get Basic information about the GNB, like public ip or IDs|
+| `GetDefinition` | `.google.protobuf.UInt32Value` | `.GNBDefinition` |No|Get Basic information about the GNB, combining DU (ZMQ) and CU-CP endpoints|
 | `Start` | `.GNBStartInfo` | `.google.protobuf.Empty` |No|Start the GNB. Raise an error if can't be started.|
 
 ---

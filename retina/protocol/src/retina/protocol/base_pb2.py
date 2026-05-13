@@ -29,15 +29,15 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from google.protobuf import wrappers_pb2 as google_dot_protobuf_dot_wrappers__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1aretina/protocol/base.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1egoogle/protobuf/wrappers.proto\"8\n\nRetinaInfo\x12\x15\n\ragent_version\x18\x01 \x01(\t\x12\x13\n\x0bsut_version\x18\x02 \x01(\t\"(\n\tParameter\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"W\n\x0cUEDefinition\x12\x1f\n\nsubscriber\x18\x01 \x01(\x0b\x32\x0b.Subscriber\x12\x0e\n\x06zmq_ip\x18\x02 \x01(\t\x12\x16\n\x0ezmq_port_array\x18\x03 \x03(\r\"j\n\nSubscriber\x12\x0c\n\x04imsi\x18\x01 \x01(\t\x12\x10\n\x08\x61lgo_str\x18\x02 \x01(\t\x12\t\n\x01k\x18\x03 \x01(\t\x12\x0b\n\x03opc\x18\x04 \x01(\t\x12\x0b\n\x03\x61mf\x18\x05 \x01(\t\x12\x0b\n\x03tel\x18\x06 \x01(\x04\x12\n\n\x02sd\x18\x07 \x01(\t\"-\n\x0fSubscriberArray\x12\x1a\n\x05value\x18\x01 \x03(\x0b\x32\x0b.Subscriber\"4\n\x0e\x43UCPDefinition\x12\x0f\n\x07\x63ucp_ip\x18\x01 \x01(\t\x12\x11\n\tcucp_port\x18\x02 \x01(\r\"2\n\x0e\x43UUPDefinition\x12\x0f\n\x07\x63uup_ip\x18\x01 \x01(\t\x12\x0f\n\x07\x65\x31_port\x18\x02 \x01(\r\"6\n\x0c\x44UDefinition\x12\x0e\n\x06zmq_ip\x18\x01 \x01(\t\x12\x16\n\x0ezmq_port_array\x18\x02 \x03(\r\"V\n\x10\x46iveGCDefinition\x12\x0e\n\x06\x61mf_ip\x18\x01 \x01(\t\x12\x10\n\x08\x61mf_port\x18\x02 \x01(\r\x12\x0e\n\x06tun_ip\x18\x03 \x01(\t\x12\x10\n\x08tun_mask\x18\x04 \x01(\r\"H\n\x13NearRtRicDefinition\x12\x0f\n\x07\x65nabled\x18\x01 \x01(\x08\x12\x0e\n\x06ric_ip\x18\x02 \x01(\t\x12\x10\n\x08ric_port\x18\x03 \x01(\r\"y\n\x19\x43hannelEmulatorDefinition\x12\"\n\x04type\x18\x01 \x01(\x0e\x32\x14.ChannelEmulatorType\x12\x0e\n\x06zmq_ip\x18\x02 \x01(\t\x12\x13\n\x0b\x64l_zmq_port\x18\x03 \x01(\r\x12\x13\n\x0bul_zmq_port\x18\x04 \x01(\r\" \n\x04PLMN\x12\x0b\n\x03mcc\x18\x01 \x01(\t\x12\x0b\n\x03mnc\x18\x02 \x01(\t\"Y\n\tStartInfo\x12\x0e\n\x06\x64ryrun\x18\x01 \x01(\x08\x12\x0f\n\x07timeout\x18\x02 \x01(\r\x12\x14\n\x0cpre_commands\x18\x03 \x03(\t\x12\x15\n\rpost_commands\x18\x04 \x03(\t\"?\n\x0bPingRequest\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12\r\n\x05\x63ount\x18\x02 \x01(\r\x12\x10\n\x08interval\x18\x03 \x01(\x01\"s\n\x0cPingResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x0c\n\x04sent\x18\x02 \x01(\r\x12\x10\n\x08received\x18\x03 \x01(\r\x12\x0b\n\x03min\x18\x04 \x01(\x01\x12\x0b\n\x03\x61vg\x18\x05 \x01(\x01\x12\x0b\n\x03max\x18\x06 \x01(\x01\x12\x0c\n\x04mdev\x18\x07 \x01(\x01\"\'\n\x0bIPerfServer\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\r\"u\n\x0cStopResponse\x12\x11\n\texit_code\x18\x01 \x01(\x05\x12\x13\n\x0b\x65rror_count\x18\x02 \x01(\r\x12\x11\n\terror_msg\x18\x03 \x01(\t\x12\x15\n\rwarning_count\x18\x04 \x01(\r\x12\x13\n\x0bwarning_msg\x18\x05 \x01(\t\"\xc6\x04\n\tUeMetrics\x12\x0c\n\x04rnti\x18\x01 \x01(\r\x12\x0b\n\x03pci\x18\x02 \x01(\r\x12\x12\n\ndl_bitrate\x18\x03 \x01(\x01\x12\x12\n\nul_bitrate\x18\x04 \x01(\x01\x12\x17\n\x0f\x64l_av_5_samples\x18\x05 \x01(\x01\x12\x18\n\x10\x64l_av_15_samples\x18\x06 \x01(\x01\x12\x18\n\x10\x64l_av_30_samples\x18\x07 \x01(\x01\x12\x17\n\x0ful_av_5_samples\x18\x08 \x01(\x01\x12\x18\n\x10ul_av_15_samples\x18\t \x01(\x01\x12\x18\n\x10ul_av_30_samples\x18\n \x01(\x01\x12\x11\n\tnof_ko_dl\x18\x0b \x01(\x04\x12\x11\n\tnof_ko_ul\x18\x0c \x01(\x04\x12$\n\x1cnof_pucch_f0f1_invalid_harqs\x18\r \x01(\r\x12&\n\x1enof_pucch_f2f3f4_invalid_harqs\x18\x0e \x01(\r\x12%\n\x1dnof_pucch_f2f3f4_invalid_csis\x18\x0f \x01(\r\x12$\n\x1cnof_reestablishments_request\x18\x10 \x01(\r\x12%\n\x1dnof_reestablishments_complete\x18\x11 \x01(\r\x12\x15\n\rnof_handovers\x18\x12 \x01(\r\x12\x17\n\x0fnof_rrc_suspend\x18\x13 \x01(\r\x12\x1e\n\x16nof_rrc_resume_request\x18\x14 \x01(\r\x12\x11\n\tdl_avg_ri\x18\x15 \x01(\x01\x12\x11\n\tul_avg_ri\x18\x16 \x01(\x01\"\x88\x04\n\tDuMetrics\x12\x1d\n\x15nof_error_indications\x18\x01 \x01(\r\x12\x19\n\x11max_late_dl_harqs\x18\x02 \x01(\x04\x12\x19\n\x11max_late_ul_harqs\x18\x03 \x01(\x04\x12\x11\n\tnof_lates\x18\x04 \x01(\r\x12\x11\n\tnof_under\x18\x05 \x01(\r\x12\x13\n\x0bnof_seq_err\x18\x06 \x01(\r\x12\x1e\n\x16nof_sib1_transmissions\x18\x07 \x01(\r\x12\x1e\n\x16nof_sib2_transmissions\x18\x08 \x01(\r\x12\x1e\n\x16nof_sib3_transmissions\x18\t \x01(\r\x12\x1e\n\x16nof_sib4_transmissions\x18\n \x01(\r\x12\x1e\n\x16nof_sib5_transmissions\x18\x0b \x01(\r\x12\x1e\n\x16nof_sib8_transmissions\x18\x0c \x01(\r\x12\x1b\n\x13nof_paging_messages\x18\r \x01(\r\x12!\n\x19prach_configuration_index\x18\x0e \x01(\x05\x12\x1a\n\x12transform_precoder\x18\x0f \x01(\x05\x12#\n\x1b\x64rx_long_cycle_start_offset\x18\x10 \x01(\x05\x12\x0c\n\x04t312\x18\x11 \x01(\x05\x12\r\n\x05\x63_srs\x18\x12 \x01(\x05\x12\r\n\x05\x62_srs\x18\x13 \x01(\x05\"\xc0\x01\n\x0b\x43oreMetrics\x12,\n$nof_pdu_session_establishment_accept\x18\x01 \x01(\r\x12\"\n\x1anof_5gs_nas_service_accept\x18\x02 \x01(\r\x12\x15\n\rnof_ng_paging\x18\x03 \x01(\r\x12\x17\n\x0fnof_tau_request\x18\x04 \x01(\r\x12/\n\'nof_pdu_session_resource_modify_request\x18\x05 \x01(\r\"z\n\x07Metrics\x12\x1d\n\taggregate\x18\x01 \x01(\x0b\x32\n.UeMetrics\x12\x1c\n\x08ue_array\x18\x02 \x03(\x0b\x32\n.UeMetrics\x12\x16\n\x02\x64u\x18\x03 \x01(\x0b\x32\n.DuMetrics\x12\x1a\n\x04\x63ore\x18\x04 \x01(\x0b\x32\x0c.CoreMetrics*3\n\x13\x43hannelEmulatorType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x06\n\x02TN\x10\x01\x12\x07\n\x03NTN\x10\x02\x32\xda\x03\n\x04\x42\x61se\x12\x36\n\rGetRetinaInfo\x12\x16.google.protobuf.Empty\x1a\x0b.RetinaInfo\"\x00\x12\x34\n\x0cSetParameter\x12\n.Parameter\x1a\x16.google.protobuf.Empty\"\x00\x12%\n\x04Ping\x12\x0c.PingRequest\x1a\r.PingResponse\"\x00\x12\x35\n\x04Stop\x12\x1c.google.protobuf.UInt32Value\x1a\r.StopResponse\"\x00\x12\x30\n\nGetMetrics\x12\x16.google.protobuf.Empty\x1a\x08.Metrics\"\x00\x12H\n\x0eGetArtifactsId\x12\x16.google.protobuf.Empty\x1a\x1c.google.protobuf.StringValue\"\x00\x12L\n\x11\x44ownloadArtifacts\x12\x16.google.protobuf.Empty\x1a\x1b.google.protobuf.BytesValue\"\x00\x30\x01\x12<\n\x08Shutdown\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1aretina/protocol/base.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1egoogle/protobuf/wrappers.proto\"8\n\nRetinaInfo\x12\x15\n\ragent_version\x18\x01 \x01(\t\x12\x13\n\x0bsut_version\x18\x02 \x01(\t\"(\n\tParameter\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"W\n\x0cUEDefinition\x12\x1f\n\nsubscriber\x18\x01 \x01(\x0b\x32\x0b.Subscriber\x12\x0e\n\x06zmq_ip\x18\x02 \x01(\t\x12\x16\n\x0ezmq_port_array\x18\x03 \x03(\r\"j\n\nSubscriber\x12\x0c\n\x04imsi\x18\x01 \x01(\t\x12\x10\n\x08\x61lgo_str\x18\x02 \x01(\t\x12\t\n\x01k\x18\x03 \x01(\t\x12\x0b\n\x03opc\x18\x04 \x01(\t\x12\x0b\n\x03\x61mf\x18\x05 \x01(\t\x12\x0b\n\x03tel\x18\x06 \x01(\x04\x12\n\n\x02sd\x18\x07 \x01(\t\"-\n\x0fSubscriberArray\x12\x1a\n\x05value\x18\x01 \x03(\x0b\x32\x0b.Subscriber\"4\n\x0e\x43UCPDefinition\x12\x0f\n\x07\x63ucp_ip\x18\x01 \x01(\t\x12\x11\n\tcucp_port\x18\x02 \x01(\r\"2\n\x0e\x43UUPDefinition\x12\x0f\n\x07\x63uup_ip\x18\x01 \x01(\t\x12\x0f\n\x07\x65\x31_port\x18\x02 \x01(\r\"6\n\x0c\x44UDefinition\x12\x0e\n\x06zmq_ip\x18\x01 \x01(\t\x12\x16\n\x0ezmq_port_array\x18\x02 \x03(\r\"_\n\rGNBDefinition\x12$\n\rdu_definition\x18\x01 \x01(\x0b\x32\r.DUDefinition\x12(\n\x0f\x63ucp_definition\x18\x02 \x01(\x0b\x32\x0f.CUCPDefinition\"V\n\x10\x46iveGCDefinition\x12\x0e\n\x06\x61mf_ip\x18\x01 \x01(\t\x12\x10\n\x08\x61mf_port\x18\x02 \x01(\r\x12\x0e\n\x06tun_ip\x18\x03 \x01(\t\x12\x10\n\x08tun_mask\x18\x04 \x01(\r\"H\n\x13NearRtRicDefinition\x12\x0f\n\x07\x65nabled\x18\x01 \x01(\x08\x12\x0e\n\x06ric_ip\x18\x02 \x01(\t\x12\x10\n\x08ric_port\x18\x03 \x01(\r\"y\n\x19\x43hannelEmulatorDefinition\x12\"\n\x04type\x18\x01 \x01(\x0e\x32\x14.ChannelEmulatorType\x12\x0e\n\x06zmq_ip\x18\x02 \x01(\t\x12\x13\n\x0b\x64l_zmq_port\x18\x03 \x01(\r\x12\x13\n\x0bul_zmq_port\x18\x04 \x01(\r\" \n\x04PLMN\x12\x0b\n\x03mcc\x18\x01 \x01(\t\x12\x0b\n\x03mnc\x18\x02 \x01(\t\"Y\n\tStartInfo\x12\x0e\n\x06\x64ryrun\x18\x01 \x01(\x08\x12\x0f\n\x07timeout\x18\x02 \x01(\r\x12\x14\n\x0cpre_commands\x18\x03 \x03(\t\x12\x15\n\rpost_commands\x18\x04 \x03(\t\"?\n\x0bPingRequest\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12\r\n\x05\x63ount\x18\x02 \x01(\r\x12\x10\n\x08interval\x18\x03 \x01(\x01\"s\n\x0cPingResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x0c\n\x04sent\x18\x02 \x01(\r\x12\x10\n\x08received\x18\x03 \x01(\r\x12\x0b\n\x03min\x18\x04 \x01(\x01\x12\x0b\n\x03\x61vg\x18\x05 \x01(\x01\x12\x0b\n\x03max\x18\x06 \x01(\x01\x12\x0c\n\x04mdev\x18\x07 \x01(\x01\"\'\n\x0bIPerfServer\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\r\"u\n\x0cStopResponse\x12\x11\n\texit_code\x18\x01 \x01(\x05\x12\x13\n\x0b\x65rror_count\x18\x02 \x01(\r\x12\x11\n\terror_msg\x18\x03 \x01(\t\x12\x15\n\rwarning_count\x18\x04 \x01(\r\x12\x13\n\x0bwarning_msg\x18\x05 \x01(\t\"\xc6\x04\n\tUeMetrics\x12\x0c\n\x04rnti\x18\x01 \x01(\r\x12\x0b\n\x03pci\x18\x02 \x01(\r\x12\x12\n\ndl_bitrate\x18\x03 \x01(\x01\x12\x12\n\nul_bitrate\x18\x04 \x01(\x01\x12\x17\n\x0f\x64l_av_5_samples\x18\x05 \x01(\x01\x12\x18\n\x10\x64l_av_15_samples\x18\x06 \x01(\x01\x12\x18\n\x10\x64l_av_30_samples\x18\x07 \x01(\x01\x12\x17\n\x0ful_av_5_samples\x18\x08 \x01(\x01\x12\x18\n\x10ul_av_15_samples\x18\t \x01(\x01\x12\x18\n\x10ul_av_30_samples\x18\n \x01(\x01\x12\x11\n\tnof_ko_dl\x18\x0b \x01(\x04\x12\x11\n\tnof_ko_ul\x18\x0c \x01(\x04\x12$\n\x1cnof_pucch_f0f1_invalid_harqs\x18\r \x01(\r\x12&\n\x1enof_pucch_f2f3f4_invalid_harqs\x18\x0e \x01(\r\x12%\n\x1dnof_pucch_f2f3f4_invalid_csis\x18\x0f \x01(\r\x12$\n\x1cnof_reestablishments_request\x18\x10 \x01(\r\x12%\n\x1dnof_reestablishments_complete\x18\x11 \x01(\r\x12\x15\n\rnof_handovers\x18\x12 \x01(\r\x12\x17\n\x0fnof_rrc_suspend\x18\x13 \x01(\r\x12\x1e\n\x16nof_rrc_resume_request\x18\x14 \x01(\r\x12\x11\n\tdl_avg_ri\x18\x15 \x01(\x01\x12\x11\n\tul_avg_ri\x18\x16 \x01(\x01\"\x88\x04\n\tDuMetrics\x12\x1d\n\x15nof_error_indications\x18\x01 \x01(\r\x12\x19\n\x11max_late_dl_harqs\x18\x02 \x01(\x04\x12\x19\n\x11max_late_ul_harqs\x18\x03 \x01(\x04\x12\x11\n\tnof_lates\x18\x04 \x01(\r\x12\x11\n\tnof_under\x18\x05 \x01(\r\x12\x13\n\x0bnof_seq_err\x18\x06 \x01(\r\x12\x1e\n\x16nof_sib1_transmissions\x18\x07 \x01(\r\x12\x1e\n\x16nof_sib2_transmissions\x18\x08 \x01(\r\x12\x1e\n\x16nof_sib3_transmissions\x18\t \x01(\r\x12\x1e\n\x16nof_sib4_transmissions\x18\n \x01(\r\x12\x1e\n\x16nof_sib5_transmissions\x18\x0b \x01(\r\x12\x1e\n\x16nof_sib8_transmissions\x18\x0c \x01(\r\x12\x1b\n\x13nof_paging_messages\x18\r \x01(\r\x12!\n\x19prach_configuration_index\x18\x0e \x01(\x05\x12\x1a\n\x12transform_precoder\x18\x0f \x01(\x05\x12#\n\x1b\x64rx_long_cycle_start_offset\x18\x10 \x01(\x05\x12\x0c\n\x04t312\x18\x11 \x01(\x05\x12\r\n\x05\x63_srs\x18\x12 \x01(\x05\x12\r\n\x05\x62_srs\x18\x13 \x01(\x05\"\xc0\x01\n\x0b\x43oreMetrics\x12,\n$nof_pdu_session_establishment_accept\x18\x01 \x01(\r\x12\"\n\x1anof_5gs_nas_service_accept\x18\x02 \x01(\r\x12\x15\n\rnof_ng_paging\x18\x03 \x01(\r\x12\x17\n\x0fnof_tau_request\x18\x04 \x01(\r\x12/\n\'nof_pdu_session_resource_modify_request\x18\x05 \x01(\r\"z\n\x07Metrics\x12\x1d\n\taggregate\x18\x01 \x01(\x0b\x32\n.UeMetrics\x12\x1c\n\x08ue_array\x18\x02 \x03(\x0b\x32\n.UeMetrics\x12\x16\n\x02\x64u\x18\x03 \x01(\x0b\x32\n.DuMetrics\x12\x1a\n\x04\x63ore\x18\x04 \x01(\x0b\x32\x0c.CoreMetrics*3\n\x13\x43hannelEmulatorType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x06\n\x02TN\x10\x01\x12\x07\n\x03NTN\x10\x02\x32\xda\x03\n\x04\x42\x61se\x12\x36\n\rGetRetinaInfo\x12\x16.google.protobuf.Empty\x1a\x0b.RetinaInfo\"\x00\x12\x34\n\x0cSetParameter\x12\n.Parameter\x1a\x16.google.protobuf.Empty\"\x00\x12%\n\x04Ping\x12\x0c.PingRequest\x1a\r.PingResponse\"\x00\x12\x35\n\x04Stop\x12\x1c.google.protobuf.UInt32Value\x1a\r.StopResponse\"\x00\x12\x30\n\nGetMetrics\x12\x16.google.protobuf.Empty\x1a\x08.Metrics\"\x00\x12H\n\x0eGetArtifactsId\x12\x16.google.protobuf.Empty\x1a\x1c.google.protobuf.StringValue\"\x00\x12L\n\x11\x44ownloadArtifacts\x12\x16.google.protobuf.Empty\x1a\x1b.google.protobuf.BytesValue\"\x00\x30\x01\x12<\n\x08Shutdown\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'retina.protocol.base_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_CHANNELEMULATORTYPE']._serialized_start=2776
-  _globals['_CHANNELEMULATORTYPE']._serialized_end=2827
+  _globals['_CHANNELEMULATORTYPE']._serialized_start=2873
+  _globals['_CHANNELEMULATORTYPE']._serialized_end=2924
   _globals['_RETINAINFO']._serialized_start=91
   _globals['_RETINAINFO']._serialized_end=147
   _globals['_PARAMETER']._serialized_start=149
@@ -54,32 +54,34 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_CUUPDEFINITION']._serialized_end=539
   _globals['_DUDEFINITION']._serialized_start=541
   _globals['_DUDEFINITION']._serialized_end=595
-  _globals['_FIVEGCDEFINITION']._serialized_start=597
-  _globals['_FIVEGCDEFINITION']._serialized_end=683
-  _globals['_NEARRTRICDEFINITION']._serialized_start=685
-  _globals['_NEARRTRICDEFINITION']._serialized_end=757
-  _globals['_CHANNELEMULATORDEFINITION']._serialized_start=759
-  _globals['_CHANNELEMULATORDEFINITION']._serialized_end=880
-  _globals['_PLMN']._serialized_start=882
-  _globals['_PLMN']._serialized_end=914
-  _globals['_STARTINFO']._serialized_start=916
-  _globals['_STARTINFO']._serialized_end=1005
-  _globals['_PINGREQUEST']._serialized_start=1007
-  _globals['_PINGREQUEST']._serialized_end=1070
-  _globals['_PINGRESPONSE']._serialized_start=1072
-  _globals['_PINGRESPONSE']._serialized_end=1187
-  _globals['_IPERFSERVER']._serialized_start=1189
-  _globals['_IPERFSERVER']._serialized_end=1228
-  _globals['_STOPRESPONSE']._serialized_start=1230
-  _globals['_STOPRESPONSE']._serialized_end=1347
-  _globals['_UEMETRICS']._serialized_start=1350
-  _globals['_UEMETRICS']._serialized_end=1932
-  _globals['_DUMETRICS']._serialized_start=1935
-  _globals['_DUMETRICS']._serialized_end=2455
-  _globals['_COREMETRICS']._serialized_start=2458
-  _globals['_COREMETRICS']._serialized_end=2650
-  _globals['_METRICS']._serialized_start=2652
-  _globals['_METRICS']._serialized_end=2774
-  _globals['_BASE']._serialized_start=2830
-  _globals['_BASE']._serialized_end=3304
+  _globals['_GNBDEFINITION']._serialized_start=597
+  _globals['_GNBDEFINITION']._serialized_end=692
+  _globals['_FIVEGCDEFINITION']._serialized_start=694
+  _globals['_FIVEGCDEFINITION']._serialized_end=780
+  _globals['_NEARRTRICDEFINITION']._serialized_start=782
+  _globals['_NEARRTRICDEFINITION']._serialized_end=854
+  _globals['_CHANNELEMULATORDEFINITION']._serialized_start=856
+  _globals['_CHANNELEMULATORDEFINITION']._serialized_end=977
+  _globals['_PLMN']._serialized_start=979
+  _globals['_PLMN']._serialized_end=1011
+  _globals['_STARTINFO']._serialized_start=1013
+  _globals['_STARTINFO']._serialized_end=1102
+  _globals['_PINGREQUEST']._serialized_start=1104
+  _globals['_PINGREQUEST']._serialized_end=1167
+  _globals['_PINGRESPONSE']._serialized_start=1169
+  _globals['_PINGRESPONSE']._serialized_end=1284
+  _globals['_IPERFSERVER']._serialized_start=1286
+  _globals['_IPERFSERVER']._serialized_end=1325
+  _globals['_STOPRESPONSE']._serialized_start=1327
+  _globals['_STOPRESPONSE']._serialized_end=1444
+  _globals['_UEMETRICS']._serialized_start=1447
+  _globals['_UEMETRICS']._serialized_end=2029
+  _globals['_DUMETRICS']._serialized_start=2032
+  _globals['_DUMETRICS']._serialized_end=2552
+  _globals['_COREMETRICS']._serialized_start=2555
+  _globals['_COREMETRICS']._serialized_end=2747
+  _globals['_METRICS']._serialized_start=2749
+  _globals['_METRICS']._serialized_end=2871
+  _globals['_BASE']._serialized_start=2927
+  _globals['_BASE']._serialized_end=3401
 # @@protoc_insertion_point(module_scope)

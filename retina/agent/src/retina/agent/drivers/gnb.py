@@ -10,7 +10,7 @@ from abc import ABCMeta
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import CUCPDefinition, CUUPDefinition, DUDefinition
+from retina.protocol.base_pb2 import CUCPDefinition, CUUPDefinition, DUDefinition, GNBDefinition
 from retina.protocol.gnb_pb2_grpc import CUCPServicer, CUServicer, CUUPServicer, DUServicer, GNBServicer
 
 from retina.agent.drivers.base import BaseDriver
@@ -77,5 +77,8 @@ class GNBDriver(GNBServicer, BaseDriver, metaclass=ABCMeta):
 
     def GetDefinition(
         self, request: UInt32Value, context: grpc.ServicerContext
-    ) -> DUDefinition:  # UInt32Value is the DU cell offset.
-        return DUDriver.GetDefinition(self, request, context)
+    ) -> GNBDefinition:  # UInt32Value is the DU cell offset.
+        return GNBDefinition(
+            du_definition=DUDriver.GetDefinition(self, request, context),
+            cucp_definition=CUCPDriver.GetDefinition(self, Empty(), context),
+        )
