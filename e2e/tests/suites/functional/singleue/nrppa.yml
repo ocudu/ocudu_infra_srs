@@ -11,8 +11,3 @@ position_power: &base_config
 position_time:
   <<: *base_config
   feature_ids: [skip, MVP-FUNC-POS-16-3-b]
-
-# Angle-based NRPPa (FR2)
-position_angle:
-  <<: *base_config
-  feature_ids: [skip, MVP-FUNC-POS-16-3-c]
