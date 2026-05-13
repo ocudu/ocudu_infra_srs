@@ -294,6 +294,33 @@ class nof_sib8_ge(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_sib8_transmissions for s in self._stub_array)
 
 
+class sib1_has_rach_prioritization_slice_eq(DuCriteria):
+    """RACH prioritization for slicing present in SIB1"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> bool:
+        return any(s.GetMetrics(Empty()).du.sib1_has_rach_prioritization_slice for s in self._stub_array)
+
+
+class nof_sib16_ge(DuCriteria):
+    """SIB16 transmissions"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_sib16_transmissions for s in self._stub_array)
+
+
+class nof_sib19_ge(DuCriteria):
+    """SIB19 transmissions"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_sib19_transmissions for s in self._stub_array)
+
+
 class dl_avg_ri_ge(DuCriteria):
     """DL avg RI"""
 

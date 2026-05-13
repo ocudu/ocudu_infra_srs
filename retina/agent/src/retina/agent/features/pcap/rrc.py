@@ -74,24 +74,32 @@ class PrachConfigIndexAnalyzer(PcapAnalyzer):
 
 class SibAnalyzer(PcapAnalyzer):
     """
-    Counts transmissions of SIB2, SIB3, SIB4 and SIB5 in a MAC-NR capture.
+    Counts transmissions of SIB1-SIB5, SIB8, SIB16 and SIB19 in a MAC-NR capture.
 
     Each SIB is carried inside a SystemInformation message. The per-SIB count
     is available via sib_count(n) after analysis.
-    tshark display filters: nr-rrc.sib2_element, nr-rrc.sib3_element, ...
+    tshark display filters: nr-rrc.sib2_element, nr-rrc.sib16_v1700_element, ...
     """
 
-    _SIBS = (1, 2, 3, 4, 5, 8)
+    # Maps SIB number to its tshark ASN.1 name (mixed-case → display filter;
+    # lower-cased → pyshark field name via nr_rrc_{lower}_element).
+    _SIBS = {
+        1: "systemInformationBlockType1",
+        2: "sib2",
+        3: "sib3",
+        4: "sib4",
+        5: "sib5",
+        8: "sib8",
+        16: "sib16_v1700",
+        19: "sib19_v1700",
+    }
 
     def __init__(self) -> None:
         self._counts = {n: 0 for n in self._SIBS}
 
     @property
     def display_filter(self) -> str:
-        parts = []
-        for n in self._SIBS:
-            parts.append("nr-rrc.systemInformationBlockType1_element" if n == 1 else f"nr-rrc.sib{n}_element")
-        return " || ".join(parts)
+        return " || ".join(f"nr-rrc.{name}_element" for name in self._SIBS.values())
 
     def sib_count(self, n: int) -> int:
         """Return the number of packets containing SIBn."""
@@ -102,10 +110,9 @@ class SibAnalyzer(PcapAnalyzer):
             layer = _rrc_layer(packet)
         except KeyError:
             return
-        for n in self._SIBS:
-            field = "nr_rrc_systeminformationblocktype1_element" if n == 1 else f"nr_rrc_sib{n}_element"
+        for n, name in self._SIBS.items():
             try:
-                getattr(layer, field)
+                getattr(layer, f"nr_rrc_{name.lower()}_element")
                 self._counts[n] += 1
             except AttributeError:
                 pass
@@ -119,8 +126,32 @@ class SibAnalyzer(PcapAnalyzer):
                 nof_sib4_transmissions=self._counts[4],
                 nof_sib5_transmissions=self._counts[5],
                 nof_sib8_transmissions=self._counts[8],
+                nof_sib16_transmissions=self._counts[16],
+                nof_sib19_transmissions=self._counts[19],
             )
         )
+
+
+class RachPrioritizationSliceAnalyzer(PcapAnalyzer):
+    """
+    Detects presence of ra-PrioritizationSliceInfoList-r17 in a MAC-NR capture.
+
+    The field appears inside SIB1 when RACH prioritization for slicing is configured.
+    tshark display filter: nr-rrc.ra_PrioritizationSliceInfoList_r17
+    """
+
+    def __init__(self) -> None:
+        self._present = False
+
+    @property
+    def display_filter(self) -> str:
+        return "nr-rrc.ra_PrioritizationSliceInfoList_r17"
+
+    def process(self, _) -> None:
+        self._present = True
+
+    def report(self) -> Metrics:
+        return Metrics(du=DuMetrics(sib1_has_rach_prioritization_slice=self._present))
 
 
 class TransformPrecoderAnalyzer(PcapAnalyzer):

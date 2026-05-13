@@ -10,7 +10,7 @@ slicing: &base_config
     parameters:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
-      test_duration: 2
+      test_duration: 1
   gnb:
     config: [amf.yml, cell_cfg.yml, mac_pcap.yml, tdd_default.yml, dual_slice.yml, sib16.yml, slice_rach.yml]
   core:
@@ -24,5 +24,7 @@ slicing: &base_config
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_sib16_ge: 1
+    du.sib1_has_rach_prioritization_slice_eq: true
     all.errors_le: 0
     all.warnings_le: 0

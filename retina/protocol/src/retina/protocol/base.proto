@@ -194,8 +194,13 @@ message DuMetrics {
   uint32 nof_sib3_transmissions = 9;
   uint32 nof_sib4_transmissions = 10;
   uint32 nof_sib5_transmissions = 11;
-  uint32 nof_sib8_transmissions = 12;
-  uint32 nof_paging_messages    = 13;
+  uint32 nof_sib8_transmissions  = 12;
+  uint32 nof_paging_messages     = 13;
+
+  uint32 nof_sib16_transmissions = 20;
+  uint32 nof_sib19_transmissions = 21;
+
+  bool sib1_has_rach_prioritization_slice = 22;
 
   int32 prach_configuration_index   = 14;
   int32 transform_precoder          = 15;
