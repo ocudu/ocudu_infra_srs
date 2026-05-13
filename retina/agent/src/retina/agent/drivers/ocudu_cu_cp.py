@@ -70,6 +70,7 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
             "ngap_filename": self.get_filepath_in_report_folder(gnb_defaults.ngap_filename),
             "f1ap_filename": self.get_filepath_in_report_folder(gnb_defaults.f1ap_filename),
             "e1ap_filename": self.get_filepath_in_report_folder(gnb_defaults.e1ap_filename),
+            "xnap_filename": self.get_filepath_in_report_folder(gnb_defaults.xnap_filename),
             "n3_filename": self.get_filepath_in_report_folder(gnb_defaults.n3_filename),
             "fivegc_definition": list(fivegc_definition),
             "cell_array": get_cell_array(num_cells=gnb_defaults.num_cells, cell_offset=gnb_defaults.cell_offset),

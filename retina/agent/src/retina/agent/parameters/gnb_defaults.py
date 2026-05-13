@@ -53,6 +53,7 @@ rlc_metrics: bool = False
 ngap_filename: str = "ngap.pcap"
 e1ap_filename: str = "e1ap.pcap"
 f1ap_filename: str = "f1ap.pcap"
+xnap_filename: str = "xnap.pcap"
 n3_enable: bool = False
 n3_filename: str = "n3.pcap"
 e2_du_enable: bool = False
