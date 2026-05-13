@@ -18,7 +18,7 @@ mimo_2x2: &base_config
       nof_antennas: 2
   core:
     config: [baseline.cfg]
-  feature_ids: [MVP-FUNC-MIMO-16-3, MVP-FUNC-MIMO-16-4, MVP-FUNC-PHY-16-10]
+  feature_ids: [MVP-FUNC-MIMO-16-3, MVP-FUNC-MIMO-16-4, MVP-FUNC-PHY-16-10, MVP-FUNC-PHY-16-11]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -46,7 +46,7 @@ mimo_4x4:
     config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_wideband.yml, mimo_rx.yml]
     parameters:
       nof_antennas: 4
-  feature_ids: [MVP-FUNC-MIMO-16-5, MVP-FUNC-PHY-16-7]
+  feature_ids: [MVP-FUNC-MIMO-16-5, MVP-FUNC-PHY-16-7, MVP-FUNC-PHY-16-8]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0

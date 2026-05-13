@@ -122,13 +122,3 @@ band_n66:
       nof_cell_csi_res: 1
       resource_set_size: 2
   feature_ids: [MVP-FUNC-PHY-16-1]
-
-# 4T4R DL for mid bands authorized in North America (2.1GHz)
-band_na_4t4r_ul:
-  <<: *base_config
-  feature_ids: [skip, MVP-FUNC-PHY-16-8]
-
-# 2T2R UL for mid bands authorized in North America (1.8GHz)
-band_na_2t2r_ul:
-  <<: *base_config
-  feature_ids: [skip, MVP-FUNC-PHY-16-11]
