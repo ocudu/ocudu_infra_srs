@@ -1,0 +1,39 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Slice-specific RACH prioritization example configuration (3GPP TS 38.331)
+#
+# slice_based_ra_prioritization assigns different Random Access prioritization
+# parameters to groups of NSAGs. This lets the gNB give high-priority NSAGs
+# (e.g. URLLC) a faster/more-aggressive RACH procedure than best-effort NSAGs.
+#
+# This is a supplementary configuration. Pass it alongside your base config:
+#   sudo ./gnb -c gnb_rf_b200_tdd_n78_20mhz.yml -c slice_rach.yml
+
+cell_cfg:
+  prach:
+    # List of slice-based RA prioritization entries.
+    # Each entry defines a prioritized RACH configuration for one or more NSAGs.
+    slice_based_ra_prioritization:
+      # Entry 0: high-priority URLLC NSAGs (1, 2)
+      #   - aggressive power ramping to resolve contention quickly
+      #   - reduced BI scaling to shorten back-off intervals
+      - nsag_ids: [1, 2]
+        power_ramp_step_high_priority: 6   # Extra power ramp step [dB] applied on top of the
+        # normal step. Allowed: {0, 2, 4, 6}
+        scaling_factor_bi: 0.25            # Scales the backoff indicator drawn from the RAR.
+          # Allowed: {0.0, 0.25, 0.5, 0.75}
+          # Lower = shorter effective back-off for these NSAGs.
+        # Omit this field entirely to leave BI unscaled.
+
+      # Entry 1: medium-priority eMBB NSAG (3)
+      #   - moderate power ramp, normal back-off behaviour
+      - nsag_ids: [3]
+        power_ramp_step_high_priority: 2
+        scaling_factor_bi: 0.5
+
+      # Entry 2: best-effort / mIoT NSAGs (4, 5)
+      #   - no additional power ramping
+      #   - no BI scaling (field omitted → BI used as-is from RAR)
+      - nsag_ids: [4, 5]
+        power_ramp_step_high_priority: 0

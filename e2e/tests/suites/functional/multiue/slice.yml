@@ -17,12 +17,3 @@ slice_reselection:
   <<: *base_config
   feature_ids: [skip, MVP-FUNC-SVCS-17-3-a]
 
-# Slice-specific RACH configuration
-slice_rach_config:
-  <<: *base_config
-  feature_ids: [skip, MVP-FUNC-SVCS-17-3-b]
-
-# Slice specific MBR
-different_mbr:
-  <<: *base_config
-  feature_ids: [skip, MVP-FUNC-SVCS-17-3-c]

@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# SIB16 example configuration (3GPP TS 38.331 SIB16-r17)
+#
+# SIB16 provides slice-based cell reselection assistance. It maps Network Slice
+# Assistance Groups (NSAGs) to cells/frequencies, letting UEs apply different
+# reselection priorities depending on their slice membership.
+
+cell_cfg:
+  sib:
+    si_window_length: 40
+    si_sched_info:
+      - si_period: 64
+        sib_mapping: 2
+      - si_period: 64
+        sib_mapping: 16
+        si_window_position: 2
+    sib2:
+      q_hyst: 3
+      thresh_serving_low_p: 0
+      cell_reselection_priority: 6
+      q_rx_lev_min: -70
+      s_intra_search_p: 62
+      t_reselection_nr: 1
+    sib16:
+      # List of frequency priority entries for slice-based reselection.
+      # Up to 9 entries are allowed.
+      freq_prio_list_slicing:
+        # Entry 0: serving cell (dl_implicit_carrier_freq = 0)
+        - dl_implicit_carrier_freq: 0   # 0 = serving cell; 1..8 = inter-freq carriers from SIB4
+          slice_info_list:
+            # eMBB slice (NSAG 1): high reselection priority, specific cell range allowed
+            - nsag_id: 1
+              allowed: true             # true = cells_allowed is an allowed list
+              # false = cells_allowed is an excluded list
+              reselection_priority: 6.0 # Range [0.0, 7.8] in steps of 0.2; higher = more preferred
+              cells_allowed:
+                - start: 0             # First PCI in range
+                  size: 8              # Number of PCIs covered (must be one of: 1,4,8,12,16,24,32,48,64,84,96,128,168,252,504,1008)
+
+            # URLLC slice (NSAG 2): medium priority, all cells allowed (empty list = all cells)
+            - nsag_id: 2
+              allowed: true
+              reselection_priority: 4.0
+              # No cells_allowed entry means the policy applies to all cells
+
+            # mIoT slice (NSAG 3): low priority, explicitly excludes a range of cells
+            - nsag_id: 3
+              allowed: false            # excluded list
+              reselection_priority: 2.0
+              cells_allowed:
+                - start: 500
+                  size: 4
