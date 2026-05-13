@@ -4,13 +4,13 @@
 # Slicing resource sharing and partitioning
 reserved_prb: &base_config
   template: ue_simulator.test_gnb
-  feature_ids: [skip, MVP-FUNC-SVCS-17-3-d, MVP-FUNC-SVCS-17-3-e]
+  feature_ids: [skip, MVP-FUNC-SVCS-17-3-e]
   # tc2.7	rc1
 
 # Slicing resource sharing and partitioning
 dedicated_prb:
   <<: *base_config
-  feature_ids: [skip, MVP-FUNC-SVCS-17-3-d, MVP-FUNC-SVCS-17-3-e]
+  feature_ids: [skip, MVP-FUNC-SVCS-17-3-e]
 
 # Slice-aware Reselection
 slice_reselection:
