@@ -1,0 +1,34 @@
+# OCUDU Infra SRS
+
+> Infrastructure and E2E test suite for [OCUDU](https://gitlab.com/ocudu), a 5G CU-DU stack.
+> Tests cover the full RAN stack using simulators (Amarisoft, Viavi), external 5G cores (Open5GS, Amarisoft MME), and real hardware (COTS UEs, O-RUs, SDRs).
+> Combines the Retina testing framework (Python/pytest on Kubernetes), GitLab CI/CD pipelines, and Terraform modules to provision the infrastructure.
+
+## Overview
+
+- [Main README](./README.md): Project description, pipeline diagram, and test execution flow
+
+## E2E Testing
+
+- [How to write tests](./e2e/tests/README.md): Terminology (Testbed, Test Step, Test Case, Test Suite), folder structure (`configs/`, `criteria/`, `steps/`, `suites/`), suite YAML format and how they map to CI jobs
+
+## Retina Framework
+
+- [Retina README](./retina/README.md): What Retina is, architecture (agents on K8s nodes, central orchestrator, pytest), documentation index
+- [How to add metrics/criteria](./retina/protocol/criteria.md): Steps to add new metrics: `base.proto` → agent (JSON/PCAP analyzer) → launcher (`public.py`) → test YAML
+- [Run local tests](./retina/_scripts/README.md)
+
+## How to use Retina Framework in a cluster 
+- [Cluster Setup](./retina/_docs/02_cluster_setup.md): How to configure the K8s cluster and the cluster definition in Retina
+- [Reserve Resources](./retina/_docs/04_reserve_resources.md): Retina resource booking system
+- [Run Cluster Tests](./retina/_docs/05_run_cluster_test.md): How to run tests against a real cluster
+- [Orchestrator](./retina/orchestrator/README.md): Retina orchestrator component
+
+## GitLab CI
+
+- [Templates README](./templates/README.md): Reusable GitLab CI components exposed by this repo
+- [E2E Scripts](./e2e/scripts/README.md): Helper scripts to trigger and verify pipelines
+
+## Infrastructure as Code
+
+- [Infrastructure Overview](./infrastructure/README.md): Full setup guide: fork, K8s, servers, Retina, runners, cluster definition
