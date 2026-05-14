@@ -546,6 +546,9 @@ class DuMetrics(google.protobuf.message.Message):
     NOF_SIB5_TRANSMISSIONS_FIELD_NUMBER: builtins.int
     NOF_SIB8_TRANSMISSIONS_FIELD_NUMBER: builtins.int
     NOF_PAGING_MESSAGES_FIELD_NUMBER: builtins.int
+    NOF_SIB16_TRANSMISSIONS_FIELD_NUMBER: builtins.int
+    NOF_SIB19_TRANSMISSIONS_FIELD_NUMBER: builtins.int
+    SIB1_HAS_RACH_PRIORITIZATION_SLICE_FIELD_NUMBER: builtins.int
     PRACH_CONFIGURATION_INDEX_FIELD_NUMBER: builtins.int
     TRANSFORM_PRECODER_FIELD_NUMBER: builtins.int
     DRX_LONG_CYCLE_START_OFFSET_FIELD_NUMBER: builtins.int
@@ -565,6 +568,9 @@ class DuMetrics(google.protobuf.message.Message):
     nof_sib5_transmissions: builtins.int
     nof_sib8_transmissions: builtins.int
     nof_paging_messages: builtins.int
+    nof_sib16_transmissions: builtins.int
+    nof_sib19_transmissions: builtins.int
+    sib1_has_rach_prioritization_slice: builtins.bool
     prach_configuration_index: builtins.int
     transform_precoder: builtins.int
     drx_long_cycle_start_offset: builtins.int
@@ -587,6 +593,9 @@ class DuMetrics(google.protobuf.message.Message):
         nof_sib5_transmissions: builtins.int = ...,
         nof_sib8_transmissions: builtins.int = ...,
         nof_paging_messages: builtins.int = ...,
+        nof_sib16_transmissions: builtins.int = ...,
+        nof_sib19_transmissions: builtins.int = ...,
+        sib1_has_rach_prioritization_slice: builtins.bool = ...,
         prach_configuration_index: builtins.int = ...,
         transform_precoder: builtins.int = ...,
         drx_long_cycle_start_offset: builtins.int = ...,
@@ -594,7 +603,7 @@ class DuMetrics(google.protobuf.message.Message):
         c_srs: builtins.int = ...,
         b_srs: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_paging_messages", b"nof_paging_messages", "nof_seq_err", b"nof_seq_err", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_under", b"nof_under", "prach_configuration_index", b"prach_configuration_index", "t312", b"t312", "transform_precoder", b"transform_precoder"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_paging_messages", b"nof_paging_messages", "nof_seq_err", b"nof_seq_err", "nof_sib16_transmissions", b"nof_sib16_transmissions", "nof_sib19_transmissions", b"nof_sib19_transmissions", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_under", b"nof_under", "prach_configuration_index", b"prach_configuration_index", "sib1_has_rach_prioritization_slice", b"sib1_has_rach_prioritization_slice", "t312", b"t312", "transform_precoder", b"transform_precoder"]) -> None: ...
 
 Global___DuMetrics: typing_extensions.TypeAlias = DuMetrics
 
