@@ -18,6 +18,9 @@ cell_cfg:
     dmrs_additional_position: {{dmrs_additional_pos|default(2)}}
   pusch:
     dmrs_additional_position: {{dmrs_additional_pos|default(2)}}
+  prach:
+    zero_correlation_zone: 3
+
 
 expert_phy:
   pusch_channel_estimator_cfo_compensation: false
