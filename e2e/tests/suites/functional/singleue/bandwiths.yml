@@ -28,7 +28,7 @@ bw_tdd_10: &base_config
       cfg_common_scs: 30
   core:
     config: [baseline.cfg]
-  feature_ids: [MVP-FUNC-PHY-16-1]  # NOTHING SET HERE IN THE CI SHEET
+  feature_ids: []
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -51,9 +51,9 @@ bw_tdd_50:
       ssb_nr_arfcn: 516030
   gnb:
     config: [amf.yml, cell_cfg.yml, tdd_default.yml]
-    parameters:     # NOTHING SET HERE IN THE CI SHEET
+    parameters:
       cfg_bandwidth: 50
-  feature_ids: [MVP-FUNC-PHY-16-1]  # NOTHING SET HERE IN THE CI SHEET
+  feature_ids: []
 
 # Baseline band n256 at 5 MHz
 bw_fdd_ntn_5:
@@ -68,6 +68,7 @@ bw_fdd_ntn_5:
       dl_nr_arfcn: 436000
       ssb_nr_arfcn: 436090
       common_scs: 15
+      # TODO: add NTN parameters
   gnb:
     config: [amf.yml, cell_cfg.yml, prach_config.yml, pucch_config.yml, mac_pcap.yml]
     parameters:
@@ -82,4 +83,4 @@ bw_fdd_ntn_5:
       f1_enable_occ: true
       nof_cell_sr_res: 7
       nof_cell_csi_res: 7
-  feature_ids: [skip]  # NOTHING SET HERE IN THE CI SHEET
+  feature_ids: [skip] # TODO: remove this when test is ready

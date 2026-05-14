@@ -94,7 +94,7 @@ band_n41:
   feature_ids: [MVP-FUNC-PHY-16-1]
 
 # Baseline band n66
-band_n66: 
+band_n66:
   <<: *base_config
   ue:
     config: [1cell_chsim.cfg, udp_bi_chsim.cfg]
