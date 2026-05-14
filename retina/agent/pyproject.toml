@@ -98,15 +98,6 @@ deps =
   black <= 26.3.1
   isort <= 8.0.1
 commands =
-  black --check --diff --color src
-  isort --check src
-
-[testenv:format_apply]
-skip_install = true
-deps =
-  black <= 26.3.1
-  isort <= 8.0.1
-commands =
   black src
   isort src
 
