@@ -27,6 +27,7 @@ gnb_id: int = 411
 gnb_id_bit_length: int = 22
 gnb_du_id: int = 0
 log_level: str = "info"
+log_rlc_level: str = "warning"
 enable_high_latency_diagnostics: bool = False
 tx_gain: float = -1  # Default value in testbed
 rx_gain: float = -1  # Default value in testbed

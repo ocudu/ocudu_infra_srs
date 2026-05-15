@@ -10,6 +10,9 @@ log:
   all_level: {{log_level}}
   lib_level: {{log_level}}
   config_level: debug
+{%+ if du_ip or not cucp_ip +%}
+  rlc_level: {{log_rlc_level}}
+{% endif %}
 
 metrics:
   enable_log: true
