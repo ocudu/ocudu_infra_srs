@@ -693,11 +693,11 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
     @property
     def _warning_regex(self) -> str:
-        return r"^.*warning(?!.*unused property).*$"
+        return r"^.*Warning(?!.*unused property)(?!.*CPU hyperthreading is enabled).*$"
 
     @property
     def _error_regex(self) -> str:
-        return r"^.*error.*$"
+        return r"^.*(?:Error|Unknown message).*$"
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def _ue_get(

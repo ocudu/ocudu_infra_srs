@@ -158,6 +158,14 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
         metrics.MergeFrom(self._metrics)
         return metrics
 
+    @property
+    def _warning_regex(self) -> str:
+        return r"^.*Warning(?!.*unused property)(?!.*buffer set to).*$"
+
+    @property
+    def _error_regex(self) -> str:
+        return r"^.*(?:Error).*$"
+
 
 class _RemoteAmarisoftMme(_AmarisoftMme):
     def start_sut(self, *args, **kwargs) -> None:

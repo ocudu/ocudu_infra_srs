@@ -104,8 +104,17 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
         return Empty()
 
     @property
+    def _warning_regex(self) -> str:
+        return (
+            r"^.*\[1;36mWARNING\x1B\[0m: "
+            r"(?!.*Please change the configuration files)(?!.*NF has already been added)(?!.*UnRef NF EndPoint)"
+            r"(?!.*Couldn't connect to server)(?!.*ogs_sbi_client_handler\(\) failed)"
+            r".*$"
+        )
+
+    @property
     def _error_regex(self) -> str:
-        return r"^.*\] ERROR: .*$"
+        return r"^.*\[1;33mERROR\x1B\[0m: (?!.*Child status change)(?!.*Invalid packet)(?!.*No IPv6 subnet).*$"
 
     @property
     def _exit_children_first(self) -> bool:

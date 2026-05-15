@@ -1207,7 +1207,7 @@ def stop(
             retina_data=retina_data,
             timeout=ue_stop_timeout,
             log_search=log_search,
-            warning_as_errors=warning_as_errors,
+            warning_as_errors=False,
         )
         error_msg_array.append(error_message)
 
@@ -1277,7 +1277,7 @@ def stop(
                 retina_data=retina_data,
                 timeout=fivegc_stop_timeout,
                 log_search=log_search,
-                warning_as_errors=warning_as_errors,
+                warning_as_errors=False,
             )
             error_msg_array.append(error_message)
 
