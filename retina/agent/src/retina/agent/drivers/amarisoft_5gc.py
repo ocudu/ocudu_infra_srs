@@ -141,7 +141,6 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
                     fd.write(json.dumps(stats))
                     fd.write("]")
                     fd.flush()
-                logging.error("Written in file")
             # Generate gRPC metrics
             counters = stats.get("counters", {}).get("messages", {})
             self._metrics = Metrics(
