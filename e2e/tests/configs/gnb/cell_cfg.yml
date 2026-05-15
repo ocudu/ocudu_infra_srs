@@ -21,7 +21,6 @@ cell_cfg:
   prach:
     zero_correlation_zone: 3
 
-
 expert_phy:
   pusch_channel_estimator_cfo_compensation: false
 
@@ -30,15 +29,7 @@ pcap:
   rlc_rb_type: srb
   rlc_filename: {{rlc_filename}}
 
-log:
-  all_level: info
-  rlc_level: warning
-  config_level: debug
-
 metrics:
-  autostart_stdout_metrics: true
-  enable_log: true
-  enable_json: true
   layers:
     enable_sched: true
     enable_mac: true
