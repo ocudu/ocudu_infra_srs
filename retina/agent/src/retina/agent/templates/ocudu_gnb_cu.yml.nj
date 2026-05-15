@@ -3,11 +3,6 @@ SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 #}
 
-{% if log_sec_level %}
-log:
-  sec_level: {{log_sec_level}}
-{% endif %}
-
 pcap:
   ngap_filename: {{ngap_filename}}
   f1ap_filename: {{f1ap_filename}}

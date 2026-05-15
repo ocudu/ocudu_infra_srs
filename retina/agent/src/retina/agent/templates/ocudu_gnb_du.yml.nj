@@ -194,16 +194,6 @@ cell_cfg:
 log:
   high_latency_diagnostics_enabled: {{enable_high_latency_diagnostics}}
 
-{% if log_mac_level %}
-log:
-  mac_level: {{log_mac_level}}
-{% endif %}
-
-{% if log_phy_level %}
-log:
-  phy_level: {{log_phy_level}}
-{% endif %}
-
 {% if ntn_enable %}
 cell_cfg:
   sib:
