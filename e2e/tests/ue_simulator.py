@@ -73,29 +73,6 @@ def test_2gnb(
 
 @load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_gnb_2core(
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    criteria: CriteriaTable,
-    test_definition: RetinaTestDefinition,
-    ue: UEStub,
-    gnb: GNBStub,
-    fivegc_multiple,
-):
-    """Template test function for UE simulator + GNB + 2 Core"""
-    _ue_simulator(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        criteria=criteria,
-        test_definition=test_definition,
-        ue=ue,
-        gnb_array=[gnb],
-        fivegc_array=fivegc_multiple(2),
-    )
-
-
-@load_tests
-# pylint: disable=too-many-arguments,too-many-positional-arguments
 def test_cu_2du(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,

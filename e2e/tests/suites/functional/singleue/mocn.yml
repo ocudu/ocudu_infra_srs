@@ -3,24 +3,24 @@
 
 # MOCN test
 mocn: &base_config
-  template: ue_simulator.test_gnb_2core
+  template: mocn.test
   request: zmq_2mme
   ue:
     config: [1cell.cfg, mocn.cfg]
   gnb:
-    config: [cu.yml, du.yml, mocn.yml]
+    config: [mocn.yml, cu.yml, du.yml]
   core:
     items:
-      - config: [baseline.cfg]
-        parameters:
-          plmn: "00101"
-          first_ip: "192.168.3.2"
-          last_ip: "192.168.3.254"
-      - config: [baseline.cfg]
-        parameters:
-          plmn: "00102"
-          first_ip: "192.168.4.2"
-          last_ip: "192.168.4.254"
+      - parameters:
+          mcc: "001"
+          mnc: "01"
+          slices:
+            - 1
+      - parameters:
+          mcc: "001"
+          mnc: "02"
+          slices:
+            - 1
   feature_ids: [MVP-FUNC-RANS-16-1]
   criteria:
     du.dl_bitrate_gt: 0
@@ -28,7 +28,7 @@ mocn: &base_config
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
     du.nof_reestablishments_eq: 0
-    core.nof_pdu_session_establishment_accept_eq: 2 # there are 2 UEs, one per PLMN
+    ue.nof_pdu_session_establishment_accept_eq: 2 # there are 2 UEs, one per PLMN
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
@@ -39,7 +39,7 @@ moran:
   ue:
     config: [2cell_intrafreq.cfg, mocn.cfg]
   gnb:
-    config: [cu.yml, du.yml, mocn.yml, 2cell_moran.yml]
+    config: [mocn.yml, cu.yml, du.yml, 2cell_moran.yml]
   feature_ids: [MVP-FUNC-RANS-16-2]
 
 # SCTP Multi-homing

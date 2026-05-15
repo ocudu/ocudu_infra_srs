@@ -68,11 +68,11 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
             filename=self.OPEN5G_CONF_FILE_BASE_NAME,
             templates={self.OPEN5G_CONF_FILE_BASE_NAME: template_defaults.main},
             values={
+                "mcc": request.plmn.mcc,
+                "mnc": request.plmn.mnc,
                 **get_module_variables(testbed_defaults),
                 **get_module_variables(fivegc_defaults),
                 "log_level": {"warning": "warn"}.get(fivegc_defaults.log_level, fivegc_defaults.log_level),
-                "mcc": request.plmn.mcc,
-                "mnc": request.plmn.mnc,
             },
         )
 

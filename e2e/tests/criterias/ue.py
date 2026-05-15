@@ -29,3 +29,12 @@ class nof_handovers_ge(UeCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).aggregate.nof_handovers for s in self._stub_array)
+
+
+class nof_pdu_session_establishment_accept_eq(UeCriteria):
+    """PDU Session Establishment Accept"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_pdu_session_establishment_accept for s in self._stub_array)

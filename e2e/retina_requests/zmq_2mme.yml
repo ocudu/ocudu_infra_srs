@@ -42,9 +42,9 @@
       remote_path: /usr/local/bin/gnb
       is_executable: true
 
-- name: amarisoft-mme-1
+- name: open5gs-1
   type: 5gc
-  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
       requests: 10%
@@ -52,15 +52,17 @@
       requests: 10%
     ephemeral-storage:
       requests: 6G
+  environment:
+    - TUN_IP_PREFIX: "10.45"
   resources:
     - type: license
       model: amarisoft-mme.*
     - type: zmq
       dummy: true
 
-- name: amarisoft-mme-2
+- name: open5gs-2
   type: 5gc
-  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
       requests: 10%
@@ -68,6 +70,8 @@
       requests: 10%
     ephemeral-storage:
       requests: 6G
+  environment:
+    - TUN_IP_PREFIX: "10.46"
   resources:
     - type: license
       model: amarisoft-mme.*

@@ -24,9 +24,12 @@ from retina.launcher.utils import configure_artifacts
 from retina.protocol import RanStub
 from retina.protocol.base_pb2 import (
     ChannelEmulatorType,
+    CUCPDefinition,
     DUDefinition,
     FiveGCDefinition,
+    GNBDefinition,
     Metrics,
+    NearRtRicDefinition,
     PingRequest,
     PingResponse,
     PLMN,
@@ -224,17 +227,9 @@ def start_network(
         if ue_def.zmq_ip is not None:
             ue_def_for_gnb = ue_def
 
-    fivegc_definition: List[FiveGCDefinition] = []
-    for fivegc in fivegc_array:
-        with handle_start_error(name=f"5GC [{id(fivegc)}]"):
-            # 5GC Start
-            fivegc_definition.append(fivegc.GetDefinition(Empty()))
-            fivegc.Start(
-                FiveGCStartInfo(
-                    plmn=plmn,
-                    start_info=StartInfo(timeout=fivegc_startup_timeout),
-                )
-            )
+    fivegc_definition = [
+        fivegc_start(fivegc, plmn=plmn, fivegc_startup_timeout=fivegc_startup_timeout) for fivegc in fivegc_array
+    ]
 
     if channel_emulator and ue_def_for_gnb.zmq_ip is not None:
         # Overwrite the ZMQ IP and port, so the GNB connects to the channel emulator.
@@ -258,22 +253,17 @@ def start_network(
     if gnb_array:
         gnb_definitions = [gnb.GetDefinition(UInt32Value(value=idx)) for idx, gnb in enumerate(gnb_array)]
         for idx, gnb in enumerate(gnb_array):
-            with handle_start_error(name=f"GNB [{id(gnb)}]"):
-                # GNB Start
-                gnb.Start(
-                    GNBStartInfo(
-                        plmn=plmn,
-                        ue_definition=ue_def_for_gnb,
-                        fivegc_definition=fivegc_definition,
-                        ric_definition=ric_definition,
-                        neighbor_cucp_definition=[d.cucp_definition for i, d in enumerate(gnb_definitions) if i != idx],
-                        start_info=StartInfo(
-                            timeout=gnb_startup_timeout,
-                            pre_commands=gnb_pre_cmd,
-                            post_commands=gnb_post_cmd,
-                        ),
-                    )
-                )
+            gnb_start(
+                gnb,
+                plmn=plmn,
+                ue_definition=ue_def_for_gnb,
+                fivegc_definition_array=fivegc_definition,
+                ric_definition=ric_definition,
+                neighbor_cucp_definition=[d.cucp_definition for i, d in enumerate(gnb_definitions) if i != idx],
+                startup_timeout=gnb_startup_timeout,
+                pre_cmd=gnb_pre_cmd,
+                post_cmd=gnb_post_cmd,
+            )
         return
 
     cucp_definition = None
@@ -341,6 +331,52 @@ def start_network(
                         ),
                     )
                 )
+
+
+def fivegc_start(
+    fivegc: FiveGCStub,
+    plmn: Optional[PLMN] = PLMN(),
+    fivegc_startup_timeout: int = FIVEGC_STARTUP_TIMEOUT,
+) -> FiveGCDefinition:
+    """Starts a FiveG Core"""
+
+    with handle_start_error(name=f"5GC [{id(fivegc)}]"):
+        # 5GC Start
+        fivegc.Start(FiveGCStartInfo(plmn=plmn, start_info=StartInfo(timeout=fivegc_startup_timeout)))
+    return fivegc.GetDefinition(Empty())
+
+
+def gnb_start(
+    gnb: GNBStub,
+    plmn: Optional[PLMN] = PLMN(),
+    ue_definition: UEDefinition = UEDefinition(),
+    ric_definition: NearRtRicDefinition = NearRtRicDefinition(),
+    fivegc_definition_array: Sequence[FiveGCDefinition] = tuple(),
+    neighbor_cucp_definition: Sequence[CUCPDefinition] = tuple(),
+    startup_timeout: int = GNB_STARTUP_TIMEOUT,
+    pre_cmd: Tuple[str, ...] = tuple(),
+    post_cmd: Tuple[str, ...] = tuple(),
+    cell_offset: int = 0,
+) -> GNBDefinition:
+    """Starts a gNB"""
+
+    with handle_start_error(name=f"GNB [{id(gnb)}]"):
+        # GNB Start
+        gnb.Start(
+            GNBStartInfo(
+                plmn=plmn,
+                ue_definition=ue_definition,
+                ric_definition=ric_definition,
+                fivegc_definition=fivegc_definition_array,
+                neighbor_cucp_definition=neighbor_cucp_definition,
+                start_info=StartInfo(
+                    timeout=startup_timeout,
+                    pre_commands=pre_cmd,
+                    post_commands=post_cmd,
+                ),
+            )
+        )
+    return gnb.GetDefinition(UInt32Value(value=cell_offset))
 
 
 def ue_start_and_attach(

@@ -337,9 +337,9 @@ services:
     x-testbed:
       type: du
 
-  open5gs:
+  open5gs-1: &open5gs
     restart: unless-stopped
-    container_name: open5gs
+    container_name: open5gs-1
     profiles:
       - all
       - zmq_amariue_open5gs
@@ -359,16 +359,27 @@ services:
     sysctls:
       - net.ipv6.conf.default.disable_ipv6=0
     environment:
-      RETINA_IP: &open5gs_ip 172.20.0.70
+      RETINA_IP: &open5gs_ip_1 172.20.0.70
+      TUN_IP_PREFIX: 10.45
     networks:
       retina:
-        ipv4_address: *open5gs_ip
+        ipv4_address: *open5gs_ip_1
     volumes: *agent_volumes
     tmpfs: *agent_tmpfs
     devices:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
       type: 5gc
+
+  open5gs-2:
+    <<: *open5gs
+    container_name: open5gs-2
+    environment:
+      RETINA_IP: &open5gs_ip_2 172.20.0.71
+      TUN_IP_PREFIX: 10.46
+    networks:
+      retina:
+        ipv4_address: *open5gs_ip_2
 
   amarisoft-5gc-1: &mme
     ulimits:
@@ -389,7 +400,7 @@ services:
         agent: "service:agent-image"
         wheelhouse: "service:wheelhouse"
     environment:
-      RETINA_IP: &amari5gc1_ip 172.20.0.71
+      RETINA_IP: &amari5gc1_ip 172.20.0.72
       RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_MME_LICENSE_TAG}
     cap_add:
       - NET_ADMIN # Required for TUN interface creation and iptables
@@ -413,7 +424,7 @@ services:
     <<: *mme
     container_name: amarisoft-5gc-2
     environment:
-      RETINA_IP: &amari5gc2_ip 172.20.0.72
+      RETINA_IP: &amari5gc2_ip 172.20.0.73
       RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_MME_LICENSE_TAG}
     networks:
       retina:
