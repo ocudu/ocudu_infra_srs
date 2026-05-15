@@ -17,6 +17,7 @@
 - [Retina README](./retina/README.md): What Retina is, architecture (agents on K8s nodes, central orchestrator, pytest), documentation index
 - [How to add metrics/criteria](./retina/protocol/criteria.md): Steps to add new metrics: `base.proto` → agent (JSON/PCAP analyzer) → launcher (`public.py`) → test YAML
 - [Run local tests](./retina/_scripts/README.md)
+- [How to parse tests artifacts](./retina/launcher/artifacts.md)
 
 ## How to use Retina Framework in a cluster 
 - [Cluster Setup](./retina/_docs/02_cluster_setup.md): How to configure the K8s cluster and the cluster definition in Retina

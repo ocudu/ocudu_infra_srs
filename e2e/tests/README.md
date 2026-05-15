@@ -120,6 +120,23 @@ conditional_ho:
   feature_ids: [MVP-FUNC-MOB-15]
 ```
 
+## Test name in pytest
+
+Each test case key in the YAML maps to a full pytest test ID of the form `tests/<template_file>::<function>[<suite_path>.<test_case_key>]`, where `<suite_path>` is the dot-separated path of the suite file relative to `suites/`, e.g.:
+
+```text
+tests/ue_simulator.py::test_gnb[functional.singleue.fdd_siso.prach_config_1_fdd]
+│     │                │        │          │         │        └── test case key in the YAML
+│     │                │        │          │         └── suite file name (fdd_siso.yml)
+│     │                │        │          └── subfolder (singleue/)
+│     │                │        └── top-level suite folder (functional/)
+│     │                └── function name in the test template
+│     └── test template file (see Test Templates above)
+└── e2e/tests/ root
+```
+
+This is the ID used in `report.html` and in the artifact folder name under `e2e/log/tests/`.
+
 ## Criteria
 
 ### Naming convention
