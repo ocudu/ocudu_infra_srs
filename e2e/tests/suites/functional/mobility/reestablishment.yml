@@ -12,7 +12,7 @@ intra_ru: &base_config
       ul_bitrate: 10.0e+3
       nof_reestablishments: &nof_reestablishments 5
   gnb:
-    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, tdd_default.yml]
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml]
   core:
     config: [baseline.cfg]
   feature_ids: [CU-GEN-3]

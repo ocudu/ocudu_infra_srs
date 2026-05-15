@@ -11,7 +11,7 @@ key_regen: &base_config
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
   gnb:
-    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, tdd_default.yml]
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml]
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-MOB-1-a]

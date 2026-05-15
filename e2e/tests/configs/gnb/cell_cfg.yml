@@ -28,6 +28,12 @@ pcap:
   rlc_enable: true
   rlc_rb_type: srb
   rlc_filename: {{rlc_filename}}
+  ngap_enable: true
+  ngap_filename: {{ngap_filename}}
+  f1ap_enable: true
+  f1ap_filename: {{f1ap_filename}}
+  e1ap_enable: true
+  e1ap_filename: {{e1ap_filename}}
 
 metrics:
   layers:

@@ -13,7 +13,7 @@ baseline: &base_config
       test_duration: 100
       nof_ue: &nof_ue 1
   gnb:
-    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
+    config: [amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14, MVP-FUNC-BAS-16-2, DU-GEN-2-a, CU-GEN-5]
@@ -43,7 +43,7 @@ conditional_ho:
       test_duration: 100
       nof_ue: *nof_ue
   gnb:
-    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, conditional_ho.yml, tdd_default.yml, mac_pcap.yml]
+    config: [amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, conditional_ho.yml, tdd_default.yml, mac_pcap.yml]
     parameters:
       trigger_handover: false
   feature_ids: [MVP-FUNC-MOB-15]
@@ -70,7 +70,7 @@ cfra_ho:
       test_duration: 100
       nof_ue: *nof_ue
   gnb:
-    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, cfra_ho.yml, tdd_default.yml, mac_pcap.yml]
+    config: [amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, cfra_ho.yml, tdd_default.yml, mac_pcap.yml]
     parameters:
       trigger_handover: false
   feature_ids: [DU-GEN-2-b]

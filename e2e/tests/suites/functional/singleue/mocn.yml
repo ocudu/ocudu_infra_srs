@@ -8,7 +8,7 @@ mocn: &base_config
   ue:
     config: [1cell.cfg, mocn.cfg]
   gnb:
-    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, mocn.yml]
+    config: [amf.yml, cell_cfg.yml, mocn.yml]
   core:
     items:
       - config: [baseline.cfg]
@@ -39,7 +39,7 @@ moran:
   ue:
     config: [2cell_intrafreq.cfg, mocn.cfg]
   gnb:
-    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, mocn.yml, 2cell_moran.yml]
+    config: [amf.yml, cell_cfg.yml, mocn.yml, 2cell_moran.yml]
   feature_ids: [MVP-FUNC-RANS-16-2]
 
 # SCTP Multi-homing

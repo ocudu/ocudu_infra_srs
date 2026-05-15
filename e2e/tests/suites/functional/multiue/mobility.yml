@@ -12,7 +12,7 @@ inter_ru_ho: &base_config
       ul_bitrate: 10.0e+3
       nof_ue: &nof_ue 10
   gnb:
-    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, 512ue.yml]
+    config: [amf.yml, cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, 512ue.yml]
   core:
     config: [baseline.cfg]
   criteria:
@@ -60,7 +60,7 @@ inter_du_ho:
       nof_antennas_dl: 1
       nof_antennas_ul: 1
   cu:
-    config: [cu_cp_log.yml, amf.yml, mobility.yml]
+    config: [amf.yml, mobility.yml]
   du:
     items:
       - config: [cell_cfg.yml, tdd_default.yml, 512ue.yml]
@@ -109,7 +109,7 @@ inter_cu_ho:
       nof_antennas_ul: 1
   gnb:
     items:
-      - config: [cu_cp_log.yml, amf.yml, gnb_base.yml, inter_cu_mobility_1.yml, cell_cfg.yml, tdd_default.yml, sib2345.yml]
+      - config: [amf.yml, gnb_base.yml, inter_cu_mobility_1.yml, cell_cfg.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
           ran_node_name_cfg: "ocudu01"
@@ -117,7 +117,7 @@ inter_cu_ho:
           nof_antennas_dl: 1
           nof_antennas_ul: 1
           cell_offset: 0
-      - config: [cu_cp_log.yml, amf.yml, gnb_base.yml, inter_cu_mobility_2.yml, cell_cfg.yml, tdd_default.yml, sib2345.yml]
+      - config: [amf.yml, gnb_base.yml, inter_cu_mobility_2.yml, cell_cfg.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
           ran_node_name_cfg: "ocudu02"
@@ -147,7 +147,7 @@ reestablishment:
       ul_bitrate: 10.0e+3
       nof_ue: *nof_ue
   gnb:
-    config: [cu_cp_log.yml, amf.yml, cell_cfg.yml, tdd_default.yml, 512ue.yml]
+    config: [amf.yml, cell_cfg.yml, tdd_default.yml, 512ue.yml]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0

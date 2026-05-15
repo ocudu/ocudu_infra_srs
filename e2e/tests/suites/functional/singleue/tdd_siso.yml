@@ -40,7 +40,7 @@ baseline_cu_du:
       ul_bitrate: 10.0e+6
       test_duration: 3
   cu_cp:
-    config: [amf.yml, cu_cp_log.yml]
+    config: [amf.yml]
   cu_up:
     config: []
   du:
