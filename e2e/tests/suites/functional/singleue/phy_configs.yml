@@ -12,7 +12,7 @@ prach_config_0: &base_config
       ul_bitrate: 10.0e+6
       test_duration: 2
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 159
   core:
@@ -34,7 +34,7 @@ prach_config_0: &base_config
 prach_config_1:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 162
   feature_ids: [MVP-FUNC-PHY-16-2]
@@ -54,7 +54,7 @@ prach_config_1:
 prach_config_a3:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_63.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_63.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 110
   feature_ids: [MVP-FUNC-PHY-16-2]
@@ -74,7 +74,7 @@ prach_config_a3:
 prach_config_c0:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 180
   feature_ids: [MVP-FUNC-PHY-16-2]
@@ -94,7 +94,7 @@ prach_config_c0:
 prach_config_c2:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_72.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_72.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 189
   criteria:
@@ -114,21 +114,21 @@ prach_config_c2:
 srs_aperiodic:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_aperiodic.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, srs_aperiodic.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-PHY-16-4]
 
 # SRS Wideband configuration test
 srs_wideband:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_wideband.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, srs_wideband.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-PHY-16-5]
 
 # SRS Narrowband configuration test
 srs_narrowband:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, srs_narrowband.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, srs_narrowband.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-PHY-16-6]
   criteria:
     du.dl_bitrate_gt: 0
@@ -145,14 +145,14 @@ srs_narrowband:
 aperiodic_csi:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, aperiodic_csi.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, aperiodic_csi.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-MIMO-16-1]
 
 # PUCCH Format 0/2 test
 pucch_02:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, pucch_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, pucch_config.yml, mac_pcap.yml]
     parameters:
       pucch_format: "f0_and_f2"
   feature_ids: [DU-PHY-1]
@@ -161,7 +161,7 @@ pucch_02:
 pucch_13:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, pucch_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, pucch_config.yml, mac_pcap.yml]
     parameters:
       pucch_format: "f1_and_f3"
   feature_ids: [DU-PHY-1]
@@ -170,7 +170,7 @@ pucch_13:
 pucch_14:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, pucch_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, pucch_config.yml, mac_pcap.yml]
     parameters:
       pucch_format: "f1_and_f4"
   feature_ids: [DU-PHY-1]
@@ -179,7 +179,7 @@ pucch_14:
 pucch_intraslot:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, pucch_config_intraslot.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, pucch_config_intraslot.yml, mac_pcap.yml]
   feature_ids: [DU-PHY-9]
 
 # PDSCH VRB
@@ -187,7 +187,7 @@ pucch_intraslot:
 pdsch_vrb:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, pdsch_vrb.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, pdsch_vrb.yml, mac_pcap.yml]
     parameters:
       warning_allowlist:
         - MAC max KOs reached
@@ -209,7 +209,7 @@ pdsch_vrb:
 dmrs_1:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 159
       dmrs_additional_pos: 1
@@ -219,7 +219,7 @@ dmrs_1:
 dmrs_2:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 159
       dmrs_additional_pos: 2
@@ -229,7 +229,7 @@ dmrs_2:
 dmrs_3:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 159
       dmrs_additional_pos: 3
@@ -239,7 +239,7 @@ dmrs_3:
 precoding:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, precoding.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, precoding.yml]
   feature_ids: [DU-PHY-7]
   criteria:
     du.dl_bitrate_gt: 0

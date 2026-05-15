@@ -21,7 +21,7 @@ baseline: &base_config
       nof_antennas_ul: 1
   gnb:
     items:
-      - config: [amf.yml, gnb_base.yml, inter_cu_mobility_1.yml, cell_cfg.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
           ran_node_name_cfg: "ocudu01"
@@ -29,7 +29,7 @@ baseline: &base_config
           nof_antennas_dl: 1
           nof_antennas_ul: 1
           cell_offset: 0
-      - config: [amf.yml, gnb_base.yml, inter_cu_mobility_2.yml, cell_cfg.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
           ran_node_name_cfg: "ocudu02"
@@ -60,7 +60,7 @@ fr1_fr2:
   <<: *base_config
   gnb:
     items:
-      - config: [amf.yml, gnb_base.yml, inter_cu_mobility_1.yml, cell_cfg.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id_cfg: 411
           ran_node_name_cfg: "ocudu01"
@@ -71,7 +71,7 @@ fr1_fr2:
           nof_antennas_dl: 1
           nof_antennas_ul: 1
           cell_offset: 0
-      - config: [amf.yml, gnb_base.yml, inter_cu_mobility_2.yml, cell_cfg.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu.yml, inter_cu_mobility_2.yml, du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id_cfg: 412
           ran_node_name_cfg: "ocudu02"

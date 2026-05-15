@@ -11,7 +11,7 @@ closed_loop_pc:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, closed_loop_pc.yml, pucch_config.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, closed_loop_pc.yml, pucch_config.yml]
     parameters:
       prach_config_index: 159
       pucch_format: "f0_and_f2"

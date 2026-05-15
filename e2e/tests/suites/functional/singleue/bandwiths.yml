@@ -19,7 +19,7 @@ bw_tdd_10: &base_config
       nof_antennas: 1
       pdcch_decode_threshold: 0
   gnb:
-    config: [amf.yml, cell_cfg.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, mac_pcap.yml]
     parameters:
       cfg_band: 41
       cfg_earfcn: 520002
@@ -50,7 +50,7 @@ bw_tdd_50:
       dl_nr_arfcn: 520002
       ssb_nr_arfcn: 516030
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml]
+    config: [cu.yml, du.yml, tdd_default.yml]
     parameters:
       cfg_bandwidth: 50
   feature_ids: []
@@ -70,7 +70,7 @@ bw_fdd_ntn_5:
       common_scs: 15
       # TODO: add NTN parameters
   gnb:
-    config: [amf.yml, cell_cfg.yml, prach_config.yml, pucch_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, prach_config.yml, pucch_config.yml, mac_pcap.yml]
     parameters:
       cfg_band: 256
       cfg_earfcn: 436000

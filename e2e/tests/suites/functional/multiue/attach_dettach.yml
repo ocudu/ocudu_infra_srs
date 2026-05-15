@@ -11,7 +11,7 @@ baseline: &base_config
       nof_ue: 10
       nof_cycles: 5
   gnb:
-    config: [amf.yml, cell_cfg.yml, 512ue.yml, tdd_default.yml]
+    config: [cu.yml, du.yml, 512ue.yml, tdd_default.yml]
   core:
     config: [baseline.cfg]
   criteria:
@@ -29,10 +29,10 @@ baseline: &base_config
 dl_heavy_tdd:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, 512ue.yml, tdd_72.yml]
+    config: [cu.yml, du.yml, 512ue.yml, tdd_72.yml]
 
 # Attach/dettach stability, management of fallback scheduler, correct addition and removal of UEs
 ul_heavy_tdd:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, 512ue.yml, tdd_27.yml]
+    config: [cu.yml, du.yml, 512ue.yml, tdd_27.yml]

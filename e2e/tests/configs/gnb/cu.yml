@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
+ran_node_name: {{ran_node_name_cfg|default("ocudu01")}}
+
 # Baseline single slice configuration
 cu_cp:
   amf:
@@ -11,3 +14,11 @@ cu_cp:
             tai_slice_support_list:
               - sst: 1
                 sd: 1
+
+pcap:
+  ngap_enable: true
+  ngap_filename: {{ngap_filename}}
+  e1ap_enable: true
+  e1ap_filename: {{e1ap_filename}}
+  f1ap_enable: true
+  f1ap_filename: {{f1ap_filename}}

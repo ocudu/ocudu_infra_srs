@@ -101,7 +101,7 @@ baseline: &base_config # Test Case
       nof_ue: 1
       test_duration: 100
   gnb:
-    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml]  # YAML overlays, merged in order
+    config: [du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml]  # YAML overlays, merged in order
   core:
     config: [baseline.cfg]
   # Pass/fail criteria: <component>.<metric_name>_<operator>: <threshold>
@@ -116,7 +116,7 @@ baseline: &base_config # Test Case
 conditional_ho:
   <<: *base_config
   gnb:
-    config: [cell_cfg.yml, 2cell_intrafreq.yml, mobility.yml, conditional_ho.yml]
+    config: [du.yml, 2cell_intrafreq.yml, mobility.yml, conditional_ho.yml]
   feature_ids: [MVP-FUNC-MOB-15]
 ```
 

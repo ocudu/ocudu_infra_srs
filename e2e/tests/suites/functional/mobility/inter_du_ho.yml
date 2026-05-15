@@ -18,17 +18,17 @@ baseline: &base_config
       nof_antennas_dl: 1
       nof_antennas_ul: 1
   cu:
-    config: [amf.yml, mobility.yml]
+    config: [cu.yml, mobility.yml]
   du:
     items:
-      - config: [cell_cfg.yml, tdd_default.yml, sib2345.yml]
+      - config: [du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_du_id_cfg: 0
           pci_cfg: 1
           sector_id_cfg: 0
           nof_antennas_dl: 1
           nof_antennas_ul: 1
-      - config: [cell_cfg.yml, tdd_default.yml, sib2345.yml]
+      - config: [du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_du_id_cfg: 1
           pci_cfg: 2
@@ -53,14 +53,14 @@ fr1_fr2:
   <<: *base_config
   du:
     items:
-      - config: [cell_cfg.yml, tdd_default.yml, sib2345.yml]
+      - config: [du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_du_id_cfg: 0
           pci_cfg: 1
           sector_id_cfg: 0
           nof_antennas_dl: 1
           nof_antennas_ul: 1
-      - config: [cell_cfg.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
+      - config: [du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters: # FR2 config parameters
           gnb_du_id_cfg: 1
           pci_cfg: 2

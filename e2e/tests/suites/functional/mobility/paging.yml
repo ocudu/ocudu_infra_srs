@@ -12,7 +12,7 @@ paging: &base_config
       ul_bitrate: 10.0e+3
       nof_paging: &nof_paging 1
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       time_multiplier: &time_multiplier 10
   core:
@@ -38,7 +38,7 @@ paging: &base_config
 drx:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       drx_long_cycle: 80
       time_multiplier: *time_multiplier
@@ -61,7 +61,7 @@ drx:
 edrx:
   <<: *base_config
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [DU-GEN-10]
@@ -100,7 +100,7 @@ rrc_inactive:
       nof_paging: 1
       log_level: debug
   gnb:
-    config: [amf.yml, cell_cfg.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-MOB-10]
