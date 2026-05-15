@@ -36,17 +36,17 @@ band3_bw50: &base_config
     all.errors_le: 0
     all.warnings_le: 0
 
-# FDD 50 MHz with PRACH config 1
-prach_config_1_fdd:
+# FDD 50 MHz with PRACH format 0
+prach_config_0_fdd:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, prach_config.yml]
+    config: [cu.yml, du.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       cfg_earfcn: 368500
       cfg_bandwidth: 50
       cfg_band: 3
       cfg_common_scs: 15
-      prach_config_index: 16
+      prach_config_index: 12
   ue:
     config: [1cell.cfg, udp_bi.cfg]
     parameters:
@@ -68,6 +68,42 @@ prach_config_1_fdd:
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
+    du.prach_configuration_index_eq: 12
+  feature_ids: [MVP-FUNC-PHY-16-2]
+
+# FDD 50 MHz with PRACH format 1
+prach_config_1_fdd:
+  <<: *base_config
+  gnb:
+    config: [cu.yml, du.yml, prach_config.yml, mac_pcap.yml]
+    parameters:
+      cfg_earfcn: 368500
+      cfg_bandwidth: 50
+      cfg_band: 3
+      cfg_common_scs: 15
+      prach_config_index: 42
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      dl_nr_arfcn: 368500
+      ssb_nr_arfcn: 364090
+      common_scs: 15
+      band: 3
+      bandwidth: 50
+      test_duration: 3
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.prach_configuration_index_eq: 42
   feature_ids: [MVP-FUNC-PHY-16-2]
 
 # FDD 5 MHz in band 3
