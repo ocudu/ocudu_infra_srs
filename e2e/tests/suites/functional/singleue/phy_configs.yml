@@ -183,11 +183,27 @@ pucch_intraslot:
   feature_ids: [DU-PHY-9]
 
 # PDSCH VRB
+# Note: DL KOs and RLFs are allowed until UE supports PDSCH VRB
 pdsch_vrb:
   <<: *base_config
   gnb:
     config: [amf.yml, cell_cfg.yml, tdd_default.yml, pdsch_vrb.yml, mac_pcap.yml]
+    parameters:
+      warning_allowlist:
+        - MAC max KOs reached
+      prach_config_index: 159
   feature_ids: [DU-PHY-8]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: .inf
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.prach_configuration_index_eq: 159
 
 # DMRS Additional pos 1 test
 dmrs_1:
