@@ -30,7 +30,7 @@ $RETINA_PATH/_scripts/retina_local.sh
 ### Terminal 2 - Run the test
 
 ```bash
-docker exec -it launcher retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml <pytest-arguments>
+docker exec -it launcher retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml --reruns=0 <pytest-arguments>
 ```
 
 ## 1. Download repos
@@ -174,7 +174,7 @@ docker exec -it <name> bash
 You can run a test with the following command:
 
 ```bash
-docker exec -it launcher retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml -x -m {marker} --force-download
+docker exec -it launcher retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml --reruns=0 -x -m {marker}
 ```
 
 Alternatively, You can also enter into the container and run your command:
@@ -186,7 +186,7 @@ docker exec -it launcher sh
 And execute inside the container:
 
 ```bash
-retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml -x -m example --force-download
+retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml --reruns=0 -x -m example
 ```
 
 This will:
