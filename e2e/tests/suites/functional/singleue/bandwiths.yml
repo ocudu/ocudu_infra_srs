@@ -46,9 +46,16 @@ bw_tdd_50:
   ue:
     config: [1cell.cfg, udp_bi.cfg]
     parameters:
+      band: 41
       bandwidth: 50
       dl_nr_arfcn: 520002
       ssb_nr_arfcn: 516030
+      common_scs: 30
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 2
+      nof_antennas: 1
+      pdcch_decode_threshold: 0
   gnb:
     config: [cu.yml, du.yml, tdd_default.yml]
     parameters:
