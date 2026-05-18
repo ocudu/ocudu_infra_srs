@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cu_cp:
+  xnap:
+    connections:
+      - bind_addrs:
+          - {{ip}}
+        peer_addrs:
+          - {{neighbor_cucp_definition.0.cucp_ip}}
+
+pcap:
+  xnap_enable: true
+  xnap_filename: {{xnap_filename}}

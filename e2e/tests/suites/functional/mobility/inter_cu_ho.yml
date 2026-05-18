@@ -91,7 +91,27 @@ fr1_fr2_same_cu_up:
   <<: *base_config
   feature_ids: [skip, MVP-FUNC-MOB-2-e]
 
-# Xn HO
+# tid1.2.14: Xn HO
 xn_ho:
   <<: *base_config
-  feature_ids: [skip, MVP-FUNC-MOB-3]
+  gnb:
+    items:
+      - config: [cu.yml, xnap.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_id: 411
+          ran_node_name_cfg: "ocudu01"
+          pci_cfg: 1
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 0
+          warning_allowlist:
+            - Failed to connect to XN-C peer
+      - config: [cu.yml, xnap.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_id: 412
+          ran_node_name_cfg: "ocudu02"
+          pci_cfg: 2
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 1
+  feature_ids: [MVP-FUNC-MOB-3]
