@@ -4,7 +4,18 @@
 # Power-based NRPPa
 position_power: &base_config
   template: ue_simulator.test_gnb
-  feature_ids: [skip, MVP-FUNC-POS-16-1, MVP-FUNC-POS-16-3-a]
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 10
+  gnb:
+    config: [cu.yml, du.yml, tdd_default.yml, nrppa.yml]
+  core:
+    config: [baseline_nrppa.cfg]
+  feature_ids: [MVP-FUNC-POS-16-1, MVP-FUNC-POS-16-3-a]
   # tc1.17	rc1.13
 
 # SRS time-based NRPPa
