@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# PRACH format 0 configuration test
-prach_config_0: &base_config
+# PRACH format B4 configuration test
+prach_config_b4: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
@@ -30,13 +30,15 @@ prach_config_0: &base_config
     all.warnings_le: 0
     du.prach_configuration_index_eq: 159
 
-# PRACH format 1 configuration test
-prach_config_1:
+# PRACH format 0 configuration test
+prach_config_0:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_63.yml, prach_config.yml, mac_pcap.yml]
     parameters:
-      prach_config_index: 162
+      prach_config_index: 7
+  core:
+    config: [baseline.cfg]
   feature_ids: [MVP-FUNC-PHY-16-2]
   criteria:
     du.dl_bitrate_gt: 0
@@ -48,7 +50,27 @@ prach_config_1:
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
-    du.prach_configuration_index_eq: 162
+    du.prach_configuration_index_eq: 7
+
+# PRACH format 1 configuration test
+prach_config_1:
+  <<: *base_config
+  gnb:
+    config: [cu.yml, du.yml, tdd_27.yml, prach_config.yml, mac_pcap.yml]
+    parameters:
+      prach_config_index: 33
+  feature_ids: [MVP-FUNC-PHY-16-2]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.prach_configuration_index_eq: 33
 
 # PRACH format A3 configuration test
 prach_config_a3:
