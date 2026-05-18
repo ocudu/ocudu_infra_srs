@@ -41,8 +41,3 @@ moran:
   gnb:
     config: [mocn.yml, cu.yml, du.yml, 2cell_moran.yml]
   feature_ids: [MVP-FUNC-RANS-16-2]
-
-# SCTP Multi-homing
-sctp_multihoming:
-  <<: *base_config
-  feature_ids: [skip, CU-GEN-4] # tc3.5

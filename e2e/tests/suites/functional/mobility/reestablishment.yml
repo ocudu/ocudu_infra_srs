@@ -26,13 +26,3 @@ intra_ru: &base_config
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
-
-# Reestablishment
-inter_du:
-  <<: *base_config
-  feature_ids: [skip, CU-GEN-3] # tc1.11 rc8.1
-
-# Reestablishment
-inter_cu:
-  <<: *base_config
-  feature_ids: [skip, CU-GEN-3] # tc1.11 rc9.1

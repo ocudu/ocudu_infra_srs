@@ -55,8 +55,3 @@ baseline: &base_config
         value: 38.0e+6
       - id: 2
         value: 1.0e+6
-
-# Slicing resource sharing and partitioning
-dedicated_prb:
-  <<: *base_config
-  feature_ids: [skip]
