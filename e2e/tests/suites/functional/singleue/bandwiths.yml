@@ -59,7 +59,11 @@ bw_tdd_50:
   gnb:
     config: [cu.yml, du.yml, tdd_default.yml]
     parameters:
+      cfg_band: 41
+      cfg_earfcn: 520002
       cfg_bandwidth: 50
+      nof_antennas: 1
+      cfg_common_scs: 30
   feature_ids: []
 
 # Baseline band n256 at 5 MHz
