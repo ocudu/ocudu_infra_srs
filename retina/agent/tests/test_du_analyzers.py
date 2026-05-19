@@ -40,9 +40,18 @@ def make_cell(ue_list=None, cell_metrics=None, event_list=None):
 
 
 def make_ue(
-    rnti, dl_brate=0.0, ul_brate=0.0, dl_nof_nok=0, ul_nof_nok=0, pucch_f0f1=0, pucch_f2f3f4_harq=0, pucch_f2f3f4_csi=0
+    rnti,
+    dl_brate=0.0,
+    ul_brate=0.0,
+    dl_nof_nok=0,
+    ul_nof_nok=0,
+    pucch_f0f1=0,
+    pucch_f2f3f4_harq=0,
+    pucch_f2f3f4_csi=0,
+    dl_mcs=None,
+    ul_mcs=None,
 ):
-    return {
+    ue = {
         "rnti": rnti,
         "dl_brate": dl_brate,
         "ul_brate": ul_brate,
@@ -52,6 +61,11 @@ def make_ue(
         "nof_pucch_f2f3f4_invalid_harqs": pucch_f2f3f4_harq,
         "nof_pucch_f2f3f4_invalid_csis": pucch_f2f3f4_csi,
     }
+    if dl_mcs is not None:
+        ue["dl_mcs"] = dl_mcs
+    if ul_mcs is not None:
+        ue["ul_mcs"] = ul_mcs
+    return ue
 
 
 def make_cell_metrics(error_indications=0, late_dl=0, late_ul=0):
@@ -736,6 +750,93 @@ class TestDuMetricsAnalyzerPerUe(unittest.TestCase):
         self.assertAlmostEqual(ue.dl_av_5_samples, 200.0)
         # UL queue=[300,200,100]: peak5 = max(300, 250, 200) = 300
         self.assertAlmostEqual(ue.ul_av_5_samples, 300.0)
+
+
+# ── TestDuMetricsAnalyzer — Max MCS ──────────────────────────────────────────
+
+
+class TestDuMetricsAnalyzerMaxMcs(unittest.TestCase):
+    """
+    dl_max_mcs / ul_max_mcs track the highest MCS seen per RNTI across all records.
+    The aggregate is the maximum across all UEs.
+    Missing dl_mcs/ul_mcs fields are treated as 0 (field absent in older gNB versions).
+    """
+
+    def setUp(self):
+        self.a = DuMetricsAnalyzer()
+
+    def test_single_record_single_ue(self):
+        self.a.process(
+            make_record(_T0, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_mcs=24, ul_mcs=27)])])
+        )
+        m = self.a.report()
+        ue = next(u for u in m.ue_array if u.rnti == 1)
+        self.assertEqual(ue.dl_max_mcs, 24)
+        self.assertEqual(ue.ul_max_mcs, 27)
+        self.assertEqual(m.aggregate.dl_max_mcs, 24)
+        self.assertEqual(m.aggregate.ul_max_mcs, 27)
+
+    def test_max_tracked_across_records(self):
+        for ts, dl, ul in ((_T0, 20, 25), (_T1, 27, 22), (_T2, 15, 27)):
+            self.a.process(
+                make_record(ts, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_mcs=dl, ul_mcs=ul)])])
+            )
+        m = self.a.report()
+        ue = next(u for u in m.ue_array if u.rnti == 1)
+        self.assertEqual(ue.dl_max_mcs, 27)
+        self.assertEqual(ue.ul_max_mcs, 27)
+
+    def test_max_never_decreases(self):
+        for ts, dl in ((_T0, 27), (_T1, 10), (_T2, 5)):
+            self.a.process(
+                make_record(ts, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_mcs=dl)])])
+            )
+        ue = next(u for u in self.a.report().ue_array if u.rnti == 1)
+        self.assertEqual(ue.dl_max_mcs, 27)
+
+    def test_aggregate_is_max_across_ues(self):
+        self.a.process(
+            make_record(
+                _T0,
+                [
+                    make_cell(
+                        cell_metrics=make_cell_metrics(),
+                        ue_list=[make_ue(1, dl_mcs=20, ul_mcs=24), make_ue(2, dl_mcs=27, ul_mcs=15)],
+                    )
+                ],
+            )
+        )
+        m = self.a.report()
+        self.assertEqual(m.aggregate.dl_max_mcs, 27)
+        self.assertEqual(m.aggregate.ul_max_mcs, 24)
+
+    def test_missing_mcs_field_defaults_to_zero(self):
+        self.a.process(
+            make_record(_T0, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1)])])
+        )
+        m = self.a.report()
+        ue = next(u for u in m.ue_array if u.rnti == 1)
+        self.assertEqual(ue.dl_max_mcs, 0)
+        self.assertEqual(ue.ul_max_mcs, 0)
+        self.assertEqual(m.aggregate.dl_max_mcs, 0)
+        self.assertEqual(m.aggregate.ul_max_mcs, 0)
+
+    def test_empty_report_aggregate_is_zero(self):
+        m = self.a.report()
+        self.assertEqual(m.aggregate.dl_max_mcs, 0)
+        self.assertEqual(m.aggregate.ul_max_mcs, 0)
+
+    def test_multiple_cells_max_across_cells(self):
+        self.a.process(
+            make_record(
+                _T0,
+                [
+                    make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_mcs=20)]),
+                    make_cell(ue_list=[make_ue(2, dl_mcs=27)]),
+                ],
+            )
+        )
+        self.assertEqual(self.a.report().aggregate.dl_max_mcs, 27)
 
 
 if __name__ == "__main__":

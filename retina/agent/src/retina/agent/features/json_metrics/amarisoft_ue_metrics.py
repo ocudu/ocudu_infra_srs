@@ -55,6 +55,8 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
                         nof_reestablishments_complete=ue_info["counters"]["messages"].get(
                             "nr_rrc_reconfiguration_complete", 0
                         ),
+                        dl_max_mcs=int(ue_info.get("dl_mcs", 0)),
+                        ul_max_mcs=int(ue_info.get("ul_mcs", 0)),
                     )
                     self._ue_time[ue_id] = (timestamp, timestamp)
                 else:
@@ -63,6 +65,8 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
 
                     ue_m.nof_ko_dl += ue_info["dl_err_count"] + ue_info["dl_retx_count"]
                     ue_m.nof_ko_ul += ue_info["ul_retx_count"]
+                    ue_m.dl_max_mcs = max(ue_m.dl_max_mcs, int(ue_info.get("dl_mcs", 0)))
+                    ue_m.ul_max_mcs = max(ue_m.ul_max_mcs, int(ue_info.get("ul_mcs", 0)))
 
                     t_old = (time_last - time_first).total_seconds()
                     t_new = (timestamp - time_last).total_seconds()
@@ -122,6 +126,9 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
             metrics.aggregate.nof_ko_ul += ue_m.nof_ko_ul
             metrics.aggregate.nof_handovers += ue_m.nof_handovers
             metrics.aggregate.nof_reestablishments_complete += ue_m.nof_reestablishments_complete
+
+        metrics.aggregate.dl_max_mcs = max((ue_m.dl_max_mcs for ue_m in selected), default=0)
+        metrics.aggregate.ul_max_mcs = max((ue_m.ul_max_mcs for ue_m in selected), default=0)
 
         if ue_ids is None and self._stats_ue_metrics is not None:
             metrics.aggregate.MergeFrom(self._stats_ue_metrics)

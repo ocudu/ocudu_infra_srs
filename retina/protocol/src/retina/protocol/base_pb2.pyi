@@ -470,6 +470,8 @@ class UeMetrics(google.protobuf.message.Message):
     NOF_RRC_RESUME_REQUEST_FIELD_NUMBER: builtins.int
     DL_AVG_RI_FIELD_NUMBER: builtins.int
     UL_AVG_RI_FIELD_NUMBER: builtins.int
+    DL_MAX_MCS_FIELD_NUMBER: builtins.int
+    UL_MAX_MCS_FIELD_NUMBER: builtins.int
     rnti: builtins.int
     """UE identification"""
     pci: builtins.int
@@ -499,6 +501,9 @@ class UeMetrics(google.protobuf.message.Message):
     dl_avg_ri: builtins.float
     """Rank indicator"""
     ul_avg_ri: builtins.float
+    dl_max_mcs: builtins.int
+    """MCS (maximum observed across the reporting window)"""
+    ul_max_mcs: builtins.int
     def __init__(
         self,
         *,
@@ -524,8 +529,10 @@ class UeMetrics(google.protobuf.message.Message):
         nof_rrc_resume_request: builtins.int = ...,
         dl_avg_ri: builtins.float = ...,
         ul_avg_ri: builtins.float = ...,
+        dl_max_mcs: builtins.int = ...,
+        ul_max_mcs: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["dl_av_15_samples", b"dl_av_15_samples", "dl_av_30_samples", b"dl_av_30_samples", "dl_av_5_samples", b"dl_av_5_samples", "dl_avg_ri", b"dl_avg_ri", "dl_bitrate", b"dl_bitrate", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_rrc_resume_request", b"nof_rrc_resume_request", "nof_rrc_suspend", b"nof_rrc_suspend", "pci", b"pci", "rnti", b"rnti", "ul_av_15_samples", b"ul_av_15_samples", "ul_av_30_samples", b"ul_av_30_samples", "ul_av_5_samples", b"ul_av_5_samples", "ul_avg_ri", b"ul_avg_ri", "ul_bitrate", b"ul_bitrate"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["dl_av_15_samples", b"dl_av_15_samples", "dl_av_30_samples", b"dl_av_30_samples", "dl_av_5_samples", b"dl_av_5_samples", "dl_avg_ri", b"dl_avg_ri", "dl_bitrate", b"dl_bitrate", "dl_max_mcs", b"dl_max_mcs", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_rrc_resume_request", b"nof_rrc_resume_request", "nof_rrc_suspend", b"nof_rrc_suspend", "pci", b"pci", "rnti", b"rnti", "ul_av_15_samples", b"ul_av_15_samples", "ul_av_30_samples", b"ul_av_30_samples", "ul_av_5_samples", b"ul_av_5_samples", "ul_avg_ri", b"ul_avg_ri", "ul_bitrate", b"ul_bitrate", "ul_max_mcs", b"ul_max_mcs"]) -> None: ...
 
 Global___UeMetrics: typing_extensions.TypeAlias = UeMetrics
 

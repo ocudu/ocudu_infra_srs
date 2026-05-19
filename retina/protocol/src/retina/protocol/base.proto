@@ -179,6 +179,10 @@ message UeMetrics {
   // Rank indicator
   double dl_avg_ri = 21;
   double ul_avg_ri = 22;
+
+  // MCS (maximum observed across the reporting window)
+  uint32 dl_max_mcs = 23;
+  uint32 ul_max_mcs = 24;
 };
 
 message DuMetrics {

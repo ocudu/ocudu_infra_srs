@@ -321,6 +321,24 @@ class nof_sib19_ge(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_sib19_transmissions for s in self._stub_array)
 
 
+class dl_max_mcs_ge(DuCriteria):
+    """DL max MCS"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return max((s.GetMetrics(Empty()).aggregate.dl_max_mcs for s in self._stub_array), default=0)
+
+
+class ul_max_mcs_ge(DuCriteria):
+    """UL max MCS"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return max((s.GetMetrics(Empty()).aggregate.ul_max_mcs for s in self._stub_array), default=0)
+
+
 class dl_avg_ri_ge(DuCriteria):
     """DL avg RI"""
 

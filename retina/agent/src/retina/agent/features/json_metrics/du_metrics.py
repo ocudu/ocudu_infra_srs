@@ -60,6 +60,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
         self._ul_bitrate: Dict[int, float] = {}
         self._dl_avg_ri: Dict[int, float] = {}
         self._ul_avg_ri: Dict[int, float] = {}
+        self._dl_max_mcs: Dict[int, int] = {}
+        self._ul_max_mcs: Dict[int, int] = {}
         self._nof_ko_dl: Dict[int, int] = {}
         self._nof_ko_ul: Dict[int, int] = {}
         self._pucch_f0f1: Dict[int, int] = {}
@@ -91,6 +93,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
             self._ul_bitrate[rnti] = 0.0
             self._dl_avg_ri[rnti] = 0.0
             self._ul_avg_ri[rnti] = 0.0
+            self._dl_max_mcs[rnti] = 0
+            self._ul_max_mcs[rnti] = 0
             self._nof_ko_dl[rnti] = 0
             self._nof_ko_ul[rnti] = 0
             self._pucch_f0f1[rnti] = 0
@@ -236,6 +240,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
 
                 self._nof_ko_dl[rnti] += ue_info["dl_nof_nok"]
                 self._nof_ko_ul[rnti] += ue_info["ul_nof_nok"]
+                self._dl_max_mcs[rnti] = max(self._dl_max_mcs[rnti], ue_info.get("dl_mcs", 0))
+                self._ul_max_mcs[rnti] = max(self._ul_max_mcs[rnti], ue_info.get("ul_mcs", 0))
 
                 if timestamp is not None:
                     self._update_rnti_time_weighted(
@@ -287,6 +293,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
                     nof_pucch_f2f3f4_invalid_csis=self._pucch_f2f3f4_csis.get(rnti, 0),
                     dl_avg_ri=self._dl_avg_ri.get(rnti, 0.0),
                     ul_avg_ri=self._ul_avg_ri.get(rnti, 0.0),
+                    dl_max_mcs=self._dl_max_mcs.get(rnti, 0),
+                    ul_max_mcs=self._ul_max_mcs.get(rnti, 0),
                 )
             )
         metrics.aggregate.nof_ko_dl = sum(self._nof_ko_dl.values())
@@ -298,4 +306,6 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
         metrics.aggregate.ul_bitrate = self._agg_ul_bitrate
         metrics.aggregate.dl_avg_ri = self._agg_dl_ri
         metrics.aggregate.ul_avg_ri = self._agg_ul_ri
+        metrics.aggregate.dl_max_mcs = max(self._dl_max_mcs.values(), default=0)
+        metrics.aggregate.ul_max_mcs = max(self._ul_max_mcs.values(), default=0)
         return metrics
