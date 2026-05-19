@@ -16,8 +16,10 @@ cell_cfg:
   plmn: {{plmn_cfg|default("00101")}}
   pdsch:
     dmrs_additional_position: {{dmrs_additional_pos|default(2)}}
+    mcs_table: qam256
   pusch:
     dmrs_additional_position: {{dmrs_additional_pos|default(2)}}
+    mcs_table: qam256
   prach:
     zero_correlation_zone: 3
 

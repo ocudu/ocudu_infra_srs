@@ -10,7 +10,7 @@ baseline_gnb: &base_config
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 3
+      test_duration: 6
   gnb:
     config: [cu.yml, du.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
   core:
@@ -24,10 +24,12 @@ baseline_gnb: &base_config
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
-    all.errors_le: 0
-    all.warnings_le: 0
     du.nof_sib1_ge: 1
     du.nof_sib2_ge: 1
+    du.dl_max_mcs_ge: 27
+    du.ul_max_mcs_ge: 27
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # E1 and F1 interfaces. Separated CU-UP, CU-CP and DU
 baseline_cu_du:
@@ -38,7 +40,7 @@ baseline_cu_du:
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 3
+      test_duration: 6
   cu_cp:
     config: [cu.yml]
     parameters:
@@ -60,10 +62,12 @@ baseline_cu_du:
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
-    all.errors_le: 0
-    all.warnings_le: 0
     du.nof_sib1_ge: 1
     du.nof_sib2_ge: 1
+    du.dl_max_mcs_ge: 27
+    du.ul_max_mcs_ge: 27
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # Mixed TDD pattern 6:4 DDDSUUUUDD
 tdd_mixed:
@@ -81,6 +85,8 @@ tdd_mixed:
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.dl_max_mcs_ge: 26
+    du.ul_max_mcs_ge: 27
     all.errors_le: 0
     all.warnings_le: 0
 
@@ -100,5 +106,7 @@ tdd_dl_heavy:
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.dl_max_mcs_ge: 27
+    du.ul_max_mcs_ge: 27
     all.errors_le: 0
     all.warnings_le: 0

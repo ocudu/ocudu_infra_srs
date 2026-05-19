@@ -31,7 +31,6 @@ band_n30: &base_config
     config: [baseline.cfg]
   feature_ids: [SRS]
   criteria:
-    du.dl_max_mcs_ge: 25
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
