@@ -202,7 +202,7 @@ pucch_intraslot:
   <<: *base_config
   gnb:
     config: [cu.yml, du.yml, tdd_default.yml, pucch_config_intraslot.yml, mac_pcap.yml]
-  feature_ids: [DU-PHY-9]
+  feature_ids: [DU-GEN-3]
 
 # PDSCH VRB
 # Note: DL KOs and RLFs are allowed until UE supports PDSCH VRB
