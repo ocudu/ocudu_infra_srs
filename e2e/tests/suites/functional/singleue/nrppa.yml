@@ -6,13 +6,13 @@ position_power: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [2cell_intrafreq_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
       test_duration: 10
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, nrppa.yml]
+    config: [cu.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml, nrppa.yml]
   core:
     config: [baseline_nrppa.cfg]
   feature_ids: [MVP-FUNC-POS-16-1, MVP-FUNC-POS-16-3-a]
