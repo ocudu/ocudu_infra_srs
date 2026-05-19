@@ -136,15 +136,37 @@ prach_config_c2:
 srs_aperiodic:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, srs_aperiodic.yml, mac_pcap.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, srs_aperiodic_wband.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-PHY-16-4]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.c_srs_eq: 61
 
 # SRS Wideband configuration test
 srs_wideband:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, srs_wideband.yml, mac_pcap.yml]
-  feature_ids: [MVP-FUNC-PHY-16-5]
+    config: [cu.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, mac_pcap.yml]
+  feature_ids: [MVP-FUNC-PHY-16-3, MVP-FUNC-PHY-16-5]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.c_srs_eq: 61
 
 # SRS Narrowband configuration test
 srs_narrowband:
@@ -162,6 +184,7 @@ srs_narrowband:
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
+    du.c_srs_eq: 0
 
 # Periodic CSI configuration test
 periodic_csi:
