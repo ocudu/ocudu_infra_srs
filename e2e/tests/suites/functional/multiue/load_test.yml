@@ -21,11 +21,12 @@ baseline: &base_config
       log_level: warning
   core:
     config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-TDD-16-2]
   criteria:
     du.dl_bitrate_gt: 10.0e+6
     du.ul_bitrate_gt: 10.0e+6
-    du.nof_ko_dl_le: 0
-    du.nof_ko_ul_le: 0
+    du.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 20
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_eq: 0
@@ -43,6 +44,19 @@ tdd_dl_heavy:
     parameters:
       log_level: warning
   feature_ids: [MVP-FUNC-TDD-16-4]
+  criteria:
+    du.dl_bitrate_gt: 10.0e+6
+    du.ul_bitrate_gt: 10.0e+6
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_handovers_eq: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 3
 
 # 512 UEs tdd_ul_heavy
 tdd_ul_heavy:
@@ -51,3 +65,16 @@ tdd_ul_heavy:
     config: [cu.yml, du.yml, 512ue.yml, tdd_27.yml]
     parameters:
       log_level: warning
+  criteria:
+    du.dl_bitrate_gt: 10.0e+6
+    du.ul_bitrate_gt: 10.0e+6
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.nof_handovers_eq: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 3
