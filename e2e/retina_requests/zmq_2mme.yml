@@ -55,8 +55,6 @@
   environment:
     - TUN_IP_PREFIX: "10.45"
   resources:
-    - type: license
-      model: amarisoft-mme.*
     - type: zmq
       dummy: true
 
@@ -73,7 +71,5 @@
   environment:
     - TUN_IP_PREFIX: "10.46"
   resources:
-    - type: license
-      model: amarisoft-mme.*
     - type: zmq
       dummy: true
