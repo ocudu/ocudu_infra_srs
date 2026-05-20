@@ -163,12 +163,54 @@ srs_narrowband:
     all.errors_le: 0
     all.warnings_le: 0
 
+# Periodic CSI configuration test
+periodic_csi:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 10
+  feature_ids: [MVP-FUNC-MIMO-16-1]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.nof_pucch_f0f1_invalid_harqs_le: 0
+    du.nof_pucch_f2f3f4_invalid_csis_le: 0
+    du.nof_pusch_invalid_csis_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+
 # Aperiodic CSI configuration test
 aperiodic_csi:
   <<: *base_config
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 10
   gnb:
     config: [cu.yml, du.yml, tdd_default.yml, aperiodic_csi.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-MIMO-16-1]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.nof_pucch_f2f3f4_invalid_csis_le: 0
+    du.nof_pusch_invalid_csis_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # PUCCH Format 0/2 test
 pucch_02:

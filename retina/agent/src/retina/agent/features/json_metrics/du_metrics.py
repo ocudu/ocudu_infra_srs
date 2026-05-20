@@ -67,6 +67,7 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
         self._pucch_f0f1: Dict[int, int] = {}
         self._pucch_f2f3f4_harqs: Dict[int, int] = {}
         self._pucch_f2f3f4_csis: Dict[int, int] = {}
+        self._pusch_csis: Dict[int, int] = {}
         self._pci: Dict[int, int] = {}
 
         # Aggregate time-weighted bitrate/RI (time-weighted average of per-record sum)
@@ -100,6 +101,7 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
             self._pucch_f0f1[rnti] = 0
             self._pucch_f2f3f4_harqs[rnti] = 0
             self._pucch_f2f3f4_csis[rnti] = 0
+            self._pusch_csis[rnti] = 0
             self._pci[rnti] = pci
 
     def _handle_events(self, cell_info: dict) -> None:
@@ -213,6 +215,7 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
                     self._pucch_f2f3f4_csis[rnti] = (
                         self._pucch_f2f3f4_csis.get(rnti, 0) + ue_info["nof_pucch_f2f3f4_invalid_csis"]
                     )
+                    self._pusch_csis[rnti] = self._pusch_csis.get(rnti, 0) + ue_info.get("nof_pusch_invalid_csis", 0)
 
             ue_list = cell_info.get("ue_list", [])
 
@@ -291,6 +294,7 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
                     nof_pucch_f0f1_invalid_harqs=self._pucch_f0f1.get(rnti, 0),
                     nof_pucch_f2f3f4_invalid_harqs=self._pucch_f2f3f4_harqs.get(rnti, 0),
                     nof_pucch_f2f3f4_invalid_csis=self._pucch_f2f3f4_csis.get(rnti, 0),
+                    nof_pusch_invalid_csis=self._pusch_csis.get(rnti, 0),
                     dl_avg_ri=self._dl_avg_ri.get(rnti, 0.0),
                     ul_avg_ri=self._ul_avg_ri.get(rnti, 0.0),
                     dl_max_mcs=self._dl_max_mcs.get(rnti, 0),
@@ -302,6 +306,7 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
         metrics.aggregate.nof_pucch_f0f1_invalid_harqs = sum(self._pucch_f0f1.values())
         metrics.aggregate.nof_pucch_f2f3f4_invalid_harqs = sum(self._pucch_f2f3f4_harqs.values())
         metrics.aggregate.nof_pucch_f2f3f4_invalid_csis = sum(self._pucch_f2f3f4_csis.values())
+        metrics.aggregate.nof_pusch_invalid_csis = sum(self._pusch_csis.values())
         metrics.aggregate.dl_bitrate = self._agg_dl_bitrate
         metrics.aggregate.ul_bitrate = self._agg_ul_bitrate
         metrics.aggregate.dl_avg_ri = self._agg_dl_ri

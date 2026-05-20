@@ -18,7 +18,7 @@ mimo_2x2: &base_config
       nof_antennas: 2
   core:
     config: [baseline.cfg]
-  feature_ids: [MVP-FUNC-MIMO-16-3, MVP-FUNC-MIMO-16-4, MVP-FUNC-PHY-16-10, MVP-FUNC-PHY-16-11]
+  feature_ids: [MVP-FUNC-MIMO-16-1, MVP-FUNC-MIMO-16-3, MVP-FUNC-MIMO-16-4, MVP-FUNC-PHY-16-10, MVP-FUNC-PHY-16-11]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -29,8 +29,19 @@ mimo_2x2: &base_config
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_pucch_f0f1_invalid_harqs_le: 0
+    du.nof_pucch_f2f3f4_invalid_csis_le: 0 # To validate periodic CSI (enabled by default)
+    du.nof_pusch_invalid_csis_le: 0
     all.errors_le: 0
     all.warnings_le: 0
+
+mimo_2x2_aperiodic_csi:
+  <<: *base_config
+  gnb:
+    config: [cu.yml, du.yml, tdd_default.yml, aperiodic_csi.yml, srs_wideband.yml, mimo_rx.yml]
+    parameters:
+      nof_antennas: 2
+  feature_ids: [MVP-FUNC-MIMO-16-1]
 
 # TDD MIMO 4x4 configuration test
 mimo_4x4:
