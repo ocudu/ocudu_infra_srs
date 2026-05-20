@@ -40,7 +40,7 @@ baseline: &base_config
 tdd_dl_heavy:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, 512ue.yml, tdd_63.yml]
+    config: [cu.yml, du.yml, 512ue.yml, tdd_72b.yml]
     parameters:
       log_level: warning
   feature_ids: [MVP-FUNC-TDD-16-4]
@@ -65,6 +65,7 @@ tdd_ul_heavy:
     config: [cu.yml, du.yml, 512ue.yml, tdd_27.yml]
     parameters:
       log_level: warning
+  feature_ids: []
   criteria:
     du.dl_bitrate_gt: 10.0e+6
     du.ul_bitrate_gt: 10.0e+6
