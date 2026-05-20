@@ -6,7 +6,7 @@ baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [1cell.cfg, 2ues_qos_gbr_ngbr.cfg]
+    config: [1cell_chsim.cfg, 2ues_qos_gbr_ngbr.cfg]
     parameters:
       nof_ue: 2
       non_gbr_bitrate: 50.0e+6
