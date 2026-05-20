@@ -187,10 +187,15 @@ criteria:
 * All configuration files are Jinja2 templates, rendered at test start.
 * Variables come from the `parameters:` block in the suite YAML and from [Retina parameters](../../retina/agent/src/retina/agent/parameters/__init__.py).
 * Multiple files are merged in list order; later files override earlier ones.
-* Folders:
-  * UE configs (`configs/ue/`)
-  * gNB / DU / CU / CU-UP / CU-CP configs (`configs/gnb/*.yml`)
-  * Core configs (`configs/core/*.cfg`)
+
+### Folders
+
+* UE configs (`configs/ue/`)
+  * [Amarisoft UE Simulator Config Reference](https://tech-academy.amarisoft.com/lteue.doc#Configuration-reference)
+* gNB / DU / CU / CU-UP / CU-CP configs (`configs/gnb/*.yml`)
+  * [OCUDU Config Reference](https://ocudu.gitlab.io/ocudu_docs/user_manual/config_reference)
+* Core configs (`configs/core/*.cfg`)
+  * [Amarisoft MME Config Reference](https://tech-academy.amarisoft.com/ltemme.doc#Configuration-reference)
 
 ## CI
 

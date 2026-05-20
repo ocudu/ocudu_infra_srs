@@ -33,6 +33,10 @@ cd retina/protocol && tox -e grpc
 
 ## 2. Populate the field in the agent
 
+- [OCUDU JSON metrics Reference](https://ocudu.gitlab.io/ocudu_docs/user_manual/outputs/#json-metrics)
+- [Amarisoft UE Metrics Reference](https://tech-academy.amarisoft.com/lteue.doc#LTE-messages-1)
+- [Amarisoft MME Metrics Reference](https://tech-academy.amarisoft.com/ltemme.doc#Remote-API-1)
+
 ### 2a. JSON WebSocket
 
 **If the new field fits naturally in an existing analyzer**, add it to an existing one, f.e.:
@@ -73,7 +77,11 @@ _WS_ANALYZER_ARRAY = (GeneralMetricsAnalyzer, PerUePeakAverageAnalyzer, NewAnaly
 
 ### 2b. PCAP
 
-Use this when the data comes from packet captures. The DU produces two kinds of pcap files:
+Use this when the data comes from packet captures.
+
+[OCUDU PCAPs Reference](https://ocudu.gitlab.io/ocudu_docs/user_manual/outputs/#pcaps)
+
+The DU produces two kinds of pcap files:
 
 | pcap type | File | Enabled by |
 | --- | --- | --- |
