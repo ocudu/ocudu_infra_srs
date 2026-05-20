@@ -108,7 +108,7 @@ reestablishment:
     KEYWORDS: "functional.mobility.reestablishment."
     TESTBED: dynamic
 
-attach_dettach:
+attach_detach:
   stage: multiue
   extends: .functional_e2e
   rules:
@@ -121,7 +121,7 @@ attach_dettach:
       allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
-    KEYWORDS: "functional.multiue.attach_dettach."
+    KEYWORDS: "functional.multiue.attach_detach."
     TESTBED: dynamic
 
 load_test:
