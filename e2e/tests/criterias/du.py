@@ -79,7 +79,7 @@ class nof_error_indications_le(DuCriteria):
 
 
 class nof_pucch_f0f1_invalid_harqs_le(DuCriteria):
-    """PUCCH f0/f1 HARQs"""
+    """PUCCH f0/f1 invalid HARQs"""
 
     operator_method = operator.le
 
@@ -87,8 +87,17 @@ class nof_pucch_f0f1_invalid_harqs_le(DuCriteria):
         return sum(s.GetMetrics(Empty()).aggregate.nof_pucch_f0f1_invalid_harqs for s in self._stub_array)
 
 
+class nof_pucch_f2f3f4_invalid_harqs_le(DuCriteria):
+    """PUCCH f2/f3/f4 invalid HARQs"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_pucch_f2f3f4_invalid_harqs for s in self._stub_array)
+
+
 class nof_pucch_f2f3f4_invalid_csis_le(DuCriteria):
-    """PUCCH f2/f3/f4 invalid CSI reports"""
+    """PUCCH f2/f3/f4 invalid CSIs"""
 
     operator_method = operator.le
 
@@ -97,12 +106,21 @@ class nof_pucch_f2f3f4_invalid_csis_le(DuCriteria):
 
 
 class nof_pusch_invalid_csis_le(DuCriteria):
-    """PUSCH invalid CSI reports"""
+    """PUSCH invalid CSIs"""
 
     operator_method = operator.le
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).aggregate.nof_pusch_invalid_csis for s in self._stub_array)
+
+
+class nof_pusch_invalid_harqs_le(DuCriteria):
+    """PUSCH invalid HARQs"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_pusch_invalid_harqs for s in self._stub_array)
 
 
 class nof_reestablishments_eq(DuCriteria):

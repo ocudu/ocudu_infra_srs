@@ -169,6 +169,7 @@ message UeMetrics {
   uint32 nof_pucch_f2f3f4_invalid_harqs = 14;
   uint32 nof_pucch_f2f3f4_invalid_csis  = 15;
   uint32 nof_pusch_invalid_csis         = 25;
+  uint32 nof_pusch_invalid_harqs        = 26;
 
   // RRC events
   uint32 nof_reestablishments_request  = 16;
