@@ -20,8 +20,6 @@ baseline: &base_config
   gnb:
     config: [cu.yml, du.yml, tdd_default.yml, vonr_qos.yml]
     parameters:
-      log_level: warning
-      parameters:
       cfg_earfcn: 368500
       cfg_bandwidth: 10
       cfg_band: 3
