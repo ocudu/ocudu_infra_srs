@@ -100,6 +100,7 @@ markers = [
   "MVP-ARCH-INTF-10",
   "MVP-ARCH-INTF-11",
   "MVP-FUNC-ARCH-16-1",
+  "MVP-FUNC-BAS-16-1",
   "MVP-FUNC-BAS-16-2",
   "MVP-FUNC-BAS-16-3",
   "MVP-FUNC-BW-16-1",

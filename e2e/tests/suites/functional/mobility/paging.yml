@@ -19,7 +19,7 @@ paging: &base_config
     config: [baseline.cfg]
     parameters:
       time_multiplier: *time_multiplier
-  feature_ids: [MVP-FUNC-MOB-11]
+  feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-11]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
