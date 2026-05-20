@@ -14,11 +14,13 @@ position_power: &base_config
   gnb:
     config: [cu.yml, du.yml, 2cell_intrafreq.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml, nrppa.yml]
   core:
-    config: [baseline_nrppa.cfg]
+    config: [baseline.cfg, nrppa_nr_ecid.cfg, nrppa_trigger_meas.cfg]
   feature_ids: [MVP-FUNC-POS-16-1, MVP-FUNC-POS-16-3-a]
   # tc1.17	rc1.13
 
 # SRS time-based NRPPa
 position_time:
   <<: *base_config
-  feature_ids: [skip, MVP-FUNC-POS-16-3-b]
+  feature_ids: [MVP-FUNC-POS-16-3-b]
+  core:
+    config: [baseline.cfg, nrppa_nr_tdoa.cfg, nrppa_trigger_meas.cfg]
