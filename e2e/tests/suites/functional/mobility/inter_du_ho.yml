@@ -72,7 +72,7 @@ fr1_fr2:
           sector_id_cfg: 1
           nof_antennas_dl: 1
           nof_antennas_ul: 1
-  feature_ids: [MVP-FUNC-MOB-2-b, MVP-FUNC-MOB-2-c, DU-GEN-9]
+  feature_ids: [MVP-FUNC-MOB-2-a, MVP-FUNC-MOB-2-b, MVP-FUNC-MOB-2-c, DU-GEN-9]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
