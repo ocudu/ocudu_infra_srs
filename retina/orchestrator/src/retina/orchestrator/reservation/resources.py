@@ -10,6 +10,7 @@ import logging
 import random
 import re
 from abc import ABC, abstractmethod
+from contextlib import suppress
 from dataclasses import dataclass
 from enum import Enum
 from time import sleep
@@ -172,7 +173,9 @@ class ClusterResource(ResourceType):
         """
         Get user name
         """
-        return kubernetes.get_config_map(get_cluster_resource_name(self.get_full_name())).data.get("user_name", "")
+        with suppress(AttributeError):
+            return kubernetes.get_config_map(get_cluster_resource_name(self.get_full_name())).data.get("user_name", "")
+        return "unknown"
 
     def __eq__(self, value) -> bool:
         """
