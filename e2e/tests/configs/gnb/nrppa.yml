@@ -3,3 +3,32 @@
 
 log:
   nrppa_level: debug
+
+gnb_id_bit_length: 32
+
+cu_cp:
+  mobility:
+    trigger_handover_from_measurements: false
+    cells:
+      - nr_cell_id: 0x19B0
+        periodic_report_cfg_id: 1
+        ncells:
+          - nr_cell_id: 0x19B1
+            report_configs: [2]
+      - nr_cell_id: 0x19B1
+        periodic_report_cfg_id: 1
+        ncells:
+          - nr_cell_id: 0x19B0
+            report_configs: [2]
+    report_configs:
+      - report_cfg_id: 1
+        report_type: periodical
+        report_interval_ms: 120
+      - report_cfg_id: 2
+        report_type: event_triggered
+        event_triggered_report_type: a3
+        meas_trigger_quantity: rsrp
+        meas_trigger_quantity_offset_db: 3
+        hysteresis_db: 0
+        time_to_trigger_ms: 100
+        t312: 200

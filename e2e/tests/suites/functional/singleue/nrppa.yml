@@ -12,7 +12,7 @@ position_power: &base_config
       ul_bitrate: 1.0e+6
       test_duration: 10
   gnb:
-    config: [cu.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml, nrppa.yml]
+    config: [cu.yml, du.yml, 2cell_intrafreq.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml, nrppa.yml]
   core:
     config: [baseline_nrppa.cfg]
   feature_ids: [MVP-FUNC-POS-16-1, MVP-FUNC-POS-16-3-a]
