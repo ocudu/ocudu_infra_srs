@@ -65,7 +65,7 @@ tdd_ul_heavy:
     config: [cu.yml, du.yml, 512ue.yml, tdd_27.yml]
     parameters:
       log_level: warning
-  feature_ids: []
+  feature_ids: [MVP-FUNC-TDD-16-1]
   criteria:
     du.dl_bitrate_gt: 10.0e+6
     du.ul_bitrate_gt: 10.0e+6
