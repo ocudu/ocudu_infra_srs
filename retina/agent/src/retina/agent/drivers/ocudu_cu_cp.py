@@ -6,12 +6,13 @@ OCUDU CU-CP Agent
 """
 
 import socket
-from typing import Any, Dict, Sequence
+from pathlib import Path
+from typing import Any, Dict, Sequence, Tuple
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import CUCPDefinition, FiveGCDefinition, PLMN
+from retina.protocol.base_pb2 import CUCPDefinition, FiveGCDefinition, Metrics, PLMN
 from retina.protocol.gnb_pb2 import CUCPStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
@@ -24,10 +25,22 @@ from retina.agent.drivers.ocudu_du import (
     RTSAN_ERROR,
 )
 from retina.agent.features.executor import LocalExecutor
+from retina.agent.features.pcap.analyzer import run_analyzers
+from retina.agent.features.pcap.ngap import (
+    ECidMeasurementInitiationRequestAnalyzer,
+    ECidMeasurementInitiationResponseAnalyzer,
+    ECidMeasurementReportAnalyzer,
+)
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
 from retina.agent.tools.time import TimeoutHandler
+
+_NGAP_PCAP_ANALYZER_ARRAY = (
+    ECidMeasurementInitiationRequestAnalyzer,
+    ECidMeasurementInitiationResponseAnalyzer,
+    ECidMeasurementReportAnalyzer,
+)
 
 
 class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
@@ -43,6 +56,11 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
     CUCP_CONF_MAIN_NAME: str = "ocudu_gnb_base.yml"
     CUCP_CONF_AMF_NAME: str = "ocudu_gnb_amf.yml"
     CUCP_START_UP_TIMEOUT: int = 5
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._metrics = Metrics()
+        self._metrics_parsing_done = False
 
     def _get_sut_version(self) -> str:
         output = tuple(
@@ -135,6 +153,40 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
                                 break
 
         return Empty()
+
+    def get_metrics_parsing_arguments(self) -> Tuple[str, ...]:
+        """
+        Get Arguments for metrics parsing. Needs to be called before stop
+        """
+        if self._metrics_parsing_done:
+            return tuple()
+        return (self.get_filepath_in_report_folder(gnb_defaults.ngap_filename),)
+
+    def extract_metrics(self, *args):
+        """
+        Extract Metrics
+        """
+        if not self._metrics_parsing_done:
+            (ngap_pcap_filename,) = args
+            if Path(ngap_pcap_filename).exists():
+                self._metrics.MergeFrom(
+                    run_analyzers(
+                        ngap_pcap_filename,
+                        tuple(analyzer_cls() for analyzer_cls in _NGAP_PCAP_ANALYZER_ARRAY),
+                    )
+                )
+                self._metrics_parsing_done = True
+
+    def Stop(self, request: UInt32Value, context: grpc.ServicerContext):
+        pcap_args = self.get_metrics_parsing_arguments()
+        response = super().Stop(request, context)
+        self.extract_metrics(*pcap_args)
+        return response
+
+    def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
+        metrics = super().GetMetrics(request, context)
+        metrics.MergeFrom(self._metrics)
+        return metrics
 
     @property
     def _warning_regex(self) -> str:

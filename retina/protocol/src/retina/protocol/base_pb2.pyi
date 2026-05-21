@@ -637,11 +637,17 @@ class CoreMetrics(google.protobuf.message.Message):
     NOF_NG_PAGING_FIELD_NUMBER: builtins.int
     NOF_TAU_REQUEST_FIELD_NUMBER: builtins.int
     NOF_PDU_SESSION_RESOURCE_MODIFY_REQUEST_FIELD_NUMBER: builtins.int
+    NOF_E_CID_MEASUREMENT_INITIATION_REQUEST_FIELD_NUMBER: builtins.int
+    NOF_E_CID_MEASUREMENT_INITIATION_RESPONSE_FIELD_NUMBER: builtins.int
+    NOF_E_CID_MEASUREMENT_REPORT_FIELD_NUMBER: builtins.int
     nof_pdu_session_establishment_accept: builtins.int
     nof_5gs_nas_service_accept: builtins.int
     nof_ng_paging: builtins.int
     nof_tau_request: builtins.int
     nof_pdu_session_resource_modify_request: builtins.int
+    nof_e_cid_measurement_initiation_request: builtins.int
+    nof_e_cid_measurement_initiation_response: builtins.int
+    nof_e_cid_measurement_report: builtins.int
     def __init__(
         self,
         *,
@@ -650,8 +656,11 @@ class CoreMetrics(google.protobuf.message.Message):
         nof_ng_paging: builtins.int = ...,
         nof_tau_request: builtins.int = ...,
         nof_pdu_session_resource_modify_request: builtins.int = ...,
+        nof_e_cid_measurement_initiation_request: builtins.int = ...,
+        nof_e_cid_measurement_initiation_response: builtins.int = ...,
+        nof_e_cid_measurement_report: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_5gs_nas_service_accept", b"nof_5gs_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_resource_modify_request", b"nof_pdu_session_resource_modify_request", "nof_tau_request", b"nof_tau_request"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_5gs_nas_service_accept", b"nof_5gs_nas_service_accept", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_resource_modify_request", b"nof_pdu_session_resource_modify_request", "nof_tau_request", b"nof_tau_request"]) -> None: ...
 
 Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
 

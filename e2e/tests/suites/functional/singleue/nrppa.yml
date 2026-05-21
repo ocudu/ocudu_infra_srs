@@ -23,6 +23,9 @@ position_power: &base_config
     du.nof_reestablishments_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
+    cu_cp.nof_e_cid_measurement_initiation_request_eq: 1
+    cu_cp.nof_e_cid_measurement_initiation_response_eq: 1
+    cu_cp.nof_e_cid_measurement_report_geq: 1
 
 # SRS time-based NRPPa
 position_time:

@@ -7,6 +7,7 @@ CU-CP pass/fail criteria definitions
 
 import operator
 
+from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
 from retina.launcher.criteria import CuCpCriteria
 
@@ -29,3 +30,39 @@ class warnings_le(CuCpCriteria):
 
     def callback(self) -> int:
         return sum(s.Stop.with_call(UInt32Value(value=15), timeout=15)[0].warning_count for s in self._stub_array)
+
+
+class nof_e_cid_measurement_initiation_request_eq(CuCpCriteria):
+    """E-CID Measurement Initiation Request"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_e_cid_measurement_initiation_request for s in self._stub_array)
+
+
+class nof_e_cid_measurement_initiation_response_eq(CuCpCriteria):
+    """E-CID Measurement Initiation Response"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_e_cid_measurement_initiation_response for s in self._stub_array)
+
+
+class nof_e_cid_measurement_report_eq(CuCpCriteria):
+    """E-CID Measurement Report"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_e_cid_measurement_report for s in self._stub_array)
+
+
+class nof_e_cid_measurement_report_geq(CuCpCriteria):
+    """E-CID Measurement Report"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_e_cid_measurement_report for s in self._stub_array)

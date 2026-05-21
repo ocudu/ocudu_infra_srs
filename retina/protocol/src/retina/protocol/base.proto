@@ -225,6 +225,10 @@ message CoreMetrics {
   uint32 nof_ng_paging                           = 3;
   uint32 nof_tau_request                         = 4;
   uint32 nof_pdu_session_resource_modify_request = 5;
+
+  uint32 nof_e_cid_measurement_initiation_request  = 6;
+  uint32 nof_e_cid_measurement_initiation_response = 7;
+  uint32 nof_e_cid_measurement_report              = 8;
 };
 
 message Metrics {
