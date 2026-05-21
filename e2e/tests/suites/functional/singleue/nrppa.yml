@@ -17,6 +17,12 @@ position_power: &base_config
     config: [baseline.cfg, nrppa_nr_ecid.cfg, nrppa_trigger_meas.cfg]
   feature_ids: [MVP-FUNC-POS-16-1, MVP-FUNC-POS-16-3-a]
   # tc1.17	rc1.13
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_reestablishments_eq: 0
+    all.errors_le: 0
+    all.warnings_le: 0
 
 # SRS time-based NRPPa
 position_time:
