@@ -33,7 +33,7 @@ cd retina/protocol && tox -e grpc
 
 ## 2. Populate the field in the agent
 
-- [OCUDU JSON metrics Reference](https://ocudu.gitlab.io/ocudu_docs/user_manual/outputs/#json-metrics)
+- [OCUDU JSON metrics Reference](https://gitlab.com/ocudu/ocudu_docs/-/raw/main/docs/user_manual/outputs/outputs.md#json-metrics)
 - [Amarisoft UE Metrics Reference](https://tech-academy.amarisoft.com/lteue.doc#LTE-messages-1)
 - [Amarisoft MME Metrics Reference](https://tech-academy.amarisoft.com/ltemme.doc#Remote-API-1)
 
@@ -79,7 +79,7 @@ _WS_ANALYZER_ARRAY = (GeneralMetricsAnalyzer, PerUePeakAverageAnalyzer, NewAnaly
 
 Use this when the data comes from packet captures.
 
-[OCUDU PCAPs Reference](https://ocudu.gitlab.io/ocudu_docs/user_manual/outputs/#pcaps)
+[OCUDU PCAPs Reference](https://gitlab.com/ocudu/ocudu_docs/-/raw/main/docs/user_manual/outputs/outputs.md/#pcaps)
 
 The DU produces two kinds of pcap files:
 

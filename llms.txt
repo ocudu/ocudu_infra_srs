@@ -19,7 +19,8 @@
 - [Run local tests](./retina/_scripts/README.md)
 - [How to parse tests artifacts](./retina/launcher/artifacts.md)
 
-## How to use Retina Framework in a cluster 
+## How to use Retina Framework in a cluster
+
 - [Cluster Setup](./retina/_docs/02_cluster_setup.md): How to configure the K8s cluster and the cluster definition in Retina
 - [Reserve Resources](./retina/_docs/04_reserve_resources.md): Retina resource booking system
 - [Run Cluster Tests](./retina/_docs/05_run_cluster_test.md): How to run tests against a real cluster
