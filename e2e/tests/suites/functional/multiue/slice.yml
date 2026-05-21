@@ -2,12 +2,81 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 # Slicing resource sharing and partitioning
-reserved_prb: &base_config
+dedicated_prb: &base_config
   template: ue_simulator.test_gnb
-  feature_ids: [skip, MVP-FUNC-SVCS-17-3-e]
+  feature_ids: [MVP-FUNC-SVCS-17-3-c, MVP-FUNC-SVCS-17-3-d, MVP-FUNC-SVCS-17-3-e]
   # tc2.7	rc1
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, 2ues_slicing.cfg]
+    parameters:
+      nof_ue: 2
+      dl_bitrate: 60.0e+6
+      ul_bitrate_sst1: 10.0e+6
+      ul_bitrate_sst2: 3.0e+6
+      ssb_nr_arfcn: 626304
+      bandwidth: 20
+      test_duration: 10
+  gnb:
+    config: [du.yml, tdd_default.yml, slicing_dedicated.yml, dual_slice.yml]
+    parameters:
+      cfg_bandwidth: 20
+  core:
+    config: [baseline.cfg]
+  criteria:
+    du.pdsch_prbs_used_per_tdd_slot_mean: 34
+    du.pusch_prbs_used_per_tdd_slot_mean: 6
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    core.nof_pdu_session_establishment_accept_eq: 2
+    du.nof_reestablishments_eq: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 3
+    du.dl_bitrate_gt: 55.0e+6
+    du.ul_bitrate_gt: 12.0e+6
+    du.dl_ue_avg_bitrate:
+      - id: 1
+        value: 42.0e+6
+      - id: 2
+        value: 14.0e+6
+    du.ul_ue_avg_bitrate:
+      - id: 1
+        value: 9.0e+6
+      - id: 2
+        value: 3.0e+6
 
 # Slicing resource sharing and partitioning
-dedicated_prb:
+reserved_prb:
   <<: *base_config
-  feature_ids: [skip, MVP-FUNC-SVCS-17-3-e]
+  feature_ids: [MVP-FUNC-SVCS-17-3-c, MVP-FUNC-SVCS-17-3-d, MVP-FUNC-SVCS-17-3-e]
+  gnb:
+    config: [du.yml, tdd_default.yml, slicing_reserved.yml, dual_slice.yml]
+    parameters:
+      cfg_bandwidth: 20
+  criteria:
+    du.pdsch_prbs_used_per_tdd_slot_mean: 27
+    du.pusch_prbs_used_per_tdd_slot_mean: 5.5
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    core.nof_pdu_session_establishment_accept_eq: 2
+    du.nof_reestablishments_eq: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 3
+    du.dl_bitrate_gt: 47.0e+6
+    du.ul_bitrate_gt: 10.0e+6
+    du.dl_ue_avg_bitrate:
+      - id: 1
+        value: 34.0e+6
+      - id: 2
+        value: 11.0e+6
+    du.ul_ue_avg_bitrate:
+      - id: 1
+        value: 8.1e+6
+      - id: 2
+        value: 2.7e+6

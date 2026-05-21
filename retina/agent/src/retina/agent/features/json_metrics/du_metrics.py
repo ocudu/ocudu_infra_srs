@@ -6,34 +6,11 @@ JSON metrics analyzer for the DU: per-UE metrics and aggregate counters.
 """
 
 import datetime
-from collections import deque
-from typing import Deque, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from retina.protocol.base_pb2 import Metrics, UeMetrics
 
-from retina.agent.features.json_metrics.analyzer import JsonMetricsAnalyzer
-
-
-class _MovingAverage:
-    """Moving average queue for up to N samples."""
-
-    def __init__(self, max_length):
-        self._queue: Deque[float] = deque(maxlen=max_length)
-
-    def add(self, value: float) -> None:
-        """Add a new element to the queue."""
-        self._queue.append(value)
-
-    def get_average(self, nof_average_samples=None) -> float:
-        """Return the average of the last K elements in the queue."""
-        if nof_average_samples is None:
-            nof_average_samples = self._queue.maxlen
-        elif nof_average_samples > self._queue.maxlen or nof_average_samples < 0:
-            raise ValueError("nof_average_samples is greater than the maximum length of the queue")
-        if len(self._queue) == 0:
-            return 0
-        last_k_values = list(self._queue)[-nof_average_samples:]
-        return sum(last_k_values) / len(last_k_values)
+from retina.agent.features.json_metrics.analyzer import JsonMetricsAnalyzer, MovingAverage
 
 
 class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instance-attributes
@@ -50,8 +27,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
 
     def __init__(self) -> None:
         # Per-RNTI state
-        self._dl_mov_av: Dict[int, _MovingAverage] = {}
-        self._ul_mov_av: Dict[int, _MovingAverage] = {}
+        self._dl_mov_av: Dict[int, MovingAverage] = {}
+        self._ul_mov_av: Dict[int, MovingAverage] = {}
         self._dl_peak: Dict[int, Tuple[float, float, float]] = {}
         self._ul_peak: Dict[int, Tuple[float, float, float]] = {}
         self._time_first: Dict[int, Optional[datetime.datetime]] = {}
@@ -85,8 +62,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
 
     def _init_rnti(self, rnti: int, pci: int) -> None:
         if rnti not in self._dl_mov_av:
-            self._dl_mov_av[rnti] = _MovingAverage(50)
-            self._ul_mov_av[rnti] = _MovingAverage(50)
+            self._dl_mov_av[rnti] = MovingAverage(50)
+            self._ul_mov_av[rnti] = MovingAverage(50)
             self._dl_peak[rnti] = (0.0, 0.0, 0.0)
             self._ul_peak[rnti] = (0.0, 0.0, 0.0)
             self._time_first[rnti] = None

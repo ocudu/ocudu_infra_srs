@@ -419,3 +419,23 @@ class ul_ue_avg_bitrate(DuCriteria):
         ues_tput = [ue.ul_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
         expected_tput = [item["value"] for item in self._input]
         return all(a > b for a, b in zip(ues_tput, expected_tput))
+
+
+class pdsch_prbs_used_per_tdd_slot_mean(DuCriteria):
+    """PDSCH PRBs used per TDD slot index"""
+
+    operator_method = operator.ge
+
+    def callback(self):
+        du = self._stub_array[0]
+        return round(mean(du.GetMetrics(Empty()).du.pdsch_prbs_used_per_tdd_slot_idx), 1)
+
+
+class pusch_prbs_used_per_tdd_slot_mean(DuCriteria):
+    """PUSCH PRBs used per TDD slot index"""
+
+    operator_method = operator.ge
+
+    def callback(self):
+        du = self._stub_array[0]
+        return round(mean(du.GetMetrics(Empty()).du.pusch_prbs_used_per_tdd_slot_idx), 1)

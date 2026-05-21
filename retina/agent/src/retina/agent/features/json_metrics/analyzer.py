@@ -11,11 +11,34 @@ import json
 import logging
 import sys
 from abc import ABC, abstractmethod
+from collections import deque
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from google.protobuf.text_format import MessageToString
 from retina.protocol.base_pb2 import Metrics
+
+
+class MovingAverage:
+    """Moving average queue for up to N samples."""
+
+    def __init__(self, max_length: int) -> None:
+        self._queue: "deque[float]" = deque(maxlen=max_length)
+
+    def add(self, value: float) -> None:
+        """Add a new element to the queue."""
+        self._queue.append(value)
+
+    def get_average(self, nof_average_samples: Optional[int] = None) -> float:
+        """Return the average of the last N elements in the queue."""
+        if nof_average_samples is None:
+            nof_average_samples = self._queue.maxlen or 0
+        elif nof_average_samples > (self._queue.maxlen or 0) or nof_average_samples < 0:
+            raise ValueError("nof_average_samples is greater than the maximum length of the queue")
+        if len(self._queue) == 0:
+            return 0
+        last_k_values = list(self._queue)[-nof_average_samples:]
+        return sum(last_k_values) / len(last_k_values)
 
 
 class JsonMetricsAnalyzer(ABC):

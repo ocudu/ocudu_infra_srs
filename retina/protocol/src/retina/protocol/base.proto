@@ -214,6 +214,9 @@ message DuMetrics {
   int32 t312                        = 17;
   int32 c_srs                       = 18;
   int32 b_srs                       = 19;
+
+  repeated uint32 pdsch_prbs_used_per_tdd_slot_idx = 23;
+  repeated uint32 pusch_prbs_used_per_tdd_slot_idx = 24;
 };
 
 message CoreMetrics {

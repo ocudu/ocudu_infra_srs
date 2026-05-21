@@ -8,7 +8,8 @@ Unit tests for DU JSON metrics analyzers: DuMetricsAnalyzer and DuCellAnalyzer.
 import unittest
 
 from retina.agent.features.json_metrics.du_cell import DuCellAnalyzer
-from retina.agent.features.json_metrics.du_metrics import DuMetricsAnalyzer, _MovingAverage
+from retina.agent.features.json_metrics.analyzer import MovingAverage as _MovingAverage
+from retina.agent.features.json_metrics.du_metrics import DuMetricsAnalyzer
 
 # ── Timestamps ────────────────────────────────────────────────────────────────
 
