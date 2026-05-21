@@ -23,7 +23,7 @@ baseline: &base_config
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-TDD-16-2]
   criteria:
-    du.dl_bitrate_gt: 10.0e+6
+    du.dl_bitrate_gt: 20.0e+6
     du.ul_bitrate_gt: 10.0e+6
     du.nof_ko_dl_le: 20
     du.nof_ko_ul_le: 20
@@ -46,7 +46,7 @@ tdd_dl_heavy:
       prach_config_index: 158
   feature_ids: [MVP-FUNC-TDD-16-4]
   criteria:
-    du.dl_bitrate_gt: 10.0e+6
+    du.dl_bitrate_gt: 20.0e+6
     du.ul_bitrate_gt: 10.0e+6
     du.nof_ko_dl_le: 5
     du.nof_ko_ul_le: 0
@@ -69,7 +69,7 @@ tdd_ul_heavy:
   feature_ids: [MVP-FUNC-TDD-16-1]
   criteria:
     du.dl_bitrate_gt: 10.0e+6
-    du.ul_bitrate_gt: 10.0e+6
+    du.ul_bitrate_gt: 20.0e+6
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
     du.nof_reestablishments_eq: 0
