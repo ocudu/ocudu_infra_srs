@@ -15,7 +15,7 @@ cu_cp:
         ncells:
           - nr_cell_id: 0x19B0
             report_configs: [2]
-        gnb_id_bit_length: 32
+        gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
         plmn: "00101"
         tac: 7
         pci: 2

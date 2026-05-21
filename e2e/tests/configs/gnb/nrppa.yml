@@ -4,8 +4,6 @@
 log:
   nrppa_level: debug
 
-gnb_id_bit_length: 32
-
 cu_cp:
   mobility:
     trigger_handover_from_measurements: false
