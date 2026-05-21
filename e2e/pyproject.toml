@@ -161,6 +161,8 @@ markers = [
   "MVP-FUNC-TDD-16-5",
   "MVP-FUNC-RANS-16-1",
   "MVP-FUNC-RANS-16-2",
+  "MVP-SEC-O-CU-12",
+  "MVP-SEC-O-CU-13",
   "SRS",
 ]
 minversion = "6.0"

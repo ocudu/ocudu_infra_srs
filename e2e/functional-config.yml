@@ -348,6 +348,22 @@ power_control:
     KEYWORDS: "functional.singleue.power_control."
     TESTBED: dynamic
 
+security:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $ON_MR
+      changes:
+        - e2e/tests/**/*
+        - e2e/*.yml
+        - retina/**/*
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  variables:
+    KEYWORDS: "functional.singleue.security."
+    TESTBED: dynamic
+
 slicing:
   stage: singleue
   extends: .functional_e2e
