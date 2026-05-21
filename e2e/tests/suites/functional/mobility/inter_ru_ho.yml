@@ -24,7 +24,7 @@ baseline: &base_config
     du.nof_ko_ul_le: 50 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    du.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the test_duration
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
@@ -54,7 +54,7 @@ conditional_ho:
     du.nof_ko_ul_le: 50 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    du.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the test_duration
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
@@ -81,7 +81,7 @@ cfra_ho:
     du.nof_ko_ul_le: 50 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    du.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the test_duration
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
