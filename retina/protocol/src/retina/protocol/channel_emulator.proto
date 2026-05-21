@@ -38,7 +38,7 @@ message NtnScenarioDefinition {
   uint32            pass_start_offset_s    = 4;
   uint32            access_link_dl_freq_hz = 5;
   uint32            access_link_ul_freq_hz = 6;
-  uint32            enable_feeder_link     = 7;
+  bool              enable_feeder_link     = 7;
   uint32            feeder_link_dl_freq_hz = 8;
   uint32            feeder_link_ul_freq_hz = 9;
   uint32            sample_rate            = 10;

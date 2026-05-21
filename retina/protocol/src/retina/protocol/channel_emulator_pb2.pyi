@@ -78,7 +78,7 @@ class NtnScenarioDefinition(google.protobuf.message.Message):
     pass_start_offset_s: builtins.int
     access_link_dl_freq_hz: builtins.int
     access_link_ul_freq_hz: builtins.int
-    enable_feeder_link: builtins.int
+    enable_feeder_link: builtins.bool
     feeder_link_dl_freq_hz: builtins.int
     feeder_link_ul_freq_hz: builtins.int
     sample_rate: builtins.int
@@ -93,7 +93,7 @@ class NtnScenarioDefinition(google.protobuf.message.Message):
         pass_start_offset_s: builtins.int = ...,
         access_link_dl_freq_hz: builtins.int = ...,
         access_link_ul_freq_hz: builtins.int = ...,
-        enable_feeder_link: builtins.int = ...,
+        enable_feeder_link: builtins.bool = ...,
         feeder_link_dl_freq_hz: builtins.int = ...,
         feeder_link_ul_freq_hz: builtins.int = ...,
         sample_rate: builtins.int = ...,
