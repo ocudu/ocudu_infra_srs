@@ -3,11 +3,12 @@
 
 cu_cp:
   xnap:
-    connections:
+    gateways:
       - bind_addrs:
           - {{ip}}
-        peer_addrs:
-          - {{neighbor_cucp_definition.0.cucp_ip}}
+        connections:
+          - peer_addrs:
+              - {{neighbor_cucp_definition.0.cucp_ip}}
 
 pcap:
   xnap_enable: true
