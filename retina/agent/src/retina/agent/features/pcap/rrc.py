@@ -316,11 +316,11 @@ class SuspendConfigAnalyzer(PcapAnalyzer):
         return Metrics(aggregate=UeMetrics(nof_rrc_suspend=self._count))
 
 
-class ResumeRequestAnalyzer(PcapAnalyzer):
+class ResumeCompleteAnalyzer(PcapAnalyzer):
     """
-    Counts UL RRCResumeRequest messages (covers both RRCResumeRequest and RRCResumeRequest1).
+    Counts UL RRCResumeComplete messages sent by the UE after a successful resume.
 
-    tshark display filter: nr-rrc.rrcResumeRequest or nr-rrc.rrcResumeRequest1
+    tshark display filter: nr-rrc.rrcResumeComplete_element
     """
 
     def __init__(self) -> None:
@@ -328,13 +328,13 @@ class ResumeRequestAnalyzer(PcapAnalyzer):
 
     @property
     def display_filter(self) -> str:
-        return "nr-rrc.rrcResumeRequest_element"
+        return "nr-rrc.rrcResumeComplete_element"
 
     def process(self, _) -> None:
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(aggregate=UeMetrics(nof_rrc_resume_request=self._count))
+        return Metrics(aggregate=UeMetrics(nof_rrc_resume_complete=self._count))
 
 
 class ReestablishmentAnalyzer(PcapAnalyzer):

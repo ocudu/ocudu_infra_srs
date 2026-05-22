@@ -240,26 +240,8 @@ class nof_paging_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_paging_messages for s in self._stub_array)
 
 
-class nof_rrc_resume_request_eq(DuCriteria):
-    """RRC Resume Request"""
-
-    operator_method = operator.eq
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_resume_request for s in self._stub_array)
-
-
-class nof_rrc_resume_request_ge(DuCriteria):
-    """RRC Resume Request"""
-
-    operator_method = operator.ge
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_resume_request for s in self._stub_array)
-
-
 class nof_rrc_suspend_eq(DuCriteria):
-    """RRC Suspend (suspendConfig)"""
+    """RRC Suspend"""
 
     operator_method = operator.eq
 
@@ -268,12 +250,21 @@ class nof_rrc_suspend_eq(DuCriteria):
 
 
 class nof_rrc_suspend_ge(DuCriteria):
-    """RRC Suspend (suspendConfig)"""
+    """RRC Suspend"""
 
     operator_method = operator.ge
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_suspend for s in self._stub_array)
+
+
+class nof_rrc_resume_complete_eq(DuCriteria):
+    """RRC Resume Complete"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_resume_complete for s in self._stub_array)
 
 
 class nof_sib1_ge(DuCriteria):
