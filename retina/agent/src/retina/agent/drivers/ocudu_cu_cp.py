@@ -60,6 +60,11 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._metrics = Metrics()
+        self._metrics_parsing_done = True
+
+    def reset_pcap_metrics(self) -> None:
+        """Reset metrics state at the start of a new test run."""
+        self._metrics = Metrics()
         self._metrics_parsing_done = False
 
     def _get_sut_version(self) -> str:
@@ -100,6 +105,7 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
     def Start(self, request: CUCPStartInfo, context: grpc.ServicerContext) -> Empty:
         with notify_grpc_exception(context):
             self.Stop(UInt32Value(value=request.start_info.timeout), context)
+            self.reset_pcap_metrics()
 
             cucp_logfile = self.get_filepath_in_report_folder(self.CUCP_STDOUT_NAME) + ".log"
             self._last_log_array = (

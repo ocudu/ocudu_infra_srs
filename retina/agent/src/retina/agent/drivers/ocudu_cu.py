@@ -11,7 +11,7 @@ from typing import Any, Dict, Sequence
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import CUCPDefinition, FiveGCDefinition, PLMN
+from retina.protocol.base_pb2 import CUCPDefinition, FiveGCDefinition, Metrics, PLMN, StopResponse
 from retina.protocol.gnb_pb2 import CUStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
@@ -89,6 +89,7 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
     def Start(self, request: CUStartInfo, context: grpc.ServicerContext) -> Empty:
         with notify_grpc_exception(context):
             self.Stop(UInt32Value(value=request.start_info.timeout), context)
+            self.reset_pcap_metrics()
 
             cu_logfile = self.get_filepath_in_report_folder(self.CU_STDOUT_NAME) + ".log"
             self._last_log_array = (
@@ -141,6 +142,33 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
                                 break
 
         return Empty()
+
+    def reset_pcap_metrics(self) -> None:
+        """Reset metrics state at the start of a new test run."""
+        self._cu_cp.reset_pcap_metrics()
+
+    def get_metrics_parsing_arguments(self):
+        """
+        Get Arguments for metrics parsing. Needs to be called before stop
+        """
+        return self._cu_cp.get_metrics_parsing_arguments()
+
+    def extract_metrics(self, *args):
+        """
+        Extract Metrics
+        """
+        self._cu_cp.extract_metrics(*args)
+
+    def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
+        pcap_args = self._cu_cp.get_metrics_parsing_arguments()
+        response = super().Stop(request, context)
+        self._cu_cp.extract_metrics(*pcap_args)
+        return response
+
+    def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
+        metrics = super().GetMetrics(request, context)
+        metrics.MergeFrom(self._cu_cp.GetMetrics(request, context))
+        return metrics
 
     @property
     def _warning_regex(self) -> str:

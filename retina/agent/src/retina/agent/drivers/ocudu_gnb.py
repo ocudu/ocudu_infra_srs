@@ -200,14 +200,17 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
                             raise err from None
 
                 self._du.start_listening_metrics()
+                self._cu.reset_pcap_metrics()
 
         return Empty()
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
         metrics_json_path = self._du.stop_listening_metrics()
-        pcap_args = self._du.get_metrics_parsing_arguments()
+        du_pcap_args = self._du.get_metrics_parsing_arguments()
+        cu_pcap_args = self._cu.get_metrics_parsing_arguments()
         response = super().Stop(request, context)
-        self._du.extract_metrics(*pcap_args)
+        self._du.extract_metrics(*du_pcap_args)
+        self._cu.extract_metrics(*cu_pcap_args)
         transform_metrics(metrics_json_path)
         return response
 
@@ -226,7 +229,9 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
         return OCUDU_ERROR_REGEX
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
-        return self._du.GetMetrics(request, context)
+        metrics = self._du.GetMetrics(request, context)
+        metrics.MergeFrom(self._cu.GetMetrics(request, context))
+        return metrics
 
 
 class LocalOcuduGnb(OcuduGnb):
