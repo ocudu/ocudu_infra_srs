@@ -87,6 +87,8 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             if available_resources.node.port_array:
                 set_parameter("testbed.port_array", available_resources.node.port_array)
             set_parameter("testbed.lcores_eal_args", available_resources.node.lcores_eal)
+            if available_resources.node.n2n3_bind_address:
+                set_parameter("testbed.n2n3_bind_address", available_resources.node.n2n3_bind_address)
 
         # Remote
         if available_resources.remote is not None:

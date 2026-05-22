@@ -381,5 +381,6 @@ class RemoteAmarisoft5gc(Amarisoft5gc):
         return super().Start(request, context)
 
     def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> FiveGCDefinition:
-        testbed_defaults.ip = testbed_defaults.amf_address
-        return super().GetDefinition(request, context)
+        definition = super().GetDefinition(request, context)
+        definition.amf_ip = testbed_defaults.amf_address
+        return definition

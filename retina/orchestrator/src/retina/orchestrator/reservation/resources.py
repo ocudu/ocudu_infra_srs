@@ -930,6 +930,16 @@ class RequestReservation:
                 return node["cpu_isolation"].get("lcores_eal_args", "")
         return ""
 
+    def get_node_backhaul_configuration(self, k_server: Kubernetes) -> str:
+        """
+        Get node backhaul configuration
+        """
+        node_name = self.get_node_name(k_server=k_server)
+        for node in k_server.get_cluster_configuration()["nodes"]:
+            if node["name"] == node_name and "backhaul" in node:
+                return node["backhaul"].get("n2n3_bind_address", "")
+        return ""
+
     def _get_node(self, k_server: Kubernetes) -> Node:
         if self._node is None:
             self._node = self._match_node(k_server=k_server)

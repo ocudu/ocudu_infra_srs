@@ -57,6 +57,7 @@ api_port: int = 9002
 tma_path: str = ""
 amf_address: str = ""
 amf_port: int = 38412
+n2n3_bind_address: str = ""
 # Accelerator
 accelerator_model: str = ""
 accelerator_type: str = ""

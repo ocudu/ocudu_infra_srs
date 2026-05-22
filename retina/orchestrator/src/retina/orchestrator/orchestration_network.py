@@ -399,6 +399,7 @@ class OrchestratorManager:
             use_node_ip=force_external_ip,
             port_array=list(extra_ports_number_array),
             lcores_eal=request_reservation.get_node_configuration(self.k_server),
+            n2n3_bind_address=request_reservation.get_node_backhaul_configuration(self.k_server),
         )
         create_resource_data_configmap(
             k_server=self.k_server,

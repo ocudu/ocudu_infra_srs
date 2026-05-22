@@ -150,6 +150,7 @@ class Node:  # pylint: disable=too-few-public-methods
     use_node_ip: bool = field(default=False)  # pylint: disable=invalid-field-call
     port_array: List[int] = field(default_factory=list)  # pylint: disable=invalid-field-call
     lcores_eal: str = field(default="")  # pylint: disable=invalid-field-call
+    n2n3_bind_address: str = field(default="")  # pylint: disable=invalid-field-call
 
 
 @resource
