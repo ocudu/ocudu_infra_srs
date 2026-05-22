@@ -10,9 +10,9 @@ paging: &base_config
     parameters:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
-      nof_paging: &nof_paging 1
+      nof_paging: 1
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu.yml, du.yml, tdd_default.yml, inactivity_timer.yml, mac_pcap.yml]
     parameters:
       time_multiplier: &time_multiplier 10
   core:
@@ -21,18 +21,19 @@ paging: &base_config
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-11]
   criteria:
-    du.dl_bitrate_gt: 0
-    du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 0
-    du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
-    core.nof_nas_service_accept_eq: *nof_paging
-    core.nof_ng_paging_eq: *nof_paging
-    core.nof_pdu_session_establishment_accept_eq: 1
-    du.nof_error_indications_le: 0
+    <<: &base_criteria
+      all.errors_le: 0
+      all.warnings_le: 0
+      du.dl_bitrate_gt: 0
+      du.ul_bitrate_gt: 0
+      du.nof_ko_dl_le: 0
+      du.nof_ko_ul_le: 0
+      du.nof_reestablishments_eq: 0
+      core.nof_pdu_session_establishment_accept_eq: 1
+      du.nof_error_indications_le: 0
+    core.nof_ng_paging_eq: 1
+    du.nof_rrc_suspend_ge: 0 # Release, no suspend
     du.nof_paging_eq: 2 # the DU sends 2x Paging messages per NG paging
-    all.errors_le: 0
-    all.warnings_le: 0
 
 # tid2.2.23: DRX test
 drx:
@@ -44,16 +45,8 @@ drx:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-SVCS-16-6]
   criteria:
-    du.dl_bitrate_gt: 0
-    du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 0
-    du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
-    core.nof_pdu_session_establishment_accept_eq: 1
-    du.nof_error_indications_le: 0
-    all.errors_le: 0
-    all.warnings_le: 0
-    core.nof_ng_paging_eq: *nof_paging
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 1
     du.nof_paging_eq: 2  # the DU sends 2x Paging messages per NG paging
     du.drx_long_cycle_eq: 7 # this is the coded value that corresponds to 80 ms
 
@@ -74,22 +67,14 @@ mt_initiate:
     parameters:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
-      nof_paging: *nof_paging
+      nof_paging: 1
   feature_ids: [MVP-FUNC-MOB-11]
   criteria:
-    du.dl_bitrate_gt: 0
-    du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 0
-    du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
-    core.nof_pdu_session_establishment_accept_eq: 1
-    du.nof_error_indications_le: 0
-    all.errors_le: 0
-    all.warnings_le: 0
+    <<: *base_criteria
     core.nof_ng_paging_eq: 0
     du.nof_paging_eq: 0
 
-# tid2.2.26: RRC Inactive
+# RRC Inactive
 rrc_inactive:
   <<: *base_config
   ue:
@@ -98,22 +83,14 @@ rrc_inactive:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
       nof_paging: 1
-      log_level: debug
   gnb:
     config: [cu.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-MOB-10]
   criteria:
-    du.dl_bitrate_gt: 0
-    du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 0
-    du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
-    core.nof_pdu_session_establishment_accept_eq: 1
-    du.nof_error_indications_le: 0
-    all.errors_le: 0
-    all.warnings_le: 0
-    du.nof_paging_eq: 2
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up
     du.nof_rrc_suspend_eq: 1
-    du.nof_rrc_resume_request_eq: 1
+    du.nof_paging_eq: 2 # 1 suspend/resume x 2 PCCH Paging messages
+    du.nof_rrc_resume_complete_eq: 1
