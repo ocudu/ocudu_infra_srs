@@ -74,8 +74,8 @@ mt_initiate:
     core.nof_ng_paging_eq: 0
     du.nof_paging_eq: 0
 
-# RRC Inactive
-rrc_inactive:
+# RRC Inactive - MT
+rrc_inactive_mt:
   <<: *base_config
   ue:
     config: [1cell.cfg, paging.cfg]
@@ -87,10 +87,51 @@ rrc_inactive:
     config: [cu.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
     parameters:
       time_multiplier: *time_multiplier
-  feature_ids: [MVP-FUNC-MOB-10]
+  feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-10]
   criteria:
     <<: *base_criteria
     core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up
     du.nof_rrc_suspend_eq: 1
     du.nof_paging_eq: 2 # 1 suspend/resume x 2 PCCH Paging messages
+    du.nof_rrc_resume_complete_eq: 1
+
+# RRC Inactive - MT multiple suspend/resume cycles
+rrc_inactive_mt_multi:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, paging.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_paging: 3
+  gnb:
+    config: [cu.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    parameters:
+      time_multiplier: *time_multiplier
+  feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-10]
+  criteria:
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up
+    du.nof_rrc_suspend_eq: 3
+    du.nof_paging_eq: 6 # 3 suspend/resume cycles x 2 PCCH Paging messages
+    du.nof_rrc_resume_complete_eq: 3
+
+# RRC Inactive - MO-data-triggered resume (no paging)
+rrc_inactive_mo:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, mo_initiate.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+  gnb:
+    config: [cu.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    parameters:
+      time_multiplier: *time_multiplier
+  feature_ids: [MVP-FUNC-MOB-10]
+  criteria:
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up
+    du.nof_rrc_suspend_eq: 1
+    du.nof_paging_eq: 0
     du.nof_rrc_resume_complete_eq: 1
