@@ -229,6 +229,9 @@ message CoreMetrics {
   uint32 nof_e_cid_measurement_initiation_request  = 6;
   uint32 nof_e_cid_measurement_initiation_response = 7;
   uint32 nof_e_cid_measurement_report              = 8;
+
+  uint32 nof_trp_information_request  = 9;
+  uint32 nof_trp_information_response = 10;
 };
 
 message Metrics {

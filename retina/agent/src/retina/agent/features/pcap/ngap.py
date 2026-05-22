@@ -71,3 +71,45 @@ class ECidMeasurementReportAnalyzer(PcapAnalyzer):
 
     def report(self) -> Metrics:
         return Metrics(core=CoreMetrics(nof_e_cid_measurement_report=self._count))
+
+
+class TrpInformationRequestAnalyzer(PcapAnalyzer):
+    """
+    Counts NRPPa TRP Information Request messages.
+
+    tshark display filter: nrppa.TRPInformationRequest_element
+    """
+
+    def __init__(self) -> None:
+        self._count = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "nrppa.TRPInformationRequest_element"
+
+    def process(self, _) -> None:
+        self._count += 1
+
+    def report(self) -> Metrics:
+        return Metrics(core=CoreMetrics(nof_trp_information_request=self._count))
+
+
+class TrpInformationResponseAnalyzer(PcapAnalyzer):
+    """
+    Counts NRPPa TRP Information Response messages.
+
+    tshark display filter: nrppa.TRPInformationResponse_element
+    """
+
+    def __init__(self) -> None:
+        self._count = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "nrppa.TRPInformationResponse_element"
+
+    def process(self, _) -> None:
+        self._count += 1
+
+    def report(self) -> Metrics:
+        return Metrics(core=CoreMetrics(nof_trp_information_response=self._count))

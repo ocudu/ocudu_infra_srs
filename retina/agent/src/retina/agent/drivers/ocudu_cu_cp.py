@@ -30,6 +30,8 @@ from retina.agent.features.pcap.ngap import (
     ECidMeasurementInitiationRequestAnalyzer,
     ECidMeasurementInitiationResponseAnalyzer,
     ECidMeasurementReportAnalyzer,
+    TrpInformationRequestAnalyzer,
+    TrpInformationResponseAnalyzer,
 )
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
@@ -40,6 +42,8 @@ _NGAP_PCAP_ANALYZER_ARRAY = (
     ECidMeasurementInitiationRequestAnalyzer,
     ECidMeasurementInitiationResponseAnalyzer,
     ECidMeasurementReportAnalyzer,
+    TrpInformationRequestAnalyzer,
+    TrpInformationResponseAnalyzer,
 )
 
 
