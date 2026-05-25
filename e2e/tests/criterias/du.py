@@ -7,6 +7,7 @@ DU pass/fail criteria definitions
 
 import operator
 from statistics import mean
+from typing import List
 
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
@@ -387,29 +388,33 @@ class ul_avg_ri_ge(DuCriteria):
 class dl_ue_avg_bitrate(DuCriteria):
     """DL UE average bitrate"""
 
+    def operator_method(self, result: List[float], expected: List[float]) -> bool:
+        ">"
+        return all(a > b for a, b in zip(result, expected))
+
     @property
     def expected(self):
-        return True
+        return [item["value"] for item in self._input]
 
     def callback(self):
         du = self._stub_array[0]
-        ues_tput = [ue.dl_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
-        expected_tput = [item["value"] for item in self._input]
-        return all(a > b for a, b in zip(ues_tput, expected_tput))
+        return [ue.dl_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
 
 
 class ul_ue_avg_bitrate(DuCriteria):
     """UL UE average bitrate"""
 
+    def operator_method(self, result: List[float], expected: List[float]) -> bool:
+        ">"
+        return all(a > b for a, b in zip(result, expected))
+
     @property
     def expected(self):
-        return True
+        return [item["value"] for item in self._input]
 
     def callback(self):
         du = self._stub_array[0]
-        ues_tput = [ue.ul_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
-        expected_tput = [item["value"] for item in self._input]
-        return all(a > b for a, b in zip(ues_tput, expected_tput))
+        return [ue.ul_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
 
 
 class pdsch_prbs_used_per_tdd_slot_mean(DuCriteria):
