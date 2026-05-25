@@ -450,10 +450,28 @@ class nof_rlm_ssb_resources_ge(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_rlm_ssb_resources for s in self._stub_array)
 
 
+class nof_rlm_ssb_resources_eq(DuCriteria):
+    """RLM SSB Resources"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_rlm_ssb_resources for s in self._stub_array)
+
+
 class nof_rlm_csi_rs_resources_ge(DuCriteria):
     """RLM CSI-RS Resources"""
 
     operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_rlm_csi_rs_resources for s in self._stub_array)
+
+
+class nof_rlm_csi_rs_resources_eq(DuCriteria):
+    """RLM CSI-RS Resources"""
+
+    operator_method = operator.eq
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).du.nof_rlm_csi_rs_resources for s in self._stub_array)

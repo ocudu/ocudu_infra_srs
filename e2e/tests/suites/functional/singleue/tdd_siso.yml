@@ -112,3 +112,41 @@ tdd_dl_heavy:
     du.ul_max_mcs_ge: 27
     all.errors_le: 0
     all.warnings_le: 0
+
+# SSB-only Radio Link Monitoring
+rlm_ssb_only:
+  <<: *base_config
+  gnb:
+    config: [cu.yml, du.yml, tdd_default.yml, sib12.yml, rlm_ssb.yml, mac_pcap.yml]
+  feature_ids: [MVP-FUNC-RLM-16-1]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.nof_rlm_ssb_resources_ge: 1
+    du.nof_rlm_csi_rs_resources_eq: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+
+# CSI-RS-only Radio Link Monitoring
+rlm_csi_rs_only:
+  <<: *base_config
+  gnb:
+    config: [cu.yml, du.yml, tdd_default.yml, sib12.yml, rlm_csi_rs.yml, mac_pcap.yml]
+  feature_ids: [MVP-FUNC-RLM-16-1]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.nof_rlm_csi_rs_resources_ge: 1
+    du.nof_rlm_ssb_resources_eq: 0
+    all.errors_le: 0
+    all.warnings_le: 0
