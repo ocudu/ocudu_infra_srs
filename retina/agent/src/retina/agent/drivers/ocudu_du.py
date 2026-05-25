@@ -366,7 +366,6 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                         "-C nr-mac",
                     )
                 )
-                self._metrics_parsing_done = True
             if Path(rlc_pcap_filename).exists():
                 self._metrics.MergeFrom(
                     run_analyzers(
@@ -375,7 +374,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                         "-C nr-rlc",
                     )
                 )
-                self._metrics_parsing_done = True
+            self._metrics_parsing_done = True
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
         metrics_json_path = self.stop_listening_metrics()

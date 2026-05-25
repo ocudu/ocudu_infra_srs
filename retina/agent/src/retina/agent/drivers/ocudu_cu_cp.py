@@ -185,7 +185,7 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
                         tuple(analyzer_cls() for analyzer_cls in _NGAP_PCAP_ANALYZER_ARRAY),
                     )
                 )
-                self._metrics_parsing_done = True
+            self._metrics_parsing_done = True
 
     def Stop(self, request: UInt32Value, context: grpc.ServicerContext):
         pcap_args = self.get_metrics_parsing_arguments()
