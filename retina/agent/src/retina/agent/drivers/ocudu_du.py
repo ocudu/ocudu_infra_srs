@@ -42,6 +42,7 @@ from retina.agent.features.pcap.rrc import (
     RachPrioritizationSliceAnalyzer,
     ReestablishmentAnalyzer,
     ResumeRequestAnalyzer,
+    RlmConfigAnalyzer,
     SibAnalyzer,
     SrsFreqDomainAnalyzer,
     SuspendConfigAnalyzer,
@@ -66,6 +67,7 @@ _MAC_PCAP_ANALYZER_ARRAY = (
     ResumeRequestAnalyzer,
     SuspendConfigAnalyzer,
     TransformPrecoderAnalyzer,
+    RlmConfigAnalyzer,
 )
 _RLC_PCAP_ANALYZER_ARRAY = (
     ReestablishmentAnalyzer,

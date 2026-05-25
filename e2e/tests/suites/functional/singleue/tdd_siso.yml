@@ -15,7 +15,7 @@ baseline_gnb: &base_config
     config: [cu.yml, du.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
-  feature_ids: [MVP-ARCH-INTF-4, MVP-FUNC-ARCH-16-1, MVP-FUNC-PHY-16-3, MVP-FUNC-PHY-16-13, MVP-FUNC-PHY-16-15, MVP-FUNC-BAS-16-2, MVP-FUNC-TDD-16-1, MVP-FUNC-TDD-16-2, MVP-FUNC-RLM-16-1, MVP-FUNC-RACH-16-1, MVP-FUNC-MOB-9, MVP-FUNC-RLM-16-1, MVP-ARCH-GEN-1, MVP-ARCH-GEN-2, DU-GEN-1, DU-PHY-2, DU-GEN-5, DU-PHY-5, DU-PHY-6, DU-PHY-4, MVP-FUNC-SVCS-17-1, MVP-FUNC-BW-16-1]
+  feature_ids: [MVP-ARCH-INTF-4, MVP-FUNC-ARCH-16-1, MVP-FUNC-PHY-16-3, MVP-FUNC-PHY-16-13, MVP-FUNC-PHY-16-15, MVP-FUNC-BAS-16-2, MVP-FUNC-TDD-16-1, MVP-FUNC-TDD-16-2, MVP-FUNC-RLM-16-1, MVP-FUNC-RACH-16-1, MVP-FUNC-MOB-9, MVP-ARCH-GEN-1, MVP-ARCH-GEN-2, DU-GEN-1, DU-PHY-2, DU-GEN-5, DU-PHY-5, DU-PHY-6, DU-PHY-4, MVP-FUNC-SVCS-17-1, MVP-FUNC-BW-16-1]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -28,6 +28,8 @@ baseline_gnb: &base_config
     du.nof_sib2_ge: 1
     du.dl_max_mcs_ge: 27
     du.ul_max_mcs_ge: 27
+    du.nof_rlm_ssb_resources_ge: 1
+    du.nof_rlm_csi_rs_resources_ge: 1
     all.errors_le: 0
     all.warnings_le: 0
 

@@ -439,3 +439,21 @@ class pusch_prbs_used_per_tdd_slot_mean(DuCriteria):
     def callback(self):
         du = self._stub_array[0]
         return round(mean(du.GetMetrics(Empty()).du.pusch_prbs_used_per_tdd_slot_idx), 1)
+
+
+class nof_rlm_ssb_resources_ge(DuCriteria):
+    """RLM SSB Resources"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_rlm_ssb_resources for s in self._stub_array)
+
+
+class nof_rlm_csi_rs_resources_ge(DuCriteria):
+    """RLM CSI-RS Resources"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_rlm_csi_rs_resources for s in self._stub_array)

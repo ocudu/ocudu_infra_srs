@@ -357,3 +357,40 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
 
     def report(self) -> Metrics:
         return Metrics(aggregate=UeMetrics(nof_reestablishments_complete=self._completion_count))
+
+
+class RlmConfigAnalyzer(PcapAnalyzer):
+    """
+    Counts SSB and CSI-RS resources in radioLinkMonitoringConfig.failureDetectionResourcesToAddModList.
+
+    Each RadioLinkMonitoringRS element carries a detectionResource choice: 0 = ssb-Index,
+    1 = csi-RS-Index.  Presence of both types in the same RRCSetup / RRCReconfiguration confirms
+    that the gNB configured ssb_and_csi_rs mode.
+    tshark display filter: nr-rrc.RadioLinkMonitoringRS_element
+    """
+
+    def __init__(self) -> None:
+        self._ssb_count: int = 0
+        self._csi_rs_count: int = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "nr-rrc.RadioLinkMonitoringRS_element"
+
+    def process(self, packet) -> None:
+        try:
+            layer = _rrc_layer(packet)
+        except KeyError:
+            return
+        try:
+            for field in layer.nr_rrc_detectionresource.all_fields:
+                showname = getattr(field, "showname", "") or ""
+                if "ssb-Index" in showname:
+                    self._ssb_count += 1
+                elif "csi-RS-Index" in showname:
+                    self._csi_rs_count += 1
+        except AttributeError:
+            pass
+
+    def report(self) -> Metrics:
+        return Metrics(du=DuMetrics(nof_rlm_ssb_resources=self._ssb_count, nof_rlm_csi_rs_resources=self._csi_rs_count))

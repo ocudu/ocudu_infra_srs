@@ -217,6 +217,9 @@ message DuMetrics {
 
   repeated uint32 pdsch_prbs_used_per_tdd_slot_idx = 23;
   repeated uint32 pusch_prbs_used_per_tdd_slot_idx = 24;
+
+  uint32 nof_rlm_ssb_resources    = 25;
+  uint32 nof_rlm_csi_rs_resources = 26;
 };
 
 message CoreMetrics {
