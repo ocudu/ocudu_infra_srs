@@ -81,7 +81,10 @@ class Criteria(ABC):  # pylint: disable=too-few-public-methods
     @property
     def expected_str(self) -> str:
         """Formatted string representation of the expected value with its operator symbol."""
-        return f"{_OPERATOR_SYMBOLS.get(self.operator_method, '?')} {_number_to_str(self.expected)}"
+        operator_symbol = _OPERATOR_SYMBOLS.get(
+            self.operator_method, self.operator_method.__doc__ if self.operator_method.__doc__ else "?"
+        )
+        return f"{operator_symbol} {_number_to_str(self.expected)}"
 
     @final
     @property
