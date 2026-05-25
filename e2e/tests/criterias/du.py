@@ -70,7 +70,7 @@ class max_late_ul_harqs_le(DuCriteria):
 
 
 class nof_error_indications_le(DuCriteria):
-    """Error indications"""
+    """Error Indications"""
 
     operator_method = operator.le
 
@@ -232,7 +232,7 @@ class drx_long_cycle_eq(DuCriteria):
 
 
 class nof_paging_eq(DuCriteria):
-    """Paging messages"""
+    """Paging Messages"""
 
     operator_method = operator.eq
 
@@ -277,7 +277,7 @@ class nof_rrc_suspend_ge(DuCriteria):
 
 
 class nof_sib1_ge(DuCriteria):
-    """SIB1 transmissions"""
+    """SIB1 Transmissions"""
 
     operator_method = operator.ge
 
@@ -286,7 +286,7 @@ class nof_sib1_ge(DuCriteria):
 
 
 class nof_sib2_ge(DuCriteria):
-    """SIB2 transmissions"""
+    """SIB2 Transmissions"""
 
     operator_method = operator.ge
 
@@ -295,7 +295,7 @@ class nof_sib2_ge(DuCriteria):
 
 
 class nof_sib3_ge(DuCriteria):
-    """SIB3 transmissions"""
+    """SIB3 Transmissions"""
 
     operator_method = operator.ge
 
@@ -304,7 +304,7 @@ class nof_sib3_ge(DuCriteria):
 
 
 class nof_sib4_ge(DuCriteria):
-    """SIB4 transmissions"""
+    """SIB4 Transmissions"""
 
     operator_method = operator.ge
 
@@ -313,7 +313,7 @@ class nof_sib4_ge(DuCriteria):
 
 
 class nof_sib5_ge(DuCriteria):
-    """SIB5 transmissions"""
+    """SIB5 Transmissions"""
 
     operator_method = operator.ge
 
@@ -322,7 +322,7 @@ class nof_sib5_ge(DuCriteria):
 
 
 class nof_sib8_ge(DuCriteria):
-    """SIB8 transmissions"""
+    """SIB8 Transmissions"""
 
     operator_method = operator.ge
 
@@ -331,7 +331,7 @@ class nof_sib8_ge(DuCriteria):
 
 
 class sib1_has_rach_prioritization_slice_eq(DuCriteria):
-    """RACH prioritization for slicing present in SIB1"""
+    """SIB1 RACH Prioritization Slice"""
 
     operator_method = operator.eq
 
@@ -340,7 +340,7 @@ class sib1_has_rach_prioritization_slice_eq(DuCriteria):
 
 
 class nof_sib16_ge(DuCriteria):
-    """SIB16 transmissions"""
+    """SIB16 Transmissions"""
 
     operator_method = operator.ge
 
@@ -349,7 +349,7 @@ class nof_sib16_ge(DuCriteria):
 
 
 class nof_sib19_ge(DuCriteria):
-    """SIB19 transmissions"""
+    """SIB19 Transmissions"""
 
     operator_method = operator.ge
 

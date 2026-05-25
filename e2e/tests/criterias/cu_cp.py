@@ -38,7 +38,7 @@ class nof_e_cid_measurement_initiation_request_eq(CuCpCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).core.nof_e_cid_measurement_initiation_request for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_e_cid_measurement_initiation_request for s in self._stub_array)
 
 
 class nof_e_cid_measurement_initiation_response_eq(CuCpCriteria):
@@ -47,7 +47,7 @@ class nof_e_cid_measurement_initiation_response_eq(CuCpCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).core.nof_e_cid_measurement_initiation_response for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_e_cid_measurement_initiation_response for s in self._stub_array)
 
 
 class nof_e_cid_measurement_report_eq(CuCpCriteria):
@@ -56,7 +56,7 @@ class nof_e_cid_measurement_report_eq(CuCpCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).core.nof_e_cid_measurement_report for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_e_cid_measurement_report for s in self._stub_array)
 
 
 class nof_e_cid_measurement_report_geq(CuCpCriteria):
@@ -65,7 +65,7 @@ class nof_e_cid_measurement_report_geq(CuCpCriteria):
     operator_method = operator.ge
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).core.nof_e_cid_measurement_report for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_e_cid_measurement_report for s in self._stub_array)
 
 
 class trp_information_request_eq(CuCpCriteria):
@@ -74,7 +74,7 @@ class trp_information_request_eq(CuCpCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).core.nof_trp_information_request for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_trp_information_request for s in self._stub_array)
 
 
 class trp_information_response_eq(CuCpCriteria):
@@ -83,4 +83,4 @@ class trp_information_response_eq(CuCpCriteria):
     operator_method = operator.eq
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).core.nof_trp_information_response for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_trp_information_response for s in self._stub_array)

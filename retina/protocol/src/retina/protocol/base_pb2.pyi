@@ -637,21 +637,11 @@ class CoreMetrics(google.protobuf.message.Message):
     NOF_NG_PAGING_FIELD_NUMBER: builtins.int
     NOF_TAU_REQUEST_FIELD_NUMBER: builtins.int
     NOF_PDU_SESSION_RESOURCE_MODIFY_REQUEST_FIELD_NUMBER: builtins.int
-    NOF_E_CID_MEASUREMENT_INITIATION_REQUEST_FIELD_NUMBER: builtins.int
-    NOF_E_CID_MEASUREMENT_INITIATION_RESPONSE_FIELD_NUMBER: builtins.int
-    NOF_E_CID_MEASUREMENT_REPORT_FIELD_NUMBER: builtins.int
-    NOF_TRP_INFORMATION_REQUEST_FIELD_NUMBER: builtins.int
-    NOF_TRP_INFORMATION_RESPONSE_FIELD_NUMBER: builtins.int
     nof_pdu_session_establishment_accept: builtins.int
     nof_nas_service_accept: builtins.int
     nof_ng_paging: builtins.int
     nof_tau_request: builtins.int
     nof_pdu_session_resource_modify_request: builtins.int
-    nof_e_cid_measurement_initiation_request: builtins.int
-    nof_e_cid_measurement_initiation_response: builtins.int
-    nof_e_cid_measurement_report: builtins.int
-    nof_trp_information_request: builtins.int
-    nof_trp_information_response: builtins.int
     def __init__(
         self,
         *,
@@ -660,15 +650,37 @@ class CoreMetrics(google.protobuf.message.Message):
         nof_ng_paging: builtins.int = ...,
         nof_tau_request: builtins.int = ...,
         nof_pdu_session_resource_modify_request: builtins.int = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_resource_modify_request", b"nof_pdu_session_resource_modify_request", "nof_tau_request", b"nof_tau_request"]) -> None: ...
+
+Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
+
+@typing.final
+class CuCpMetrics(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    NOF_E_CID_MEASUREMENT_INITIATION_REQUEST_FIELD_NUMBER: builtins.int
+    NOF_E_CID_MEASUREMENT_INITIATION_RESPONSE_FIELD_NUMBER: builtins.int
+    NOF_E_CID_MEASUREMENT_REPORT_FIELD_NUMBER: builtins.int
+    NOF_TRP_INFORMATION_REQUEST_FIELD_NUMBER: builtins.int
+    NOF_TRP_INFORMATION_RESPONSE_FIELD_NUMBER: builtins.int
+    nof_e_cid_measurement_initiation_request: builtins.int
+    nof_e_cid_measurement_initiation_response: builtins.int
+    nof_e_cid_measurement_report: builtins.int
+    nof_trp_information_request: builtins.int
+    nof_trp_information_response: builtins.int
+    def __init__(
+        self,
+        *,
         nof_e_cid_measurement_initiation_request: builtins.int = ...,
         nof_e_cid_measurement_initiation_response: builtins.int = ...,
         nof_e_cid_measurement_report: builtins.int = ...,
         nof_trp_information_request: builtins.int = ...,
         nof_trp_information_response: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_resource_modify_request", b"nof_pdu_session_resource_modify_request", "nof_tau_request", b"nof_tau_request", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response"]) -> None: ...
 
-Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
+Global___CuCpMetrics: typing_extensions.TypeAlias = CuCpMetrics
 
 @typing.final
 class Metrics(google.protobuf.message.Message):
@@ -676,12 +688,15 @@ class Metrics(google.protobuf.message.Message):
 
     AGGREGATE_FIELD_NUMBER: builtins.int
     UE_ARRAY_FIELD_NUMBER: builtins.int
+    CU_CP_FIELD_NUMBER: builtins.int
     DU_FIELD_NUMBER: builtins.int
     CORE_FIELD_NUMBER: builtins.int
     @property
     def aggregate(self) -> Global___UeMetrics: ...
     @property
     def ue_array(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[Global___UeMetrics]: ...
+    @property
+    def cu_cp(self) -> Global___CuCpMetrics: ...
     @property
     def du(self) -> Global___DuMetrics: ...
     @property
@@ -691,10 +706,11 @@ class Metrics(google.protobuf.message.Message):
         *,
         aggregate: Global___UeMetrics | None = ...,
         ue_array: collections.abc.Iterable[Global___UeMetrics] | None = ...,
+        cu_cp: Global___CuCpMetrics | None = ...,
         du: Global___DuMetrics | None = ...,
         core: Global___CoreMetrics | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "du", b"du"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "du", b"du", "ue_array", b"ue_array"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu_cp", b"cu_cp", "du", b"du"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu_cp", b"cu_cp", "du", b"du", "ue_array", b"ue_array"]) -> None: ...
 
 Global___Metrics: typing_extensions.TypeAlias = Metrics

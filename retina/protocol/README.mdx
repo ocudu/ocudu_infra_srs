@@ -43,6 +43,11 @@ import TOCInline from '@theme/TOCInline';
 | `nof_ng_paging` | `uint32` |||
 | `nof_tau_request` | `uint32` |||
 | `nof_pdu_session_resource_modify_request` | `uint32` |||
+
+#### CuCpMetrics
+
+| Field | Type | Label | Description |
+|---|---|---|---|
 | `nof_e_cid_measurement_initiation_request` | `uint32` |||
 | `nof_e_cid_measurement_initiation_response` | `uint32` |||
 | `nof_e_cid_measurement_report` | `uint32` |||
@@ -114,6 +119,7 @@ import TOCInline from '@theme/TOCInline';
 |---|---|---|---|
 | `aggregate` | `UeMetrics` |||
 | `ue_array` | `UeMetrics` |`repeated`||
+| `cu_cp` | `CuCpMetrics` |||
 | `du` | `DuMetrics` |||
 | `core` | `CoreMetrics` |||
 

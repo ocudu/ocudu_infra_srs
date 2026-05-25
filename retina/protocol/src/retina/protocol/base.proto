@@ -221,22 +221,25 @@ message DuMetrics {
 
 message CoreMetrics {
   uint32 nof_pdu_session_establishment_accept    = 1;
-  uint32 nof_nas_service_accept              = 2;
+  uint32 nof_nas_service_accept                  = 2;
   uint32 nof_ng_paging                           = 3;
   uint32 nof_tau_request                         = 4;
   uint32 nof_pdu_session_resource_modify_request = 5;
+};
 
-  uint32 nof_e_cid_measurement_initiation_request  = 6;
-  uint32 nof_e_cid_measurement_initiation_response = 7;
-  uint32 nof_e_cid_measurement_report              = 8;
+message CuCpMetrics {
+  uint32 nof_e_cid_measurement_initiation_request  = 1;
+  uint32 nof_e_cid_measurement_initiation_response = 2;
+  uint32 nof_e_cid_measurement_report              = 3;
 
-  uint32 nof_trp_information_request  = 9;
-  uint32 nof_trp_information_response = 10;
+  uint32 nof_trp_information_request  = 4;
+  uint32 nof_trp_information_response = 5;
 };
 
 message Metrics {
   UeMetrics          aggregate = 1;
   repeated UeMetrics ue_array  = 2;
-  DuMetrics          du        = 3;
-  CoreMetrics        core      = 4;
+  CuCpMetrics        cu_cp     = 3;
+  DuMetrics          du        = 4;
+  CoreMetrics        core      = 5;
 };

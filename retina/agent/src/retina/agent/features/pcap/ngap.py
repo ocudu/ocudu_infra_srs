@@ -5,7 +5,7 @@
 NGAP/NRPPa-layer pcap analyzers.
 """
 
-from retina.protocol.base_pb2 import CoreMetrics, Metrics
+from retina.protocol.base_pb2 import CuCpMetrics, Metrics
 
 from retina.agent.features.pcap.analyzer import PcapAnalyzer
 
@@ -28,7 +28,7 @@ class ECidMeasurementInitiationRequestAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(core=CoreMetrics(nof_e_cid_measurement_initiation_request=self._count))
+        return Metrics(cu_cp=CuCpMetrics(nof_e_cid_measurement_initiation_request=self._count))
 
 
 class ECidMeasurementInitiationResponseAnalyzer(PcapAnalyzer):
@@ -49,7 +49,7 @@ class ECidMeasurementInitiationResponseAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(core=CoreMetrics(nof_e_cid_measurement_initiation_response=self._count))
+        return Metrics(cu_cp=CuCpMetrics(nof_e_cid_measurement_initiation_response=self._count))
 
 
 class ECidMeasurementReportAnalyzer(PcapAnalyzer):
@@ -70,7 +70,7 @@ class ECidMeasurementReportAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(core=CoreMetrics(nof_e_cid_measurement_report=self._count))
+        return Metrics(cu_cp=CuCpMetrics(nof_e_cid_measurement_report=self._count))
 
 
 class TrpInformationRequestAnalyzer(PcapAnalyzer):
@@ -91,7 +91,7 @@ class TrpInformationRequestAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(core=CoreMetrics(nof_trp_information_request=self._count))
+        return Metrics(cu_cp=CuCpMetrics(nof_trp_information_request=self._count))
 
 
 class TrpInformationResponseAnalyzer(PcapAnalyzer):
@@ -112,4 +112,4 @@ class TrpInformationResponseAnalyzer(PcapAnalyzer):
         self._count += 1
 
     def report(self) -> Metrics:
-        return Metrics(core=CoreMetrics(nof_trp_information_response=self._count))
+        return Metrics(cu_cp=CuCpMetrics(nof_trp_information_response=self._count))
