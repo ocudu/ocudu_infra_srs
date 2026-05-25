@@ -120,3 +120,57 @@ class nof_sn_status_transfer_geq(CuCpCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).cu_cp.nof_sn_status_transfer for s in self._stub_array)
+
+
+class nof_rohc_profile_1_configured_eq(CuCpCriteria):
+    """RoHC Profile 1 DRBs"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_rohc_profile_1_configured for s in self._stub_array)
+
+
+class nof_rohc_profile_1_configured_ge(CuCpCriteria):
+    """RoHC Profile 1 DRBs"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_rohc_profile_1_configured for s in self._stub_array)
+
+
+class nof_rohc_profile_2_configured_ge(CuCpCriteria):
+    """RoHC Profile 2 DRBs"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_rohc_profile_2_configured for s in self._stub_array)
+
+
+class nof_5qi_1_drb_configured_eq(CuCpCriteria):
+    """5QI-1 DRBs"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_5qi_1_drb_configured for s in self._stub_array)
+
+
+class nof_5qi_1_drb_configured_ge(CuCpCriteria):
+    """5QI-1 DRBs"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_5qi_1_drb_configured for s in self._stub_array)
+
+
+class nof_5qi_2_drb_configured_ge(CuCpCriteria):
+    """5QI-2 DRBs"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_5qi_2_drb_configured for s in self._stub_array)

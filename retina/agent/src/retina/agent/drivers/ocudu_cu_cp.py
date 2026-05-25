@@ -26,6 +26,12 @@ from retina.agent.drivers.ocudu_du import (
 )
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.pcap.analyzer import run_analyzers
+from retina.agent.features.pcap.e1ap import (
+    Fiveqi1DrbAnalyzer,
+    Fiveqi2DrbAnalyzer,
+    RohcProfile1Analyzer,
+    RohcProfile2Analyzer,
+)
 from retina.agent.features.pcap.ngap import (
     ECidMeasurementInitiationRequestAnalyzer,
     ECidMeasurementInitiationResponseAnalyzer,
@@ -53,6 +59,8 @@ _XNAP_PCAP_ANALYZER_ARRAY = (
     HandoverRequestAcknowledgeAnalyzer,
     SNStatusTransferAnalyzer,
 )
+
+_E1AP_PCAP_ANALYZER_ARRAY = (RohcProfile1Analyzer, RohcProfile2Analyzer, Fiveqi1DrbAnalyzer, Fiveqi2DrbAnalyzer)
 
 
 class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
@@ -181,6 +189,7 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
         return (
             self.get_filepath_in_report_folder(gnb_defaults.ngap_filename),
             self.get_filepath_in_report_folder(gnb_defaults.xnap_filename),
+            self.get_filepath_in_report_folder(gnb_defaults.e1ap_filename),
         )
 
     def extract_metrics(self, *args):
@@ -188,7 +197,7 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
         Extract Metrics
         """
         if not self._metrics_parsing_done:
-            ngap_pcap_filename, xnap_pcap_filename = args
+            ngap_pcap_filename, xnap_pcap_filename, e1ap_pcap_filename = args
             if Path(ngap_pcap_filename).exists():
                 self._metrics.MergeFrom(
                     run_analyzers(
@@ -201,6 +210,13 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
                     run_analyzers(
                         xnap_pcap_filename,
                         tuple(analyzer_cls() for analyzer_cls in _XNAP_PCAP_ANALYZER_ARRAY),
+                    )
+                )
+            if Path(e1ap_pcap_filename).exists():
+                self._metrics.MergeFrom(
+                    run_analyzers(
+                        e1ap_pcap_filename,
+                        tuple(analyzer_cls() for analyzer_cls in _E1AP_PCAP_ANALYZER_ARRAY),
                     )
                 )
             self._metrics_parsing_done = True

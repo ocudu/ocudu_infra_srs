@@ -223,11 +223,11 @@ message DuMetrics {
 };
 
 message CoreMetrics {
-  uint32 nof_pdu_session_establishment_accept    = 1;
-  uint32 nof_nas_service_accept                  = 2;
-  uint32 nof_ng_paging                           = 3;
-  uint32 nof_tau_request                         = 4;
-  uint32 nof_pdu_session_resource_modify_request = 5;
+  uint32 nof_pdu_session_establishment_accept  = 1;
+  uint32 nof_nas_service_accept                = 2;
+  uint32 nof_ng_paging                         = 3;
+  uint32 nof_tau_request                       = 4;
+  uint32 nof_pdu_session_modification_complete = 5;
 };
 
 message CuCpMetrics {
@@ -238,8 +238,13 @@ message CuCpMetrics {
   uint32 nof_trp_information_request  = 4;
   uint32 nof_trp_information_response = 5;
 
-   uint32 nof_xn_handover_request_acknowledge = 6;
-   uint32 nof_sn_status_transfer              = 7;
+  uint32 nof_xn_handover_request_acknowledge = 6;
+  uint32 nof_sn_status_transfer              = 7;
+
+  uint32 nof_rohc_profile_1_configured = 8;
+  uint32 nof_rohc_profile_2_configured = 9;
+  uint32 nof_5qi_1_drb_configured      = 10;
+  uint32 nof_5qi_2_drb_configured      = 11;
 };
 
 message Metrics {

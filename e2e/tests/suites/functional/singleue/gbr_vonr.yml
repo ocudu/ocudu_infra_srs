@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 # GBR bearer, VoNR 5QI and ROHC test
-baseline: &base_config
+baseline:
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
@@ -19,7 +19,12 @@ baseline: &base_config
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
     du.nof_reestablishments_eq: 0
-    core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    core.nof_pdu_session_modification_complete_ge: 1
+    cu_cp.nof_rohc_profile_1_configured_ge: 1
+    cu_cp.nof_rohc_profile_2_configured_ge: 1
+    cu_cp.nof_5qi_1_drb_configured_ge: 1
+    cu_cp.nof_5qi_2_drb_configured_ge: 1
     all.errors_le: 0
     all.warnings_le: 0

@@ -22,15 +22,6 @@ class nof_pdu_session_establishment_accept_eq(FiveGcCriteria):
         return sum(s.GetMetrics(Empty()).core.nof_pdu_session_establishment_accept for s in self._stub_array)
 
 
-class nof_pdu_session_resource_modify_request_eq(FiveGcCriteria):
-    """PDU Session Modification Request"""
-
-    operator_method = operator.eq
-
-    def callback(self):
-        return sum(s.GetMetrics(Empty()).core.nof_pdu_session_resource_modify_request for s in self._stub_array)
-
-
 class nof_pdu_session_establishment_accept_ge(FiveGcCriteria):
     """PDU Session Establishment Accept"""
 
@@ -56,3 +47,21 @@ class nof_ng_paging_eq(FiveGcCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).core.nof_ng_paging for s in self._stub_array)
+
+
+class nof_pdu_session_modification_complete_eq(FiveGcCriteria):
+    """PDU Session Modification Complete"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_pdu_session_modification_complete for s in self._stub_array)
+
+
+class nof_pdu_session_modification_complete_ge(FiveGcCriteria):
+    """PDU Session Modification Complete"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_pdu_session_modification_complete for s in self._stub_array)
