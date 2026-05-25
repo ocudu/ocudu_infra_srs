@@ -221,7 +221,7 @@ message DuMetrics {
 
 message CoreMetrics {
   uint32 nof_pdu_session_establishment_accept    = 1;
-  uint32 nof_5gs_nas_service_accept              = 2;
+  uint32 nof_nas_service_accept              = 2;
   uint32 nof_ng_paging                           = 3;
   uint32 nof_tau_request                         = 4;
   uint32 nof_pdu_session_resource_modify_request = 5;

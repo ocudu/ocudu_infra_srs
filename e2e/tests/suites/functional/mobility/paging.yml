@@ -26,7 +26,7 @@ paging: &base_config
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
     du.nof_reestablishments_eq: 0
-    core.nof_5gs_nas_service_accept_eq: *nof_paging
+    core.nof_nas_service_accept_eq: *nof_paging
     core.nof_ng_paging_eq: *nof_paging
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0

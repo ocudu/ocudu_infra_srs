@@ -147,7 +147,7 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
                 core=CoreMetrics(
                     nof_pdu_session_establishment_accept=counters.get("5gs_nas_pdu_session_establishment_accept", 0),
                     nof_pdu_session_resource_modify_request=counters.get("ng_pdu_session_resource_modify_request", 0),
-                    nof_5gs_nas_service_accept=counters.get("5gs_nas_service_accept", 0),
+                    nof_nas_service_accept=counters.get("5gs_nas_service_accept", 0),
                     nof_ng_paging=counters.get("ng_paging", 0),
                 )
             )
