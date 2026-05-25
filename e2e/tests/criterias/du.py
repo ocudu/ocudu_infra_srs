@@ -214,7 +214,7 @@ class b_srs_eq(DuCriteria):
 
 
 class t312_eq(DuCriteria):
-    """T312"""
+    """T312 Duration Enum"""
 
     operator_method = operator.eq
 

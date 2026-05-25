@@ -28,7 +28,7 @@ baseline: &base_config
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
-    du.t312_eq: 1
+    du.t312_eq: 3 # ms200
     du.nof_sib3_ge: 1
     du.nof_sib4_ge: 1
 

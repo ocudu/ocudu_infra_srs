@@ -217,10 +217,13 @@ class SrsFreqDomainAnalyzer(PcapAnalyzer):
 
 class T312Analyzer(PcapAnalyzer):
     """
-    Extracts the t312 value from rlf-TimersAndConstants in a MAC-NR capture.
+    Extracts the T312 duration from rlf-TimersAndConstants in a MAC-NR capture.
 
-    Reads the nr-rrc.t312 field from the first matching RRC message.
-    tshark display filter: nr-rrc.t312
+    nr-rrc.t312_r16 is a CHOICE: 0=release, 1=setup. When setup, the nested
+    nr-rrc.setup field carries the duration enum (e.g. 3=ms200). This analyzer
+    stores that duration enum value (>0 means T312 is enabled), or -1 if the
+    field is absent or set to release.
+    tshark display filter: nr-rrc.t312_r16
     """
 
     def __init__(self) -> None:
@@ -233,7 +236,9 @@ class T312Analyzer(PcapAnalyzer):
     def process(self, packet) -> None:
         if self._value < 0:
             try:
-                self._value = int(_rrc_layer(packet).nr_rrc_t312_r16)
+                rrc = _rrc_layer(packet)
+                if int(rrc.nr_rrc_t312_r16) == 1:  # 1 = setup (enabled)
+                    self._value = int(rrc.nr_rrc_setup)
             except (AttributeError, KeyError, ValueError):
                 pass
 
