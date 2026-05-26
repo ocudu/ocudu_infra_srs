@@ -48,7 +48,7 @@ baseline_cu_du:
     parameters:
       gnb_id_bit_length_cfg: 22
   cu_up:
-    config: []
+    config: [cu_up.yml]
   du:
     config: [du.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
     parameters:
