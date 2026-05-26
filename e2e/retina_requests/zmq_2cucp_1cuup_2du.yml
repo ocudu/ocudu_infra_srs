@@ -26,9 +26,9 @@
   image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 10%
+      requests: 2%
     memory:
-      requests: 10%
+      requests: 2%
     ephemeral-storage:
       requests: 6G
   resources:
@@ -48,9 +48,9 @@
   image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 10%
+      requests: 2%
     memory:
-      requests: 10%
+      requests: 2%
     ephemeral-storage:
       requests: 6G
   resources:
@@ -70,9 +70,9 @@
   image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 10%
+      requests: 6%
     memory:
-      requests: 10%
+      requests: 6%
     ephemeral-storage:
       requests: 6G
   resources:
