@@ -13,5 +13,5 @@ variable "services_file" {
 variable "helm_version" {
   description = "Linuxptp Helm chart version."
   type        = string
-  default     = "2.1.0"
+  default     = "2.2.0"
 }
