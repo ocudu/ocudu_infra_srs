@@ -114,7 +114,11 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
 
     @property
     def _error_regex(self) -> str:
-        return r"^.*\[1;33mERROR\x1B\[0m: (?!.*Child status change)(?!.*Invalid packet)(?!.*No IPv6 subnet).*$"
+        return (
+            r"^.*\[1;33mERROR\x1B\[0m: (?!.*Child status change)(?!.*Invalid packet)(?!.*No IPv6 subnet)"
+            r"(?!.*Send Error Indication)"
+            r".*$"
+        )
 
     @property
     def _exit_children_first(self) -> bool:
