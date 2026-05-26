@@ -21,7 +21,7 @@ baseline: &base_config
       nof_antennas_ul: 1
   gnb:
     items:
-      - config: [cu.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
           ran_node_name_cfg: "ocudu01"
@@ -29,7 +29,7 @@ baseline: &base_config
           nof_antennas_dl: 1
           nof_antennas_ul: 1
           cell_offset: 0
-      - config: [cu.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu_cp.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
           ran_node_name_cfg: "ocudu02"
@@ -70,12 +70,12 @@ same_cu_up: &base_same_cu_up
       nof_antennas_ul: 1
   cu_cp:
     items:
-      - config: [cu.yml, inter_cu_mobility_1.yml]
+      - config: [cu_cp.yml, inter_cu_mobility_1.yml]
         parameters:
           gnb_id: 411
           ran_node_name_cfg: "ocudu01"
           log_level: "debug"
-      - config: [cu.yml, inter_cu_mobility_2.yml]
+      - config: [cu_cp.yml, inter_cu_mobility_2.yml]
         parameters:
           gnb_id: 412
           ran_node_name_cfg: "ocudu02"
@@ -116,7 +116,7 @@ fr1_fr2:
   <<: *base_config
   gnb:
     items:
-      - config: [cu.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
           ran_node_name_cfg: "ocudu01"
@@ -127,7 +127,7 @@ fr1_fr2:
           nof_antennas_dl: 1
           nof_antennas_ul: 1
           cell_offset: 0
-      - config: [cu.yml, inter_cu_mobility_2.yml, du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu_cp.yml, inter_cu_mobility_2.yml, du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
           ran_node_name_cfg: "ocudu02"
@@ -147,14 +147,14 @@ fr1_fr2_same_cu_up:
   <<: *base_same_cu_up
   cu_cp:
     items:
-      - config: [cu.yml, inter_cu_mobility_1.yml]
+      - config: [cu_cp.yml, inter_cu_mobility_1.yml]
         parameters:
           gnb_id: 411
           ran_node_name_cfg: "ocudu01"
           ext_ssb_arfcn: 2073691
           ext_band: 261
           ext_ssb_scs: 120
-      - config: [cu.yml, inter_cu_mobility_2.yml]
+      - config: [cu_cp.yml, inter_cu_mobility_2.yml]
         parameters:
           gnb_id: 412
           ran_node_name_cfg: "ocudu02"
@@ -188,7 +188,7 @@ xn_ho:
   <<: *base_config
   gnb:
     items:
-      - config: [cu.yml, xnap.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
           ran_node_name_cfg: "ocudu01"
@@ -198,7 +198,7 @@ xn_ho:
           cell_offset: 0
           warning_allowlist:
             - Failed to connect to XN-C peer
-      - config: [cu.yml, xnap.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
+      - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
           ran_node_name_cfg: "ocudu02"

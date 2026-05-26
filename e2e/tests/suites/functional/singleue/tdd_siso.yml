@@ -12,7 +12,7 @@ baseline_gnb: &base_config
       ul_bitrate: 10.0e+6
       test_duration: 6
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-ARCH-INTF-4, MVP-FUNC-ARCH-16-1, MVP-FUNC-PHY-16-13, MVP-FUNC-PHY-16-15, MVP-FUNC-BAS-16-2, MVP-FUNC-TDD-16-1, MVP-FUNC-TDD-16-2, MVP-FUNC-RLM-16-1, MVP-FUNC-RACH-16-1, MVP-FUNC-MOB-9, MVP-ARCH-GEN-1, MVP-ARCH-GEN-2, DU-GEN-1, DU-PHY-2, DU-GEN-5, DU-PHY-5, DU-PHY-6, DU-PHY-4, MVP-FUNC-SVCS-17-1, MVP-FUNC-BW-16-1]
@@ -44,7 +44,7 @@ baseline_cu_du:
       ul_bitrate: 10.0e+6
       test_duration: 6
   cu_cp:
-    config: [cu.yml]
+    config: [cu_cp.yml]
     parameters:
       gnb_id_bit_length_cfg: 22
   cu_up:
@@ -75,7 +75,7 @@ baseline_cu_du:
 tdd_mixed:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, prach_config.yml, tdd_mixed.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, prach_config.yml, tdd_mixed.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 156
   feature_ids: [MVP-FUNC-TDD-16-4]
@@ -96,7 +96,7 @@ tdd_mixed:
 tdd_dl_heavy:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, prach_config.yml, tdd_72b.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, prach_config.yml, tdd_72b.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 156
   feature_ids: [MVP-FUNC-TDD-16-5]
@@ -117,7 +117,7 @@ tdd_dl_heavy:
 rlm_ssb_only:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, sib12.yml, rlm_ssb.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, sib12.yml, rlm_ssb.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-RLM-16-1]
   criteria:
     du.dl_bitrate_gt: 0
@@ -136,7 +136,7 @@ rlm_ssb_only:
 rlm_csi_rs_only:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, sib12.yml, rlm_csi_rs.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, sib12.yml, rlm_csi_rs.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-RLM-16-1]
   criteria:
     du.dl_bitrate_gt: 0

@@ -16,7 +16,7 @@ baseline: &base_config
       traffic_duration_sec: 180
       log_level: "error"
   gnb:
-    config: [cu.yml, du.yml, 512ue.yml, tdd_default.yml]
+    config: [cu_cp.yml, du.yml, 512ue.yml, tdd_default.yml]
     parameters:
       log_level: warning
   core:
@@ -40,7 +40,7 @@ baseline: &base_config
 tdd_dl_heavy:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, 512ue.yml, tdd_72b.yml, prach_config.yml]
+    config: [cu_cp.yml, du.yml, 512ue.yml, tdd_72b.yml, prach_config.yml]
     parameters:
       log_level: warning
       prach_config_index: 158
@@ -63,7 +63,7 @@ tdd_dl_heavy:
 tdd_ul_heavy:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, 512ue.yml, tdd_27.yml]
+    config: [cu_cp.yml, du.yml, 512ue.yml, tdd_27.yml]
     parameters:
       log_level: warning
   feature_ids: [MVP-FUNC-TDD-16-1]

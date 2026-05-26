@@ -12,7 +12,7 @@ etws_cmas:
       ul_bitrate: 10.0e+6
       test_duration: 2
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, etws_cmas.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, etws_cmas.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
   feature_ids: [CU-GEN-1, MVP-FUNC-SVCS-16-5]

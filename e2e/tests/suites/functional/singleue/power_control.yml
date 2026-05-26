@@ -11,7 +11,7 @@ closed_loop_pc: &base_config
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, closed_loop_pc.yml, pucch_config.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, closed_loop_pc.yml, pucch_config.yml]
     parameters:
       prach_config_index: 159
       pucch_format: "f0_and_f2"
@@ -34,7 +34,7 @@ closed_loop_pc: &base_config
 closed_loop_pc_f1f3:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, closed_loop_pc.yml, pucch_config.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, closed_loop_pc.yml, pucch_config.yml]
     parameters:
       prach_config_index: 159
       pucch_format: "f1_and_f3"
@@ -53,7 +53,7 @@ closed_loop_pc_fdd:
       band: 3
       bandwidth: 50
   gnb:
-    config: [cu.yml, du.yml, closed_loop_pc.yml, pucch_config.yml]
+    config: [cu_cp.yml, du.yml, closed_loop_pc.yml, pucch_config.yml]
     parameters:
       cfg_earfcn: 368500
       cfg_bandwidth: 50

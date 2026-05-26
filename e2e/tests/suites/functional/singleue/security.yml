@@ -14,7 +14,7 @@ baseline:
       log_prod_level: "debug"
       pdcch_decode_opt_threshold: 0.7
   gnb:
-    config: [cu.yml, security.yml, du.yml, tdd_default.yml]
+    config: [cu_cp.yml, security.yml, du.yml, tdd_default.yml]
     parameters:
       log_level: warning
   core:

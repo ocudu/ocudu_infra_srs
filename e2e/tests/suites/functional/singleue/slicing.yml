@@ -12,7 +12,7 @@ slicing: &base_config
       ul_bitrate: 10.0e+3
       test_duration: 1
   gnb:
-    config: [dual_slice.yml, cu.yml, du.yml, mac_pcap.yml, tdd_default.yml, sib16.yml, slice_rach.yml]
+    config: [dual_slice.yml, cu_cp.yml, du.yml, mac_pcap.yml, tdd_default.yml, sib16.yml, slice_rach.yml]
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-SVCS-17-3-a, MVP-FUNC-SVCS-17-3-b]

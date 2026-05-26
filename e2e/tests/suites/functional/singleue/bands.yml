@@ -19,7 +19,7 @@ band_n30: &base_config
       nof_antennas: 4
       pdcch_decode_threshold: 0
   gnb:
-    config: [cu.yml, du.yml, srs_periodic_wband.yml, prach_config.yml]
+    config: [cu_cp.yml, du.yml, srs_periodic_wband.yml, prach_config.yml]
     parameters:
       cfg_band: 30
       cfg_earfcn: 471000
@@ -57,7 +57,7 @@ band_fr2:
       test_duration: 2
       nof_antennas: 1
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       cfg_band: 261
       cfg_earfcn: 2077915
@@ -85,7 +85,7 @@ band_n41:
       nof_antennas: 2
       pdcch_decode_threshold: 0
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml]
     parameters:
       cfg_band: 41
       cfg_earfcn: 520002
@@ -109,7 +109,7 @@ band_n66:
       test_duration: 2
       nof_antennas: 1
   gnb:
-    config: [cu.yml, du.yml, pucch_config.yml, srs_periodic_wband.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, pucch_config.yml, srs_periodic_wband.yml, mac_pcap.yml]
     parameters:
       cfg_band: 66
       cfg_earfcn: 430000
@@ -141,7 +141,7 @@ band_na_4t4r_dl:
       nof_antennas: 4
       pdcch_decode_threshold: 0
   gnb:
-    config: [cu.yml, du.yml]
+    config: [cu_cp.yml, du.yml]
     parameters:
       cfg_band: 66   # n66 (FDD) is available in the UE and the DL carrier is on 2.11-2.2GHz
       cfg_earfcn: 430000
@@ -167,7 +167,7 @@ band_na_2t2r_ul:
       nof_antennas: 2
       pdcch_decode_threshold: 0
   gnb:
-    config: [cu.yml, du.yml]
+    config: [cu_cp.yml, du.yml]
     parameters:
       cfg_band: 25    # n25 (FDD) is available in the US and the UL carrier is on 1.85-1.915GHz.
       cfg_earfcn: 392000

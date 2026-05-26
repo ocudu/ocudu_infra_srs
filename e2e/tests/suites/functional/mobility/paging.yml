@@ -12,7 +12,7 @@ baseline: &base_config
       ul_bitrate: 10.0e+3
       nof_paging: 1
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, inactivity_timer.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, inactivity_timer.yml, mac_pcap.yml]
     parameters:
       time_multiplier: &time_multiplier 10
   core:
@@ -39,7 +39,7 @@ baseline: &base_config
 drx:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       drx_long_cycle: 80
       time_multiplier: *time_multiplier
@@ -55,7 +55,7 @@ drx:
 edrx:
   <<: *base_config
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-11, DU-GEN-10]
@@ -106,7 +106,7 @@ rrc_inactive_mt:
       ul_bitrate: 10.0e+3
       nof_paging: 1
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-10]
@@ -127,7 +127,7 @@ rrc_inactive_mt_multi:
       ul_bitrate: 10.0e+3
       nof_paging: 3
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-10]
@@ -147,7 +147,7 @@ rrc_inactive_mo:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
   gnb:
-    config: [cu.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-MOB-10]
