@@ -285,16 +285,29 @@ services:
     x-testbed:
       type: cu
 
-  ocudu-cu-cp:
+  ocudu-cu-cp-1:
     <<: *gnb_service
-    container_name: ocudu-cu-cp
+    container_name: ocudu-cu-cp-1
     environment:
       <<: *ocudu_env
       RETINA_AGENT: ocudu-cu-cp
-      RETINA_IP: &cu_cp_ip 172.20.0.40
+      RETINA_IP: &cu_cp0_ip 172.20.0.40
     networks:
       retina:
-        ipv4_address: *cu_cp_ip
+        ipv4_address: *cu_cp0_ip
+    x-testbed:
+      type: cu_cp
+
+  ocudu-cu-cp-2:
+    <<: *gnb_service
+    container_name: ocudu-cu-cp-2
+    environment:
+      <<: *ocudu_env
+      RETINA_AGENT: ocudu-cu-cp
+      RETINA_IP: &cu_cp1_ip 172.20.0.41
+    networks:
+      retina:
+        ipv4_address: *cu_cp1_ip
     x-testbed:
       type: cu_cp
 

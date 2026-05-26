@@ -83,7 +83,10 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
                 plmn=plmn,
                 neighbor_cucp_definition=neighbor_cucp_definition,
             ),
-            **self._cu_up.get_parameters(fivegc_definition=fivegc_definition),
+            **self._cu_up.get_parameters(
+                cucp_definition=(self.GetDefinition(Empty(), grpc.ServicerContext),),
+                fivegc_definition=fivegc_definition,
+            ),
         }
 
     def Start(self, request: CUStartInfo, context: grpc.ServicerContext) -> Empty:

@@ -177,7 +177,7 @@ def start_network(
     fivegc_array: Sequence[FiveGCStub],
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
-    cu_cp: Optional[CUCPStub] = None,
+    cu_cp_array: Optional[Sequence[CUCPStub]] = None,
     cu_up_array: Optional[Sequence[CUUPStub]] = None,
     du_array: Optional[Sequence[DUStub]] = None,
     gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
@@ -196,13 +196,13 @@ def start_network(
     Start Network (5GC + gNB/CU+DU/CUCP+CUUP+DU + RIC(optional))
     """
 
-    if gnb_array and (cu or cu_cp or du_array):
+    if gnb_array and (cu or cu_cp_array or du_array):
         pytest.fail("Either gNB or CU/CUCP and DU array must be provided, not both")
 
-    if (cu and not du_array) or (not cu and du_array and not cu_cp):
+    if (cu and not du_array) or (not cu and du_array and not cu_cp_array):
         pytest.fail("CU and DU must be provided together")
 
-    if (cu_cp and not cu_up_array) or (not cu_cp and cu_up_array):
+    if (cu_cp_array and not cu_up_array) or (not cu_cp_array and cu_up_array):
         pytest.fail("CUCP and CUUP array must be provided together")
 
     ue_def_for_gnb = UEDefinition()
@@ -266,9 +266,9 @@ def start_network(
             )
         return
 
-    cucp_definition = None
+    cucp_definitions: Sequence[CUCPDefinition] = tuple()
     if cu:
-        cucp_definition = cu.GetDefinition(Empty())
+        cucp_definitions = (cu.GetDefinition(Empty()),)
         with handle_start_error(name=f"CU [{id(cu)}]"):
             # CU Start
             cu.Start(
@@ -283,19 +283,20 @@ def start_network(
                 )
             )
 
-    if cu_cp:
-        cucp_definition = cu_cp.GetDefinition(Empty())
-        with handle_start_error(name=f"CU-CP [{id(cu_cp)}]"):
-            # CU-CP Start
-            cu_cp.Start(
-                CUCPStartInfo(
-                    plmn=plmn,
-                    fivegc_definition=fivegc_definition,
-                    start_info=StartInfo(
-                        timeout=gnb_startup_timeout,
-                    ),
+    if cu_cp_array:
+        cucp_definitions = tuple(cu_cp.GetDefinition(Empty()) for cu_cp in cu_cp_array)
+        for cu_cp in cu_cp_array:
+            with handle_start_error(name=f"CU-CP [{id(cu_cp)}]"):
+                # CU-CP Start
+                cu_cp.Start(
+                    CUCPStartInfo(
+                        plmn=plmn,
+                        fivegc_definition=fivegc_definition,
+                        start_info=StartInfo(
+                            timeout=gnb_startup_timeout,
+                        ),
+                    )
                 )
-            )
 
     if cu_up_array:
         for cu_up in cu_up_array:
@@ -303,7 +304,7 @@ def start_network(
                 # CU-UP Start
                 cu_up.Start(
                     CUUPStartInfo(
-                        cucp_definition=cucp_definition,
+                        cucp_definition=cucp_definitions,
                         fivegc_definition=fivegc_definition,
                         start_info=StartInfo(
                             timeout=gnb_startup_timeout,
@@ -321,7 +322,9 @@ def start_network(
                         plmn=plmn,
                         num_cells=1,
                         cell_offset=du_id,
-                        cucp_definition=cucp_definition,
+                        cucp_definition=(
+                            cucp_definitions[du_id] if len(cucp_definitions) > du_id else cucp_definitions[0]
+                        ),
                         ue_definition=ue_def_for_gnb,
                         ric_definition=ric_definition,
                         start_info=StartInfo(
@@ -1205,7 +1208,7 @@ def stop(
     retina_data: RetinaTestData,
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
-    cu_cp: Optional[CUCPStub] = None,
+    cu_cp_array: Optional[Sequence[CUCPStub]] = None,
     cu_up_array: Optional[Sequence[CUUPStub]] = None,
     du_array: Optional[Sequence[DUStub]] = None,
     fivegc_array: Optional[Sequence[FiveGCStub]] = None,
@@ -1294,16 +1297,17 @@ def stop(
             )
             error_msg_array.append(error_message)
 
-    if cu_cp is not None:
-        error_message, _ = _stop_stub(
-            stub=cu_cp,
-            name="CU-CP",
-            retina_data=retina_data,
-            timeout=gnb_stop_timeout,
-            log_search=log_search,
-            warning_as_errors=warning_as_errors,
-        )
-        error_msg_array.append(error_message)
+    if cu_cp_array is not None:
+        for index, cu_cp in enumerate(cu_cp_array):
+            error_message, _ = _stop_stub(
+                stub=cu_cp,
+                name=f"CU-CP_{index+1}",
+                retina_data=retina_data,
+                timeout=gnb_stop_timeout,
+                log_search=log_search,
+                warning_as_errors=warning_as_errors,
+            )
+            error_msg_array.append(error_message)
 
     if fivegc_array is not None:
         for index, fivegc in enumerate(fivegc_array):

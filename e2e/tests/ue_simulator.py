@@ -109,16 +109,43 @@ def test_cucp_cuup(
     du: DUStub,
     fivegc: FiveGCStub,
 ):
-    """Template test function for UE simulator + CUCP + 2 CUUP + DU + Core"""
+    """Template test function for UE simulator + CUCP + CUUP + DU + Core"""
     _ue_simulator(
         retina_manager=retina_manager,
         retina_data=retina_data,
         criteria=criteria,
         test_definition=test_definition,
         ue=ue,
-        cu_cp=cu_cp,
+        cu_cp_array=[cu_cp],
         cu_up_array=[cu_up],
         du_array=[du],
+        fivegc_array=[fivegc],
+    )
+
+
+@load_tests
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def test_2cucp_1cuup_2du(
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
+    ue: UEStub,
+    cu_cp_multiple,
+    cu_up: CUUPStub,
+    du_multiple,
+    fivegc: FiveGCStub,
+):
+    """Template test function for UE simulator + 2CUCP + 1 CUUP + 2 DU + Core"""
+    _ue_simulator(
+        retina_manager=retina_manager,
+        retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
+        ue=ue,
+        cu_cp_array=cu_cp_multiple(2),
+        cu_up_array=[cu_up],
+        du_array=du_multiple(2),
         fivegc_array=[fivegc],
     )
 
@@ -131,7 +158,7 @@ def _ue_simulator(
     ue: UEStub,
     fivegc_array: Sequence[FiveGCStub],
     cu: Optional[CUStub] = None,
-    cu_cp: Optional[CUCPStub] = None,
+    cu_cp_array: Optional[Sequence[CUCPStub]] = None,
     cu_up_array: Optional[Sequence[CUUPStub]] = None,
     du_array: Optional[Sequence[DUStub]] = None,
     gnb_array: Optional[Sequence[GNBStub]] = None,
@@ -151,7 +178,7 @@ def _ue_simulator(
     start_network(
         ue_array=(ue,),
         cu=cu,
-        cu_cp=cu_cp,
+        cu_cp_array=cu_cp_array,
         cu_up_array=cu_up_array,
         gnb_array=gnb_array,
         du_array=du_array,
@@ -181,7 +208,7 @@ def _ue_simulator(
         stop(
             ue_array=(ue,),
             cu=cu,
-            cu_cp=cu_cp,
+            cu_cp_array=cu_cp_array,
             cu_up_array=cu_up_array,
             du_array=du_array,
             gnb_array=gnb_array,

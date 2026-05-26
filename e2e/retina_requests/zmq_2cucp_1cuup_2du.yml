@@ -1,0 +1,145 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+- name: amarisoft-ue
+  type: ue
+  image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  nof_ports: 64
+  requirements:
+    cpu:
+      requests: 10%
+    memory:
+      requests: 10%
+    ephemeral-storage:
+      requests: 6G
+  resources:
+    - type: zmq
+    - type: license
+      model: amarisoft-ue.*
+  shared_files:
+    - local_path: ${OCUDU_PATH}/build_retina/utils/trx_ocudu/libtrx_ocudu.so
+      remote_path: /opt/lteue/trx_ocudu.so
+      is_executable: true
+
+- name: ocudu-cu-cp-1
+  type: cu_cp
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
+  requirements:
+    cpu:
+      requests: 10%
+    memory:
+      requests: 10%
+    ephemeral-storage:
+      requests: 6G
+  resources:
+    - type: zmq
+      dummy: true
+  environment:
+    - RETINA_AGENT: ocudu-cu-cp
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/cu_cp
+    - LD_LIBRARY_PATH: /opt/rohc/lib/
+  shared_files:
+    - local_path: ${OCUDU_PATH}/build_retina/apps/cu_cp/ocucp
+      remote_path: /usr/local/bin/ocucp
+      is_executable: true
+
+- name: ocudu-cu-cp-2
+  type: cu_cp
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
+  requirements:
+    cpu:
+      requests: 10%
+    memory:
+      requests: 10%
+    ephemeral-storage:
+      requests: 6G
+  resources:
+    - type: zmq
+      dummy: true
+  environment:
+    - RETINA_AGENT: ocudu-cu-cp
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/cu_cp
+    - LD_LIBRARY_PATH: /opt/rohc/lib/
+  shared_files:
+    - local_path: ${OCUDU_PATH}/build_retina/apps/cu_cp/ocucp
+      remote_path: /usr/local/bin/ocucp
+      is_executable: true
+
+- name: ocudu-cu-up
+  type: cu_up
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
+  requirements:
+    cpu:
+      requests: 10%
+    memory:
+      requests: 10%
+    ephemeral-storage:
+      requests: 6G
+  resources:
+    - type: zmq
+      dummy: true
+  environment:
+    - RETINA_AGENT: ocudu-cu-up
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/cu_up
+  shared_files:
+    - local_path: ${OCUDU_PATH}/build_retina/apps/cu_cp/ocuup
+      remote_path: /usr/local/bin/ocuup
+      is_executable: true
+
+- name: ocudu-du-1
+  type: du
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
+  requirements:
+    cpu:
+      requests: 10%
+    memory:
+      requests: 10%
+    ephemeral-storage:
+      requests: 6G
+  resources:
+    - type: zmq
+      dummy: true
+  environment:
+    - RETINA_AGENT: ocudu-du
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/du
+  shared_files:
+    - local_path: ${OCUDU_PATH}/build_retina/apps/du/odu
+      remote_path: /usr/local/bin/odu
+      is_executable: true
+
+- name: ocudu-du-2
+  type: du
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
+  requirements:
+    cpu:
+      requests: 10%
+    memory:
+      requests: 10%
+    ephemeral-storage:
+      requests: 6G
+  resources:
+    - type: zmq
+      dummy: true
+  environment:
+    - RETINA_AGENT: ocudu-du
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/du
+  shared_files:
+    - local_path: ${OCUDU_PATH}/build_retina/apps/du/odu
+      remote_path: /usr/local/bin/odu
+      is_executable: true
+
+- name: amarisoft-mme
+  type: 5gc
+  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  requirements:
+    cpu:
+      requests: 10%
+    memory:
+      requests: 10%
+    ephemeral-storage:
+      requests: 6G
+  resources:
+    - type: license
+      model: amarisoft-mme.*
+    - type: zmq
+      dummy: true

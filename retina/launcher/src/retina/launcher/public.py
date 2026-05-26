@@ -22,7 +22,7 @@ from retina.protocol.base_pb2 import Metrics, StopResponse
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.exit_codes import exit_code_to_message
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import CUStub, DUStub, GNBStub
+from retina.protocol.gnb_pb2_grpc import CUCPStub, CUStub, CUUPStub, DUStub, GNBStub
 from retina.protocol.resource import API, Core, Remote
 from retina.protocol.ric_pb2_grpc import NearRtRicStub
 from retina.protocol.ue_pb2_grpc import UEStub
@@ -158,13 +158,13 @@ def ue(ue_multiple: Callable[[int], Tuple[UEStub, ...]]) -> UEStub:
 @pytest.fixture
 def cu_cp_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[CUStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[CUCPStub, ...]], None, None]:
     """
     Return a factory that creates N CU-CPs
     """
     created = []
 
-    def _factory(count: int) -> Tuple[CUStub, ...]:
+    def _factory(count: int) -> Tuple[CUCPStub, ...]:
         stub_array = tuple(retina_manager.get_cu_cp(index) for index in range(count))
         for cls in CuCpCriteria.subclasses:
             cls(criteria, stub_array)
@@ -179,7 +179,7 @@ def cu_cp_multiple(
 
 
 @pytest.fixture
-def cu_cp(cu_cp_multiple: Callable[[int], Tuple[CUStub, ...]]) -> CUStub:
+def cu_cp(cu_cp_multiple: Callable[[int], Tuple[CUCPStub, ...]]) -> CUCPStub:
     """Return a CU-CP"""
     return cu_cp_multiple(1)[0]
 
@@ -187,13 +187,13 @@ def cu_cp(cu_cp_multiple: Callable[[int], Tuple[CUStub, ...]]) -> CUStub:
 @pytest.fixture
 def cu_up_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[CUStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[CUUPStub, ...]], None, None]:
     """
     Return a factory that creates N CU-UPs
     """
     created = []
 
-    def _factory(count: int) -> Tuple[CUStub, ...]:
+    def _factory(count: int) -> Tuple[CUUPStub, ...]:
         stub_array = tuple(retina_manager.get_cu_up(index) for index in range(count))
         for cls in CuUpCriteria.subclasses:
             cls(criteria, stub_array)
@@ -208,7 +208,7 @@ def cu_up_multiple(
 
 
 @pytest.fixture
-def cu_up(cu_up_multiple: Callable[[int], Tuple[CUStub, ...]]) -> CUStub:
+def cu_up(cu_up_multiple: Callable[[int], Tuple[CUUPStub, ...]]) -> CUUPStub:
     """Return a CU-UP"""
     return cu_up_multiple(1)[0]
 

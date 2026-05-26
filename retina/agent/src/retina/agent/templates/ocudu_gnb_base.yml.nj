@@ -67,9 +67,18 @@ cu_up:
     peer_port: {{f1u_port}}
     socket:
       - bind_addr: {{cuup_ip}}
+
   e1ap:
-    addrs: {{cucp_ip}}
-    bind_addrs: {{cuup_ip}}
+    gateways:
+  {% if cucp_definition|length > 0 %}
+  {% for cucp in cucp_definition %}
+      - bind_addrs: {{cuup_ip}}
+        addrs: {{cucp.cucp_ip}}
+  {% endfor %}
+  {% else %}
+      - bind_addrs: {{cuup_ip}}
+        addrs: {{cucp_ip}}
+  {% endif %}
   ngu:
     socket:
       - bind_addr: {{cuup_ip}}

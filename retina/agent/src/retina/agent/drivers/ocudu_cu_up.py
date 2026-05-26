@@ -11,7 +11,7 @@ from typing import Any, Dict, Sequence
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import FiveGCDefinition
+from retina.protocol.base_pb2 import CUCPDefinition, FiveGCDefinition
 from retina.protocol.gnb_pb2 import CUUPStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
@@ -54,13 +54,19 @@ class OcuduCuUp(CUUPDriver, BaseDriverSutHandler):
         )
         return self._parse_sut_version(output, self.CUUP_VERSION_REGEX)
 
-    def get_parameters(self, *, fivegc_definition: Sequence[FiveGCDefinition]) -> Dict[str, Any]:
+    def get_parameters(
+        self,
+        *,
+        cucp_definition: Sequence[CUCPDefinition],
+        fivegc_definition: Sequence[FiveGCDefinition],
+    ) -> Dict[str, Any]:
         """
         Return parameters for config templates
         """
         return {
             "e1ap_filename": self.get_filepath_in_report_folder(gnb_defaults.e1ap_filename),
             "n3_filename": self.get_filepath_in_report_folder(gnb_defaults.n3_filename),
+            "cucp_definition": list(cucp_definition),
             "fivegc_definition": list(fivegc_definition),
         }
 
@@ -85,9 +91,12 @@ class OcuduCuUp(CUUPDriver, BaseDriverSutHandler):
                 values={
                     **get_module_variables(testbed_defaults),
                     **get_module_variables(gnb_defaults),
-                    **self.get_parameters(fivegc_definition=list(request.fivegc_definition)),
+                    **self.get_parameters(
+                        cucp_definition=list(request.cucp_definition),
+                        fivegc_definition=list(request.fivegc_definition),
+                    ),
                     "log_filename": self.get_filepath_in_report_folder(self.CUUP_LOG_FILENAME),
-                    "cucp_ip": request.cucp_definition.cucp_ip,
+                    "cucp_ip": request.cucp_definition[0].cucp_ip,
                     "cuup_ip": testbed_defaults.ip,
                 },
             )

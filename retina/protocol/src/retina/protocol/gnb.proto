@@ -56,13 +56,13 @@ message CUCPStartInfo {
 }
 
 message CUUPStartInfo {
-  CUCPDefinition            cucp_definition   = 1;
-  repeated FiveGCDefinition fivegc_definition = 2;
-  StartInfo                 start_info        = 3;
+  repeated CUCPDefinition   cucp_definition          = 1;
+  repeated FiveGCDefinition fivegc_definition        = 2;
+  StartInfo                 start_info               = 3;
 }
 
 message CUStartInfo {
-  PLMN                     plmn              = 1;
+  PLMN                      plmn              = 1;
   repeated FiveGCDefinition fivegc_definition = 2;
   StartInfo                 start_info        = 3;
 }

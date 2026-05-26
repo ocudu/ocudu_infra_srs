@@ -50,10 +50,66 @@ baseline: &base_config
     du.errors_le: 0
     du.warnings_le: 0
 
-# inter-CU HO, same CU-UP
-same_cu_up:
-  <<: *base_config
-  feature_ids: [skip, MVP-FUNC-MOB-1-d]
+# tid1.2.11: inter-CU HO, same CU-UP
+same_cu_up: &base_same_cu_up
+  template: ue_simulator.test_2cucp_1cuup_2du
+  request: zmq_2cucp_1cuup_2du
+  core:
+    config: [baseline.cfg]
+    parameters:
+      log_level: "debug"
+  ue:
+    config: [2cell_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: *nof_ue
+      num_cells: 2
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+  cu_cp:
+    items:
+      - config: [cu.yml, inter_cu_mobility_1.yml]
+        parameters:
+          gnb_id: 411
+          ran_node_name_cfg: "ocudu01"
+          log_level: "debug"
+      - config: [cu.yml, inter_cu_mobility_2.yml]
+        parameters:
+          gnb_id: 412
+          ran_node_name_cfg: "ocudu02"
+          log_level: "debug"
+  cu_up:
+    config: [cu_up.yml]
+  du:
+    items:
+      - config: [du.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_id: 411
+          pci_cfg: 1
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 0
+      - config: [du.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_id: 412
+          pci_cfg: 2
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 1
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 500 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 100 # allow some KOs during HO transitions
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
+  feature_ids: [MVP-FUNC-MOB-1-d]
 
 # tid1.2.12: inter-CU HO, changing the CU-UP between FR1 and FR2
 fr1_fr2:
@@ -86,10 +142,46 @@ fr1_fr2:
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-2-d]
 
-# inter-CU HO, same CU-UP  between FR1 and FR2
+# tid1.2.13: inter-CU HO, same CU-UP  between FR1 and FR2
 fr1_fr2_same_cu_up:
-  <<: *base_config
-  feature_ids: [skip, MVP-FUNC-MOB-2-e]
+  <<: *base_same_cu_up
+  cu_cp:
+    items:
+      - config: [cu.yml, inter_cu_mobility_1.yml]
+        parameters:
+          gnb_id: 411
+          ran_node_name_cfg: "ocudu01"
+          ext_ssb_arfcn: 2073691
+          ext_band: 261
+          ext_ssb_scs: 120
+      - config: [cu.yml, inter_cu_mobility_2.yml]
+        parameters:
+          gnb_id: 412
+          ran_node_name_cfg: "ocudu02"
+          cfg_earfcn: 2074171
+          cfg_band: 261
+          cfg_common_scs: 120
+          cfg_bandwidth: 100
+  du:
+    items:
+      - config: [du.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_du_id_cfg: 0
+          pci_cfg: 1
+          sector_id_cfg: 0
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 0
+      - config: [du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_du_id_cfg: 1
+          pci_cfg: 2
+          sector_id_cfg: 1
+          prach_config_index: 121
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 1
+  feature_ids: [MVP-FUNC-MOB-2-e]
 
 # tid1.2.14: Xn HO
 xn_ho:
