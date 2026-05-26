@@ -115,3 +115,16 @@ xn_ho:
           nof_antennas_ul: 1
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-3]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 500 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 100 # allow some KOs during HO transitions
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    cu_cp.nof_xn_handover_request_acknowledge_geq: 40 # double of handovers as each message is logged in both pcaps
+    cu_cp.nof_sn_status_transfer_geq: 40 # double of handovers as each message is logged in both pcaps
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0

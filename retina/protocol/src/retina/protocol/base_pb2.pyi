@@ -670,11 +670,15 @@ class CuCpMetrics(google.protobuf.message.Message):
     NOF_E_CID_MEASUREMENT_REPORT_FIELD_NUMBER: builtins.int
     NOF_TRP_INFORMATION_REQUEST_FIELD_NUMBER: builtins.int
     NOF_TRP_INFORMATION_RESPONSE_FIELD_NUMBER: builtins.int
+    NOF_XN_HANDOVER_REQUEST_ACKNOWLEDGE_FIELD_NUMBER: builtins.int
+    NOF_SN_STATUS_TRANSFER_FIELD_NUMBER: builtins.int
     nof_e_cid_measurement_initiation_request: builtins.int
     nof_e_cid_measurement_initiation_response: builtins.int
     nof_e_cid_measurement_report: builtins.int
     nof_trp_information_request: builtins.int
     nof_trp_information_response: builtins.int
+    nof_xn_handover_request_acknowledge: builtins.int
+    nof_sn_status_transfer: builtins.int
     def __init__(
         self,
         *,
@@ -683,8 +687,10 @@ class CuCpMetrics(google.protobuf.message.Message):
         nof_e_cid_measurement_report: builtins.int = ...,
         nof_trp_information_request: builtins.int = ...,
         nof_trp_information_response: builtins.int = ...,
+        nof_xn_handover_request_acknowledge: builtins.int = ...,
+        nof_sn_status_transfer: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge"]) -> None: ...
 
 Global___CuCpMetrics: typing_extensions.TypeAlias = CuCpMetrics
 

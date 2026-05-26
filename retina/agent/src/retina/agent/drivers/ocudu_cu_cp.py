@@ -33,6 +33,10 @@ from retina.agent.features.pcap.ngap import (
     TrpInformationRequestAnalyzer,
     TrpInformationResponseAnalyzer,
 )
+from retina.agent.features.pcap.xnap import (
+    HandoverRequestAcknowledgeAnalyzer,
+    SNStatusTransferAnalyzer,
+)
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
@@ -44,6 +48,10 @@ _NGAP_PCAP_ANALYZER_ARRAY = (
     ECidMeasurementReportAnalyzer,
     TrpInformationRequestAnalyzer,
     TrpInformationResponseAnalyzer,
+)
+_XNAP_PCAP_ANALYZER_ARRAY = (
+    HandoverRequestAcknowledgeAnalyzer,
+    SNStatusTransferAnalyzer,
 )
 
 
@@ -170,19 +178,29 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
         """
         if self._metrics_parsing_done:
             return tuple()
-        return (self.get_filepath_in_report_folder(gnb_defaults.ngap_filename),)
+        return (
+            self.get_filepath_in_report_folder(gnb_defaults.ngap_filename),
+            self.get_filepath_in_report_folder(gnb_defaults.xnap_filename),
+        )
 
     def extract_metrics(self, *args):
         """
         Extract Metrics
         """
         if not self._metrics_parsing_done:
-            (ngap_pcap_filename,) = args
+            ngap_pcap_filename, xnap_pcap_filename = args
             if Path(ngap_pcap_filename).exists():
                 self._metrics.MergeFrom(
                     run_analyzers(
                         ngap_pcap_filename,
                         tuple(analyzer_cls() for analyzer_cls in _NGAP_PCAP_ANALYZER_ARRAY),
+                    )
+                )
+            if Path(xnap_pcap_filename).exists():
+                self._metrics.MergeFrom(
+                    run_analyzers(
+                        xnap_pcap_filename,
+                        tuple(analyzer_cls() for analyzer_cls in _XNAP_PCAP_ANALYZER_ARRAY),
                     )
                 )
             self._metrics_parsing_done = True

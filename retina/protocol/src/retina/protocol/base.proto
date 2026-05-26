@@ -237,6 +237,9 @@ message CuCpMetrics {
 
   uint32 nof_trp_information_request  = 4;
   uint32 nof_trp_information_response = 5;
+
+   uint32 nof_xn_handover_request_acknowledge = 6;
+   uint32 nof_sn_status_transfer              = 7;
 };
 
 message Metrics {
