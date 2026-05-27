@@ -6,7 +6,7 @@ inter_ru_ho: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [2cell_intrafreq_chsim.cfg, handover_random.cfg]
+    config: [2cell_intrafreq_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
