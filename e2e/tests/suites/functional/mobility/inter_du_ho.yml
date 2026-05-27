@@ -51,6 +51,24 @@ baseline: &base_config
 # tid1.2.8: inter-RU, inter-DU HO FR1 to FR2 inter-frequency with measurement gap
 fr1_fr2:
   <<: *base_config
+  ue:
+    # Inter-frequency UE config:
+    # Cell 2 is FR2 (n261, 120 kHz SCS), matching DU-2 below.
+    config: [2cell_interfreq_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: *nof_ue
+      num_cells: 2
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+      # FR2 cell-2 parameters (must match DU-2 below)
+      band_2: 261
+      bandwidth_2: 100
+      dl_nr_arfcn_2: 2074171
+      ssb_nr_arfcn_2: 2073691
+      common_scs_2: 120
   du:
     items:
       - config: [du.yml, tdd_default.yml, sib2345.yml]

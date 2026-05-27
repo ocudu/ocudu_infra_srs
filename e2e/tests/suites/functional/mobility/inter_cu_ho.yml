@@ -114,6 +114,24 @@ same_cu_up: &base_same_cu_up
 # tid1.2.12: inter-CU HO, changing the CU-UP between FR1 and FR2
 fr1_fr2:
   <<: *base_config
+  ue:
+    # Inter-frequency UE config:
+    # Cell 2 is FR2 (n261, 120 kHz SCS), matching gNB-2 below.
+    config: [2cell_interfreq_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: *nof_ue
+      num_cells: 2
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+      # FR2 cell-2 parameters (must match gNB-2 below)
+      band_2: 261
+      bandwidth_2: 100
+      dl_nr_arfcn_2: 2074171
+      ssb_nr_arfcn_2: 2073691
+      common_scs_2: 120
   gnb:
     items:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
@@ -145,6 +163,24 @@ fr1_fr2:
 # tid1.2.13: inter-CU HO, same CU-UP  between FR1 and FR2
 fr1_fr2_same_cu_up:
   <<: *base_same_cu_up
+  ue:
+    # Inter-frequency UE config:
+    # Cell 2 is FR2 (n261, 120 kHz SCS), matching DU-2 below.
+    config: [2cell_interfreq_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: *nof_ue
+      num_cells: 2
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+      # FR2 cell-2 parameters (must match DU-2 below)
+      band_2: 261
+      bandwidth_2: 100
+      dl_nr_arfcn_2: 2074171
+      ssb_nr_arfcn_2: 2073691
+      common_scs_2: 120
   cu_cp:
     items:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml]
@@ -158,10 +194,6 @@ fr1_fr2_same_cu_up:
         parameters:
           gnb_id: 412
           ran_node_name_cfg: "ocudu02"
-          cfg_earfcn: 2074171
-          cfg_band: 261
-          cfg_common_scs: 120
-          cfg_bandwidth: 100
   du:
     items:
       - config: [du.yml, tdd_default.yml, sib2345.yml]
@@ -173,11 +205,15 @@ fr1_fr2_same_cu_up:
           nof_antennas_ul: 1
           cell_offset: 0
       - config: [du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
-        parameters:
+        parameters: # FR2 config parameters
           gnb_du_id_cfg: 1
           pci_cfg: 2
-          sector_id_cfg: 1
+          cfg_earfcn: 2074171
+          cfg_band: 261
+          cfg_common_scs: 120
+          cfg_bandwidth: 100
           prach_config_index: 121
+          sector_id_cfg: 1
           nof_antennas_dl: 1
           nof_antennas_ul: 1
           cell_offset: 1
