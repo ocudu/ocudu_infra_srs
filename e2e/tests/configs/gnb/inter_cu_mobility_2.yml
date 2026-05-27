@@ -8,6 +8,7 @@ cu_cp:
     trigger_handover_from_measurements: true
     cells:
       - nr_cell_id: 0x19C0
+        periodic_report_cfg_id: 1
         ncells:
           - nr_cell_id: 0x19B0
             report_configs: [2]
