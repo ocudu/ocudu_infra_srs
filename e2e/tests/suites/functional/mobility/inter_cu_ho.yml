@@ -198,22 +198,20 @@ fr1_fr2_same_cu_up:
     items:
       - config: [du.yml, tdd_default.yml, sib2345.yml]
         parameters:
-          gnb_du_id_cfg: 0
+          gnb_id: 411
           pci_cfg: 1
-          sector_id_cfg: 0
           nof_antennas_dl: 1
           nof_antennas_ul: 1
           cell_offset: 0
       - config: [du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters: # FR2 config parameters
-          gnb_du_id_cfg: 1
+          gnb_id: 412
           pci_cfg: 2
           cfg_earfcn: 2074171
           cfg_band: 261
           cfg_common_scs: 120
           cfg_bandwidth: 100
           prach_config_index: 121
-          sector_id_cfg: 1
           nof_antennas_dl: 1
           nof_antennas_ul: 1
           cell_offset: 1
