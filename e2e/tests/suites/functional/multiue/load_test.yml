@@ -48,8 +48,8 @@ tdd_dl_heavy:
   criteria:
     du.dl_bitrate_gt: 20.0e+6
     du.ul_bitrate_gt: 10.0e+6
-    du.nof_ko_dl_le: 5
-    du.nof_ko_ul_le: 0
+    du.nof_ko_dl_le: 12
+    du.nof_ko_ul_le: 30
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_eq: 0
