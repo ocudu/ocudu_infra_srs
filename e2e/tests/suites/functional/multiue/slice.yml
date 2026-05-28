@@ -24,8 +24,8 @@ dedicated_prb: &base_config
   core:
     config: [baseline.cfg]
   criteria:
-    du.pdsch_prbs_used_per_tdd_slot_mean: 34
-    du.pusch_prbs_used_per_tdd_slot_mean: 5.4
+    du.pdsch_prbs_used_per_tdd_slot_mean: 30
+    du.pusch_prbs_used_per_tdd_slot_mean: 5
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
     core.nof_pdu_session_establishment_accept_eq: 2
@@ -35,18 +35,18 @@ dedicated_prb: &base_config
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 3
-    du.dl_bitrate_gt: 55.0e+6
-    du.ul_bitrate_gt: 11.0e+6
+    du.dl_bitrate_gt: 50.0e+6
+    du.ul_bitrate_gt: 10.0e+6
     du.dl_ue_avg_bitrate:
       - id: 1
-        value: 42.0e+6
+        value: 41.5e+6
       - id: 2
-        value: 14.0e+6
+        value: 13.5e+6
     du.ul_ue_avg_bitrate:
       - id: 1
-        value: 8.1e+6
+        value: 8.0e+6
       - id: 2
-        value: 2.7e+6
+        value: 2.6e+6
 
 # Slicing resource sharing and partitioning
 reserved_prb:
@@ -57,8 +57,8 @@ reserved_prb:
     parameters:
       cfg_bandwidth: 20
   criteria:
-    du.pdsch_prbs_used_per_tdd_slot_mean: 27
-    du.pusch_prbs_used_per_tdd_slot_mean: 5.4
+    du.pdsch_prbs_used_per_tdd_slot_mean: 25
+    du.pusch_prbs_used_per_tdd_slot_mean: 5
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
     core.nof_pdu_session_establishment_accept_eq: 2
@@ -68,7 +68,7 @@ reserved_prb:
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 3
-    du.dl_bitrate_gt: 47.0e+6
+    du.dl_bitrate_gt: 40.0e+6
     du.ul_bitrate_gt: 10.0e+6
     du.dl_ue_avg_bitrate:
       - id: 1
@@ -77,6 +77,6 @@ reserved_prb:
         value: 11.0e+6
     du.ul_ue_avg_bitrate:
       - id: 1
-        value: 8.1e+6
+        value: 8.0e+6
       - id: 2
-        value: 2.7e+6
+        value: 2.6e+6
