@@ -31,6 +31,7 @@ inter_ru_cfra_ho:
   <<: *base_config
   gnb:
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, cfra_ho.yml, tdd_default.yml, 512ue.yml]
+  feature_ids: [DU-GEN-2-b]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
