@@ -101,6 +101,21 @@ class OcuduCuUp(CUUPDriver, BaseDriverSutHandler):
                 },
             )
 
+            if not request.start_info.dryrun:
+                timeout = request.start_info.timeout if request.start_info.timeout else self.CUUP_START_UP_TIMEOUT
+                timeout_handler = TimeoutHandler(
+                    timeout,
+                    msg="Timeout reached while waiting for CU-CP to listen",
+                )
+                for cucp in request.cucp_definition:
+                    if cucp.cucp_ip == testbed_defaults.ip:
+                        continue
+                    with notify_grpc_exception(context):
+                        while timeout_handler.not_reached():
+                            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+                                if sock.connect_ex((cucp.cucp_ip, cucp.cucp_port)) == 0:
+                                    break
+
             self.start_sut(
                 *(item for pre_command in request.start_info.pre_commands for item in pre_command.split(" ")),
                 self.CUUP_BINARY_NAME,
