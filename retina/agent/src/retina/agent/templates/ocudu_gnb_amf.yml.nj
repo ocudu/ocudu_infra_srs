@@ -9,12 +9,12 @@ cu_cp:
   amf:
     addrs: {{fivegc_definition[0].amf_ip}}
     port: {{fivegc_definition[0].amf_port}}
-    bind_addrs: {{n2n3_bind_address if n2n3_bind_address else ip}}
+    bind_addrs: {{ip}}
   {% if fivegc_definition|length > 1 %}
   extra_amfs:
   {% for fivegc in fivegc_definition[1:] %}
     - addr: {{fivegc.amf_ip}}
       port: {{fivegc.amf_port}}
-      bind_addrs: {{n2n3_bind_address if n2n3_bind_address else ip}}
+      bind_addrs: {{ip}}
   {% endfor %}
   {% endif %}

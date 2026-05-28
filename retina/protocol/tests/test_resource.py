@@ -150,7 +150,6 @@ class TestResourceFileFunctions(unittest.TestCase):
         """Test dumping and loading Ru resource."""
         ru = Ru(
             model="fake-ru",
-            address="192.168.30.61",
             network_interface=["0000:51:01.0"],
             ru_mac_address=["B8:CE:F6:38:25:4B"],
             du_mac_address=["00:33:22:33:00:11"],

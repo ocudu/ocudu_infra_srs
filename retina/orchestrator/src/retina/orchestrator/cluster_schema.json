@@ -377,9 +377,6 @@
           "type": "integer",
           "minimum": 1
         },
-        "address": {
-          "type": "string"
-        },
         "network_interface": {
           "type": "array",
           "items": {
@@ -424,7 +421,6 @@
         "type",
         "model",
         "space",
-        "address",
         "network_interface",
         "ru_mac_addr",
         "du_mac_addr",

@@ -22,7 +22,7 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
   },
   {% endif %}
 
-  gtp_addr: "{{amf_address if amf_address else ip}}",
+  gtp_addr: "{{ip}}",
   mme_group_id: 32769,
   mme_code: 1,
 

@@ -147,7 +147,8 @@ def load_resources_from_file(file_path_str: Union[str, Path]) -> List[Any]:
 class Node:  # pylint: disable=too-few-public-methods
     """Node configuration."""
 
-    use_node_ip: bool = field(default=False)  # pylint: disable=invalid-field-call
+    node_ip: str = field(default="")  # pylint: disable=invalid-field-call
+    backhaul_ip: str = field(default="")  # pylint: disable=invalid-field-call
     port_array: List[int] = field(default_factory=list)  # pylint: disable=invalid-field-call
     lcores_eal: str = field(default="")  # pylint: disable=invalid-field-call
     n2n3_bind_address: str = field(default="")  # pylint: disable=invalid-field-call
@@ -218,7 +219,6 @@ class Ru:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """Radio Unit configuration."""
 
     model: str
-    address: str
     network_interface: List[str]
     ru_mac_address: List[str]
     du_mac_address: List[str]

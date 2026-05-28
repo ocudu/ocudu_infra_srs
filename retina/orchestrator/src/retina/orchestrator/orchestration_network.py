@@ -218,7 +218,6 @@ class OrchestratorManager:
                         dev_mode=dev_mode,
                         timeout_handler=timeout_handler,
                         not_finite_execution=not_finite_execution,
-                        force_external_ip=req_reservation.force_external_ip,
                     )
                     for req_reservation in pool_request.request_reservation_list
                 ]
@@ -361,7 +360,6 @@ class OrchestratorManager:
         dev_mode: bool,
         timeout_handler: TimeoutHandler,
         not_finite_execution: bool,
-        force_external_ip: bool,
     ) -> RetinaPod:
         """
         Create Pod
@@ -396,10 +394,10 @@ class OrchestratorManager:
         # Create configmap RS
         ########################################################################
         node_resource = Node(
-            use_node_ip=force_external_ip,
             port_array=list(extra_ports_number_array),
             lcores_eal=request_reservation.get_node_configuration(self.k_server),
-            n2n3_bind_address=request_reservation.get_node_backhaul_configuration(self.k_server),
+            node_ip=request_reservation.get_uu_ip(self.k_server),
+            backhaul_ip=request_reservation.get_backhaul_ip(self.k_server),
         )
         create_resource_data_configmap(
             k_server=self.k_server,

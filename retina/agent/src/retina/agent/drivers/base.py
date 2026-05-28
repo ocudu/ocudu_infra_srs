@@ -82,13 +82,13 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
 
         # Node
         if available_resources.node is not None:
-            if available_resources.node.use_node_ip:
-                set_parameter("testbed.ip_zmq", os.getenv("RETINA_NODE_IP", ""))
+            if available_resources.node.node_ip:
+                set_parameter("testbed.ip_zmq", available_resources.node.node_ip)
+            if available_resources.node.backhaul_ip:
+                set_parameter("testbed.ip", available_resources.node.backhaul_ip)
             if available_resources.node.port_array:
                 set_parameter("testbed.port_array", available_resources.node.port_array)
             set_parameter("testbed.lcores_eal_args", available_resources.node.lcores_eal)
-            if available_resources.node.n2n3_bind_address:
-                set_parameter("testbed.n2n3_bind_address", available_resources.node.n2n3_bind_address)
 
         # Remote
         if available_resources.remote is not None:
@@ -131,8 +131,6 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         # RU
         if available_resources.ru is not None:
             set_parameter("testbed.type", "ru")
-            if available_resources.ru.address:
-                set_parameter("testbed.ip", available_resources.ru.address)
             set_parameter("testbed.model", available_resources.ru.model)
             set_parameter("testbed.ru_network_interface", available_resources.ru.network_interface)
             set_parameter("testbed.ru_du_mac_addr", available_resources.ru.du_mac_address)

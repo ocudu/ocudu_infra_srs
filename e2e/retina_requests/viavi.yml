@@ -16,6 +16,7 @@
       limits: 2Gi
     ephemeral-storage:
       requests: "15G"
+  ip_back_source: backhaul
   resources:
     - type: remote
       model: viavi

@@ -34,8 +34,6 @@ from retina.orchestrator.kubernetes import ErrorCode, KubernetesManager
 from retina.orchestrator.requirement import RequirementDefinition, RETINA_PREFIX
 from retina.orchestrator.timeout_handler import TimeoutHandler
 
-ALTERNATIVE_IP = "retina.srs.io/secondary-ip"
-
 
 class PodStatus(Enum):
     """
@@ -896,8 +894,6 @@ class Kubernetes(KubernetesManager):
                 ip_dict[addr_dict.type] = addr_dict.address
             except ValueError:
                 pass
-        if ALTERNATIVE_IP in node.metadata.annotations:
-            ip_dict[ALTERNATIVE_IP] = node.metadata.annotations[ALTERNATIVE_IP]
 
         return ip_dict
 

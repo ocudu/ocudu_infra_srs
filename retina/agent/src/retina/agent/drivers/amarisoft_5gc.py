@@ -376,11 +376,9 @@ class RemoteAmarisoft5gc(Amarisoft5gc):
         )
 
     def Start(self, request: FiveGCStartInfo, context: grpc.ServicerContext) -> Empty:
-        # Remote Amarisoft MME/IMS must bind sockets on the callbox host, not on the Retina pod IP.
-        testbed_defaults.ip = testbed_defaults.api_address
+        testbed_defaults.ip = testbed_defaults.amf_address
         return super().Start(request, context)
 
     def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> FiveGCDefinition:
-        definition = super().GetDefinition(request, context)
-        definition.amf_ip = testbed_defaults.amf_address
-        return definition
+        testbed_defaults.ip = testbed_defaults.amf_address
+        return super().GetDefinition(request, context)

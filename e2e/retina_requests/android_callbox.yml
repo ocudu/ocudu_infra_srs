@@ -26,6 +26,7 @@
       limits: 100%
     ephemeral-storage:
       requests: 6G
+  ip_back_source: backhaul
   resources:
     - type: sdr
       model: x300
@@ -41,7 +42,6 @@
 - name: amarisoft-mme
   type: 5gc
   image: ${RETINA_REGISTRY_URI}/amarisoft5gc-remote:${RETINA_VERSION}
-  force_external_ip: true
   requirements:
     cpu:
       requests: 1

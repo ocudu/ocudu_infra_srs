@@ -527,7 +527,6 @@ class ResourceRU(NodeResource):
         capacity: int = 1,
         space: Optional[int] = None,
         node: Optional[Node] = None,
-        ip_address: Optional[str] = None,
         network_interface: Optional[List[str]] = None,
         du_mac_addr: Optional[List[str]] = None,
         ru_mac_addr: Optional[List[str]] = None,
@@ -545,7 +544,6 @@ class ResourceRU(NodeResource):
             space=space,
             node=node,
         )
-        self.ip_address = ip_address
         self.network_interface = network_interface
         self.du_mac_addr = du_mac_addr
         self.ru_mac_addr = ru_mac_addr
@@ -563,7 +561,6 @@ class ResourceRU(NodeResource):
                 str(self.capacity),
                 self.connection,
                 str(self.space),
-                self.ip_address,
                 tuple(self.network_interface) if self.network_interface is not None else None,
                 tuple(self.du_mac_addr) if self.du_mac_addr is not None else None,
                 tuple(self.ru_mac_addr) if self.ru_mac_addr is not None else None,
@@ -582,7 +579,6 @@ class ResourceRU(NodeResource):
         return [
             Ru(
                 model=self.model,
-                address=self.ip_address,
                 network_interface=self.network_interface,
                 ru_mac_address=self.ru_mac_addr,
                 du_mac_address=self.du_mac_addr,
@@ -842,8 +838,9 @@ class RequestReservation:
         environment: List[Dict],
         enable_host_network_force: str = "",
         command: Union[None, List[str]] = None,
-        force_external_ip: Union[None, bool] = None,
         grace_period: float = TERMINATION_GRACE_PERIOD_SECONDS,
+        ip_uu_source: str = "",
+        ip_back_source: str = "",
     ):
         """
         Constructor
@@ -860,8 +857,9 @@ class RequestReservation:
         self.environment = environment
         self.enable_host_network_force = enable_host_network_force
         self.command = command
-        self.force_external_ip = force_external_ip
         self.grace_period = grace_period
+        self.ip_uu_source = ip_uu_source
+        self.ip_back_source = ip_back_source
         self._node: Optional[Node] = None
 
     def get_binaries(self) -> List[BinaryDefinition]:
@@ -930,14 +928,27 @@ class RequestReservation:
                 return node["cpu_isolation"].get("lcores_eal_args", "")
         return ""
 
-    def get_node_backhaul_configuration(self, k_server: Kubernetes) -> str:
+    def get_uu_ip(self, k_server: Kubernetes) -> str:
         """
-        Get node backhaul configuration
+        Return K8s node InternalIP when ip_uu_source is 'node', else empty string.
         """
+        if self.ip_uu_source != "node":
+            return ""
+        node_name = self.get_node_name(k_server=k_server)
+        return k_server.get_node_ip_dict(node_name).get("InternalIP", "")
+
+    def get_backhaul_ip(self, k_server: Kubernetes) -> str:
+        """
+        Return backhaul bind address when ip_back_source is 'backhaul', else empty string.
+        """
+        if self.ip_back_source != "backhaul":
+            return ""
         node_name = self.get_node_name(k_server=k_server)
         for node in k_server.get_cluster_configuration()["nodes"]:
-            if node["name"] == node_name and "backhaul" in node:
-                return node["backhaul"].get("n2n3_bind_address", "")
+            if node["name"] == node_name:
+                return node.get("backhaul", {}).get(
+                    "n2n3_bind_address", k_server.get_node_ip_dict(node_name).get("InternalIP", "")
+                )
         return ""
 
     def _get_node(self, k_server: Kubernetes) -> Node:
@@ -1172,7 +1183,6 @@ def get_resource_from_cluster_info(cluster_info, node_dict: Dict[str, Node]) -> 
                             model=resource["model"],
                             space=resource["space"],
                             node=node_in_cluster,
-                            ip_address=resource["address"],
                             network_interface=resource["network_interface"],
                             du_mac_addr=resource["du_mac_addr"],
                             ru_mac_addr=resource["ru_mac_addr"],
