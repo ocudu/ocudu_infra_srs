@@ -36,11 +36,6 @@ qos:
       backoff_timer: 10
     f1u_cu_up:
       backoff_timer: 10
-    mac:
-      lc_priority: 4
-      lc_group_id: 1
-      bucket_size_duration_ms: 5
-      prioritized_bit_rate_kBps: 65537
   -
     five_qi: 2 # E.g. Conversational Video
     rlc:
@@ -66,11 +61,6 @@ qos:
       backoff_timer: 10
     f1u_cu_up:
       backoff_timer: 10
-    mac:
-      lc_priority: 4
-      lc_group_id: 1
-      bucket_size_duration_ms: 5
-      prioritized_bit_rate_kBps: 65537
   -
     five_qi: 5 # E.g. IMS signaling
     rlc:
@@ -101,11 +91,6 @@ qos:
       backoff_timer: 10
     f1u_cu_up:
       backoff_timer: 10
-    mac:
-      lc_priority: 5
-      lc_group_id: 2
-      bucket_size_duration_ms: 5
-      prioritized_bit_rate_kBps: 65537
   -
     five_qi: 7 # E.g. Voice, Video (live streaming)
     rlc:
@@ -131,11 +116,6 @@ qos:
       backoff_timer: 10
     f1u_cu_up:
       backoff_timer: 10
-    mac:
-      lc_priority: 4
-      lc_group_id: 1
-      bucket_size_duration_ms: 5
-      prioritized_bit_rate_kBps: 65537
   -
     five_qi: 9 # E.g. Buffered video streaming, TCP-based traffic
     rlc:
@@ -166,11 +146,6 @@ qos:
       backoff_timer: 10
     f1u_cu_up:
       backoff_timer: 10
-    mac:
-      lc_priority: 5
-      lc_group_id: 2
-      bucket_size_duration_ms: 5
-      prioritized_bit_rate_kBps: 65537
       
 {% elif enable_qos_viavi %}
 qos:
@@ -203,11 +178,6 @@ qos:
       backoff_timer: 10
     f1u_cu_up:
       backoff_timer: 10
-    mac:
-      lc_priority: 5
-      lc_group_id: 2
-      bucket_size_duration_ms: 5
-      prioritized_bit_rate_kBps: 65537
 {% elif enable_qos_um %}
 qos:
   -
