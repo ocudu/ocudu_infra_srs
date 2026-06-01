@@ -16,7 +16,7 @@ qos:
         status_report_required: false
       rx:
         sn: 18
-        t_reordering: 0
+        t_reordering: 1
         out_of_order_delivery: false
     f1u_cu_up:
       backoff_timer: 10
@@ -46,7 +46,7 @@ qos:
         status_report_required: false
       rx:
         sn: 18
-        t_reordering: 0
+        t_reordering: 1
         out_of_order_delivery: false
     f1u_cu_up:
       backoff_timer: 10
