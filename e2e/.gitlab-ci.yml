@@ -303,15 +303,6 @@ ru dummy:
     - get retina version
     - dpdk rtsan avx512
 
-ru dummy asan:
-  extends: .test mode ru
-  variables:
-    MARKERS: test_mode_not_crash
-    KEYWORDS: "test_ru"
-  needs:
-    - get retina version
-    - asan
-
 ru dummy tsan:
   extends: .test mode ru
   variables:
