@@ -46,10 +46,10 @@ hal:
 {% endif %}
 {% endif %}
 
+{% if type == "ru" and model == "viavi"%}
 {###################################################}
 {# Special configuration for Viavi RU #}
 {###################################################}
-{% if type == "ru" and model == "viavi"%}
 ru_ofh:
   t1a_max_cp_dl: 500
   t1a_min_cp_dl: 268
@@ -84,46 +84,7 @@ ru_ofh:
 
 expert_phy:
   max_proc_delay: 4
-{% endif %}
-{% if type == "ru" and model == "s72-ocudu"%}
-{###################################################}
-{# Special configuration for Amarisoft UE running in split 7.2 mode #}
-{###################################################}
-ru_ofh:
-  t1a_max_cp_dl: 430
-  t1a_min_cp_dl: 370
-  t1a_max_cp_ul: 430
-  t1a_min_cp_ul: 370
-  t1a_max_up: 340
-  t1a_min_up: 250
-  ta4_max: 600
-  ta4_min: 0                                     
-  is_prach_cp_enabled: true
-  compr_method_ul: bfp
-  compr_bitwidth_ul: 9
-  compr_method_dl: bfp
-  compr_bitwidth_dl: 9
-  compr_method_prach: bfp
-  compr_bitwidth_prach: 9
-  enable_ul_static_compr_hdr: true
-  enable_dl_static_compr_hdr: true
-  iq_scaling: 0.4
-  cells:
-  {% for ofh_cell in ru_ofh_cells %}
-  - network_interface: {{ ofh_cell.network_interface }}
-    ru_mac_addr: {{ ofh_cell.ru_mac_addr }}
-    du_mac_addr: {{ ofh_cell.du_mac_addr }}
-    vlan_tag_cp: {{ ofh_cell.vlan_tag_cp }}
-    vlan_tag_up: {{ ofh_cell.vlan_tag_up }}
-    prach_port_id: {{ ofh_cell.prach_port_id }}
-    dl_port_id: {{ ofh_cell.dl_port_id }}
-    ul_port_id: {{ ofh_cell.ul_port_id }}
-  {% endfor %}
-
-expert_phy:
-  max_request_headroom_slots: 3
-{% endif %}
-{% if type == "ru" and model == "s72-fr2-ocudu"%}
+{% elif type == "ru" and model == "s72-fr2-ocudu"%}
 {###################################################}
 {# Special configuration for Amarisoft UE running in split 7.2 mode for FR2 testing #}
 {###################################################}
@@ -161,5 +122,38 @@ ru_ofh:
 
 expert_phy:
   max_proc_delay: 6
-{% endif %}
+{% elif type == "ru" %}
 {###################################################}
+{# Special configuration for Amarisoft UE running in split 7.2 mode #}
+{###################################################}
+ru_ofh:
+  t1a_max_cp_dl: 430
+  t1a_min_cp_dl: 370
+  t1a_max_cp_ul: 430
+  t1a_min_cp_ul: 370
+  t1a_max_up: 340
+  t1a_min_up: 250
+  ta4_max: 600
+  ta4_min: 0                                     
+  is_prach_cp_enabled: true
+  compr_method_ul: bfp
+  compr_bitwidth_ul: 9
+  compr_method_dl: bfp
+  compr_bitwidth_dl: 9
+  compr_method_prach: bfp
+  compr_bitwidth_prach: 9
+  enable_ul_static_compr_hdr: true
+  enable_dl_static_compr_hdr: true
+  iq_scaling: 0.4
+  cells:
+  {% for ofh_cell in ru_ofh_cells %}
+  - network_interface: {{ ofh_cell.network_interface }}
+    ru_mac_addr: {{ ofh_cell.ru_mac_addr }}
+    du_mac_addr: {{ ofh_cell.du_mac_addr }}
+    vlan_tag_cp: {{ ofh_cell.vlan_tag_cp }}
+    vlan_tag_up: {{ ofh_cell.vlan_tag_up }}
+    prach_port_id: {{ ofh_cell.prach_port_id }}
+    dl_port_id: {{ ofh_cell.dl_port_id }}
+    ul_port_id: {{ ofh_cell.ul_port_id }}
+  {% endfor %}
+{% endif %}

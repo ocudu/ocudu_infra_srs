@@ -376,7 +376,7 @@ class RemoteAmarisoft5gc(Amarisoft5gc):
         )
 
     def Start(self, request: FiveGCStartInfo, context: grpc.ServicerContext) -> Empty:
-        testbed_defaults.ip = testbed_defaults.amf_address
+        self.GetDefinition(Empty(), context)  # Force ip tweak
         return super().Start(request, context)
 
     def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> FiveGCDefinition:

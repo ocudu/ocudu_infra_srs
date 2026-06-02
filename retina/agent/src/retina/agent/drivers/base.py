@@ -98,6 +98,16 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             add_log_secret(available_resources.remote.password)
             set_parameter("testbed.password", available_resources.remote.password)
             set_parameter("testbed.tma_path", available_resources.remote.path)
+            if available_resources.remote.network_interface:
+                set_parameter("testbed.type", "ru")
+                set_parameter("testbed.ru_network_interface", available_resources.remote.network_interface)
+                set_parameter("testbed.ru_du_mac_addr", available_resources.remote.du_mac_address)
+                set_parameter("testbed.ru_ru_mac_addr", available_resources.remote.ru_mac_address)
+                set_parameter("testbed.ru_vlan_tag_up", available_resources.remote.vlan_tag_up)
+                set_parameter("testbed.ru_vlan_tag_cp", available_resources.remote.vlan_tag_cp)
+                set_parameter("testbed.ru_prach_port_id", available_resources.remote.prach_port_id)
+                set_parameter("testbed.ru_dl_port_id", available_resources.remote.dl_port_id)
+                set_parameter("testbed.ru_ul_port_id", available_resources.remote.ul_port_id)
 
         # Core
         if available_resources.core is not None:
@@ -171,7 +181,11 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             set_parameter("testbed.accelerator_harq_context_size", available_resources.accelerator.harq_context_size)
 
         # ZMQ
-        if available_resources.sdr is None and available_resources.ru is None:
+        if (
+            available_resources.sdr is None
+            and available_resources.ru is None
+            and (available_resources.remote is None or available_resources.remote.network_interface is None)
+        ):
             # In ZMQ, set sample rate and antennas to the max possible by the driver
             set_parameter("testbed.sample_rate", 122880000)
             set_parameter("ue.nof_antennas_dl", 4)

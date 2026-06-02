@@ -71,6 +71,7 @@ markers = [
   "example",
   "example_srsue",
   "s72",
+  "s72_uesim",
   "CU-GEN-1",
   "CU-GEN-3",
   "CU-GEN-4",

@@ -155,13 +155,21 @@ class Node:  # pylint: disable=too-few-public-methods
 
 
 @resource
-class Remote:  # pylint: disable=too-few-public-methods
+class Remote:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """Remote configuration."""
 
     address: str
     user: str
     password: str
     path: str
+    network_interface: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
+    ru_mac_address: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
+    du_mac_address: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
+    vlan_tag_up: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
+    vlan_tag_cp: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
+    prach_port_id: str = field(default="")  # pylint: disable=invalid-field-call
+    dl_port_id: str = field(default="")  # pylint: disable=invalid-field-call
+    ul_port_id: str = field(default="")  # pylint: disable=invalid-field-call
 
 
 @resource

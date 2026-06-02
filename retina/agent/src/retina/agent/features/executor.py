@@ -487,8 +487,11 @@ class SshExecutor(LocalExecutor):
 
     def mkdir(self, path: Union[str, Path]) -> None:
         super().mkdir(path)
+        path = Path(path)
         with self._sftp() as sftp:
-            sftp.mkdir(str(path))
+            for partial in reversed([path, *path.parents]):
+                with suppress(IOError):
+                    sftp.mkdir(str(partial))
 
     def write_file(self, path: Union[str, Path], content: str) -> None:
         super().write_file(path, content)

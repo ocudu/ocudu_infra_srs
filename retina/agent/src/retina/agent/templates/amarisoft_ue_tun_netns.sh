@@ -12,18 +12,24 @@ ipv4_dns="$5"        # IPv4 DNS
 ipv6_local_addr="$6" # IPv6 local address
 ipv6_dns="$7"        # IPv6 DNS
 param="$8"           # UE param
+apn="$9"             # Access point name
 old_link_local=""
+cid="-"
 
 # Optional parameters
-shift; shift; shift; shift; shift; shift; shift; shift;
+shift; shift; shift; shift; shift; shift; shift; shift; shift;
 while [ "$1" != "" ] ; do
     case "$1" in
     --mtu)
         mtu="$2"
         shift
         ;;
+    --cid)
+        cid="$2"
+        shift
+        ;;
     *)
-        echo "Bad paramater: $1" >&2
+        echo "Bad parameter: $1" >&2
         exit 1
         ;;
     esac
@@ -37,7 +43,7 @@ if [ "$pdn_id" = "0" ] ; then
     ip netns add $ue_id
 fi
 
-echo "Configure $ue_id($param) on pdn $pdn_id, tun=$ifname, ip=$ipv4_addr, dns=$ipv4_dns"
+echo "Configure $ue_id($param) on pdn $apn#$pdn_id[$cid], tun=$ifname, ip=$ipv4_addr, dns=$ipv4_dns"
 
 # Set DNS ?
 if [ "$ipv4_dns" != "" ] || [ "$ipv6_dns" != "" ] ; then
@@ -70,7 +76,7 @@ if [ "$pdn_id" = "0" ] ; then
     ip netns exec $ue_id ifconfig lo up
 fi
 
-ip netns exec $ue_id ifconfig $ifname up
+ip netns exec $ue_id ifconfig $ifname up txqueuelen 1000
 if [ "$ipv4_addr" != "" ] ; then
     ip netns exec $ue_id ifconfig $ifname $ipv4_addr/24
     if [ "$pdn_id" = "0" ] ; then
@@ -89,9 +95,7 @@ if [ "$ipv6_local_addr" != "" ] ; then
 fi
 
 # Give mac address to lteue
-if [ "$ipv4_addr" != "" -a "$ipv6_local_addr" != "" ] ; then
+if [ "$ipv4_addr" = "" -a "$ipv6_local_addr" = "" ] ; then
     echo "MAC_ADDR="$(ip netns exec $ue_id ip link show dev $ifname | grep -oP "ether \K[\d:a-f]+")
 fi
 
-#ip netns exec $ue_id iperf3 -c 10.45.0.1 -t3600 -l 1300 -R > /dev/null &
-#ip netns exec $ue_id ping 10.45.0.1 -i 0.2 -s 65000 > /dev/null &

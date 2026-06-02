@@ -256,6 +256,7 @@ class ResourceLicense(ClusterResource):
         return [License(address=self.ip_address, args=self.args)]
 
 
+# pylint: disable=too-many-instance-attributes
 class ResourceRemote(ClusterResource):
     """
     Resource remote manager
@@ -270,6 +271,14 @@ class ResourceRemote(ClusterResource):
         user: Optional[str] = None,
         password: Optional[str] = None,
         path: Optional[str] = None,
+        network_interface: Optional[List[str]] = None,
+        ru_mac_addr: Optional[List[str]] = None,
+        du_mac_addr: Optional[List[str]] = None,
+        vlan_tag_up: Optional[List[str]] = None,
+        vlan_tag_cp: Optional[List[str]] = None,
+        prach_port_id: Optional[str] = None,
+        dl_port_id: Optional[str] = None,
+        ul_port_id: Optional[str] = None,
     ):
         super().__init__(
             capacity=capacity,
@@ -283,6 +292,14 @@ class ResourceRemote(ClusterResource):
         self.password = password
         self.address = address
         self.path = path
+        self.network_interface = network_interface
+        self.ru_mac_addr = ru_mac_addr
+        self.du_mac_addr = du_mac_addr
+        self.vlan_tag_up = vlan_tag_up
+        self.vlan_tag_cp = vlan_tag_cp
+        self.prach_port_id = prach_port_id
+        self.dl_port_id = dl_port_id
+        self.ul_port_id = ul_port_id
 
     def __hash__(self):
         return hash(
@@ -295,6 +312,14 @@ class ResourceRemote(ClusterResource):
                 self.password,
                 self.address,
                 self.path,
+                tuple(self.network_interface) if self.network_interface is not None else None,
+                tuple(self.ru_mac_addr) if self.ru_mac_addr is not None else None,
+                tuple(self.du_mac_addr) if self.du_mac_addr is not None else None,
+                tuple(self.vlan_tag_up) if self.vlan_tag_up is not None else None,
+                tuple(self.vlan_tag_cp) if self.vlan_tag_cp is not None else None,
+                self.prach_port_id,
+                self.dl_port_id,
+                self.ul_port_id,
             )
         )
 
@@ -302,7 +327,22 @@ class ResourceRemote(ClusterResource):
         """
         Get resource data
         """
-        return [Remote(address=self.address, user=self.user, password=self.password, path=self.path)]
+        return [
+            Remote(
+                address=self.address,
+                user=self.user,
+                password=self.password,
+                path=self.path,
+                network_interface=self.network_interface or [],
+                ru_mac_address=self.ru_mac_addr or [],
+                du_mac_address=self.du_mac_addr or [],
+                vlan_tag_up=self.vlan_tag_up or [],
+                vlan_tag_cp=self.vlan_tag_cp or [],
+                prach_port_id=self.prach_port_id or "",
+                dl_port_id=self.dl_port_id or "",
+                ul_port_id=self.ul_port_id or "",
+            )
+        ]
 
 
 class ResourceAPI(ClusterResource):
@@ -1125,6 +1165,14 @@ def get_resource_from_cluster_info(cluster_info, node_dict: Dict[str, Node]) -> 
                 password=resource["password"],
                 address=resource["address"],
                 path=resource["path"],
+                network_interface=resource.get("network_interface"),
+                ru_mac_addr=resource.get("ru_mac_addr"),
+                du_mac_addr=resource.get("du_mac_addr"),
+                vlan_tag_up=resource.get("vlan_tag_up"),
+                vlan_tag_cp=resource.get("vlan_tag_cp"),
+                prach_port_id=resource.get("prach_port_id"),
+                dl_port_id=resource.get("dl_port_id"),
+                ul_port_id=resource.get("ul_port_id"),
             )
             resource_list.add_resource(resource_obj_j)
         if resource["type"] == "api":

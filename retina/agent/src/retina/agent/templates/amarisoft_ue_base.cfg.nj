@@ -54,7 +54,6 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
         transport: "ethernet",
         bind_interface: "{{s72_port.interface}}",
         remote_addr: "{{s72_port.du_mac_addr}}",
-        send_margin: 0,
       },
     {% endfor %}
     ],

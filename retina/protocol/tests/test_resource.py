@@ -14,6 +14,7 @@ import yaml
 from retina.protocol.resource import (
     Core,
     License,
+    Remote,
     Ru,
     Ue,
     API,
@@ -146,16 +147,57 @@ class TestResourceFileFunctions(unittest.TestCase):
             self.assertEqual(api_loaded, api)
             self.assertEqual(ue_loaded, ue)
 
+    def test_dump_load_consistency_remote_without_ru_fields(self):
+        """Test that Remote without RU fields round-trips correctly (backward compat)."""
+        remote = Remote(address="10.0.0.1", user="admin", password="secret", path="/my/path")
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as temp_file:
+            temp_path = temp_file.name
+            dump_resource_list_to_file([remote], temp_path)
+            loaded = load_resources_from_file(temp_path)
+
+        self.assertEqual(len(loaded), 1)
+        self.assertIsInstance(loaded[0], Remote)
+        self.assertEqual(loaded[0], remote)
+        self.assertEqual(loaded[0].network_interface, [])
+        self.assertEqual(loaded[0].prach_port_id, "")
+
+    def test_dump_load_consistency_remote_with_ru_fields(self):
+        """Test that Remote with RU fields round-trips correctly."""
+        remote = Remote(
+            address="10.0.0.1",
+            user="admin",
+            password="secret",
+            path="/my/path",
+            network_interface=["0000:11:22.3", "0000:11:22.4"],
+            ru_mac_address=["00:11:22:33:44:55"],
+            du_mac_address=["00:11:22:33:44:66"],
+            vlan_tag_up=["10"],
+            vlan_tag_cp=["11"],
+            prach_port_id="[4, 5]",
+            dl_port_id="[0, 1, 2, 3]",
+            ul_port_id="[0, 1]",
+        )
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as temp_file:
+            temp_path = temp_file.name
+            dump_resource_list_to_file([remote], temp_path)
+            loaded = load_resources_from_file(temp_path)
+
+        self.assertEqual(len(loaded), 1)
+        self.assertIsInstance(loaded[0], Remote)
+        self.assertEqual(loaded[0], remote)
+
     def test_dump_load_consistency_with_nested_structures(self):
         """Test dumping and loading Ru resource."""
         ru = Ru(
             model="fake-ru",
-            network_interface=["0000:51:01.0"],
-            ru_mac_address=["B8:CE:F6:38:25:4B"],
-            du_mac_address=["00:33:22:33:00:11"],
+            network_interface=["0000:11:22.3"],
+            ru_mac_address=["00:11:22:33:44:55"],
+            du_mac_address=["00:11:22:33:44:66"],
             vlan_tag_up=["1"],
             vlan_tag_cp=["1"],
-            prach_port_id="[8, 9]",
+            prach_port_id="[5, 6]",
             dl_port_id="[0, 1, 2, 3]",
             ul_port_id="[0, 1]",
         )

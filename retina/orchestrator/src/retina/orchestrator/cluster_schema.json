@@ -87,6 +87,45 @@
         },
         "path": {
           "type": "string"
+        },
+        "network_interface": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ru_mac_addr": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "du_mac_addr": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vlan_tag_up": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vlan_tag_cp": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prach_port_id": {
+          "type": "string"
+        },
+        "dl_port_id": {
+          "type": "string"
+        },
+        "ul_port_id": {
+          "type": "string"
         }
       },
       "required": [

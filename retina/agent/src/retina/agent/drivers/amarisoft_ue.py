@@ -152,7 +152,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             with self._amarisoft_lock:
                 return self._start_unlock(request, context)
 
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-statements
     def _start_unlock(self, request: UEStartInfo, context: grpc.ServicerContext) -> Empty:
         if not self._any_virtual_ue_already_started:
             self._stop_unlock(UInt32Value(value=request.start_info.timeout), context.peer())
@@ -301,10 +301,11 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             self._ue_analyzer = AmarisoftUeMetricsAnalyzer()
             self._peer_ue_ids.clear()
 
-            with suppress(BrokenPipeError, AttributeError):
-                # Enter (stop previous command) + t
-                self._process.stdin.write("\nt\n")
-                self._process.stdin.flush()
+            if testbed_defaults.type == "ru":
+                with suppress(BrokenPipeError, AttributeError):
+                    # Enter (stop previous command) + t
+                    self._process.stdin.write("\nt s72\n")
+                    self._process.stdin.flush()
 
             while timeout_handler.not_reached():
                 cells: Dict = self._websocket.send_command_and_wait_response(message="config_get").get("cells", {})
@@ -314,6 +315,11 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
         if self._websocket is None:
             raise ChildProcessError("Process has died")
+
+        with suppress(BrokenPipeError, AttributeError):
+            # Enter (stop previous command) + t
+            self._process.stdin.write("\nt\n")
+            self._process.stdin.flush()
 
         if len(self._subscriber_client_dict) > 0:
             subscriber_id = self._subscriber_client_dict[context.peer()].subscriber_id
@@ -821,6 +827,7 @@ class RemoteAmarisoftUe(AmarisoftUe):
 
     def _start_unlock(self, request: UEStartInfo, context: grpc.ServicerContext) -> Empty:
         if not self._any_virtual_ue_already_started:
+            self.GetDefinition(Empty(), context)  # Force ip tweak
             remote_tun_sh = str(self._get_amarisoft_folder().joinpath(self._NETNS_TUN_SH))
             self._executor.copy_file(template_path(self._NETNS_TUN_SH), remote_tun_sh)
             ue_defaults.tun_sh_path = remote_tun_sh

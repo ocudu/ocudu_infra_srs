@@ -182,8 +182,6 @@
                     }
                 },
                 "required": [
-                    "cpu",
-                    "memory"
                 ],
                 "additionalProperties": false,
                 "uniqueItems": false
