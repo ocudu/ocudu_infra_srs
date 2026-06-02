@@ -45,7 +45,7 @@ variables:
   TF_VAR_retina_registry_uri: $[[ inputs.retina_registry_uri ]]
 
 include:
-  - component: ${CI_SERVER_FQDN}/components/opentofu/job-templates@3.11.0
+  - component: ${CI_SERVER_FQDN}/components/opentofu/job-templates@4.5.0
     inputs:
       root_dir: $[[ inputs.root_dir ]]
       state_name: $[[ inputs.state_name ]]

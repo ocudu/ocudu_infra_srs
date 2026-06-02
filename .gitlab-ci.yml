@@ -210,7 +210,7 @@ yaml lint:
 
 tf lint:
   stage: static
-  image: registry.gitlab.com/components/opentofu/gitlab-opentofu:3.11.0-opentofu1.10.6-alpine
+  image: registry.gitlab.com/components/opentofu/gitlab-opentofu:4.5.0-opentofu1.11.5-alpine
   rules:
     - if: $ON_MR
       changes:
