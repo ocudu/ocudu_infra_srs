@@ -417,6 +417,38 @@ class ul_ue_avg_bitrate(DuCriteria):
         return [ue.ul_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
 
 
+class dl_ue_mid10_bitrate(DuCriteria):
+    """DL UE mid-10 bitrate"""
+
+    def operator_method(self, result: List[float], expected: List[float]) -> bool:
+        ">"
+        return all(a > b for a, b in zip(result, expected))
+
+    @property
+    def expected(self):
+        return [item["value"] for item in self._input]
+
+    def callback(self):
+        du = self._stub_array[0]
+        return [ue.dl_av_mid10_samples for ue in du.GetMetrics(Empty()).ue_array]
+
+
+class ul_ue_mid10_bitrate(DuCriteria):
+    """UL UE mid-10 bitrate"""
+
+    def operator_method(self, result: List[float], expected: List[float]) -> bool:
+        ">"
+        return all(a > b for a, b in zip(result, expected))
+
+    @property
+    def expected(self):
+        return [item["value"] for item in self._input]
+
+    def callback(self):
+        du = self._stub_array[0]
+        return [ue.ul_av_mid10_samples for ue in du.GetMetrics(Empty()).ue_array]
+
+
 class pdsch_prbs_used_per_tdd_slot_mean(DuCriteria):
     """PDSCH PRBs used per TDD slot index"""
 
@@ -435,6 +467,26 @@ class pusch_prbs_used_per_tdd_slot_mean(DuCriteria):
     def callback(self):
         du = self._stub_array[0]
         return round(mean(du.GetMetrics(Empty()).du.pusch_prbs_used_per_tdd_slot_idx), 1)
+
+
+class pdsch_prbs_mid10_per_tdd_slot_mean(DuCriteria):
+    """PDSCH PRBs per TDD slot (mid 10)"""
+
+    operator_method = operator.ge
+
+    def callback(self):
+        du = self._stub_array[0]
+        return round(mean(du.GetMetrics(Empty()).du.pdsch_prbs_mid10_per_tdd_slot_idx), 1)
+
+
+class pusch_prbs_mid10_per_tdd_slot_mean(DuCriteria):
+    """PUSCH PRBs per TDD slot (mid 10)"""
+
+    operator_method = operator.ge
+
+    def callback(self):
+        du = self._stub_array[0]
+        return round(mean(du.GetMetrics(Empty()).du.pusch_prbs_mid10_per_tdd_slot_idx), 1)
 
 
 class nof_rlm_ssb_resources_ge(DuCriteria):

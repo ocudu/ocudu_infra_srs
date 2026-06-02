@@ -257,6 +257,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
         for rnti in self._dl_peak:  # pylint: disable=consider-using-dict-items,consider-using-dict-items
             dl5, dl15, dl30 = self._dl_peak[rnti]
             ul5, ul15, ul30 = self._ul_peak[rnti]
+            dl_mid10 = self._dl_mov_av[rnti].get_middle_average(10)
+            ul_mid10 = self._ul_mov_av[rnti].get_middle_average(10)
             metrics.ue_array.append(
                 UeMetrics(
                     rnti=rnti,
@@ -269,6 +271,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
                     ul_av_5_samples=ul5,
                     ul_av_15_samples=ul15,
                     ul_av_30_samples=ul30,
+                    dl_av_mid10_samples=dl_mid10,
+                    ul_av_mid10_samples=ul_mid10,
                     nof_ko_dl=self._nof_ko_dl.get(rnti, 0),
                     nof_ko_ul=self._nof_ko_ul.get(rnti, 0),
                     nof_pucch_f0f1_invalid_harqs=self._pucch_f0f1.get(rnti, 0),

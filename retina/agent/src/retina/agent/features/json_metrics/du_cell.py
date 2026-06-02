@@ -62,5 +62,7 @@ class DuCellAnalyzer(JsonMetricsAnalyzer):
                 max_late_ul_harqs=self._max_late_ul_harqs,
                 pdsch_prbs_used_per_tdd_slot_idx=[round(ma.get_average()) for ma in self._pdsch_prbs_mov_av],
                 pusch_prbs_used_per_tdd_slot_idx=[round(ma.get_average()) for ma in self._pusch_prbs_mov_av],
+                pdsch_prbs_mid10_per_tdd_slot_idx=[round(ma.get_middle_average(10)) for ma in self._pdsch_prbs_mov_av],
+                pusch_prbs_mid10_per_tdd_slot_idx=[round(ma.get_middle_average(10)) for ma in self._pusch_prbs_mov_av],
             )
         )

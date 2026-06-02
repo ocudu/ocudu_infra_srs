@@ -185,6 +185,10 @@ message UeMetrics {
   // MCS (maximum observed across the reporting window)
   uint32 dl_max_mcs = 25;
   uint32 ul_max_mcs = 26;
+
+  // Average of 10 middle samples (all collected samples sorted, extremes trimmed)
+  double dl_av_mid10_samples = 27;
+  double ul_av_mid10_samples = 28;
 };
 
 message DuMetrics {
@@ -215,8 +219,10 @@ message DuMetrics {
   int32 c_srs                       = 18;
   int32 b_srs                       = 19;
 
-  repeated uint32 pdsch_prbs_used_per_tdd_slot_idx = 23;
-  repeated uint32 pusch_prbs_used_per_tdd_slot_idx = 24;
+  repeated uint32 pdsch_prbs_used_per_tdd_slot_idx      = 23;
+  repeated uint32 pusch_prbs_used_per_tdd_slot_idx      = 24;
+  repeated uint32 pdsch_prbs_mid10_per_tdd_slot_idx     = 27;
+  repeated uint32 pusch_prbs_mid10_per_tdd_slot_idx     = 28;
 
   uint32 nof_rlm_ssb_resources    = 25;
   uint32 nof_rlm_csi_rs_resources = 26;

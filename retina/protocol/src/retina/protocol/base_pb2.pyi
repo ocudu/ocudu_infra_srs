@@ -474,6 +474,8 @@ class UeMetrics(google.protobuf.message.Message):
     UL_AVG_RI_FIELD_NUMBER: builtins.int
     DL_MAX_MCS_FIELD_NUMBER: builtins.int
     UL_MAX_MCS_FIELD_NUMBER: builtins.int
+    DL_AV_MID10_SAMPLES_FIELD_NUMBER: builtins.int
+    UL_AV_MID10_SAMPLES_FIELD_NUMBER: builtins.int
     rnti: builtins.int
     """UE identification"""
     pci: builtins.int
@@ -508,6 +510,9 @@ class UeMetrics(google.protobuf.message.Message):
     dl_max_mcs: builtins.int
     """MCS (maximum observed across the reporting window)"""
     ul_max_mcs: builtins.int
+    dl_av_mid10_samples: builtins.float
+    """Average of 10 middle samples (all collected samples sorted, extremes trimmed)"""
+    ul_av_mid10_samples: builtins.float
     def __init__(
         self,
         *,
@@ -537,8 +542,10 @@ class UeMetrics(google.protobuf.message.Message):
         ul_avg_ri: builtins.float = ...,
         dl_max_mcs: builtins.int = ...,
         ul_max_mcs: builtins.int = ...,
+        dl_av_mid10_samples: builtins.float = ...,
+        ul_av_mid10_samples: builtins.float = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["dl_av_15_samples", b"dl_av_15_samples", "dl_av_30_samples", b"dl_av_30_samples", "dl_av_5_samples", b"dl_av_5_samples", "dl_avg_ri", b"dl_avg_ri", "dl_bitrate", b"dl_bitrate", "dl_max_mcs", b"dl_max_mcs", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_pusch_invalid_csis", b"nof_pusch_invalid_csis", "nof_pusch_invalid_harqs", b"nof_pusch_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_rrc_resume_complete", b"nof_rrc_resume_complete", "nof_rrc_suspend", b"nof_rrc_suspend", "pci", b"pci", "rnti", b"rnti", "ul_av_15_samples", b"ul_av_15_samples", "ul_av_30_samples", b"ul_av_30_samples", "ul_av_5_samples", b"ul_av_5_samples", "ul_avg_ri", b"ul_avg_ri", "ul_bitrate", b"ul_bitrate", "ul_max_mcs", b"ul_max_mcs"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["dl_av_15_samples", b"dl_av_15_samples", "dl_av_30_samples", b"dl_av_30_samples", "dl_av_5_samples", b"dl_av_5_samples", "dl_av_mid10_samples", b"dl_av_mid10_samples", "dl_avg_ri", b"dl_avg_ri", "dl_bitrate", b"dl_bitrate", "dl_max_mcs", b"dl_max_mcs", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_pusch_invalid_csis", b"nof_pusch_invalid_csis", "nof_pusch_invalid_harqs", b"nof_pusch_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_rrc_resume_complete", b"nof_rrc_resume_complete", "nof_rrc_suspend", b"nof_rrc_suspend", "pci", b"pci", "rnti", b"rnti", "ul_av_15_samples", b"ul_av_15_samples", "ul_av_30_samples", b"ul_av_30_samples", "ul_av_5_samples", b"ul_av_5_samples", "ul_av_mid10_samples", b"ul_av_mid10_samples", "ul_avg_ri", b"ul_avg_ri", "ul_bitrate", b"ul_bitrate", "ul_max_mcs", b"ul_max_mcs"]) -> None: ...
 
 Global___UeMetrics: typing_extensions.TypeAlias = UeMetrics
 
@@ -570,6 +577,8 @@ class DuMetrics(google.protobuf.message.Message):
     B_SRS_FIELD_NUMBER: builtins.int
     PDSCH_PRBS_USED_PER_TDD_SLOT_IDX_FIELD_NUMBER: builtins.int
     PUSCH_PRBS_USED_PER_TDD_SLOT_IDX_FIELD_NUMBER: builtins.int
+    PDSCH_PRBS_MID10_PER_TDD_SLOT_IDX_FIELD_NUMBER: builtins.int
+    PUSCH_PRBS_MID10_PER_TDD_SLOT_IDX_FIELD_NUMBER: builtins.int
     NOF_RLM_SSB_RESOURCES_FIELD_NUMBER: builtins.int
     NOF_RLM_CSI_RS_RESOURCES_FIELD_NUMBER: builtins.int
     nof_error_indications: builtins.int
@@ -600,6 +609,10 @@ class DuMetrics(google.protobuf.message.Message):
     def pdsch_prbs_used_per_tdd_slot_idx(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
     @property
     def pusch_prbs_used_per_tdd_slot_idx(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
+    @property
+    def pdsch_prbs_mid10_per_tdd_slot_idx(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
+    @property
+    def pusch_prbs_mid10_per_tdd_slot_idx(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
     def __init__(
         self,
         *,
@@ -627,10 +640,12 @@ class DuMetrics(google.protobuf.message.Message):
         b_srs: builtins.int = ...,
         pdsch_prbs_used_per_tdd_slot_idx: collections.abc.Iterable[builtins.int] | None = ...,
         pusch_prbs_used_per_tdd_slot_idx: collections.abc.Iterable[builtins.int] | None = ...,
+        pdsch_prbs_mid10_per_tdd_slot_idx: collections.abc.Iterable[builtins.int] | None = ...,
+        pusch_prbs_mid10_per_tdd_slot_idx: collections.abc.Iterable[builtins.int] | None = ...,
         nof_rlm_ssb_resources: builtins.int = ...,
         nof_rlm_csi_rs_resources: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_paging_messages", b"nof_paging_messages", "nof_rlm_csi_rs_resources", b"nof_rlm_csi_rs_resources", "nof_rlm_ssb_resources", b"nof_rlm_ssb_resources", "nof_seq_err", b"nof_seq_err", "nof_sib16_transmissions", b"nof_sib16_transmissions", "nof_sib19_transmissions", b"nof_sib19_transmissions", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_under", b"nof_under", "pdsch_prbs_used_per_tdd_slot_idx", b"pdsch_prbs_used_per_tdd_slot_idx", "prach_configuration_index", b"prach_configuration_index", "pusch_prbs_used_per_tdd_slot_idx", b"pusch_prbs_used_per_tdd_slot_idx", "sib1_has_rach_prioritization_slice", b"sib1_has_rach_prioritization_slice", "t312", b"t312", "transform_precoder", b"transform_precoder"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_paging_messages", b"nof_paging_messages", "nof_rlm_csi_rs_resources", b"nof_rlm_csi_rs_resources", "nof_rlm_ssb_resources", b"nof_rlm_ssb_resources", "nof_seq_err", b"nof_seq_err", "nof_sib16_transmissions", b"nof_sib16_transmissions", "nof_sib19_transmissions", b"nof_sib19_transmissions", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_under", b"nof_under", "pdsch_prbs_mid10_per_tdd_slot_idx", b"pdsch_prbs_mid10_per_tdd_slot_idx", "pdsch_prbs_used_per_tdd_slot_idx", b"pdsch_prbs_used_per_tdd_slot_idx", "prach_configuration_index", b"prach_configuration_index", "pusch_prbs_mid10_per_tdd_slot_idx", b"pusch_prbs_mid10_per_tdd_slot_idx", "pusch_prbs_used_per_tdd_slot_idx", b"pusch_prbs_used_per_tdd_slot_idx", "sib1_has_rach_prioritization_slice", b"sib1_has_rach_prioritization_slice", "t312", b"t312", "transform_precoder", b"transform_precoder"]) -> None: ...
 
 Global___DuMetrics: typing_extensions.TypeAlias = DuMetrics
 

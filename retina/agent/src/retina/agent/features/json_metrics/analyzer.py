@@ -40,6 +40,20 @@ class MovingAverage:
         last_k_values = list(self._queue)[-nof_average_samples:]
         return sum(last_k_values) / len(last_k_values)
 
+    def get_middle_average(self, nof_middle_samples: int) -> float:
+        """Return the average of the N temporally middle samples."""
+        if nof_middle_samples > (self._queue.maxlen or 0) or nof_middle_samples < 0:
+            raise ValueError("nof_middle_samples is greater than the maximum length of the queue")
+        if len(self._queue) == 0:
+            return 0
+        values = list(self._queue)
+        n = len(values)
+        if n <= nof_middle_samples:
+            return sum(values) / n
+        start = (n - nof_middle_samples) // 2
+        middle = values[start : start + nof_middle_samples]
+        return sum(middle) / len(middle)
+
 
 class JsonMetricsAnalyzer(ABC):
     """
