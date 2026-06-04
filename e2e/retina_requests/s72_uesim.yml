@@ -1,0 +1,73 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+- name: amarisoft-ue
+  type: ue
+  image: ${RETINA_REGISTRY_URI}/amarisoftue-remote:${RETINA_VERSION}
+  nof_ports: 16
+  requirements:
+    cpu:
+      requests: 5%
+      limits: 5%
+    memory:
+      requests: 5%
+      limits: 5%
+    ephemeral-storage:
+      requests: 6G
+  resources:
+    - type: license
+      model: amarisoft-ue.*
+    - type: remote
+      model: uesim
+    - type: api
+      model: uesim
+    - type: ru
+      model: uesim
+      dummy: true
+
+- name: ocudu-gnb
+  type: gnb
+  image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
+  ip_uu_source: node
+  requirements:
+    cpu:
+      requests: 80%
+      limits: 80%
+    memory:
+      requests: 80%
+      limits: 80%
+    hugepages-1Gi:
+      requests: 2Gi
+      limits: 2Gi
+    ephemeral-storage:
+      requests: 15G
+  resources:
+    - type: ru
+      model: uesim
+  environment:
+    - RETINA_AGENT: ocudu-gnb
+    - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb_split_7_2
+    - LD_LIBRARY_PATH: /opt/rohc/lib/:/opt/dpdk/${DPDK_VERSION}/lib/x86_64-linux-gnu/
+  shared_files:
+    - local_path: ${OCUDU_PATH}/build_retina/apps/gnb_split_7_2/gnb
+      remote_path: /usr/local/bin/gnb
+      is_executable: true
+
+- name: amarisoft-mme
+  type: 5gc
+  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  requirements:
+    cpu:
+      requests: 15%
+      limits: 15%
+    memory:
+      requests: 15%
+      limits: 15%
+    ephemeral-storage:
+      requests: 6G
+  resources:
+    - type: license
+      model: amarisoft-mme.*
+    - type: ru
+      model: uesim
+      dummy: true
