@@ -3,6 +3,6 @@
 
 cell_cfg:
   prach:
-    total_nof_ra_preambles: 48
+    total_nof_ra_preambles: 64
     nof_cb_preambles_per_ssb: 44 # or less, but multiple of 4
     cfra_enabled: true
