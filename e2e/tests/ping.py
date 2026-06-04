@@ -17,18 +17,15 @@ from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts, param
 from retina.protocol.base_pb2 import PLMN
-from retina.protocol.channel_emulator_pb2 import EphemerisInfoType, NtnScenarioDefinition, NtnScenarioType
+from retina.protocol.channel_emulator_pb2 import NtnScenarioDefinition
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import GNBStub
 from retina.protocol.ue_pb2_grpc import UEStub
 
 from .steps.configuration import (
-    _get_dl_arfcn,
-    _get_ul_arfcn,
     configure_test_parameters,
     get_minimum_sample_rate_for_bandwidth,
-    nr_arfcn_to_freq,
 )
 from .steps.stub import (
     get_ntn_configs,
@@ -616,63 +613,6 @@ def test_rf_does_not_crash(
             always_download_artifacts=True,
         )
     stop(ue_array=ue_4, gnb_array=[gnb], fivegc_array=[fivegc], retina_data=retina_data, log_search=False)
-
-
-@mark.parametrize(
-    "band, common_scs, bandwidth, enable_feeder_link",
-    (
-        param(256, 15, 5, False, id="band:%s-scs:%s-bandwidth:%s-fl:%s"),
-        param(256, 15, 5, True, id="band:%s-scs:%s-bandwidth:%s-fl:%s"),
-    ),
-)
-@mark.zmq_ntn
-# pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_ntn(
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    ue: UEStub,
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
-    channel_emulator: ChannelEmulatorStub,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    enable_feeder_link: bool,
-):
-    """
-    NTN ZMQ Pings
-    """
-    ntn_scenario_def = NtnScenarioDefinition()
-    ntn_scenario_def.scenario_type = NtnScenarioType.GEO
-    ntn_scenario_def.ephemeris_info_type = EphemerisInfoType.ECEF
-    ntn_scenario_def.min_sat_elevation_deg = 20
-    ntn_scenario_def.pass_start_offset_s = 10
-    ntn_scenario_def.delay_offset_us = 20
-    ntn_scenario_def.sample_rate = 5760000
-    ntn_scenario_def.enable_feeder_link = enable_feeder_link
-    ntn_scenario_def.enable_doppler = True
-    ntn_scenario_def.access_link_dl_freq_hz = nr_arfcn_to_freq(_get_dl_arfcn(band))
-    ntn_scenario_def.access_link_ul_freq_hz = nr_arfcn_to_freq(_get_ul_arfcn(band))
-    ntn_scenario_def.feeder_link_dl_freq_hz = nr_arfcn_to_freq(_get_dl_arfcn(band))
-    ntn_scenario_def.feeder_link_ul_freq_hz = nr_arfcn_to_freq(_get_ul_arfcn(band))
-
-    _ping(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        ue_array=[ue],
-        gnb=gnb,
-        fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=5760000,  # default from testbed
-        global_timing_advance=-1,
-        time_alignment_calibration="0",
-        warning_as_errors=False,
-        always_download_artifacts=True,
-        channel_emulator=channel_emulator,
-        ntn_scenario_def=ntn_scenario_def,
-    )
 
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments, too-many-locals

@@ -85,10 +85,6 @@ cu_cp_inactivity_timer: int = -1
 pucch_formats: str = "f1_and_f2"
 request_pdu_session_timeout: int = -1
 rrc_procedure_guard_time_ms: int = -1
-ta_target: float = 0
-ta_meas_slot_prohibit_period: int = -1
-ta_meas_slot_period: int = -1
-ta_cmd_offset_threshold: int = -1
 pdsch_interleaving_bundle_size: int = 0
 
 

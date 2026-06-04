@@ -13,7 +13,6 @@
 # - zmq_amariue_mme: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Amarisoft 5GC
 # - zmq_amariue_open5gs: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs
 # - zmq_srsue: srsUE + OCUDU gNB + Open5gs + Flexric
-# - zmq_ntn: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs + NTN Channel Emulator
 
 services:
   ocudu-builder:
@@ -84,7 +83,6 @@ services:
       - zmq_amariue_mme
       - zmq_amariue_open5gs
       - zmq_srsue
-      - zmq_ntn
       - launcher
     image: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
     build:
@@ -126,7 +124,6 @@ services:
       - zmq_amariue_mme
       - zmq_amariue_open5gs
       - zmq_srsue
-      - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/agent:${AGENT_OS_VERSION}
     build:
       context: ../
@@ -158,7 +155,6 @@ services:
       - all
       - zmq_amariue_mme
       - zmq_amariue_open5gs
-      - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
     build:
       context: ../images/amarisoftue
@@ -236,7 +232,6 @@ services:
       - zmq_amariue_mme
       - zmq_amariue_open5gs
       - zmq_srsue
-      - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
     build:
       context: ../images/ocudu
@@ -357,7 +352,6 @@ services:
       - all
       - zmq_amariue_open5gs
       - zmq_srsue
-      - zmq_ntn
     image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
     build:
       context: ../images/open5gs
@@ -442,29 +436,6 @@ services:
     networks:
       retina:
         ipv4_address: *amari5gc2_ip
-
-  ntn-channel-emulator:
-    restart: unless-stopped
-    container_name: ntn-channel-emulator
-    profiles:
-      - all
-      - zmq_ntn
-    image: ${RETINA_REGISTRY_URI}/ntn-channel-emulator:${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
-    build:
-      context: ../images/ntn-channel-emulator
-      args:
-        <<: *variables
-      additional_contexts:
-        agent: "service:agent-image"
-        wheelhouse: "service:wheelhouse"
-    environment:
-      RETINA_IP: &emulator_ip 172.20.0.80
-    networks:
-      retina:
-        ipv4_address: *emulator_ip
-    tmpfs: *agent_tmpfs
-    x-testbed:
-      type: channel-emulator
 
   flexric:
     restart: unless-stopped

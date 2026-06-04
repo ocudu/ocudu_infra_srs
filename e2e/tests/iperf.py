@@ -16,7 +16,7 @@ from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts, param
 from retina.protocol.base_pb2 import Metrics, PLMN
-from retina.protocol.channel_emulator_pb2 import EphemerisInfoType, NtnScenarioDefinition, NtnScenarioType
+from retina.protocol.channel_emulator_pb2 import NtnScenarioDefinition
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import GNBStub
@@ -25,16 +25,12 @@ from retina.protocol.ue_pb2 import IPerfDir, IPerfProto
 from retina.protocol.ue_pb2_grpc import UEStub
 
 from .steps.configuration import (
-    _get_dl_arfcn,
-    _get_ul_arfcn,
     configure_test_parameters,
     get_minimum_sample_rate_for_bandwidth,
-    nr_arfcn_to_freq,
 )
 from .steps.iperf_helpers import (
     assess_iperf_bitrate,
     get_maximum_throughput,
-    HIGH_BITRATE,
     LOW_BITRATE,
     MEDIUM_BITRATE,
     SHORT_DURATION,
@@ -172,88 +168,6 @@ def test_ric(
         pdsch_mcs_table="qam64",
         pusch_mcs_table="qam64",
         ric=ric,
-    )
-
-
-@mark.parametrize(
-    "direction",
-    (param(IPerfDir.BIDIRECTIONAL, id="bidirectional", marks=mark.bidirectional),),
-)
-@mark.parametrize(
-    "protocol",
-    (param(IPerfProto.UDP, id="udp", marks=mark.udp),),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth, enable_feeder_link",
-    (
-        param(256, 15, 5, False, id="band:%s-scs:%s-bandwidth:%s-fl:%s"),
-        param(256, 15, 5, True, id="band:%s-scs:%s-bandwidth:%s-fl:%s"),
-    ),
-)
-@mark.zmq_ntn
-# pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_ntn(
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
-    channel_emulator: ChannelEmulatorStub,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    enable_feeder_link: bool,
-    protocol: IPerfProto,
-    direction: IPerfDir,
-):
-    """
-    NTN ZMQ Iperf
-    """
-    ntn_scenario_def = NtnScenarioDefinition()
-    ntn_scenario_def.scenario_type = NtnScenarioType.GEO
-    ntn_scenario_def.ephemeris_info_type = EphemerisInfoType.ECEF
-    ntn_scenario_def.min_sat_elevation_deg = 20
-    ntn_scenario_def.pass_start_offset_s = 10
-    ntn_scenario_def.delay_offset_us = 20
-    ntn_scenario_def.sample_rate = 5760000
-    ntn_scenario_def.enable_feeder_link = enable_feeder_link
-    ntn_scenario_def.enable_doppler = True
-    ntn_scenario_def.access_link_dl_freq_hz = nr_arfcn_to_freq(_get_dl_arfcn(band))
-    ntn_scenario_def.access_link_ul_freq_hz = nr_arfcn_to_freq(_get_ul_arfcn(band))
-    ntn_scenario_def.feeder_link_dl_freq_hz = nr_arfcn_to_freq(_get_dl_arfcn(band))
-    ntn_scenario_def.feeder_link_ul_freq_hz = nr_arfcn_to_freq(_get_ul_arfcn(band))
-
-    # Define min DL/UL data rates to be achieved.
-    min_dl_bitrate = 0.5e6
-    min_ul_bitrate = 0.5e6
-
-    _iperf(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        ue_array=[ue],
-        gnb=gnb,
-        fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=5760000,
-        iperf_duration=SHORT_DURATION,
-        protocol=protocol,
-        bitrate=HIGH_BITRATE,
-        direction=direction,
-        global_timing_advance=-1,
-        time_alignment_calibration=0,
-        warning_as_errors=False,
-        always_download_artifacts=True,
-        common_search_space_enable=False,
-        prach_config_index=31,
-        pdsch_mcs_table="qam256",
-        pusch_mcs_table="qam256",
-        channel_emulator=channel_emulator,
-        ntn_scenario_def=ntn_scenario_def,
-        assess_bitrate=True,
-        min_dl_bitrate=min_dl_bitrate,
-        min_ul_bitrate=min_ul_bitrate,
     )
 
 

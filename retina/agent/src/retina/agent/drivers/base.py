@@ -30,7 +30,7 @@ from retina.agent.app.parameter_manager import set_parameter
 from retina.agent.app.resource_manager import ResourceManager
 from retina.agent.features.executor import Executor
 from retina.agent.templates import template_path
-from retina.agent.tools.time import now_timestamp_file
+from retina.agent.tools.time import now_timestamp_file, now_utc_timestamp
 
 try:
     from importlib.metadata import version
@@ -228,7 +228,11 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
                     content = tmp_file_descriptor.read()
             # Evaluate template
             file_content += (
-                Template(content).render(**values, report_folder=str(self.get_current_report_folder().resolve()))
+                Template(content).render(
+                    **values,
+                    report_folder=str(self.get_current_report_folder().resolve()),
+                    utc_timestamp=now_utc_timestamp(),
+                )
                 + os.linesep
             )
         # Remove multiple empty lines

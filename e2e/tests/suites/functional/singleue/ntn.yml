@@ -1,0 +1,169 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+geo_band_256_bw_5_fl_false_ping: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_ntn
+  ue:
+    config: [1cell_ntn.cfg, multiue_ping.cfg.jinja]
+    parameters: &base_ue_parameters
+      ntn_enable: true
+      band: 256
+      bandwidth: 5
+      dl_nr_arfcn: 437000
+      common_scs: 15
+      sample_rate: 5760000
+      ssb_nr_arfcn: 437090
+      as_release: 17
+      nof_sim_ues: 1
+      traffic_duration_sec: 100
+      base_power_on_time: 1
+
+      feeder_link: false
+      satellite: geo
+
+      ephemeris_format: orbital
+      gp_latitude: -2.32724563
+      gp_longitude: -151.397854351
+      gp_altitude: 1.0
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
+    parameters: &base_gnb_parameters
+      cfg_band: 256
+      cfg_bandwidth: 5
+      cfg_earfcn: 437000
+      cfg_common_scs: 15
+      sample_rate: 5760000
+      dl_freq: 2185000000.0
+      ul_freq: 1995000000.0
+      time_alignment_calibration: -576
+      zero_correlation_zone: 0
+      rrc_procedure_guard_time_ms: 12800
+      warning_allowlist:
+        - Slot point to time point mapping not available.
+
+      feeder_link: false
+      cell_specific_koffset: 240
+      ta_meas_slot_prohibit_period: 250
+
+      ephemeris_format: orbital
+      eccentricity: 0.0002596053925158607
+      inclination: 0.1319312264847397
+      longitude: 0.18827186416253533
+      mean_anomaly: 5.108532741837221
+      periapsis: 4.630205380656405
+      semi_major_axis: 42265116.30346734
+  core:
+    config: [baseline.cfg]
+  feature_ids: [SRS]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_reestablishments_eq: 0
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.nof_ko_dl_le: 5
+    du.nof_ko_ul_le: 1
+
+geo_band_256_bw_5_fl_true_ping:
+  <<: *base_config
+  ue:
+    config: [1cell_ntn.cfg, multiue_ping.cfg.jinja]
+    parameters:
+      <<: *base_ue_parameters
+      feeder_link: true
+      satellite: geo
+
+      ephemeris_format: orbital
+      gp_latitude: -2.327101395
+      gp_longitude: -106.896958167
+      gp_altitude: 1.0
+      fp_latitude: -2.327101395
+      fp_longitude: -106.896958167
+      fp_altitude: 1.0
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
+    parameters:
+      <<: *base_gnb_parameters
+      feeder_link: true
+      ta_common: 239391.90
+      cell_specific_koffset: 480
+      ta_meas_slot_prohibit_period: 490
+
+      gw_latitude: -2.3271013947022157
+      gw_longitude: -106.89695816700173
+      gw_altitude: 1.0
+
+      ephemeris_format: orbital
+      eccentricity: 0.0002596177199746916
+      inclination: 0.1319550252630127
+      longitude: 0.9650375632437326
+      mean_anomaly: 5.108818072792149
+      periapsis: 4.629841842546964
+      semi_major_axis: 42265116.31380637
+
+leo_band_256_bw_5_fl_false_ping:
+  <<: *base_config
+  ue:
+    config: [1cell_ntn.cfg, multiue_ping.cfg.jinja]
+    parameters:
+      <<: *base_ue_parameters
+      feeder_link: false
+      satellite: leo
+
+      ephemeris_format: orbital
+      gp_latitude: 7.853110757
+      gp_longitude: -96.817254023
+      gp_altitude: 1
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
+    parameters:
+      <<: *base_gnb_parameters
+      feeder_link: false
+      cell_specific_koffset: 8
+      ta_meas_slot_prohibit_period: 18
+
+      ephemeris_format: orbital
+      eccentricity: 0.00119596362232265
+      inclination: 0.9295784053909042
+      longitude: 4.50199405531991
+      mean_anomaly: 5.4284631240150425
+      periapsis: 0.8582607015966518
+      semi_major_axis: 6877288.14614692
+
+leo_band_256_bw_5_fl_true_ping:
+  <<: *base_config
+  ue:
+    config: [1cell_ntn.cfg, multiue_ping.cfg.jinja]
+    parameters:
+      <<: *base_ue_parameters
+      feeder_link: true
+      satellite: leo
+
+      ephemeris_format: orbital
+      gp_latitude: 7.853127064
+      gp_longitude: -41.916586438
+      gp_altitude: 1
+      fp_latitude: 7.853127064
+      fp_longitude: -41.916586438
+      fp_altitude: 1
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
+    parameters:
+      <<: *base_gnb_parameters
+      feeder_link: true
+      ta_common: 7874.9497
+      cell_specific_koffset: 16
+      ta_meas_slot_prohibit_period: 26
+
+      gw_altitude: 1.0
+      gw_latitude: 7.853127063969279
+      gw_longitude: -41.916586438365854
+
+      ephemeris_format: orbital
+      eccentricity: 0.0011959639962285152
+      inclination: 0.9295784053900794
+      longitude: 5.460191249899703
+      mean_anomaly: 5.428463205785937
+      periapsis: 0.8582609750544351
+      semi_major_axis: 6877288.146136846

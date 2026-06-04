@@ -384,18 +384,6 @@ gnb 1UE:
   variables:
     MARKERS: zmq_single_ue
 
-gnb 1UE ntn:
-  extends: .amarisoft_zmq
-  rules:
-    - if: $NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY && $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  variables:
-    TESTBED: zmq_ntn
-    MARKERS: zmq_ntn
-  parallel:
-    matrix:
-      - E2E_FILE_OR_DIR: tests/ping.py
-      - E2E_FILE_OR_DIR: tests/iperf.py
-
 gnb 4UE:
   extends: .amarisoft_zmq
   variables:

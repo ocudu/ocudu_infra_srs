@@ -113,7 +113,6 @@ Currently there are five available testbeds:
 - zmq_amariue_mme: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Amarisoft 5GC
 - zmq_amariue_open5gs: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs
 - zmq_srsue: srsUE + OCUDU gNB + Open5gs + Flexric
-- zmq_ntn: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs + NTN Channel Emulator
 
 ### Testbed file
 

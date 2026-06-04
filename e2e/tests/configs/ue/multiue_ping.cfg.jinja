@@ -3,15 +3,16 @@ SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 #}
 
-{# Set simulation parameters here #} 
+{# Set simulation parameters here #}
 {%- set base_imsi = 1010123456789 %}
 {%- set base_K = "00112233445566778899aabbccddeeff" | int(base=16) %}
-{%- set base_power_on = 0 %}                 {# Time at which first UE is powered on #}  
-{%- set power_on_increment = 0.1 %}          {# Time diff (to prev UE) at which next UE is powered on #}
-{%- set traffic_stop_to_dereg_delay = 20 %}  {# Time from traffic stop to deregistration #}
-{%- set dereg_to_pw_off_delay = 5 %}         {# Time from deregistration to power off #}
+{%- set base_opc = "63bfa50ee6523365ff14c1f45f88737d" | int(base=16) %}
+{%- set base_power_on = base_power_on_time | default(0) %} {# Time at which first UE is powered on #}
+{%- set power_on_increment = 0.1 %}                        {# Time diff (to prev UE) at which next UE is powered on #}
+{%- set traffic_stop_to_dereg_delay = 20 %}                {# Time from traffic stop to deregistration #}
+{%- set dereg_to_pw_off_delay = 5 %}                       {# Time from deregistration to power off #}
 
-{# DERIVED PARAMETRS: DO NOT CHANGE THEM #} 
+{# DERIVED PARAMETRS: DO NOT CHANGE THEM #}
   ue_list: [
 {%- for i in range(nof_sim_ues) %}
 {%- set power_on = base_power_on + i * power_on_increment %}
@@ -20,7 +21,7 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
   {%- set power_on_to_traffic_delay = 1 %}
   {%- set traffic_start = power_on + power_on_to_traffic_delay %}
 {%- else %}
-  {%- set power_on_to_traffic_delay = 10 %} 
+  {%- set power_on_to_traffic_delay = 10 %}
   {%- set traffic_start = base_power_on + nof_sim_ues * power_on_increment + power_on_to_traffic_delay %}
 {%- endif %}
 {%- set traffic_stop = base_power_on + nof_sim_ues * power_on_increment + power_on_to_traffic_delay + traffic_duration_sec %}
@@ -33,7 +34,7 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
       imsi: "00{{ base_imsi + i }}",
       K: "{{ "%032x" | format(base_K + i) }}",
       apn: "{{apn}}",
-      as_release: 15,
+      as_release: {{as_release|default(15)}},
       ue_category: "nr",
       power_control_enabled: false,
       position: [100, 0],
@@ -48,7 +49,7 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
         {
           event: "power_on",
           start_time: {{ power_on }},
-        },      
+        },
         {
           start_time: {{ traffic_start }},
           end_time: {{ traffic_stop }},
@@ -56,7 +57,7 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
           payload_len: 1000,
           delay: 1,
           event: "ping"
-        },    
+        },
         {
           event: "deregister",
           start_time: {{ dereg_time }},

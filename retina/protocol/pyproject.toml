@@ -74,7 +74,7 @@ show_missing = true
 legacy_tox_ini = """
 [tox]
 minversion = 4.4.0
-envlist = 
+envlist =
   grpc
   format
   lint
@@ -97,7 +97,7 @@ deps =
   requests <= 2.33.1
 commands_pre =
   python3 scripts/download_protoc_gen.py
-commands =    
+commands =
   python -m grpc_tools.protoc -I src --python_out=src --grpc_python_out=src \
     --mypy_out=src --doc_out=. --doc_opt=scripts/docusaurus.mdx.tmpl,README.mdx \
     --plugin=protoc-gen-doc=./.protoc-gen-doc/protoc-gen-doc \
@@ -105,7 +105,7 @@ commands =
     src/retina/protocol/ue.proto \
     src/retina/protocol/gnb.proto \
     src/retina/protocol/fivegc.proto \
-    src/retina/protocol/ric.proto \ 
+    src/retina/protocol/ric.proto \
     src/retina/protocol/channel_emulator.proto
   python scripts/add_copyright_header.py
 
@@ -126,9 +126,9 @@ commands =
 
 [testenv:type]
 skip_install = true
-deps = 
+deps =
   mypy <= 1.20.0
-commands = 
+commands =
   mypy src
 
 [testenv:unittest]

@@ -6,13 +6,19 @@ Time related utilities
 """
 
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 
 def now_timestamp_file() -> str:
     """Get current timestamp in a format valid for file and folder names"""
     return datetime.now().astimezone().strftime("%Y-%m-%d_%H-%M-%S")
+
+
+def now_utc_timestamp() -> str:
+    """Get current UTC timestamp"""
+    now = datetime.now(timezone.utc)
+    return now.strftime("%Y-%m-%dT%H:%M:%S.") + f"{now.microsecond // 1000:03d}"
 
 
 class TimeoutHandler:

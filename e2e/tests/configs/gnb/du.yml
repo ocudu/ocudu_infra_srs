@@ -21,7 +21,7 @@ cell_cfg:
     dmrs_additional_position: {{dmrs_additional_pos|default(2)}}
     mcs_table: qam256
   prach:
-    zero_correlation_zone: 3
+    zero_correlation_zone: {{zero_correlation_zone|default(3)}}
 
 expert_phy:
   pusch_channel_estimator_cfo_compensation: false
