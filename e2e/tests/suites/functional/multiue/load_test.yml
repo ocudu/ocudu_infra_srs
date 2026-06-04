@@ -15,6 +15,7 @@ baseline: &base_config
       brate_ul: 350000
       traffic_duration_sec: 180
       log_level: "error"
+      pdcch_decode_threshold: 0.5
   gnb:
     config: [cu_cp.yml, du.yml, 512ue.yml, tdd_default.yml]
     parameters:
