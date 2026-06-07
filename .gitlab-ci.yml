@@ -186,7 +186,7 @@ include:
 variables:
   RETINA_REGISTRY_URI: ${CI_REGISTRY_IMAGE}/retina
   RETINA_PYPI_INDEX: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
-  AMARISOFT_VERSION: "2026-05-13"
+  AMARISOFT_VERSION: "2026-06-03"
   # SKIP_RETINA_CI: "true" # Define this variable to any value to skip retina ci/cd (here or in project settings)
 
 headers:
