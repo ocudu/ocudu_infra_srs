@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cu_cp:
+  mobility:
+    trigger_cho_on_ue_setup: true
+    cho_timeout_ms: 60000
+    trigger_handover_from_measurements: false
+    cells:
+      # Own gNB1 cell (PCI and SSB provided over F1)
+      - nr_cell_id: 0x19B0
+        ncells:
+          - nr_cell_id: 0x19C0
+            report_configs: [2]
+      # External gNB2 cell (SSB/PCI provided here)
+      - nr_cell_id: 0x19C0
+        gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
+        plmn: "00101"
+        tac: 7
+        pci: 2
+        ssb_arfcn: {{ext_ssb_arfcn|default(624000)}}
+        band: {{ext_band|default(78)}}
+        ssb_scs: {{ext_ssb_scs|default(30)}}
+        ssb_period: 10
+        ssb_offset: 0
+        ssb_duration: 5
+        ncells:
+          - nr_cell_id: 0x19B0
+            report_configs: [2]
+    report_configs:
+      - report_cfg_id: 1
+        report_type: periodical
+        report_interval_ms: 480
+      - report_cfg_id: 2
+        report_type: cond_trigger
+        event_triggered_report_type: a3
+        meas_trigger_quantity: rsrp
+        meas_trigger_quantity_offset_db: 3
+        hysteresis_db: 0
+        time_to_trigger_ms: 100

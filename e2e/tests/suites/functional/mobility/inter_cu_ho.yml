@@ -254,3 +254,41 @@ xn_ho:
     du.nof_error_indications_le: 0
     du.errors_le: 0
     du.warnings_le: 0
+
+# tid1.2.15: Xn CHO (2 gNBs x 1 cell each, CHO over XN interface)
+xn_cho:
+  <<: *base_config
+  gnb:
+    items:
+      - config: [cu_cp.yml, xnap.yml, xn_cho_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_id: 411
+          ran_node_name_cfg: "ocudu01"
+          pci_cfg: 1
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 0
+          warning_allowlist:
+            - Failed to connect to XN-C peer
+      - config: [cu_cp.yml, xnap.yml, xn_cho_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_id: 412
+          ran_node_name_cfg: "ocudu02"
+          pci_cfg: 2
+          nof_antennas_dl: 1
+          nof_antennas_ul: 1
+          cell_offset: 1
+  feature_ids: [MVP-FUNC-MOB-3-a]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 50
+    du.nof_ko_ul_le: 50
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    cu_cp.nof_xn_handover_request_acknowledge_geq: 40 # double of handovers as each message is logged in both pcaps
+    cu_cp.nof_sn_status_transfer_geq: 40 # double of handovers as each message is logged in both pcaps
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
