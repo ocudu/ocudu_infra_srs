@@ -124,6 +124,7 @@ def test_zmq(
         always_download_artifacts=False,
         ue_stop_timeout=45,
         ue_settle_time=45,
+        pdcch_decode_opt_threshold=0.5,
     )
 
 
@@ -150,6 +151,7 @@ def _attach_and_detach_multi_ues(
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     ue_stop_timeout: int = 30,
     ue_settle_time: int = 0,
+    pdcch_decode_opt_threshold: float = 0,
 ):
     logging.info("Attach / Detach Test")
 
@@ -162,6 +164,7 @@ def _attach_and_detach_multi_ues(
         sample_rate=sample_rate,
         global_timing_advance=global_timing_advance,
         time_alignment_calibration=time_alignment_calibration,
+        pdcch_decode_opt_threshold=pdcch_decode_opt_threshold,
     )
     configure_artifacts(
         retina_data=retina_data,
