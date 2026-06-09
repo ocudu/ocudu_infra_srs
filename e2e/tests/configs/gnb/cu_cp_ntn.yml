@@ -8,4 +8,4 @@ cu_cp:
     rrc_procedure_guard_time_ms: {{rrc_procedure_guard_time_ms|default(12800)}}
 
 log:
-  ntn_level: debug
+  ntn_level: {{log_level}}

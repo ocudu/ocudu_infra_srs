@@ -29,6 +29,7 @@ geo_band_256_bw_5_fl_false_ping: &base_config
   gnb:
     config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
     parameters: &base_gnb_parameters
+      log_ntn_level: debug
       cfg_band: 256
       cfg_bandwidth: 5
       cfg_earfcn: 437000
@@ -39,6 +40,8 @@ geo_band_256_bw_5_fl_false_ping: &base_config
       time_alignment_calibration: -576
       zero_correlation_zone: 0
       rrc_procedure_guard_time_ms: 12800
+      dl_harq_disabled: false
+      ul_harq_disabled: false
       warning_allowlist:
         - Slot point to time point mapping not available.
 
@@ -64,6 +67,7 @@ geo_band_256_bw_5_fl_false_ping: &base_config
     du.errors_le: 0
     du.nof_ko_dl_le: 5
     du.nof_ko_ul_le: 1
+    core.nof_pdu_session_establishment_accept_eq: 1
 
 geo_band_256_bw_5_fl_true_ping:
   <<: *base_config
@@ -167,3 +171,67 @@ leo_band_256_bw_5_fl_true_ping:
       mean_anomaly: 5.428463205785937
       periapsis: 0.8582609750544351
       semi_major_axis: 6877288.146136846
+
+geo_fl_false_harq_enabled_iperf:
+  <<: *base_config
+  ue:
+    config: [1cell_ntn.cfg, multiue_udp_bi.cfg.jinja]
+    parameters:
+      <<: *base_ue_parameters
+      log_level: warning
+      traffic_type: "udp_bi"
+      brate_dl: 50.0e+6
+      brate_ul: 50.0e+6
+      staggered_traffic_start: true
+      traffic_duration_sec: 50
+      traffic_stop_to_dereg_delay_time: 1
+      dereg_to_pw_off_delay_time: 1
+      quit_delay_time: 1
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
+    parameters:
+      <<: *base_gnb_parameters
+      log_level: warning
+      time_multiplier: 0.99
+  core:
+    config: [baseline.cfg]
+  criteria:
+    du.dl_bitrate_gt: 1.0e+6
+    du.ul_bitrate_gt: 1.0e+6
+    du.nof_reestablishments_eq: 0
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+
+geo_fl_false_harq_disabled_iperf:
+  <<: *base_config
+  ue:
+    config: [1cell_ntn.cfg, multiue_udp_bi.cfg.jinja]
+    parameters:
+      <<: *base_ue_parameters
+      log_level: warning
+      traffic_type: "udp_bi"
+      brate_dl: 50.0e+6
+      brate_ul: 50.0e+6
+      staggered_traffic_start: true
+      traffic_duration_sec: 50
+      traffic_stop_to_dereg_delay_time: 1
+      dereg_to_pw_off_delay_time: 1
+      quit_delay_time: 1
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
+    parameters:
+      <<: *base_gnb_parameters
+      log_level: warning
+      ul_harq_disabled: true
+      dl_harq_disabled: true
+      time_multiplier: 0.99
+  core:
+    config: [baseline.cfg]
+  criteria:
+    du.dl_bitrate_gt: 18.0e+6
+    du.ul_bitrate_gt: 18.0e+6
+    du.nof_reestablishments_eq: 0
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    core.nof_pdu_session_establishment_accept_eq: 1

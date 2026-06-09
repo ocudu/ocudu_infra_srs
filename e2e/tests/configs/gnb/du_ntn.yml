@@ -13,14 +13,18 @@ cell_cfg:
       ss2_n_candidates: [0, 0, 3, 0, 0]
   pdsch:
     mcs_table: qam256
+    harq_feedback_disabled: {{dl_harq_disabled|default(false)|lower}}
+    # {% if not dl_harq_disabled %}
     nof_harqs: 32
     max_nof_harq_retxs: 4
-    harq_feedback_disabled: false
+    # {% endif %}
   pusch:
     mcs_table: qam256
+    harq_mode_b: {{ul_harq_disabled|default(false)|lower}}
+    # {% if not ul_harq_disabled %}
     nof_harqs: 32
     max_nof_harq_retxs: 4
-    harq_mode_b: false
+    # {% endif %}
   pucch:
     sr_period_ms: 80
     f1_nof_cyclic_shifts: 6

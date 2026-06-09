@@ -6,7 +6,6 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 {# Set simulation parameters here #}
 {%- set base_imsi = 1010123456789 %}
 {%- set base_K = "00112233445566778899aabbccddeeff" | int(base=16) %}
-{%- set base_opc = "63bfa50ee6523365ff14c1f45f88737d" | int(base=16) %}
 {%- set base_power_on = base_power_on_time | default(0) %} {# Time at which first UE is powered on #}
 {%- set power_on_increment = 0.1 %}                        {# Time diff (to prev UE) at which next UE is powered on #}
 {%- set traffic_stop_to_dereg_delay = 20 %}                {# Time from traffic stop to deregistration #}
