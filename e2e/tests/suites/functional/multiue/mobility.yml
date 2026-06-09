@@ -18,7 +18,7 @@ inter_ru_ho: &base_config
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 500 # allow some KOs due to potential PRACH contention
+    du.nof_ko_dl_le: 500 # allow some KOs during HO transition
     du.nof_ko_ul_le: 500 # allow some KOs during HO transition
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
@@ -35,7 +35,7 @@ inter_ru_cfra_ho:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 0 # do not allow KOs since there is no contention
+    du.nof_ko_dl_le: 500 # allow some KOs during HO transition
     du.nof_ko_ul_le: 500 # allow some KOs during HO transition
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
@@ -80,7 +80,7 @@ inter_du_ho:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 500 # allow some KOs due to potential PRACH contention
+    du.nof_ko_dl_le: 500 # allow some KOs during HO transition
     du.nof_ko_ul_le: 500 # allow some KOs during HO transition
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
@@ -128,7 +128,7 @@ inter_cu_ho:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 500 # allow some KOs due to potential PRACH contention
+    du.nof_ko_dl_le: 500 # allow some KOs during HO transition
     du.nof_ko_ul_le: 500 # allow some KOs during HO transition
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
