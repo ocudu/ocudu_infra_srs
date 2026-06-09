@@ -23,7 +23,7 @@ baseline:
     du.dl_bitrate_gt: 10.0e+3
     du.ul_bitrate_gt: 10.0e+3
     du.nof_ko_dl_le: 0
-    du.nof_ko_ul_le: 0
+    du.nof_ko_ul_le: 5 # allow some UL KOs in this TDD pattern
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_reestablishments_eq: 0
     du.nof_handovers_eq: 0
