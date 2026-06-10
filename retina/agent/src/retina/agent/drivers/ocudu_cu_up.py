@@ -5,6 +5,7 @@
 OCUDU CU-UP Agent
 """
 
+import logging
 import socket
 from typing import Any, Dict, Sequence
 
@@ -80,8 +81,6 @@ class OcuduCuUp(CUUPDriver, BaseDriverSutHandler):
                 self.get_filepath_in_report_folder(self.CUUP_LOG_FILENAME),
             )
 
-            cuup_def = self.GetDefinition(Empty(), context)
-
             cuup_conf_file = self._render(
                 filename=self.CUUP_CONF_FINAL_NAME,
                 templates={
@@ -127,17 +126,19 @@ class OcuduCuUp(CUUPDriver, BaseDriverSutHandler):
             )
 
             if not request.start_info.dryrun:
-                with notify_grpc_exception(context):
-                    timeout = request.start_info.timeout if request.start_info.timeout else self.CUUP_START_UP_TIMEOUT
-                    timeout_handler = TimeoutHandler(
-                        timeout,
-                        msg="Timeout reached while waiting for CU-UP to listen in "
-                        f"{cuup_def.cuup_ip}:{cuup_def.e1_port}.",
+                try:
+                    self.read_from_log(
+                        (r"==== CU-UP started ===",),
+                        True,
+                        timeout=(
+                            request.start_info.timeout if request.start_info.timeout else self.CUUP_START_UP_TIMEOUT
+                        ),
                     )
-                    while timeout_handler.not_reached():
-                        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-                            if sock.connect_ex((cuup_def.cuup_ip, cuup_def.e1_port)) == 0:
-                                break
+                except TimeoutError as err:
+                    logging.warning("Timeout reached while looking for CU-UP starting reference.")
+                    if not self._is_alive:
+                        with notify_grpc_exception(context):
+                            raise err from None
 
         return Empty()
 

@@ -5,7 +5,7 @@
 OCUDU CU-CP Agent
 """
 
-import socket
+import logging
 from pathlib import Path
 from typing import Any, Dict, Sequence, Tuple
 
@@ -46,7 +46,6 @@ from retina.agent.features.pcap.xnap import (
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
-from retina.agent.tools.time import TimeoutHandler
 
 _NGAP_PCAP_ANALYZER_ARRAY = (
     ECidMeasurementInitiationRequestAnalyzer,
@@ -133,8 +132,6 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
                 self.get_filepath_in_report_folder(self.CUCP_LOG_FILENAME),
             )
 
-            cucp_def = self.GetDefinition(Empty(), context)
-
             cucp_conf_file = self._render(
                 filename=self.CUCP_CONF_FINAL_NAME,
                 templates={
@@ -166,17 +163,19 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
             )
 
             if not request.start_info.dryrun:
-                with notify_grpc_exception(context):
-                    timeout = request.start_info.timeout if request.start_info.timeout else self.CUCP_START_UP_TIMEOUT
-                    timeout_handler = TimeoutHandler(
-                        timeout,
-                        msg="Timeout reached while waiting for CU-CP to listen in "
-                        f"{cucp_def.cucp_ip}:{cucp_def.cucp_port}.",
+                try:
+                    self.read_from_log(
+                        (r"==== CU-CP started ===",),
+                        True,
+                        timeout=(
+                            request.start_info.timeout if request.start_info.timeout else self.CUCP_START_UP_TIMEOUT
+                        ),
                     )
-                    while timeout_handler.not_reached():
-                        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-                            if sock.connect_ex((cucp_def.cucp_ip, cucp_def.cucp_port)) == 0:
-                                break
+                except TimeoutError as err:
+                    logging.warning("Timeout reached while looking for CU-CP starting reference.")
+                    if not self._is_alive:
+                        with notify_grpc_exception(context):
+                            raise err from None
 
         return Empty()
 

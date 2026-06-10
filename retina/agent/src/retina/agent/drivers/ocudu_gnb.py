@@ -186,7 +186,7 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
                 try:
                     self.read_from_log(
                         (
-                            r"gNodeB started",
+                            r"==== gNB started ===",
                             r"Lower PHY started successfully",
                             r"Cell pci=",
                         ),
