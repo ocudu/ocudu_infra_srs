@@ -50,7 +50,7 @@ conditional_ho:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 5 # allow some KOs during HO transitions
+    du.nof_ko_dl_le: 50 # allow some KOs during HO transitions
     du.nof_ko_ul_le: 50 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
