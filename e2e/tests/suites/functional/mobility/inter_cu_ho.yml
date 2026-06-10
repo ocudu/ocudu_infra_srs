@@ -278,7 +278,7 @@ xn_cho:
           nof_antennas_dl: 1
           nof_antennas_ul: 1
           cell_offset: 1
-  feature_ids: [MVP-FUNC-MOB-3-a]
+  feature_ids: [MVP-FUNC-MOB-3]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
