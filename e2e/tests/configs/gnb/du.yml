@@ -25,6 +25,8 @@ cell_cfg:
 
 expert_phy:
   pusch_channel_estimator_cfo_compensation: false
+  pusch_dec_max_iterations: 12
+  pusch_channel_estimator_td_strategy: interpolate
 
 pcap:
   rlc_enable: true
