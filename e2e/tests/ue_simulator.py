@@ -183,6 +183,7 @@ def _ue_simulator(
         gnb_array=gnb_array,
         du_array=du_array,
         fivegc_array=fivegc_array,
+        gnb_startup_timeout=3,
     )
 
     if gnb_array:
