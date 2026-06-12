@@ -119,7 +119,7 @@ Currently there are five available testbeds:
 You can generate the testbed by running the script with the same profile:
 
 ```bash
-python3 generate_testbed.py --profile zmq_amariue
+python3 generate_testbed.py --profile zmq_amariue_mme
 ```
 
 this will generate a `testbed.yml` file in the scripts folder. Inside the launcher container, it will be mapped into `/workdir/retina/_scripts/testbed.yml`
@@ -137,7 +137,7 @@ export AMARISOFT_MME_LICENSE_TAG=your_mme_tag
 ```
 
 ```bash
-docker compose --profile zmq_amariue up --remove-orphans
+docker compose --profile zmq_amariue_mme up --remove-orphans
 ```
 
 The console output should be similar to:
