@@ -264,6 +264,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                         if testbed_defaults.type == "ru"
                         else f"sample_rate: {sample_rate / 1000000}"
                     ),
+                    # Sim event helper
+                    "start_time": 5 if testbed_defaults.type == "ru" else 0,
                 },
             )
 
