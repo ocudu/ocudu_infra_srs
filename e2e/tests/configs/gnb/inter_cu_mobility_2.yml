@@ -20,9 +20,9 @@ cu_cp:
         plmn: "00101"
         tac: 7
         pci: 1
-        ssb_arfcn: 624000
-        band: 78
-        ssb_scs: 30
+        ssb_arfcn: {{ext_ssb_arfcn|default(624000)}}
+        band: {{ext_band|default(78)}}
+        ssb_scs: {{ext_ssb_scs|default(30)}}
         ssb_period: 10
         ssb_offset: 0
         ssb_duration: 5

@@ -43,7 +43,7 @@ inter_ru_cfra_ho:
     all.errors_le: 0
     all.warnings_le: 0
 
-# tid1.3.4: Handover stability
+# Handover stability
 inter_du_ho:
   template: ue_simulator.test_cu_2du
   request: zmq_1cu2du

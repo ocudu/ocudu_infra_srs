@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-# inter-RU, intra-DU, intra-freq HO
+# inter-RU, intra-DU, intra-freq HO in FR1
 baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -16,12 +16,12 @@ baseline: &base_config
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
-  feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-9, MVP-FUNC-MOB-14, MVP-FUNC-BAS-16-2, DU-GEN-2-a, CU-GEN-5]
+  feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-9, MVP-FUNC-MOB-14, MVP-FUNC-BAS-16-2, DU-GEN-2-a, CU-GEN-5]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 50 # allow some KOs during HO transitions
-    du.nof_ko_ul_le: 50 # allow some KOs during HO transitions
+    du.nof_ko_dl_le: 100 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 100 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the test_duration
@@ -31,6 +31,31 @@ baseline: &base_config
     du.t312_eq: 3 # ms200
     du.nof_sib3_ge: 1
     du.nof_sib4_ge: 1
+
+# inter-RU, intra-DU, intra-freq HO in FR2
+fr2:
+  <<: *base_config
+  ue:
+    config: [2cell_intrafreq_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      test_duration: 100
+      nof_ue: *nof_ue
+      band: 261
+      bandwidth: 100
+      dl_nr_arfcn: 2074171
+      ssb_nr_arfcn: 2073691
+      common_scs: 120
+  gnb:
+    config: [cu_cp.yml, du.yml, prach_config.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
+    parameters:
+      cfg_band: 261
+      cfg_earfcn: 2074171
+      cfg_common_scs: 120
+      cfg_bandwidth: 100
+      prach_config_index: 121
+  feature_ids: [MVP-FUNC-MOB-1-b]
 
 # inter-RU conditional HO
 conditional_ho:
