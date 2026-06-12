@@ -564,9 +564,6 @@ def test_ping_s72_fr2(
         always_download_artifacts=True,
         warning_as_errors=True,
         post_command=("", "expert_execution threads ofh --enable_busy_waiting=true"),
-        warning_allowlist=[
-            "missed incoming User-Plane PRACH messages",
-        ],
     )
 
 

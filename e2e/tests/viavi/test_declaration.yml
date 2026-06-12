@@ -96,7 +96,6 @@ tests:
       all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist: &base_warning_allowlist
-      - missed incoming User-Plane PRACH messages
       - Tracing thread cannot keep up
 
   - id: "1UE ideal UDP downlink"
@@ -195,7 +194,6 @@ tests:
       all.warnings_le: 0
       viavi.procedure_table_eq: 0
     warning_allowlist:
-      - missed incoming User-Plane PRACH messages
       - missed incoming User-Plane uplink messages for slot
       - Tracing thread cannot keep up
 

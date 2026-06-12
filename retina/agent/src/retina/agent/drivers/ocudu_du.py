@@ -413,6 +413,8 @@ OCUDU_DU_WARNING_BODY: str = (
     r"(?!.*Real-time failure in RF: late)"
     r"(?!.*sysfs is not available.)"
     r"(?!.*RAPL MSR interface is not available.)"
+    r"(?!.*missed incoming User-Plane PRACH messages for slot.)"
+    # PRACH U-Plane messages are missed if the UE disconnects before the GNB
 )
 OCUDU_WERROR_FOOTER: str = r".*$"
 OCUDU_ERROR_REGEX: str = r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
