@@ -77,7 +77,6 @@ def main():
     srsue_version = containers_vars["SRSUE_VERSION"]
     open5gs_version = containers_vars["OPEN5GS_VERSION"]
     flexric_version = containers_vars["FLEXRIC_VERSION"]
-    ntn_channel_emulator_version = containers_vars["NTN_CHANNEL_EMULATOR_VERSION"]
 
     ocudu_vars = retina_ci_data["retina containers [ocudu]"]["variables"]
     builder_image = OCUDU_REGISTRY_URI + "/" + ocudu_vars["BUILDER_IMAGE_NAME"]
@@ -108,7 +107,6 @@ def main():
         "SRSUE_VERSION": srsue_version,
         "OPEN5GS_VERSION": open5gs_version,
         "FLEXRIC_VERSION": flexric_version,
-        "NTN_CHANNEL_EMULATOR_VERSION": ntn_channel_emulator_version,
         "CONTAINER_PATH": CONTAINER_PATH,
         "OCUDU_PATH": str(ocudu_path),
         "AMARISOFT_PATH": str(amari_path),

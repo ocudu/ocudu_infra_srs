@@ -10,7 +10,6 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 import builtins
 import google.protobuf.descriptor
-import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
 import retina.protocol.base_pb2
 import sys
@@ -23,269 +22,6 @@ else:
 
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
-class _NtnScenarioType:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
-
-class _NtnScenarioTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_NtnScenarioType.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
-    GEO: _NtnScenarioType.ValueType  # 0
-    MEO: _NtnScenarioType.ValueType  # 1
-    LEO: _NtnScenarioType.ValueType  # 2
-
-class NtnScenarioType(_NtnScenarioType, metaclass=_NtnScenarioTypeEnumTypeWrapper):
-    """NTN Channel Emulator Messages"""
-
-GEO: NtnScenarioType.ValueType  # 0
-MEO: NtnScenarioType.ValueType  # 1
-LEO: NtnScenarioType.ValueType  # 2
-Global___NtnScenarioType: typing_extensions.TypeAlias = NtnScenarioType
-
-class _EphemerisInfoType:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
-
-class _EphemerisInfoTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_EphemerisInfoType.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
-    ECEF: _EphemerisInfoType.ValueType  # 0
-    ORBITAL: _EphemerisInfoType.ValueType  # 1
-
-class EphemerisInfoType(_EphemerisInfoType, metaclass=_EphemerisInfoTypeEnumTypeWrapper): ...
-
-ECEF: EphemerisInfoType.ValueType  # 0
-ORBITAL: EphemerisInfoType.ValueType  # 1
-Global___EphemerisInfoType: typing_extensions.TypeAlias = EphemerisInfoType
-
-@typing.final
-class NtnScenarioDefinition(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    SCENARIO_TYPE_FIELD_NUMBER: builtins.int
-    EPHEMERIS_INFO_TYPE_FIELD_NUMBER: builtins.int
-    MIN_SAT_ELEVATION_DEG_FIELD_NUMBER: builtins.int
-    PASS_START_OFFSET_S_FIELD_NUMBER: builtins.int
-    ACCESS_LINK_DL_FREQ_HZ_FIELD_NUMBER: builtins.int
-    ACCESS_LINK_UL_FREQ_HZ_FIELD_NUMBER: builtins.int
-    ENABLE_FEEDER_LINK_FIELD_NUMBER: builtins.int
-    FEEDER_LINK_DL_FREQ_HZ_FIELD_NUMBER: builtins.int
-    FEEDER_LINK_UL_FREQ_HZ_FIELD_NUMBER: builtins.int
-    SAMPLE_RATE_FIELD_NUMBER: builtins.int
-    ENABLE_DOPPLER_FIELD_NUMBER: builtins.int
-    DELAY_OFFSET_US_FIELD_NUMBER: builtins.int
-    scenario_type: Global___NtnScenarioType.ValueType
-    ephemeris_info_type: Global___EphemerisInfoType.ValueType
-    min_sat_elevation_deg: builtins.int
-    pass_start_offset_s: builtins.int
-    access_link_dl_freq_hz: builtins.int
-    access_link_ul_freq_hz: builtins.int
-    enable_feeder_link: builtins.bool
-    feeder_link_dl_freq_hz: builtins.int
-    feeder_link_ul_freq_hz: builtins.int
-    sample_rate: builtins.int
-    enable_doppler: builtins.bool
-    delay_offset_us: builtins.int
-    def __init__(
-        self,
-        *,
-        scenario_type: Global___NtnScenarioType.ValueType = ...,
-        ephemeris_info_type: Global___EphemerisInfoType.ValueType = ...,
-        min_sat_elevation_deg: builtins.int = ...,
-        pass_start_offset_s: builtins.int = ...,
-        access_link_dl_freq_hz: builtins.int = ...,
-        access_link_ul_freq_hz: builtins.int = ...,
-        enable_feeder_link: builtins.bool = ...,
-        feeder_link_dl_freq_hz: builtins.int = ...,
-        feeder_link_ul_freq_hz: builtins.int = ...,
-        sample_rate: builtins.int = ...,
-        enable_doppler: builtins.bool = ...,
-        delay_offset_us: builtins.int = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["access_link_dl_freq_hz", b"access_link_dl_freq_hz", "access_link_ul_freq_hz", b"access_link_ul_freq_hz", "delay_offset_us", b"delay_offset_us", "enable_doppler", b"enable_doppler", "enable_feeder_link", b"enable_feeder_link", "ephemeris_info_type", b"ephemeris_info_type", "feeder_link_dl_freq_hz", b"feeder_link_dl_freq_hz", "feeder_link_ul_freq_hz", b"feeder_link_ul_freq_hz", "min_sat_elevation_deg", b"min_sat_elevation_deg", "pass_start_offset_s", b"pass_start_offset_s", "sample_rate", b"sample_rate", "scenario_type", b"scenario_type"]) -> None: ...
-
-Global___NtnScenarioDefinition: typing_extensions.TypeAlias = NtnScenarioDefinition
-
-@typing.final
-class EphemerisInfoEcef(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    POS_X_FIELD_NUMBER: builtins.int
-    POS_Y_FIELD_NUMBER: builtins.int
-    POS_Z_FIELD_NUMBER: builtins.int
-    VEL_X_FIELD_NUMBER: builtins.int
-    VEL_Y_FIELD_NUMBER: builtins.int
-    VEL_Z_FIELD_NUMBER: builtins.int
-    pos_x: builtins.float
-    pos_y: builtins.float
-    pos_z: builtins.float
-    vel_x: builtins.float
-    vel_y: builtins.float
-    vel_z: builtins.float
-    def __init__(
-        self,
-        *,
-        pos_x: builtins.float = ...,
-        pos_y: builtins.float = ...,
-        pos_z: builtins.float = ...,
-        vel_x: builtins.float = ...,
-        vel_y: builtins.float = ...,
-        vel_z: builtins.float = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["pos_x", b"pos_x", "pos_y", b"pos_y", "pos_z", b"pos_z", "vel_x", b"vel_x", "vel_y", b"vel_y", "vel_z", b"vel_z"]) -> None: ...
-
-Global___EphemerisInfoEcef: typing_extensions.TypeAlias = EphemerisInfoEcef
-
-@typing.final
-class EphemerisOrbital(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    SEMI_MAJOR_AXIS_FIELD_NUMBER: builtins.int
-    ECCENTRICITY_FIELD_NUMBER: builtins.int
-    PERIAPSIS_FIELD_NUMBER: builtins.int
-    LONGITUDE_FIELD_NUMBER: builtins.int
-    INCLINATION_FIELD_NUMBER: builtins.int
-    MEAN_ANOMALY_FIELD_NUMBER: builtins.int
-    semi_major_axis: builtins.float
-    eccentricity: builtins.float
-    periapsis: builtins.float
-    longitude: builtins.float
-    inclination: builtins.float
-    mean_anomaly: builtins.float
-    def __init__(
-        self,
-        *,
-        semi_major_axis: builtins.float = ...,
-        eccentricity: builtins.float = ...,
-        periapsis: builtins.float = ...,
-        longitude: builtins.float = ...,
-        inclination: builtins.float = ...,
-        mean_anomaly: builtins.float = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["eccentricity", b"eccentricity", "inclination", b"inclination", "longitude", b"longitude", "mean_anomaly", b"mean_anomaly", "periapsis", b"periapsis", "semi_major_axis", b"semi_major_axis"]) -> None: ...
-
-Global___EphemerisOrbital: typing_extensions.TypeAlias = EphemerisOrbital
-
-@typing.final
-class Sib19Config(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    EPOCH_TIME_SFN_FIELD_NUMBER: builtins.int
-    EPOCH_TIME_SUBFRAME_NUMBER_FIELD_NUMBER: builtins.int
-    NTN_UL_SYNC_VALIDITY_DUR_FIELD_NUMBER: builtins.int
-    CELL_SPECIFIC_KOFFSET_FIELD_NUMBER: builtins.int
-    TA_COMMON_FIELD_NUMBER: builtins.int
-    TA_COMMON_DRIFT_FIELD_NUMBER: builtins.int
-    TA_COMMON_DRIFT_VARIANT_FIELD_NUMBER: builtins.int
-    EPHEMERIS_INFO_TYPE_FIELD_NUMBER: builtins.int
-    EPHEMERIS_INFO_ECEF_FIELD_NUMBER: builtins.int
-    EPHEMERIS_ORBITAL_FIELD_NUMBER: builtins.int
-    epoch_time_sfn: builtins.int
-    epoch_time_subframe_number: builtins.int
-    ntn_ul_sync_validity_dur: builtins.int
-    cell_specific_koffset: builtins.int
-    ta_common: builtins.float
-    ta_common_drift: builtins.float
-    ta_common_drift_variant: builtins.float
-    ephemeris_info_type: Global___EphemerisInfoType.ValueType
-    @property
-    def ephemeris_info_ecef(self) -> Global___EphemerisInfoEcef: ...
-    @property
-    def ephemeris_orbital(self) -> Global___EphemerisOrbital: ...
-    def __init__(
-        self,
-        *,
-        epoch_time_sfn: builtins.int = ...,
-        epoch_time_subframe_number: builtins.int = ...,
-        ntn_ul_sync_validity_dur: builtins.int = ...,
-        cell_specific_koffset: builtins.int = ...,
-        ta_common: builtins.float = ...,
-        ta_common_drift: builtins.float = ...,
-        ta_common_drift_variant: builtins.float = ...,
-        ephemeris_info_type: Global___EphemerisInfoType.ValueType = ...,
-        ephemeris_info_ecef: Global___EphemerisInfoEcef | None = ...,
-        ephemeris_orbital: Global___EphemerisOrbital | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["_ephemeris_info_ecef", b"_ephemeris_info_ecef", "_ephemeris_orbital", b"_ephemeris_orbital", "ephemeris_info_ecef", b"ephemeris_info_ecef", "ephemeris_orbital", b"ephemeris_orbital"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["_ephemeris_info_ecef", b"_ephemeris_info_ecef", "_ephemeris_orbital", b"_ephemeris_orbital", "cell_specific_koffset", b"cell_specific_koffset", "ephemeris_info_ecef", b"ephemeris_info_ecef", "ephemeris_info_type", b"ephemeris_info_type", "ephemeris_orbital", b"ephemeris_orbital", "epoch_time_sfn", b"epoch_time_sfn", "epoch_time_subframe_number", b"epoch_time_subframe_number", "ntn_ul_sync_validity_dur", b"ntn_ul_sync_validity_dur", "ta_common", b"ta_common", "ta_common_drift", b"ta_common_drift", "ta_common_drift_variant", b"ta_common_drift_variant"]) -> None: ...
-    @typing.overload
-    def WhichOneof(self, oneof_group: typing.Literal["_ephemeris_info_ecef", b"_ephemeris_info_ecef"]) -> typing.Literal["ephemeris_info_ecef"] | None: ...
-    @typing.overload
-    def WhichOneof(self, oneof_group: typing.Literal["_ephemeris_orbital", b"_ephemeris_orbital"]) -> typing.Literal["ephemeris_orbital"] | None: ...
-
-Global___Sib19Config: typing_extensions.TypeAlias = Sib19Config
-
-@typing.final
-class TaSchedConfig(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    TA_TARGET_FIELD_NUMBER: builtins.int
-    SLOT_PROHIBIT_PERIOD_FIELD_NUMBER: builtins.int
-    SLOT_MEAS_PERIOD_FIELD_NUMBER: builtins.int
-    TA_CMD_OFFSET_THRESHOLD_FIELD_NUMBER: builtins.int
-    ta_target: builtins.float
-    slot_prohibit_period: builtins.int
-    slot_meas_period: builtins.int
-    ta_cmd_offset_threshold: builtins.int
-    def __init__(
-        self,
-        *,
-        ta_target: builtins.float = ...,
-        slot_prohibit_period: builtins.int = ...,
-        slot_meas_period: builtins.int = ...,
-        ta_cmd_offset_threshold: builtins.int = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["slot_meas_period", b"slot_meas_period", "slot_prohibit_period", b"slot_prohibit_period", "ta_cmd_offset_threshold", b"ta_cmd_offset_threshold", "ta_target", b"ta_target"]) -> None: ...
-
-Global___TaSchedConfig: typing_extensions.TypeAlias = TaSchedConfig
-
-@typing.final
-class UePosition(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    LATITUDE_FIELD_NUMBER: builtins.int
-    LONGITUDE_FIELD_NUMBER: builtins.int
-    ALTITUDE_FIELD_NUMBER: builtins.int
-    latitude: builtins.float
-    longitude: builtins.float
-    altitude: builtins.float
-    def __init__(
-        self,
-        *,
-        latitude: builtins.float = ...,
-        longitude: builtins.float = ...,
-        altitude: builtins.float = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["altitude", b"altitude", "latitude", b"latitude", "longitude", b"longitude"]) -> None: ...
-
-Global___UePosition: typing_extensions.TypeAlias = UePosition
-
-@typing.final
-class NtnScenarioConfig(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    SCENARIO_TYPE_FIELD_NUMBER: builtins.int
-    SIB19_CFG_FIELD_NUMBER: builtins.int
-    TA_CFG_FIELD_NUMBER: builtins.int
-    UE_POSITION_FIELD_NUMBER: builtins.int
-    scenario_type: Global___NtnScenarioType.ValueType
-    @property
-    def sib19_cfg(self) -> Global___Sib19Config: ...
-    @property
-    def ta_cfg(self) -> Global___TaSchedConfig: ...
-    @property
-    def ue_position(self) -> Global___UePosition: ...
-    def __init__(
-        self,
-        *,
-        scenario_type: Global___NtnScenarioType.ValueType = ...,
-        sib19_cfg: Global___Sib19Config | None = ...,
-        ta_cfg: Global___TaSchedConfig | None = ...,
-        ue_position: Global___UePosition | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["sib19_cfg", b"sib19_cfg", "ta_cfg", b"ta_cfg", "ue_position", b"ue_position"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["scenario_type", b"scenario_type", "sib19_cfg", b"sib19_cfg", "ta_cfg", b"ta_cfg", "ue_position", b"ue_position"]) -> None: ...
-
-Global___NtnScenarioConfig: typing_extensions.TypeAlias = NtnScenarioConfig
-
 @typing.final
 class ChannelEmulatorStartInfo(google.protobuf.message.Message):
     """Generic Channel Emulator Messages"""
@@ -294,7 +30,6 @@ class ChannelEmulatorStartInfo(google.protobuf.message.Message):
 
     DU_DEFINITION_FIELD_NUMBER: builtins.int
     UE_DEFINITION_FIELD_NUMBER: builtins.int
-    NTN_SCENARIO_FIELD_NUMBER: builtins.int
     START_INFO_FIELD_NUMBER: builtins.int
     @property
     def du_definition(self) -> retina.protocol.base_pb2.DUDefinition:
@@ -305,20 +40,16 @@ class ChannelEmulatorStartInfo(google.protobuf.message.Message):
         """Required in ZMQ mode"""
 
     @property
-    def ntn_scenario(self) -> Global___NtnScenarioDefinition: ...
-    @property
     def start_info(self) -> retina.protocol.base_pb2.StartInfo: ...
     def __init__(
         self,
         *,
         du_definition: retina.protocol.base_pb2.DUDefinition | None = ...,
         ue_definition: retina.protocol.base_pb2.UEDefinition | None = ...,
-        ntn_scenario: Global___NtnScenarioDefinition | None = ...,
         start_info: retina.protocol.base_pb2.StartInfo | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["_ntn_scenario", b"_ntn_scenario", "du_definition", b"du_definition", "ntn_scenario", b"ntn_scenario", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["_ntn_scenario", b"_ntn_scenario", "du_definition", b"du_definition", "ntn_scenario", b"ntn_scenario", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["_ntn_scenario", b"_ntn_scenario"]) -> typing.Literal["ntn_scenario"] | None: ...
+    def HasField(self, field_name: typing.Literal["du_definition", b"du_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["du_definition", b"du_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> None: ...
 
 Global___ChannelEmulatorStartInfo: typing_extensions.TypeAlias = ChannelEmulatorStartInfo
 
@@ -326,17 +57,9 @@ Global___ChannelEmulatorStartInfo: typing_extensions.TypeAlias = ChannelEmulator
 class ScenarioConfig(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    NTN_CONFIG_FIELD_NUMBER: builtins.int
-    @property
-    def ntn_config(self) -> Global___NtnScenarioConfig: ...
     def __init__(
         self,
-        *,
-        ntn_config: Global___NtnScenarioConfig | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["_ntn_config", b"_ntn_config", "ntn_config", b"ntn_config"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["_ntn_config", b"_ntn_config", "ntn_config", b"ntn_config"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["_ntn_config", b"_ntn_config"]) -> typing.Literal["ntn_config"] | None: ...
 
 Global___ScenarioConfig: typing_extensions.TypeAlias = ScenarioConfig
 

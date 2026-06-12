@@ -51,7 +51,6 @@ from retina.agent.drivers.android import AdbAndroidUE
 from retina.agent.drivers.base import BaseDriver
 from retina.agent.drivers.flexric import LocalFlexricRic
 from retina.agent.drivers.health import RetinaHealth
-from retina.agent.drivers.ntn_channel_emulator import LocalNtnChannelEmulator
 from retina.agent.drivers.ocudu_cu import LocalOcuduCu
 from retina.agent.drivers.ocudu_cu_cp import LocalOcuduCuCp
 from retina.agent.drivers.ocudu_cu_up import LocalOcuduCuUp
@@ -74,7 +73,6 @@ _DRIVER_CODENAME_DICT: Dict[str, BaseDriver] = {
     "srs-ue": LocalSrsUe,
     "open5gs-5gc": LocalOpen5gs5gc,
     "flexric-ric": LocalFlexricRic,
-    "ntn-channel-emulator": LocalNtnChannelEmulator,
     "amarisoft-5gc": LocalAmarisoft5gc,
     "amarisoft-5gc-remote": RemoteAmarisoft5gc,
 }

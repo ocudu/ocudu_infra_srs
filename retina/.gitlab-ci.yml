@@ -193,7 +193,6 @@ retina publish wheel:
     VERSION: ${RETINA_VERSION}
     AGENT_OS_VERSION: "noble-20260410"
     FLEXRIC_VERSION: "br-flexric" # NOTE: there is only version 1.0.0 but very old
-    NTN_CHANNEL_EMULATOR_VERSION: d15635f3
     OPEN5GS_VERSION: "2.7.6"
     SRSUE_VERSION: "23.11"
   needs:
@@ -294,30 +293,6 @@ retina containers [flexric]:
     FLEXRIC_BRANCH: br-flexric
     VERSION: ${FLEXRIC_VERSION}_${RETINA_VERSION}
     BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};REPO_URL=${FLEXRIC_REPO_URL};REPO_BRANCH=${FLEXRIC_BRANCH}
-
-retina containers [ntn-channel-emulator]:
-  extends: .retina containers images
-  rules:
-    - *skip_retina_ci
-    - *skip_mr_fork
-    - *force_retina_ci
-    - <<: *retina_on_mr
-      when: delayed
-      start_in: 1 minute
-  variables:
-    NAME: ntn-channel-emulator
-    VERSION: ${NTN_CHANNEL_EMULATOR_VERSION}_${RETINA_VERSION}
-    CACHE: "false" # Just FROM agent + minimal apt
-  before_script:
-    - |
-      download_ntn_channel_emulator() {
-        cd ${CI_PROJECT_DIR}/${CONTEXT}
-        curl -u "${AMARISOFT_PACKAGE_REG_USER}:${AMARISOFT_PACKAGE_REG_PWD}" ${NTN_CHANNEL_EMULATOR_PACKAGE_REGISTRY}/${NTN_CHANNEL_EMULATOR_VERSION}/ntn-channel-emulator.tar.gz -o ntn-channel-emulator.tar.gz
-        tar -zxf ntn-channel-emulator.tar.gz
-        mv ntn-channel-emulator-*/ ntn-channel-emulator/
-        cd ${CI_PROJECT_DIR}
-      }
-    - download_ntn_channel_emulator
 
 retina containers [ocudu]:
   extends: .retina containers images

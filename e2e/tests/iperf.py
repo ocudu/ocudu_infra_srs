@@ -16,7 +16,6 @@ from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts, param
 from retina.protocol.base_pb2 import Metrics, PLMN
-from retina.protocol.channel_emulator_pb2 import NtnScenarioDefinition
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import GNBStub
@@ -36,14 +35,11 @@ from .steps.iperf_helpers import (
     SHORT_DURATION,
 )
 from .steps.stub import (
-    get_ntn_configs,
     INTER_UE_START_PERIOD,
     iperf_parallel,
-    is_ntn_channel_emulator,
     ric_validate_e2_interface,
     start_and_attach,
     start_kpm_mon_xapp,
-    start_ntn_channel_emulator,
     start_rc_xapp,
     stop,
     stop_kpm_mon_xapp,
@@ -790,7 +786,6 @@ def _iperf(
     stop_gnb_first: bool = False,
     packet_length: int = 0,
     channel_emulator: Optional[ChannelEmulatorStub] = None,
-    ntn_scenario_def: Optional[NtnScenarioDefinition] = None,
     min_dl_bitrate: float = 0,
     min_ul_bitrate: float = 0,
     pdsch_interleaving_bundle_size: int = 0,
@@ -799,16 +794,6 @@ def _iperf(
     wait_before_power_off = 5
 
     logging.info("Iperf Test")
-
-    ntn_config = None
-    if channel_emulator and ntn_scenario_def:
-        if not is_ntn_channel_emulator(channel_emulator):
-            logging.info("The channel emulator is not a NTN emulator.")
-            return
-        start_ntn_channel_emulator(
-            ue_array=ue_array, gnb=gnb, channel_emulator=channel_emulator, ntn_scenario_def=ntn_scenario_def
-        )
-        ntn_config = get_ntn_configs(channel_emulator)
 
     configure_test_parameters(
         retina_manager=retina_manager,
@@ -827,7 +812,6 @@ def _iperf(
         nof_antennas_ul=nof_antennas_ul,
         pdsch_mcs_table=pdsch_mcs_table,
         pusch_mcs_table=pusch_mcs_table,
-        ntn_config=ntn_config,
         pdsch_interleaving_bundle_size=pdsch_interleaving_bundle_size,
     )
 

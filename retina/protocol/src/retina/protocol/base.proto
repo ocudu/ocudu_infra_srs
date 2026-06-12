@@ -92,7 +92,6 @@ message NearRtRicDefinition {
 enum ChannelEmulatorType {
   UNKNOWN = 0;
   TN      = 1;
-  NTN     = 2;
 }
 
 message ChannelEmulatorDefinition {

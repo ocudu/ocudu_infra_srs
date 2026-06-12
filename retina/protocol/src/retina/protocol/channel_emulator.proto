@@ -19,94 +19,14 @@ service ChannelEmulator {
   rpc GetChannelEmulatorSummary(google.protobuf.Empty) returns (ChannelEmulatorSummary) {};
 }
 
-// NTN Channel Emulator Messages
-enum NtnScenarioType {
-  GEO = 0;
-  MEO = 1;
-  LEO = 2;
-}
-
-enum EphemerisInfoType {
-  ECEF    = 0;
-  ORBITAL = 1;
-}
-
-message NtnScenarioDefinition {
-  NtnScenarioType   scenario_type          = 1;
-  EphemerisInfoType ephemeris_info_type    = 2;
-  uint32            min_sat_elevation_deg  = 3;
-  uint32            pass_start_offset_s    = 4;
-  uint32            access_link_dl_freq_hz = 5;
-  uint32            access_link_ul_freq_hz = 6;
-  bool              enable_feeder_link     = 7;
-  uint32            feeder_link_dl_freq_hz = 8;
-  uint32            feeder_link_ul_freq_hz = 9;
-  uint32            sample_rate            = 10;
-  bool              enable_doppler         = 11;
-  uint32            delay_offset_us        = 12;
-}
-
-message EphemerisInfoEcef {
-  double pos_x = 1;
-  double pos_y = 2;
-  double pos_z = 3;
-  double vel_x = 4;
-  double vel_y = 5;
-  double vel_z = 6;
-}
-
-message EphemerisOrbital {
-  double semi_major_axis = 1;
-  double eccentricity    = 2;
-  double periapsis       = 3;
-  double longitude       = 4;
-  double inclination     = 5;
-  double mean_anomaly    = 6;
-}
-
-message Sib19Config {
-  uint32                     epoch_time_sfn             = 1;
-  uint32                     epoch_time_subframe_number = 2;
-  uint32                     ntn_ul_sync_validity_dur   = 3;
-  uint32                     cell_specific_koffset      = 4;
-  double                     ta_common                  = 5;
-  double                     ta_common_drift            = 6;
-  double                     ta_common_drift_variant    = 7;
-  EphemerisInfoType          ephemeris_info_type        = 8;
-  optional EphemerisInfoEcef ephemeris_info_ecef        = 9;
-  optional EphemerisOrbital  ephemeris_orbital          = 10;
-};
-
-message TaSchedConfig {
-  float  ta_target               = 1;
-  uint32 slot_prohibit_period    = 2;
-  uint32 slot_meas_period        = 3;
-  uint32 ta_cmd_offset_threshold = 4;
-};
-
-message UePosition {
-  double latitude  = 1;
-  double longitude = 2;
-  double altitude  = 3;
-};
-
-message NtnScenarioConfig {
-  NtnScenarioType scenario_type = 1;
-  Sib19Config     sib19_cfg     = 2;
-  TaSchedConfig   ta_cfg        = 3;
-  UePosition      ue_position   = 4;
-};
-
 // Generic Channel Emulator Messages
 message ChannelEmulatorStartInfo {
   DUDefinition                   du_definition = 1; // Requird in ZMQ mode
   UEDefinition                   ue_definition = 2; // Required in ZMQ mode
-  optional NtnScenarioDefinition ntn_scenario  = 3;
-  StartInfo                      start_info    = 4;
+  StartInfo                      start_info    = 3;
 };
 
 message ScenarioConfig {
-  optional NtnScenarioConfig ntn_config = 1;
 };
 
 message ChannelEmulatorSummary {

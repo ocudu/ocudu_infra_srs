@@ -17,7 +17,6 @@ from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts, param
 from retina.protocol.base_pb2 import PLMN
-from retina.protocol.channel_emulator_pb2 import NtnScenarioDefinition
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import GNBStub
@@ -28,11 +27,8 @@ from .steps.configuration import (
     get_minimum_sample_rate_for_bandwidth,
 )
 from .steps.stub import (
-    get_ntn_configs,
-    is_ntn_channel_emulator,
     ping,
     start_network,
-    start_ntn_channel_emulator,
     stop,
     ue_start_and_attach,
     ue_stop,
@@ -648,23 +644,12 @@ def _ping(
     pusch_mcs_table: str = "qam256",
     ping_interval: float = 1.0,
     channel_emulator: Optional[ChannelEmulatorStub] = None,
-    ntn_scenario_def: Optional[NtnScenarioDefinition] = None,
     ul_noise_spd: int = 0,
     rx_to_tx_latency: int = -1,
     pdcch_log: bool = False,
     warning_allowlist: Optional[List[str]] = None,
 ):
     logging.info("Ping Test")
-
-    ntn_config = None
-    if channel_emulator and ntn_scenario_def:
-        if not is_ntn_channel_emulator(channel_emulator):
-            logging.info("The channel emulator is not a NTN emulator.")
-            return
-        start_ntn_channel_emulator(
-            ue_array=ue_array, gnb=gnb, channel_emulator=channel_emulator, ntn_scenario_def=ntn_scenario_def
-        )
-        ntn_config = get_ntn_configs(channel_emulator)
 
     configure_test_parameters(
         retina_manager=retina_manager,
@@ -684,7 +669,6 @@ def _ping(
         prach_config_index=prach_config_index,
         pdsch_mcs_table=pdsch_mcs_table,
         pusch_mcs_table=pusch_mcs_table,
-        ntn_config=ntn_config,
         ul_noise_spd=ul_noise_spd,
         rx_to_tx_latency=rx_to_tx_latency,
         pdcch_log=pdcch_log,

@@ -268,7 +268,6 @@ import TOCInline from '@theme/TOCInline';
 |---|---:|---|
 | `UNKNOWN` | 0 ||
 | `TN` | 1 ||
-| `NTN` | 2 ||
 
 ### Services
 
@@ -630,7 +629,6 @@ Generic Channel Emulator Messages
 |---|---|---|---|
 | `du_definition` | `DUDefinition` ||Requird in ZMQ mode|
 | `ue_definition` | `UEDefinition` ||Required in ZMQ mode|
-| `ntn_scenario` | `NtnScenarioDefinition` |`optional``oneof _ntn_scenario`||
 | `start_info` | `StartInfo` |||
 
 #### ChannelEmulatorSummary
@@ -639,110 +637,7 @@ Generic Channel Emulator Messages
 |---|---|---|---|
 | `placeholder` | `uint32` |||
 
-#### EphemerisInfoEcef
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `pos_x` | `double` |||
-| `pos_y` | `double` |||
-| `pos_z` | `double` |||
-| `vel_x` | `double` |||
-| `vel_y` | `double` |||
-| `vel_z` | `double` |||
-
-#### EphemerisOrbital
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `semi_major_axis` | `double` |||
-| `eccentricity` | `double` |||
-| `periapsis` | `double` |||
-| `longitude` | `double` |||
-| `inclination` | `double` |||
-| `mean_anomaly` | `double` |||
-
-#### NtnScenarioConfig
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `scenario_type` | `NtnScenarioType` |||
-| `sib19_cfg` | `Sib19Config` |||
-| `ta_cfg` | `TaSchedConfig` |||
-| `ue_position` | `UePosition` |||
-
-#### NtnScenarioDefinition
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `scenario_type` | `NtnScenarioType` |||
-| `ephemeris_info_type` | `EphemerisInfoType` |||
-| `min_sat_elevation_deg` | `uint32` |||
-| `pass_start_offset_s` | `uint32` |||
-| `access_link_dl_freq_hz` | `uint32` |||
-| `access_link_ul_freq_hz` | `uint32` |||
-| `enable_feeder_link` | `bool` |||
-| `feeder_link_dl_freq_hz` | `uint32` |||
-| `feeder_link_ul_freq_hz` | `uint32` |||
-| `sample_rate` | `uint32` |||
-| `enable_doppler` | `bool` |||
-| `delay_offset_us` | `uint32` |||
-
 #### ScenarioConfig
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `ntn_config` | `NtnScenarioConfig` |`optional``oneof _ntn_config`||
-
-#### Sib19Config
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `epoch_time_sfn` | `uint32` |||
-| `epoch_time_subframe_number` | `uint32` |||
-| `ntn_ul_sync_validity_dur` | `uint32` |||
-| `cell_specific_koffset` | `uint32` |||
-| `ta_common` | `double` |||
-| `ta_common_drift` | `double` |||
-| `ta_common_drift_variant` | `double` |||
-| `ephemeris_info_type` | `EphemerisInfoType` |||
-| `ephemeris_info_ecef` | `EphemerisInfoEcef` |`optional``oneof _ephemeris_info_ecef`||
-| `ephemeris_orbital` | `EphemerisOrbital` |`optional``oneof _ephemeris_orbital`||
-
-#### TaSchedConfig
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `ta_target` | `float` |||
-| `slot_prohibit_period` | `uint32` |||
-| `slot_meas_period` | `uint32` |||
-| `ta_cmd_offset_threshold` | `uint32` |||
-
-#### UePosition
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `latitude` | `double` |||
-| `longitude` | `double` |||
-| `altitude` | `double` |||
-
-### Enums
-
-#### EphemerisInfoType
-
-| Name | Number | Description |
-|---|---:|---|
-| `ECEF` | 0 ||
-| `ORBITAL` | 1 ||
-
-#### NtnScenarioType
-
-NTN Channel Emulator Messages
-
-| Name | Number | Description |
-|---|---:|---|
-| `GEO` | 0 ||
-| `MEO` | 1 ||
-| `LEO` | 2 ||
 
 ### Services
 

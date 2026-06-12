@@ -23,7 +23,6 @@ from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts
 from retina.protocol import RanStub
 from retina.protocol.base_pb2 import (
-    ChannelEmulatorType,
     CUCPDefinition,
     DUDefinition,
     FiveGCDefinition,
@@ -37,7 +36,6 @@ from retina.protocol.base_pb2 import (
     StopResponse,
     UEDefinition,
 )
-from retina.protocol.channel_emulator_pb2 import ChannelEmulatorStartInfo, NtnScenarioConfig, NtnScenarioDefinition
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.exit_codes import exit_code_to_message
 from retina.protocol.fivegc_pb2 import FiveGCStartInfo, IPerfResponse
@@ -69,51 +67,6 @@ FIVEGC_STARTUP_TIMEOUT: int = RF_MAX_TIMEOUT
 ATTACH_TIMEOUT: int = 90
 RELEASE_TIMEOUT: int = 90
 INTER_UE_START_PERIOD: int = 0
-
-
-def is_ntn_channel_emulator(channel_emulator: ChannelEmulatorStub):
-    """
-    Check if the emulator is of NTN type.
-    """
-    channel_emulator_def = channel_emulator.GetDefinition(Empty())
-    return channel_emulator_def.type == ChannelEmulatorType.NTN
-
-
-def start_ntn_channel_emulator(
-    *,  # This enforces keyword-only arguments
-    ue_array: Sequence[UEStub],
-    gnb: GNBStub,
-    channel_emulator: ChannelEmulatorStub,
-    ntn_scenario_def: NtnScenarioDefinition,
-) -> NtnScenarioConfig:
-    """
-    Start NTN Channel Emulator and get NTN configs for gnb and UE.
-    """
-    ue_def_for_gnb = UEDefinition()
-    for ue_stub in ue_array:
-        ue_def: UEDefinition = ue_stub.GetDefinition(Empty())
-        if ue_def.zmq_ip is not None:
-            ue_def_for_gnb = ue_def
-
-    du_definition = gnb.GetDefinition(UInt32Value(value=0)).du_definition
-    channel_emulator_start_info = ChannelEmulatorStartInfo(
-        du_definition=du_definition,
-        ue_definition=ue_def_for_gnb,
-        ntn_scenario=ntn_scenario_def,
-        start_info=StartInfo(timeout=20),
-    )
-    channel_emulator.Start(channel_emulator_start_info)
-
-
-def get_ntn_configs(channel_emulator: ChannelEmulatorStub):
-    """
-    Get NTN configs for gnb and UE from the NTN channel emulator.
-    """
-    ntn_gnb_cfg = None
-    emulation_scenario_config = channel_emulator.GetScenarioConfigs(Empty())
-    if emulation_scenario_config.HasField("ntn_config"):
-        ntn_gnb_cfg = emulation_scenario_config.ntn_config
-    return ntn_gnb_cfg
 
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals

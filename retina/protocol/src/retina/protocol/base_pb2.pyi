@@ -32,13 +32,11 @@ class _ChannelEmulatorTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wra
     DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
     UNKNOWN: _ChannelEmulatorType.ValueType  # 0
     TN: _ChannelEmulatorType.ValueType  # 1
-    NTN: _ChannelEmulatorType.ValueType  # 2
 
 class ChannelEmulatorType(_ChannelEmulatorType, metaclass=_ChannelEmulatorTypeEnumTypeWrapper): ...
 
 UNKNOWN: ChannelEmulatorType.ValueType  # 0
 TN: ChannelEmulatorType.ValueType  # 1
-NTN: ChannelEmulatorType.ValueType  # 2
 Global___ChannelEmulatorType: typing_extensions.TypeAlias = ChannelEmulatorType
 
 @typing.final
