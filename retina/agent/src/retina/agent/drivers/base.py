@@ -108,6 +108,8 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
                 set_parameter("testbed.ru_prach_port_id", available_resources.remote.prach_port_id)
                 set_parameter("testbed.ru_dl_port_id", available_resources.remote.dl_port_id)
                 set_parameter("testbed.ru_ul_port_id", available_resources.remote.ul_port_id)
+                set_parameter("ue.log_level", "warning")  # Warning by default in RT
+                set_parameter("gnb.log_level", "warning")
 
         # Core
         if available_resources.core is not None:
@@ -150,6 +152,8 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             set_parameter("testbed.ru_prach_port_id", available_resources.ru.prach_port_id)
             set_parameter("testbed.ru_dl_port_id", available_resources.ru.dl_port_id)
             set_parameter("testbed.ru_ul_port_id", available_resources.ru.ul_port_id)
+            set_parameter("ue.log_level", "warning")  # Warning by default in RT
+            set_parameter("gnb.log_level", "warning")
 
         # COTS identifier and uSIM params
         if available_resources.ue is not None:
