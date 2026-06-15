@@ -147,6 +147,7 @@ retina demolition:
 
 ## Build jobs for Scheduled Pipelines
 # In functional-base.yml - zmq driver, release with deb info
+# In performance-base.yml - dpdk rtsan avx512
 
 debug:
   extends: build
@@ -192,24 +193,6 @@ tsan:
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
       -DENABLE_TSAN=True -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
-    TEST_MODE: none
-
-dpdk rtsan avx512:
-  extends: build
-  retry: 2
-  cache: []
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
-  variables: &dpdk_rtsan_avx512_variables
-    OS: ubuntu-24.04-rtsan
-    OCUDU_TARGET: gnb_split_7_2 gnb
-    COMPILER: clang
-    DPDK_VERSION: 24.11.2_avx512
-    BUILD_ARGS: >
-      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=True -DMARCH=x86-64-v4
-      -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
-      -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
     TEST_MODE: none
 
 ## Emulated Nightly

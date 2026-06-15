@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+dpdk rtsan avx512:
+  extends: build
+  retry: 2
+  cache: []
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
+  variables: &dpdk_rtsan_avx512_variables
+    OS: ubuntu-24.04-rtsan
+    OCUDU_TARGET: gnb_split_7_2 gnb
+    COMPILER: clang
+    DPDK_VERSION: 24.11.2_avx512
+    BUILD_ARGS: >
+      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=True -DMARCH=x86-64-v4
+      -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
+      -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
+    TEST_MODE: none
+
+dpdk rtsan avx512 cached:
+  extends: build
+  retry: 2
+  rules:
+    - if: $TRIGGERED_ON_MR == "true"
+  variables:
+    <<: *dpdk_rtsan_avx512_variables
+
+.performance_e2e:
+  extends: e2e
+  variables:
+    GROUP: viavi
+  needs:
+    - job: get retina version
+      artifacts: true
+      optional: true
+    - job: dpdk rtsan avx512
+      artifacts: true
+      optional: true
+    - job: dpdk rtsan avx512 cached
+      artifacts: true
+      optional: true

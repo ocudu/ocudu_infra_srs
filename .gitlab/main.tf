@@ -215,7 +215,7 @@ module "settings" {
     }
     performance = {
       description = "performance"
-      cron        = "30 22 * * 0-5"
+      cron        = "15 22 * * 0-5"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
       active      = true

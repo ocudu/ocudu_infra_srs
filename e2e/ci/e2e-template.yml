@@ -17,6 +17,10 @@ include:
   - local: e2e/ci/functional-config.yml
     rules:
       - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+  - local: e2e/ci/performance-base.yml
+  - local: e2e/ci/performance-config.yml
+    rules:
+      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
 
 functional:
   extends: .trigger e2e
@@ -28,6 +32,20 @@ functional:
           ocudu_ref: $[[ inputs.ocudu_ref ]]
       - local: e2e/ci/functional-base.yml
       - local: e2e/ci/functional-config.yml
+    strategy: mirror
+    forward:
+      pipeline_variables: true
+
+performance:
+  extends: .trigger e2e
+  trigger:
+    include:
+      - local: e2e/ci/child-template.yml
+        inputs:
+          ocudu_path: $[[ inputs.ocudu_path ]]
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+      - local: e2e/ci/performance-base.yml
+      - local: e2e/ci/performance-config.yml
     strategy: mirror
     forward:
       pipeline_variables: true

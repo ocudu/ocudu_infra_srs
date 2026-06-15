@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+paging:
+  stage: mobility
+  extends: .performance_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "performance.mobility.paging."
+    TESTBED: dynamic
