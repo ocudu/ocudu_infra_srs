@@ -277,6 +277,7 @@ class KubernetesManager(metaclass=ABCMeta):  # pylint: disable=too-few-public-me
         """
         Copy local folder to Pod
         """
+        result = None
         extra_args = f"--kubeconfig={self._kubeconfig_path}" if self._kubeconfig_path else ""
         # Creates destination folder
         for _ in range(3):  # Retry up to 3 times
@@ -286,9 +287,14 @@ class KubernetesManager(metaclass=ABCMeta):  # pylint: disable=too-few-public-me
                 )
                 break
         # Copies the file or dir
-        result = run_command(
-            f"kubectl {extra_args} cp --retries=-1 {local_folder} {namespace}/{pod_name}:{remote_folder}"
-        )
+        for _ in range(3):  # Retry up to 3 times
+            with contextlib.suppress(subprocess.CalledProcessError):
+                result = run_command(
+                    f"kubectl {extra_args} cp --retries=-1 {local_folder} {namespace}/{pod_name}:{remote_folder}"
+                )
+                break
+        if result is None:
+            raise RuntimeError("Exception calling application kubectl")
         return result
 
     def _create_pod(self, manifest: Dict, namespace: str) -> ErrorCode:
