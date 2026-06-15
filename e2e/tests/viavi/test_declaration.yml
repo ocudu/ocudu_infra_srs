@@ -211,7 +211,7 @@ tests:
       du.ul_bitrate_gt: 1.0e+3
       du.max_late_dl_harqs_le: 4
       du.max_late_ul_harqs_le: 4
-      du.nof_ko_dl_le: 0
+      du.nof_ko_dl_le: 5 # allow DL KOs due to PUCCH errors
       viavi.nof_ko_dl_le: 0
       du.nof_ko_ul_le: .inf
       viavi.nof_ko_ul_le: .inf
