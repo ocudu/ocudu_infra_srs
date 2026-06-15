@@ -1,0 +1,139 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Paging test, RRC IDLE MT
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  request: s72_uesim
+  ue:
+    config: [1cell.cfg, paging.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_paging: 1
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, inactivity_timer.yml, mac_pcap.yml]
+  core:
+    config: [baseline.cfg]
+  criteria:
+    <<: &base_criteria
+      all.errors_le: 0
+      all.warnings_le: 0
+      du.dl_bitrate_gt: 0
+      du.ul_bitrate_gt: 0
+      du.nof_ko_dl_le: 0
+      du.nof_ko_ul_le: 0
+      du.nof_reestablishments_eq: 0
+      core.nof_pdu_session_establishment_accept_eq: 1
+      du.nof_error_indications_le: 0
+    core.nof_ng_paging_eq: 1
+    du.nof_paging_eq: 2 # 1 suspend/resume x 2 PCCH Paging messages
+    core.nof_nas_service_accept_eq: 1
+
+# DRX test
+drx:
+  <<: *base_config
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
+    parameters:
+      drx_long_cycle: 80
+  criteria:
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 1
+    du.nof_paging_eq: 2  # 1 suspend/resume x 2 PCCH Paging messages
+    du.drx_long_cycle_eq: 7 # this is the coded value that corresponds to 80 ms
+    core.nof_nas_service_accept_eq: 1
+
+# eDRX test
+edrx:
+  <<: *base_config
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
+  criteria:
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 1
+    du.nof_paging_eq: 2  # 1 suspend/resume x 2 PCCH Paging messages
+    core.nof_nas_service_accept_eq: 1
+
+# RRC IDLE - MT multi
+rrc_idle_mt_multi:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, paging.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_paging: 3
+  criteria:
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 3
+    du.nof_paging_eq: 6  # 1 suspend/resume x 2 PCCH Paging messages
+    core.nof_nas_service_accept_eq: 3
+
+# RRC IDLE - MO reconnection
+rrc_idle_mo:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, mo_initiate.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_paging: 1
+  criteria:
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 0
+    du.nof_paging_eq: 0
+    core.nof_nas_service_accept_eq: 1
+
+# RRC Inactive - MT
+rrc_inactive_mt:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, paging.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_paging: 1
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+  criteria:
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up
+    du.nof_rrc_suspend_eq: 1
+    du.nof_paging_eq: 2 # 1 suspend/resume x 2 PCCH Paging messages
+    du.nof_rrc_resume_complete_eq: 1
+
+# RRC Inactive - MT multiple suspend/resume cycles
+rrc_inactive_mt_multi:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, paging.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+      nof_paging: 3
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+  criteria:
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up
+    du.nof_rrc_suspend_eq: 3
+    du.nof_paging_eq: 6 # 3 suspend/resume cycles x 2 PCCH Paging messages
+    du.nof_rrc_resume_complete_eq: 3
+
+# RRC Inactive - MO-data-triggered resume (no paging)
+rrc_inactive_mo:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, mo_initiate.cfg]
+    parameters:
+      dl_bitrate: 10.0e+3
+      ul_bitrate: 10.0e+3
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+  criteria:
+    <<: *base_criteria
+    core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up
+    du.nof_rrc_suspend_eq: 1
+    du.nof_paging_eq: 0
+    du.nof_rrc_resume_complete_eq: 1
