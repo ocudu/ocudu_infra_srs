@@ -189,6 +189,10 @@ cell_cfg:
 cell_cfg:
   drx:
     long_cycle: 80
+  pusch:
+    max_ue_mcs: 10
+  pdsch:
+    max_ue_mcs: 10
 {% endif %}
 
 log:
