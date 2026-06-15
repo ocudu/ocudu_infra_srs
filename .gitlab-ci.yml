@@ -181,8 +181,8 @@ include:
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
-  - local: .gitlab-ci-stages.yml
   - local: docs/.gitlab-ci.yml
+  - local: .gitlab-ci-stages.yml
 
 variables:
   RETINA_REGISTRY_URI: ${CI_REGISTRY_IMAGE}/retina

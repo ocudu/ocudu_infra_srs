@@ -8,6 +8,7 @@ Generates dynamically the pipelines given by the project folder structure
 """
 
 import argparse
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
@@ -64,14 +65,9 @@ class Job:
   stage: {self.stage}
   extends: .{self.pipeline_name}_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{self.pipeline_name}/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "{self.pipeline_name}.{self.stage}.{self.name}."
     TESTBED: dynamic
@@ -177,24 +173,21 @@ def create_pipeline_file(path, pipeline):
     try:
         with open(path, "w", encoding="utf-8") as f:
             f.write(generate_header())
-            f.write(generate_spec())
             f.write(pipeline.format())
             print(f"🟢 Successfully created {path}")
     except IOError as e:
         print(f"⚠️ Error writing to file: {e}")
 
 
-def generate_stages_file(output_path, dynamic_stages):
+def generate_stages_file(stages_output_path, dynamic_stages):
     """
-    Generates the stages definition file.
+    Generates .gitlab-ci-stages.yml at the repo root with the full stages list.
     """
 
-    base = Path(output_path)
-    path = base / ".gitlab-ci-stages.yml"
+    path = Path(stages_output_path) / ".gitlab-ci-stages.yml"
     try:
         with open(path, "w", encoding="utf-8") as f:
             f.write(generate_header())
-            # Add static stages
             stages = [
                 "ci",
                 "static",
@@ -208,14 +201,55 @@ def generate_stages_file(output_path, dynamic_stages):
                 "amarisoft sdr",
                 "android",
             ]
-            # Add dynamic stages
             stages.extend(dynamic_stages)
-            # Remove duplicated items
             stages = list(dict.fromkeys(stages))
-
             f.write("stages:\n")
             for stage in stages:
                 f.write(f"  - {stage}\n")
+            print(f"🟢 Successfully created {path}")
+    except IOError as e:
+        print(f"⚠️ Error writing to file: {e}")
+
+
+def generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_includes):
+    """
+    Generates e2e/ci/e2e-template.yml with spec inputs, per-pipeline base and
+    conditional config includes, and MR child pipeline trigger jobs.
+    """
+
+    # Path prefix for e2e/ci relative to repo root (used in local: entries)
+    ci_rel = os.path.relpath(pipelines_output_path, start=stages_output_path)
+
+    path = Path(pipelines_output_path) / "e2e-template.yml"
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(generate_header())
+            f.write(generate_spec())
+            # Per-pipeline: unconditional base + conditional config
+            f.write("include:\n")
+            for name, include_path in pipeline_includes:
+                f.write(f"  - local: {ci_rel}/{name}-base.yml\n")
+                f.write(f"  - local: {include_path}\n")
+                f.write("    rules:\n")
+                f.write(f"      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{name}/\n")
+            f.write("\n")
+            # MR child pipeline trigger jobs, one per discovered pipeline
+            for i, (name, include_path) in enumerate(pipeline_includes):
+                if i > 0:
+                    f.write("\n")
+                f.write(f"{name}:\n")
+                f.write("  extends: .trigger e2e\n")
+                f.write("  trigger:\n")
+                f.write("    include:\n")
+                f.write(f"      - local: {ci_rel}/child-template.yml\n")
+                f.write("        inputs:\n")
+                f.write("          ocudu_path: $[[ inputs.ocudu_path ]]\n")
+                f.write("          ocudu_ref: $[[ inputs.ocudu_ref ]]\n")
+                f.write(f"      - local: {ci_rel}/{name}-base.yml\n")
+                f.write(f"      - local: {include_path}\n")
+                f.write("    strategy: mirror\n")
+                f.write("    forward:\n")
+                f.write("      pipeline_variables: true\n")
             print(f"🟢 Successfully created {path}")
     except IOError as e:
         print(f"⚠️ Error writing to file: {e}")
@@ -231,15 +265,23 @@ def generate_pipelines_dynamically(input_path, pipelines_output_path, stages_out
     iterate_ordered_hierarchy(input_path, pipelines)
 
     dynamic_stages = []
+    pipeline_includes = []
+
+    base = Path(pipelines_output_path)
+    base.mkdir(parents=True, exist_ok=True)
 
     for pipeline in pipelines:
-        base = Path(pipelines_output_path)
         pipeline_path = base / f"{pipeline.get_name()}-config.yml"
         create_pipeline_file(pipeline_path, pipeline)
 
         dynamic_stages.extend(pipeline.get_stages())
 
+        # Include path relative to the generated file, for the conditional include block.
+        include_path = os.path.relpath(pipeline_path, start=stages_output_path)
+        pipeline_includes.append((pipeline.get_name(), include_path))
+
     generate_stages_file(stages_output_path, dynamic_stages)
+    generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_includes)
 
 
 def main():
@@ -263,7 +305,7 @@ def main():
         type=str,
         help="Output path where the yml files that describe the pipelines "
         "will be generated. (default: `%(default)s`)'",
-        default="../",
+        default="../ci",
     )
 
     parser.add_argument(

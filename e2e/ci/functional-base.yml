@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+zmq driver:
+  extends: build trx driver
+  retry: 2
+  rules:
+    - if: $TRIGGERED_ON_MR == "true"
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+
+release with deb info:
+  extends: build
+  retry: 2
+  cache: []
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
+  variables: &release_with_deb_info_vars
+    OS: ubuntu-24.04
+    COMPILER: gcc
+    BUILD_ARGS: >
+      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMARCH=x86-64-v3
+      -DASSERT_LEVEL=PARANOID
+    TEST_MODE: none
+  parallel: &release_with_deb_info_parallel # Splitting it in different jobs because binaries size in relwithdeb was greater than 1 gb
+    matrix:
+      - OCUDU_TARGET: ocucp ocuup ocu odu
+      - OCUDU_TARGET: gnb
+
+release with deb info cached:
+  extends: build
+  retry: 2
+  rules:
+    - if: $TRIGGERED_ON_MR == "true"
+  variables:
+    <<: *release_with_deb_info_vars
+  parallel:
+    <<: *release_with_deb_info_parallel
+
+.functional_e2e:
+  extends: e2e
+  variables:
+    GROUP: zmq
+  needs:
+    - job: get retina version
+      artifacts: true
+      optional: true
+    - job: zmq driver
+      artifacts: true
+      optional: false
+    - job: release with deb info
+      artifacts: true
+      optional: true
+    - job: release with deb info cached
+      artifacts: true
+      optional: true

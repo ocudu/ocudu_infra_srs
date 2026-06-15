@@ -19,7 +19,10 @@ include:
   - project: $[[ inputs.ocudu_path ]]
     ref: $[[ inputs.ocudu_ref ]]
     file: .gitlab/ci-shared/static.yml
-  - local: e2e/functional-config.yml
+  - local: e2e/ci/e2e-template.yml
+    inputs:
+      ocudu_path: $[[ inputs.ocudu_path ]]
+      ocudu_ref: $[[ inputs.ocudu_ref ]]
 
 # E2E CI/CD Pipeline
 
@@ -101,11 +104,24 @@ dynamically generated pipeline validation:
         - e2e/tests/**/*
         - e2e/scripts/generate_pipelines.py
         - e2e/*.yml
+        - e2e/ci/*.yml
         - .gitlab-ci-stages.yml
   script:
     - |
-      python3 e2e/scripts/generate_pipelines.py --input_path=e2e/tests/suites --pipelines_output_path=e2e --stages_output_path=.
+      python3 e2e/scripts/generate_pipelines.py --input_path=e2e/tests/suites --pipelines_output_path=e2e/ci --stages_output_path=.
       is-pristine-repo.sh
+
+## MR child pipeline triggers
+.trigger e2e:
+  stage: e2e
+  rules:
+    - if: $ON_MR
+      when: manual
+      allow_failure: true
+  variables:
+    TRIGGERED_ON_MR: "true"
+  needs:
+    - get retina version
 
 ## Schedules pipeline setup
 retina demolition:
@@ -130,54 +146,7 @@ retina demolition:
     - get retina version
 
 ## Build jobs for Scheduled Pipelines
-zmq driver:
-  extends: build trx driver
-  retry: 2
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - &on_mr_e2e_pipeline
-      if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
-
-release with deb info:
-  extends: build
-  retry: 2
-  cache: []
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-  variables: &release_with_deb_info_vars
-    OS: ubuntu-24.04
-    COMPILER: gcc
-    BUILD_ARGS: >
-      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMARCH=x86-64-v3
-      -DASSERT_LEVEL=PARANOID
-    TEST_MODE: none
-  parallel: &release_with_deb_info_parallel # Splitting it in different jobs because binaries size in relwithdeb was greater than 1 gb
-    matrix:
-      - OCUDU_TARGET: ocucp ocuup ocu odu
-      - OCUDU_TARGET: gnb
-
-release with deb info cached:
-  extends: build
-  retry: 2
-  rules:
-    - <<: *on_mr_e2e_pipeline
-      when: manual
-      allow_failure: true
-  variables:
-    <<: *release_with_deb_info_vars
-  parallel:
-    <<: *release_with_deb_info_parallel
+# In functional-base.yml - zmq driver, release with deb info
 
 debug:
   extends: build
@@ -242,21 +211,6 @@ dpdk rtsan avx512:
       -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
       -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
     TEST_MODE: none
-
-### Functional
-.functional_e2e:
-  extends: e2e
-  variables:
-    GROUP: zmq
-  needs:
-    - get retina version
-    - zmq driver
-    - job: release with deb info
-      artifacts: true
-      optional: true
-    - job: release with deb info cached
-      artifacts: true
-      optional: true
 
 ## Emulated Nightly
 ### Test mode
@@ -362,9 +316,6 @@ ric:
     - get retina version
     - zmq driver
     - job: release with deb info
-      artifacts: true
-      optional: true
-    - job: release with deb info cached
       artifacts: true
       optional: true
 

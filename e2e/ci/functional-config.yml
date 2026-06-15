@@ -1,29 +1,13 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-spec:
-  inputs:
-    ocudu_path:
-      type: string
-      default: ocudu/ocudu
-      description: "OCUDU repository path."
-    ocudu_ref:
-      type: string
-      default: dev
-      description: "OCUDU reference branch or tag."
----
 inter_cu_ho:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.mobility.inter_cu_ho."
     TESTBED: dynamic
@@ -32,14 +16,9 @@ inter_du_ho:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.mobility.inter_du_ho."
     TESTBED: dynamic
@@ -48,14 +27,9 @@ inter_ru_ho:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.mobility.inter_ru_ho."
     TESTBED: dynamic
@@ -64,14 +38,9 @@ intra_ru_ho:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.mobility.intra_ru_ho."
     TESTBED: dynamic
@@ -80,14 +49,9 @@ paging:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.mobility.paging."
     TESTBED: dynamic
@@ -96,14 +60,9 @@ reestablishment:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.mobility.reestablishment."
     TESTBED: dynamic
@@ -112,14 +71,9 @@ attach_detach:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.multiue.attach_detach."
     TESTBED: dynamic
@@ -128,14 +82,9 @@ load_test:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.multiue.load_test."
     TESTBED: dynamic
@@ -144,14 +93,9 @@ mobility:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.multiue.mobility."
     TESTBED: dynamic
@@ -160,14 +104,9 @@ ping:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.multiue.ping."
     TESTBED: dynamic
@@ -176,14 +115,9 @@ qos:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.multiue.qos."
     TESTBED: dynamic
@@ -192,14 +126,9 @@ slice:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.multiue.slice."
     TESTBED: dynamic
@@ -208,14 +137,9 @@ bands:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.bands."
     TESTBED: dynamic
@@ -224,14 +148,9 @@ bandwiths:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.bandwiths."
     TESTBED: dynamic
@@ -240,14 +159,9 @@ cmas:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.cmas."
     TESTBED: dynamic
@@ -256,14 +170,9 @@ fdd_siso:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.fdd_siso."
     TESTBED: dynamic
@@ -272,14 +181,9 @@ gbr_vonr:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.gbr_vonr."
     TESTBED: dynamic
@@ -288,14 +192,9 @@ mocn:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.mocn."
     TESTBED: dynamic
@@ -304,14 +203,9 @@ nrppa:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.nrppa."
     TESTBED: dynamic
@@ -320,14 +214,9 @@ ntn:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.ntn."
     TESTBED: dynamic
@@ -336,14 +225,9 @@ phy_configs:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.phy_configs."
     TESTBED: dynamic
@@ -352,14 +236,9 @@ power_control:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.power_control."
     TESTBED: dynamic
@@ -368,14 +247,9 @@ security:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.security."
     TESTBED: dynamic
@@ -384,14 +258,9 @@ slicing:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.slicing."
     TESTBED: dynamic
@@ -400,14 +269,9 @@ tdd_mimo:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.tdd_mimo."
     TESTBED: dynamic
@@ -416,14 +280,9 @@ tdd_siso:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $ON_MR
-      changes:
-        - e2e/tests/**/*
-        - e2e/*.yml
-        - retina/**/*
-      when: manual
-      allow_failure: true
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.tdd_siso."
     TESTBED: dynamic

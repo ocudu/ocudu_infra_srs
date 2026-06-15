@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+spec:
+  inputs:
+    ocudu_path:
+      type: string
+      default: ocudu/ocudu
+      description: "OCUDU repository path."
+    ocudu_ref:
+      type: string
+      default: dev
+      description: "OCUDU reference branch or tag."
+---
+include:
+  - local: e2e/ci/functional-base.yml
+  - local: e2e/ci/functional-config.yml
+    rules:
+      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+
+functional:
+  extends: .trigger e2e
+  trigger:
+    include:
+      - local: e2e/ci/child-template.yml
+        inputs:
+          ocudu_path: $[[ inputs.ocudu_path ]]
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+      - local: e2e/ci/functional-base.yml
+      - local: e2e/ci/functional-config.yml
+    strategy: mirror
+    forward:
+      pipeline_variables: true
