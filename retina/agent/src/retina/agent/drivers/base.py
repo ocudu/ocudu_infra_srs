@@ -190,12 +190,8 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             and available_resources.ru is None
             and (available_resources.remote is None or available_resources.remote.network_interface is None)
         ):
-            # In ZMQ, set sample rate and antennas to the max possible by the driver
+            # In ZMQ, set sample rate to the max possible by the driver
             set_parameter("testbed.sample_rate", 122880000)
-            set_parameter("ue.nof_antennas_dl", 4)
-            set_parameter("ue.nof_antennas_ul", 4)
-            set_parameter("gnb.nof_antennas_dl", 4)
-            set_parameter("gnb.nof_antennas_ul", 4)
 
     ###########################
     # Folder and report logic #

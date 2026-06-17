@@ -45,14 +45,10 @@ baseline_cu_du:
       test_duration: 6
   cu_cp:
     config: [cu_cp.yml]
-    parameters:
-      gnb_id_bit_length_cfg: 22
   cu_up:
     config: [cu_up.yml]
   du:
     config: [du.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
-    parameters:
-      gnb_id_bit_length_cfg: 22
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-ARCH-INTF-6, MVP-ARCH-INTF-7, MVP-ARCH-INTF-9, MVP-ARCH-INTF-10, MVP-ARCH-INTF-11]
@@ -77,6 +73,7 @@ tdd_mixed:
   gnb:
     config: [cu_cp.yml, du.yml, prach_config.yml, tdd_mixed.yml, mac_pcap.yml]
     parameters:
+      zero_correlation_zone: 0
       prach_config_index: 156
   feature_ids: [MVP-FUNC-TDD-16-4]
   criteria:
@@ -98,6 +95,7 @@ tdd_dl_heavy:
   gnb:
     config: [cu_cp.yml, du.yml, prach_config.yml, tdd_72b.yml, mac_pcap.yml]
     parameters:
+      zero_correlation_zone: 0
       prach_config_index: 156
   feature_ids: [MVP-FUNC-TDD-16-5]
   criteria:

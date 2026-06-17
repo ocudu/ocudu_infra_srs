@@ -12,21 +12,24 @@ band_n30: &base_config
       bandwidth: 10
       dl_nr_arfcn: 471000
       ssb_nr_arfcn: 470430
-      common_scs: 15
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
-      nof_antennas: 4
+      nof_antennas_dl: 4
+      nof_antennas_ul: 4
+      common_scs: 15
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml, srs_periodic_wband.yml, prach_config.yml]
     parameters:
-      cfg_band: 30
-      cfg_earfcn: 471000
-      cfg_common_scs: 15
-      cfg_bandwidth: 10
-      nof_antennas: 4
+      band: 30
+      dl_nr_arfcn: 471000
+      bandwidth: 10
+      common_scs: 15
+      nof_antennas_dl: 4
+      nof_antennas_ul: 4
       prach_config_index: 209
+      zero_correlation_zone: 0
   core:
     config: [baseline.cfg]
   feature_ids: [SRS]
@@ -48,22 +51,18 @@ band_fr2:
     config: [1cell.cfg, udp_bi.cfg]
     parameters:
       band: 261
-      bandwidth: 100
       dl_nr_arfcn: 2077915
       ssb_nr_arfcn: 2077435
       common_scs: 120
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
-      nof_antennas: 1
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
-      cfg_band: 261
-      cfg_earfcn: 2077915
-      cfg_bandwidth: 100
-      cfg_common_scs: 120
-      nof_antennas: 1
+      band: 261
+      dl_nr_arfcn: 2077915
+      common_scs: 120
       prach_config_index: 121
       zero_correlation_zone: 1
   feature_ids: [MVP-FUNC-PHY-16-14, MVP-FUNC-TDD-16-3, MVP-FUNC-BW-16-1]
@@ -75,22 +74,21 @@ band_n41:
     config: [1cell.cfg, udp_bi.cfg]
     parameters:
       band: 41
-      bandwidth: 100
       dl_nr_arfcn: 520002
       ssb_nr_arfcn: 511950
-      common_scs: 30
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
-      nof_antennas: 2
+      nof_antennas_dl: 2
+      nof_antennas_ul: 2
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]
     parameters:
-      cfg_band: 41
-      cfg_earfcn: 520002
-      cfg_bandwidth: 100
-      nof_antennas: 2
+      band: 41
+      dl_nr_arfcn: 520002
+      nof_antennas_dl: 2
+      nof_antennas_ul: 2
   feature_ids: [MVP-FUNC-PHY-16-1]
 
 # Baseline band n66
@@ -100,22 +98,20 @@ band_n66:
     config: [1cell.cfg, udp_bi.cfg]
     parameters:
       band: 66
-      bandwidth: 20
       dl_nr_arfcn: 430000
       ssb_nr_arfcn: 428650
+      bandwidth: 20
       common_scs: 15
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
-      nof_antennas: 1
   gnb:
     config: [cu_cp.yml, du.yml, pucch_config.yml, srs_periodic_wband.yml, mac_pcap.yml]
     parameters:
-      cfg_band: 66
-      cfg_earfcn: 430000
-      cfg_common_scs: 15
-      cfg_bandwidth: 20
-      nof_antennas: 1
+      band: 66
+      dl_nr_arfcn: 430000
+      bandwidth: 20
+      common_scs: 15
       prach_config_index: 16
       pucch_format: "f1_and_f3"
       nof_cell_sr_res: 1
@@ -128,26 +124,28 @@ band_na_4t4r_dl:
   <<: *base_config
   request: zmq_1000
   ue:
-    config: [1cell_chsim.cfg, udp_bi_chsim.cfg]
+    config: [1cell.cfg, udp_bi.cfg]
     parameters:
       band: 66       # n66 (FDD) is available in the US and the DL carrier is on 2.11-2.2GHz
-      bandwidth: 20
       dl_nr_arfcn: 430000
       ssb_nr_arfcn: 428650
+      bandwidth: 20
       common_scs: 15
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
-      nof_antennas: 4
+      nof_antennas_dl: 4
+      nof_antennas_ul: 4
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml]
     parameters:
-      cfg_band: 66   # n66 (FDD) is available in the UE and the DL carrier is on 2.11-2.2GHz
-      cfg_earfcn: 430000
-      cfg_common_scs: 15
-      cfg_bandwidth: 20
-      nof_antennas: 4
+      band: 66   # n66 (FDD) is available in the UE and the DL carrier is on 2.11-2.2GHz
+      dl_nr_arfcn: 430000
+      bandwidth: 20
+      common_scs: 15
+      nof_antennas_dl: 4
+      nof_antennas_ul: 4
   feature_ids: [MVP-FUNC-PHY-16-8]
 
 # 2T2R UL for mid bands authorized in North America (1.8GHz)
@@ -157,21 +155,23 @@ band_na_2t2r_ul:
     config: [1cell.cfg, udp_bi.cfg]
     parameters:
       band: 25       # n25 (FDD) is available in the US and the UL carrier is on 1.85-1.915GHz.
-      bandwidth: 20
       dl_nr_arfcn: 392000
       ssb_nr_arfcn: 390530
+      bandwidth: 20
       common_scs: 15
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
-      nof_antennas: 2
+      nof_antennas_dl: 2
+      nof_antennas_ul: 2
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml]
     parameters:
-      cfg_band: 25    # n25 (FDD) is available in the US and the UL carrier is on 1.85-1.915GHz.
-      cfg_earfcn: 392000
-      cfg_common_scs: 15
-      cfg_bandwidth: 20
-      nof_antennas: 2
+      band: 25    # n25 (FDD) is available in the US and the UL carrier is on 1.85-1.915GHz.
+      dl_nr_arfcn: 392000
+      bandwidth: 20
+      common_scs: 15
+      nof_antennas_dl: 2
+      nof_antennas_ul: 2
   feature_ids: [MVP-FUNC-PHY-16-11]

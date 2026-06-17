@@ -10,7 +10,6 @@ dedicated_prb: &base_config
   ue:
     config: [1cell.cfg, 2ues_slicing.cfg]
     parameters:
-      nof_ue: 2
       dl_bitrate: 60.0e+6
       ul_bitrate_sst1: 10.0e+6
       ul_bitrate_sst2: 3.0e+6
@@ -20,7 +19,7 @@ dedicated_prb: &base_config
   gnb:
     config: [du.yml, tdd_default.yml, slicing_dedicated.yml, dual_slice.yml]
     parameters:
-      cfg_bandwidth: 20
+      bandwidth: 20
   core:
     config: [baseline.cfg]
   criteria:
@@ -53,7 +52,7 @@ reserved_prb:
   gnb:
     config: [du.yml, tdd_default.yml, slicing_reserved.yml, dual_slice.yml]
     parameters:
-      cfg_bandwidth: 20
+      bandwidth: 20
   criteria:
     du.pdsch_prbs_mid10_per_tdd_slot_mean: 25
     du.pusch_prbs_mid10_per_tdd_slot_mean: 5

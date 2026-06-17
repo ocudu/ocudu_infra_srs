@@ -3,4 +3,4 @@
 
 cell_cfg:
   drx:
-    long_cycle: {{drx_long_cycle}}
+    long_cycle: 80

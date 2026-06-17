@@ -6,14 +6,13 @@ baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_1000
   ue:
-    config: [1cell_chsim.cfg, multiue_udp_bi.cfg.jinja]
+    config: [1cell_chsim.cfg, udp_bi_chsim.cfg]
     parameters:
-      nof_sim_ues: &nof_ue 512
-      traffic_type: "udp_bi"
+      nof_ue: &nof_ue 512
       staggered_traffic_start: false
-      brate_dl: 800000
-      brate_ul: 150000
-      traffic_duration_sec: 180
+      dl_bitrate: 800000
+      ul_bitrate: 150000
+      test_duration: 180
       log_level: "error"
       pdcch_decode_threshold: 0.5
   gnb:
@@ -41,14 +40,13 @@ baseline: &base_config
 tdd_dl_heavy:
   <<: *base_config
   ue:
-    config: [1cell_chsim.cfg, multiue_udp_bi.cfg.jinja]
+    config: [1cell_chsim.cfg, udp_bi_chsim.cfg]
     parameters:
-      nof_sim_ues: *nof_ue
-      traffic_type: "udp_bi"
+      nof_ue: *nof_ue
       staggered_traffic_start: false
-      brate_dl: 800000
-      brate_ul: 150000
-      traffic_duration_sec: 180
+      dl_bitrate: 800000
+      ul_bitrate: 150000
+      test_duration: 180
       log_level: "error"
       pdcch_decode_threshold: 0.5
   gnb:
@@ -56,6 +54,7 @@ tdd_dl_heavy:
     parameters:
       log_level: warning
       prach_config_index: 158
+      zero_correlation_zone: 0
   feature_ids: [MVP-FUNC-TDD-16-4]
   criteria:
     du.dl_bitrate_gt: 20.0e+6
@@ -75,14 +74,13 @@ tdd_dl_heavy:
 tdd_ul_heavy:
   <<: *base_config
   ue:
-    config: [1cell_chsim.cfg, multiue_udp_bi.cfg.jinja]
+    config: [1cell_chsim.cfg, udp_bi_chsim.cfg]
     parameters:
-      nof_sim_ues: *nof_ue
-      traffic_type: "udp_bi"
+      nof_ue: *nof_ue
       staggered_traffic_start: false
-      brate_dl: 300000
-      brate_ul: 350000
-      traffic_duration_sec: 180
+      dl_bitrate: 300000
+      ul_bitrate: 350000
+      test_duration: 180
       log_level: "error"
       pdcch_decode_threshold: 0.5
   gnb:

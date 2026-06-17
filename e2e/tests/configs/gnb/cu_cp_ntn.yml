@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 cu_cp:
-  inactivity_timer: {{cucp_inactivity_timer|default(7200)}}
-  request_pdu_session_timeout: {{cucp_pdu_timeout|default(10)}}
+  inactivity_timer: 7200
+  request_pdu_session_timeout: 10
   rrc:
-    rrc_procedure_guard_time_ms: {{rrc_procedure_guard_time_ms|default(12800)}}
+    rrc_procedure_guard_time_ms: 12800
 
 log:
   ntn_level: {{log_level}}

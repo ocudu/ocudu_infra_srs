@@ -1,7 +1,10 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+{%- set prach_config_index = prach_config_index | default(0) %}
+{%- set zero_correlation_zone = zero_correlation_zone | default(0) %}
+
 cell_cfg:
   prach:
-    prach_config_index: {{prach_config_index|default(0)}}
-    zero_correlation_zone: {{zero_correlation_zone|default(0)}}
+    prach_config_index: {{prach_config_index}}
+    zero_correlation_zone: {{zero_correlation_zone}}

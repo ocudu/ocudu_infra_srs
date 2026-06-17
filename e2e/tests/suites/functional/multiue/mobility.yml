@@ -11,8 +11,11 @@ inter_ru_ho: &base_config
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
       nof_ue: &nof_ue 10
+      num_cells: 2
   gnb:
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, 512ue.yml]
+    parameters:
+      num_cells: 2
   core:
     config: [baseline.cfg]
   criteria:
@@ -31,6 +34,8 @@ inter_ru_cfra_ho:
   <<: *base_config
   gnb:
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, cfra_ho.yml, tdd_default.yml, 512ue.yml]
+    parameters:
+      num_cells: 2
   feature_ids: [DU-GEN-2-b]
 
 # Handover stability
@@ -47,26 +52,20 @@ inter_du_ho:
       test_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
   cu:
     config: [cu_cp.yml, mobility.yml]
   du:
     items:
       - config: [du.yml, tdd_default.yml, 512ue.yml]
         parameters:
-          gnb_du_id_cfg: 0
-          pci_cfg: 1
-          sector_id_cfg: 0
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          gnb_du_id: 0
+          pci: 1
+          sector_id: 0
       - config: [du.yml, tdd_default.yml, 512ue.yml]
         parameters:
-          gnb_du_id_cfg: 1
-          pci_cfg: 2
-          sector_id_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          gnb_du_id: 1
+          pci: 2
+          sector_id: 1
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -95,25 +94,19 @@ inter_cu_ho:
       test_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
   gnb:
     items:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name_cfg: "ocudu01"
-          pci_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          ran_node_name: "ocudu01"
+          pci: 1
           cell_offset: 0
       - config: [cu_cp.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
-          ran_node_name_cfg: "ocudu02"
-          pci_cfg: 2
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          ran_node_name: "ocudu02"
+          pci: 2
           cell_offset: 1
   criteria:
     du.dl_bitrate_gt: 0
@@ -136,12 +129,16 @@ reestablishment:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
       nof_ue: *nof_ue
+      nof_reestablishments: 5
+      num_cells: 2
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, 512ue.yml]
+    parameters:
+      num_cells: 2
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_reestablishments_ge: 50
+    du.nof_reestablishments_ge: 50 # nof_ue * nof_reestablishments
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_error_indications_le: 0
     all.errors_le: 0

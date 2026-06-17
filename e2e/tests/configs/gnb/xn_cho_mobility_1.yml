@@ -14,13 +14,13 @@ cu_cp:
             report_configs: [2]
       # External gNB2 cell (SSB/PCI provided here)
       - nr_cell_id: 0x19C0
-        gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
+        gnb_id_bit_length: {{gnb_id_bit_length}}
         plmn: "00101"
         tac: 7
         pci: 2
-        ssb_arfcn: {{ext_ssb_arfcn|default(624000)}}
-        band: {{ext_band|default(78)}}
-        ssb_scs: {{ext_ssb_scs|default(30)}}
+        ssb_arfcn: 624000
+        band: 78
+        ssb_scs: 30
         ssb_period: 10
         ssb_offset: 0
         ssb_duration: 5

@@ -17,25 +17,19 @@ baseline: &base_config
       test_duration: 100
       nof_ue: &nof_ue 1
       num_cells: 2
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
   gnb:
     items:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name_cfg: "ocudu01"
-          pci_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          ran_node_name: "ocudu01"
+          pci: 1
           cell_offset: 0
       - config: [cu_cp.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
-          ran_node_name_cfg: "ocudu02"
-          pci_cfg: 2
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          ran_node_name: "ocudu02"
+          pci: 2
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-1-e, MVP-FUNC-MOB-4]
   criteria:
@@ -61,10 +55,7 @@ fr2:
       test_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
       band: 261
-      bandwidth: 100
       dl_nr_arfcn: 2074171
       ssb_nr_arfcn: 2073691
       common_scs: 120
@@ -72,35 +63,31 @@ fr2:
     items:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters:
+          zero_correlation_zone: 0
           gnb_id: 411
-          ran_node_name_cfg: "ocudu01"
-          ext_ssb_arfcn: 2073691
-          ext_band: 261
-          ext_ssb_scs: 120
-          cfg_band: 261
-          cfg_earfcn: 2074171
-          cfg_common_scs: 120
-          cfg_bandwidth: 100
+          ran_node_name: "ocudu01"
+          neighbor_ssb_arfcn: 2073691
+          neighbor_band: 261
+          neighbor_ssb_scs: 120
+          band: 261
+          dl_nr_arfcn: 2074171
+          common_scs: 120
           prach_config_index: 121
-          pci_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          pci: 1
           cell_offset: 0
       - config: [cu_cp.yml, inter_cu_mobility_2.yml, du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters:
+          zero_correlation_zone: 0
           gnb_id: 412
-          ran_node_name_cfg: "ocudu02"
-          ext_ssb_arfcn: 2073691
-          ext_band: 261
-          ext_ssb_scs: 120
-          cfg_band: 261
-          cfg_earfcn: 2074171
-          cfg_common_scs: 120
-          cfg_bandwidth: 100
+          ran_node_name: "ocudu02"
+          neighbor_ssb_arfcn: 2073691
+          neighbor_band: 261
+          neighbor_ssb_scs: 120
+          band: 261
+          dl_nr_arfcn: 2074171
+          common_scs: 120
           prach_config_index: 121
-          pci_cfg: 2
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          pci: 2
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-1-e]
 
@@ -120,19 +107,17 @@ same_cu_up_fr1: &base_same_cu_up
       test_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
   cu_cp:
     items:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml]
         parameters:
           gnb_id: 411
-          ran_node_name_cfg: "ocudu01"
+          ran_node_name: "ocudu01"
           log_level: "debug"
       - config: [cu_cp.yml, inter_cu_mobility_2.yml]
         parameters:
           gnb_id: 412
-          ran_node_name_cfg: "ocudu02"
+          ran_node_name: "ocudu02"
           log_level: "debug"
   cu_up:
     config: [cu_up.yml]
@@ -141,16 +126,13 @@ same_cu_up_fr1: &base_same_cu_up
       - config: [du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          pci_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          pci: 1
           cell_offset: 0
       - config: [du.yml, tdd_default.yml, sib2345.yml]
         parameters:
+          gnb_du_id: 0
           gnb_id: 412
-          pci_cfg: 2
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          pci: 2
           cell_offset: 1
   criteria:
     du.dl_bitrate_gt: 0
@@ -176,10 +158,7 @@ same_cu_up_fr2:
       test_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
       band: 261
-      bandwidth: 100
       dl_nr_arfcn: 2074171
       ssb_nr_arfcn: 2073691
       common_scs: 120
@@ -188,42 +167,39 @@ same_cu_up_fr2:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml]
         parameters:
           gnb_id: 411
-          ran_node_name_cfg: "ocudu01"
-          ext_ssb_arfcn: 2073691
-          ext_band: 261
-          ext_ssb_scs: 120
+          ran_node_name: "ocudu01"
+          neighbor_ssb_arfcn: 2073691
+          neighbor_band: 261
+          neighbor_ssb_scs: 120
       - config: [cu_cp.yml, inter_cu_mobility_2.yml]
         parameters:
           gnb_id: 412
-          ran_node_name_cfg: "ocudu02"
-          ext_ssb_arfcn: 2073691
-          ext_band: 261
-          ext_ssb_scs: 120
+          ran_node_name: "ocudu02"
+          neighbor_ssb_arfcn: 2073691
+          neighbor_band: 261
+          neighbor_ssb_scs: 120
   du:
     items:
       - config: [du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters:
+          zero_correlation_zone: 0
           gnb_id: 411
-          cfg_band: 261
-          cfg_earfcn: 2074171
-          cfg_common_scs: 120
-          cfg_bandwidth: 100
+          band: 261
+          dl_nr_arfcn: 2074171
+          common_scs: 120
           prach_config_index: 121
-          pci_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          pci: 1
           cell_offset: 0
       - config: [du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters:
+          gnb_du_id: 0
+          zero_correlation_zone: 0
           gnb_id: 412
-          cfg_band: 261
-          cfg_earfcn: 2074171
-          cfg_common_scs: 120
-          cfg_bandwidth: 100
+          band: 261
+          dl_nr_arfcn: 2074171
+          common_scs: 120
           prach_config_index: 121
-          pci_cfg: 2
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          pci: 2
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-1-d]
 
@@ -240,8 +216,6 @@ fr1_fr2:
       test_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
       # FR2 cell-2 parameters (must match gNB-2 below)
       band_2: 261
       bandwidth_2: 100
@@ -253,26 +227,22 @@ fr1_fr2:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name_cfg: "ocudu01"
-          ext_ssb_arfcn: 2073691
-          ext_band: 261
-          ext_ssb_scs: 120
-          pci_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          ran_node_name: "ocudu01"
+          neighbor_ssb_arfcn: 2073691
+          neighbor_band: 261
+          neighbor_ssb_scs: 120
+          pci: 1
           cell_offset: 0
       - config: [cu_cp.yml, inter_cu_mobility_2.yml, du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters:
+          zero_correlation_zone: 0
           gnb_id: 412
-          ran_node_name_cfg: "ocudu02"
-          pci_cfg: 2
-          cfg_earfcn: 2074171
-          cfg_band: 261
-          cfg_common_scs: 120
-          cfg_bandwidth: 100
+          ran_node_name: "ocudu02"
+          pci: 2
+          dl_nr_arfcn: 2074171
+          band: 261
+          common_scs: 120
           prach_config_index: 121
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-2-d]
 
@@ -289,8 +259,6 @@ same_cu_up_fr1_fr2:
       test_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
       # FR2 cell-2 parameters (must match DU-2 below)
       band_2: 261
       bandwidth_2: 100
@@ -302,34 +270,31 @@ same_cu_up_fr1_fr2:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml]
         parameters:
           gnb_id: 411
-          ran_node_name_cfg: "ocudu01"
-          ext_ssb_arfcn: 2073691
-          ext_band: 261
-          ext_ssb_scs: 120
+          ran_node_name: "ocudu01"
+          neighbor_ssb_arfcn: 2073691
+          neighbor_band: 261
+          neighbor_ssb_scs: 120
       - config: [cu_cp.yml, inter_cu_mobility_2.yml]
         parameters:
           gnb_id: 412
-          ran_node_name_cfg: "ocudu02"
+          ran_node_name: "ocudu02"
   du:
     items:
       - config: [du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          pci_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          pci: 1
           cell_offset: 0
       - config: [du.yml, prach_config.yml, tdd_default.yml, sib2345.yml]
         parameters: # FR2 config parameters
+          gnb_du_id: 0
+          zero_correlation_zone: 0
           gnb_id: 412
-          pci_cfg: 2
-          cfg_earfcn: 2074171
-          cfg_band: 261
-          cfg_common_scs: 120
-          cfg_bandwidth: 100
+          pci: 2
+          dl_nr_arfcn: 2074171
+          band: 261
+          common_scs: 120
           prach_config_index: 121
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-2-e]
 
@@ -341,20 +306,16 @@ xn_ho:
       - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name_cfg: "ocudu01"
-          pci_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          ran_node_name: "ocudu01"
+          pci: 1
           cell_offset: 0
           warning_allowlist:
             - Failed to connect to XN-C peer
       - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
-          ran_node_name_cfg: "ocudu02"
-          pci_cfg: 2
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          ran_node_name: "ocudu02"
+          pci: 2
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-3]
   criteria:
@@ -379,20 +340,16 @@ xn_cho:
       - config: [cu_cp.yml, xnap.yml, xn_cho_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name_cfg: "ocudu01"
-          pci_cfg: 1
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          ran_node_name: "ocudu01"
+          pci: 1
           cell_offset: 0
           warning_allowlist:
             - Failed to connect to XN-C peer
       - config: [cu_cp.yml, xnap.yml, xn_cho_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
-          ran_node_name_cfg: "ocudu02"
-          pci_cfg: 2
-          nof_antennas_dl: 1
-          nof_antennas_ul: 1
+          ran_node_name: "ocudu02"
+          pci: 2
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-3]
   criteria:

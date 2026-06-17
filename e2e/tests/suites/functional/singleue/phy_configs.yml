@@ -15,6 +15,7 @@ prach_config_b4: &base_config
     config: [cu_cp.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 159
+      zero_correlation_zone: 0
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-PHY-16-2]
@@ -37,6 +38,7 @@ prach_config_0:
     config: [cu_cp.yml, du.yml, tdd_63.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 7
+      zero_correlation_zone: 0
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-PHY-16-2]
@@ -59,6 +61,7 @@ prach_config_1:
     config: [cu_cp.yml, du.yml, tdd_27.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 33
+      zero_correlation_zone: 0
   feature_ids: [MVP-FUNC-PHY-16-2]
   criteria:
     du.dl_bitrate_gt: 0
@@ -79,6 +82,7 @@ prach_config_a3:
     config: [cu_cp.yml, du.yml, tdd_63.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 110
+      zero_correlation_zone: 0
   feature_ids: [MVP-FUNC-PHY-16-2]
   criteria:
     du.dl_bitrate_gt: 0
@@ -99,6 +103,7 @@ prach_config_c0:
     config: [cu_cp.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 180
+      zero_correlation_zone: 0
   feature_ids: [MVP-FUNC-PHY-16-2]
   criteria:
     du.dl_bitrate_gt: 0
@@ -119,6 +124,7 @@ prach_config_c2:
     config: [cu_cp.yml, du.yml, tdd_72.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 189
+      zero_correlation_zone: 0
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -304,6 +310,7 @@ dmrs_1:
     config: [cu_cp.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 159
+      zero_correlation_zone: 0
       dmrs_additional_pos: 1
   feature_ids: [DU-PHY-3]
 
@@ -314,6 +321,7 @@ dmrs_2:
     config: [cu_cp.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 159
+      zero_correlation_zone: 0
       dmrs_additional_pos: 2
   feature_ids: [DU-PHY-3]
 
@@ -324,6 +332,7 @@ dmrs_3:
     config: [cu_cp.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
       prach_config_index: 159
+      zero_correlation_zone: 0
       dmrs_additional_pos: 3
   feature_ids: [DU-PHY-3]
 

@@ -1,27 +1,34 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
-gnb_du_id: {{gnb_du_id_cfg|default(0)}}
+{%- set gnb_du_id = gnb_du_id | default(0) %}
+{%- set pci = pci | default(1) %}
+{%- set dl_nr_arfcn = dl_nr_arfcn | default(626668) %}
+{%- set sector_id = sector_id | default(0) %}
+{%- set dmrs_additional_pos = dmrs_additional_pos | default(2) %}
+{%- set zero_correlation_zone = zero_correlation_zone | default(3) %}
+
+gnb_id_bit_length: {{gnb_id_bit_length}}
+gnb_du_id: {{gnb_du_id}}
 
 cell_cfg:
-  pci: {{pci_cfg|default(1)}}
-  nof_antennas_dl: {{nof_antennas|default(1)}}
-  nof_antennas_ul: {{nof_antennas|default(1)}}
-  dl_arfcn: {{cfg_earfcn|default(626668)}}
-  band: {{cfg_band|default(78)}}
-  channel_bandwidth_MHz: {{cfg_bandwidth|default(100)}}
-  common_scs: {{cfg_common_scs|default(30)}}
-  sector_id: {{sector_id_cfg|default(0)}}
-  plmn: {{plmn_cfg|default("00101")}}
+  pci: {{pci}}
+  nof_antennas_dl: {{nof_antennas_dl}}
+  nof_antennas_ul: {{nof_antennas_ul}}
+  dl_arfcn: {{dl_nr_arfcn}}
+  band: {{band}}
+  channel_bandwidth_MHz: {{bandwidth}}
+  common_scs: {{common_scs}}
+  sector_id: {{sector_id}}
+  plmn: 00101
   pdsch:
-    dmrs_additional_position: {{dmrs_additional_pos|default(2)}}
+    dmrs_additional_position: {{dmrs_additional_pos}}
     mcs_table: qam256
   pusch:
-    dmrs_additional_position: {{dmrs_additional_pos|default(2)}}
+    dmrs_additional_position: {{dmrs_additional_pos}}
     mcs_table: qam256
   prach:
-    zero_correlation_zone: {{zero_correlation_zone|default(3)}}
+    zero_correlation_zone: {{zero_correlation_zone}}
 
 expert_phy:
   pusch_channel_estimator_cfo_compensation: false

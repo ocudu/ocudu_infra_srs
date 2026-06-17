@@ -1,6 +1,20 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+{%- set dl_harq_disabled = dl_harq_disabled | default(false) %}
+{%- set ul_harq_disabled = ul_harq_disabled | default(false) %}
+{%- set ta_meas_slot_prohibit_period = ta_meas_slot_prohibit_period | default(0) %}
+{%- set dl_freq = dl_freq | default(0) %}
+{%- set ul_freq = ul_freq | default(0) %}
+{%- set gw_altitude = gw_altitude | default(0) %}
+{%- set gw_latitude = gw_latitude | default(0) %}
+{%- set gw_longitude = gw_longitude | default(0) %}
+{%- set ntn_ul_sync_validity_dur = ntn_ul_sync_validity_dur | default(5) %}
+{%- set ta_common = ta_common | default(0.0) %}
+{%- set ta_common_drift = ta_common_drift | default(0.0) %}
+{%- set ta_common_drift_variant = ta_common_drift_variant | default(0.0) %}
+{%- set feeder_link = feeder_link | default(false) %}
+
 cell_cfg:
   prach:
     prach_config_index: 31
@@ -13,24 +27,23 @@ cell_cfg:
       ss2_n_candidates: [0, 0, 3, 0, 0]
   pdsch:
     mcs_table: qam256
-    harq_feedback_disabled: {{dl_harq_disabled|default(false)|lower}}
-    # {% if not dl_harq_disabled %}
+    harq_feedback_disabled: {{dl_harq_disabled|lower}}
+    {% if not dl_harq_disabled %}
     nof_harqs: 32
     max_nof_harq_retxs: 4
-    # {% endif %}
+    {% endif %}
   pusch:
     mcs_table: qam256
-    harq_mode_b: {{ul_harq_disabled|default(false)|lower}}
-    # {% if not ul_harq_disabled %}
+    harq_mode_b: {{ul_harq_disabled|lower}}
+    {% if not ul_harq_disabled %}
     nof_harqs: 32
     max_nof_harq_retxs: 4
-    # {% endif %}
+    {% endif %}
   pucch:
     sr_period_ms: 80
     f1_nof_cyclic_shifts: 6
   csi:
     csi_rs_period: 80
-
   ssb:
     ssb_period: 10
   sib:
@@ -47,14 +60,13 @@ cell_cfg:
         si_window_position: 2       # Set SIB19 position.
     sib2:
   ta:
-    ta_cmd_offset_threshold: {{ta_cmd_offset_threshold|default(1)}}
-    ta_measurement_slot_period: {{ta_meas_slot_period|default(1000)}}
+    ta_cmd_offset_threshold: 1
+    ta_measurement_slot_period: 1000
     ta_measurement_slot_prohibit_period: {{ta_meas_slot_prohibit_period}}
-    ta_outlier_detection_zscore_threshold: {{ta_outlier_detection_zscore_threshold|default(0.0)}}
-    ta_target: {{ta_target|default(0)}}
+    ta_outlier_detection_zscore_threshold: 0.0
+    ta_target: 0
   ntn:
     cell_specific_koffset: {{cell_specific_koffset}}
-    # {% if ephemeris_format == "orbital" %}
     ephemeris_orbital:
       eccentricity: {{eccentricity}}
       inclination: {{inclination}}
@@ -62,20 +74,11 @@ cell_cfg:
       mean_anomaly: {{mean_anomaly}}
       periapsis: {{periapsis}}
       semi_major_axis: {{semi_major_axis}}
-    # {% else %}
-    ephemeris_info_ecef:
-      pos_x: {{pos_x}}
-      pos_y: {{pos_y}}
-      pos_z: {{pos_z}}
-      vel_x: {{vel_x}}
-      vel_y: {{vel_y}}
-      vel_z: {{vel_z}}
-    # {% endif %}
     epoch_time:
       sfn: 0  # only placeholders, gnb overwrites it
       subframe_number: 0  # only placeholders, gnb overwrites it
     epoch_timestamp: '{{utc_timestamp}}'
-    # {% if feeder_link %}
+    {% if feeder_link %}
     feeder_link:
       dl_freq: {{dl_freq}}
       enable_doppler_compensation: false
@@ -84,10 +87,10 @@ cell_cfg:
       altitude: {{gw_altitude}}
       latitude: {{gw_latitude}}
       longitude: {{gw_longitude}}
-    # {% endif %}
-    ntn_ul_sync_validity_dur: {{ntn_ul_sync_validity_dur|default(5)}}
+    {% endif %}
+    ntn_ul_sync_validity_dur: {{ntn_ul_sync_validity_dur}}
     ta_info:
-      ta_common: {{ta_common|default(0.0)}}
-      ta_common_drift: {{ta_common_drift|default(0.0)}}
-      ta_common_drift_variant: {{ta_common_drift_variant|default(0.0)}}
+      ta_common: {{ta_common}}
+      ta_common_drift: {{ta_common_drift}}
+      ta_common_drift_variant: {{ta_common_drift_variant}}
     use_state_vector: false

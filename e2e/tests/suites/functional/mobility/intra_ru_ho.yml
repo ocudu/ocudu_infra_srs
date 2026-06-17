@@ -7,9 +7,6 @@ key_regen: &base_config
   request: zmq_mme
   ue:
     config: [1cell.cfg, key_regen.cfg]
-    parameters:
-      dl_bitrate: 1.0e+6
-      ul_bitrate: 1.0e+6
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]
   core:
@@ -34,20 +31,17 @@ fr2_key_regen:
   ue:
     config: [1cell.cfg, key_regen.cfg]
     parameters:
-      dl_bitrate: 1.0e+6
-      ul_bitrate: 1.0e+6
       band: 261
-      bandwidth: 100
       dl_nr_arfcn: 2074171
       ssb_nr_arfcn: 2073691
       common_scs: 120
   gnb:
     config: [cu_cp.yml, du.yml, prach_config.yml, tdd_default.yml]
     parameters:
-      cfg_band: 261
-      cfg_earfcn: 2074171
-      cfg_common_scs: 120
-      cfg_bandwidth: 100
+      zero_correlation_zone: 0
+      band: 261
+      dl_nr_arfcn: 2074171
+      common_scs: 120
       prach_config_index: 121
   feature_ids: [MVP-FUNC-MOB-1-a]
 
@@ -57,9 +51,6 @@ tau_request:
   <<: *base_config
   ue:
     config: [1cell.cfg, tau_request.cfg]
-    parameters:
-      dl_bitrate: 1.0e+6
-      ul_bitrate: 1.0e+6
   feature_ids: [CU-GEN-7]
   criteria:
     du.dl_bitrate_gt: 0

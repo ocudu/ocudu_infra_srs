@@ -5,51 +5,42 @@ geo_band_256_bw_5_fl_false_ping: &base_config
   template: ue_simulator.test_gnb
   request: zmq_ntn
   ue:
-    config: [1cell_ntn.cfg, multiue_ping.cfg.jinja]
-    parameters: &base_ue_parameters
-      ntn_enable: true
-      band: 256
-      bandwidth: 5
-      dl_nr_arfcn: 437000
-      common_scs: 15
-      sample_rate: 5760000
-      ssb_nr_arfcn: 437090
-      as_release: 17
-      nof_sim_ues: 1
-      traffic_duration_sec: 100
-      base_power_on_time: 1
-
-      feeder_link: false
+    config: [1cell_ntn.cfg, ping.cfg]
+    parameters:
+      <<: &base_radio_parameters
+        band: 256
+        bandwidth: 5
+        common_scs: 15
+        dl_nr_arfcn: 437000
+        sample_rate: 5760000
+      <<: &base_ue_parameters
+        ssb_nr_arfcn: 437090
+        ntn_enable: true
+        as_release: 17
+        nof_ue: 1
+        test_duration: 100
+        base_power_on_time: 1
       satellite: geo
-
-      ephemeris_format: orbital
+      feeder_link: false
       gp_latitude: -2.32724563
       gp_longitude: -151.397854351
       gp_altitude: 1.0
   gnb:
     config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
-    parameters: &base_gnb_parameters
-      log_ntn_level: debug
-      cfg_band: 256
-      cfg_bandwidth: 5
-      cfg_earfcn: 437000
-      cfg_common_scs: 15
-      sample_rate: 5760000
-      dl_freq: 2185000000.0
-      ul_freq: 1995000000.0
-      time_alignment_calibration: -576
-      zero_correlation_zone: 0
-      rrc_procedure_guard_time_ms: 12800
+    parameters:
+      <<: *base_radio_parameters
+      <<: &base_gnb_parameters
+        dl_freq: 2185000000.0
+        ul_freq: 1995000000.0
+        time_alignment_calibration: -576
+        zero_correlation_zone: 0
+        warning_allowlist:
+          - Slot point to time point mapping not available.
+      feeder_link: false
       dl_harq_disabled: false
       ul_harq_disabled: false
-      warning_allowlist:
-        - Slot point to time point mapping not available.
-
-      feeder_link: false
       cell_specific_koffset: 240
       ta_meas_slot_prohibit_period: 250
-
-      ephemeris_format: orbital
       eccentricity: 0.0002596053925158607
       inclination: 0.1319312264847397
       longitude: 0.18827186416253533
@@ -72,13 +63,12 @@ geo_band_256_bw_5_fl_false_ping: &base_config
 geo_band_256_bw_5_fl_true_ping:
   <<: *base_config
   ue:
-    config: [1cell_ntn.cfg, multiue_ping.cfg.jinja]
+    config: [1cell_ntn.cfg, ping.cfg]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_ue_parameters
-      feeder_link: true
       satellite: geo
-
-      ephemeris_format: orbital
+      feeder_link: true
       gp_latitude: -2.327101395
       gp_longitude: -106.896958167
       gp_altitude: 1.0
@@ -88,17 +78,17 @@ geo_band_256_bw_5_fl_true_ping:
   gnb:
     config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_gnb_parameters
       feeder_link: true
-      ta_common: 239391.90
+      dl_harq_disabled: false
+      ul_harq_disabled: false
       cell_specific_koffset: 480
       ta_meas_slot_prohibit_period: 490
-
       gw_latitude: -2.3271013947022157
       gw_longitude: -106.89695816700173
       gw_altitude: 1.0
-
-      ephemeris_format: orbital
+      ta_common: 239391.90
       eccentricity: 0.0002596177199746916
       inclination: 0.1319550252630127
       longitude: 0.9650375632437326
@@ -109,25 +99,25 @@ geo_band_256_bw_5_fl_true_ping:
 leo_band_256_bw_5_fl_false_ping:
   <<: *base_config
   ue:
-    config: [1cell_ntn.cfg, multiue_ping.cfg.jinja]
+    config: [1cell_ntn.cfg, ping.cfg]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_ue_parameters
-      feeder_link: false
       satellite: leo
-
-      ephemeris_format: orbital
+      feeder_link: false
       gp_latitude: 7.853110757
       gp_longitude: -96.817254023
       gp_altitude: 1
   gnb:
     config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_gnb_parameters
       feeder_link: false
+      dl_harq_disabled: false
+      ul_harq_disabled: false
       cell_specific_koffset: 8
       ta_meas_slot_prohibit_period: 18
-
-      ephemeris_format: orbital
       eccentricity: 0.00119596362232265
       inclination: 0.9295784053909042
       longitude: 4.50199405531991
@@ -138,13 +128,12 @@ leo_band_256_bw_5_fl_false_ping:
 leo_band_256_bw_5_fl_true_ping:
   <<: *base_config
   ue:
-    config: [1cell_ntn.cfg, multiue_ping.cfg.jinja]
+    config: [1cell_ntn.cfg, ping.cfg]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_ue_parameters
-      feeder_link: true
       satellite: leo
-
-      ephemeris_format: orbital
+      feeder_link: true
       gp_latitude: 7.853127064
       gp_longitude: -41.916586438
       gp_altitude: 1
@@ -154,17 +143,17 @@ leo_band_256_bw_5_fl_true_ping:
   gnb:
     config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_gnb_parameters
       feeder_link: true
+      dl_harq_disabled: false
+      ul_harq_disabled: false
       ta_common: 7874.9497
       cell_specific_koffset: 16
       ta_meas_slot_prohibit_period: 26
-
       gw_altitude: 1.0
       gw_latitude: 7.853127063969279
       gw_longitude: -41.916586438365854
-
-      ephemeris_format: orbital
       eccentricity: 0.0011959639962285152
       inclination: 0.9295784053900794
       longitude: 5.460191249899703
@@ -175,24 +164,43 @@ leo_band_256_bw_5_fl_true_ping:
 geo_fl_false_harq_enabled_iperf:
   <<: *base_config
   ue:
-    config: [1cell_ntn.cfg, multiue_udp_bi.cfg.jinja]
+    config: [1cell_ntn.cfg, udp_bi_chsim.cfg]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_ue_parameters
-      log_level: warning
-      traffic_type: "udp_bi"
-      brate_dl: 50.0e+6
-      brate_ul: 50.0e+6
-      staggered_traffic_start: true
-      traffic_duration_sec: 50
-      traffic_stop_to_dereg_delay_time: 1
-      dereg_to_pw_off_delay_time: 1
-      quit_delay_time: 1
+      <<: &base_ue_traffic_parameters
+        log_level: warning
+        dl_bitrate: 50.0e+6
+        ul_bitrate: 50.0e+6
+        staggered_traffic_start: true
+        test_duration: 50
+        traffic_stop_to_dereg_delay: 1
+        dereg_to_pw_off_delay: 1
+        quit_delay: 1
+      satellite: geo
+      feeder_link: false
+      gp_latitude: -2.32724563
+      gp_longitude: -151.397854351
+      gp_altitude: 1.0
   gnb:
     config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_gnb_parameters
-      log_level: warning
-      time_multiplier: 0.99
+      <<: &base_gnb_iperf_parameters
+        log_level: warning
+        time_multiplier: 0.99
+      feeder_link: false
+      dl_harq_disabled: false
+      ul_harq_disabled: false
+      cell_specific_koffset: 240
+      ta_meas_slot_prohibit_period: 250
+      eccentricity: 0.0002596053925158607
+      inclination: 0.1319312264847397
+      longitude: 0.18827186416253533
+      mean_anomaly: 5.108532741837221
+      periapsis: 4.630205380656405
+      semi_major_axis: 42265116.30346734
   core:
     config: [baseline.cfg]
   criteria:
@@ -206,26 +214,33 @@ geo_fl_false_harq_enabled_iperf:
 geo_fl_false_harq_disabled_iperf:
   <<: *base_config
   ue:
-    config: [1cell_ntn.cfg, multiue_udp_bi.cfg.jinja]
+    config: [1cell_ntn.cfg, udp_bi_chsim.cfg]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_ue_parameters
-      log_level: warning
-      traffic_type: "udp_bi"
-      brate_dl: 50.0e+6
-      brate_ul: 50.0e+6
-      staggered_traffic_start: true
-      traffic_duration_sec: 50
-      traffic_stop_to_dereg_delay_time: 1
-      dereg_to_pw_off_delay_time: 1
-      quit_delay_time: 1
+      <<: *base_ue_traffic_parameters
+      satellite: geo
+      feeder_link: false
+      gp_latitude: -2.32724563
+      gp_longitude: -151.397854351
+      gp_altitude: 1.0
   gnb:
     config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
     parameters:
+      <<: *base_radio_parameters
       <<: *base_gnb_parameters
-      log_level: warning
+      <<: *base_gnb_iperf_parameters
+      feeder_link: false
       ul_harq_disabled: true
       dl_harq_disabled: true
-      time_multiplier: 0.99
+      cell_specific_koffset: 240
+      ta_meas_slot_prohibit_period: 250
+      eccentricity: 0.0002596053925158607
+      inclination: 0.1319312264847397
+      longitude: 0.18827186416253533
+      mean_anomaly: 5.108532741837221
+      periapsis: 4.630205380656405
+      semi_major_axis: 42265116.30346734
   core:
     config: [baseline.cfg]
   criteria:

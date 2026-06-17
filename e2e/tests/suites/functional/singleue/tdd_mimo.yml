@@ -10,12 +10,14 @@ mimo_2x2: &base_config
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      nof_antennas: 2
+      nof_antennas_dl: 2
+      nof_antennas_ul: 2
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, mimo_rx.yml]
     parameters:
-      nof_antennas: 2
+      nof_antennas_dl: 2
+      nof_antennas_ul: 2
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-MIMO-16-1, MVP-FUNC-MIMO-16-3, MVP-FUNC-MIMO-16-4, MVP-FUNC-PHY-16-10, MVP-FUNC-PHY-16-11]
@@ -42,7 +44,8 @@ mimo_2x2_aperiodic_csi:
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, aperiodic_csi.yml, srs_periodic_wband.yml, mimo_rx.yml]
     parameters:
-      nof_antennas: 2
+      nof_antennas_dl: 2
+      nof_antennas_ul: 2
   feature_ids: [MVP-FUNC-MIMO-16-1]
 
 # TDD MIMO 4x4 configuration test
@@ -53,12 +56,14 @@ mimo_4x4:
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      nof_antennas: 4
+      nof_antennas_dl: 4
+      nof_antennas_ul: 4
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, mimo_rx.yml]
     parameters:
-      nof_antennas: 4
+      nof_antennas_dl: 4
+      nof_antennas_ul: 4
   feature_ids: [MVP-FUNC-MIMO-16-5, MVP-FUNC-PHY-16-7, MVP-FUNC-PHY-16-8]
   criteria:
     du.dl_bitrate_gt: 0

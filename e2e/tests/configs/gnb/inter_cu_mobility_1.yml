@@ -1,7 +1,11 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
+{%- set neighbor_ssb_arfcn = neighbor_ssb_arfcn | default(624000) %}
+{%- set neighbor_band = neighbor_band | default(78) %}
+{%- set neighbor_ssb_scs = neighbor_ssb_scs | default(30) %}
+
+gnb_id_bit_length: {{gnb_id_bit_length}}
 
 cu_cp:
   mobility:
@@ -16,13 +20,13 @@ cu_cp:
         ncells:
           - nr_cell_id: 0x19B0
             report_configs: [2]
-        gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
+        gnb_id_bit_length: {{gnb_id_bit_length}}
         plmn: "00101"
         tac: 7
         pci: 2
-        ssb_arfcn: {{ext_ssb_arfcn|default(624000)}}
-        band: {{ext_band|default(78)}}
-        ssb_scs: {{ext_ssb_scs|default(30)}}
+        ssb_arfcn: {{neighbor_ssb_arfcn}}
+        band: {{neighbor_band}}
+        ssb_scs: {{neighbor_ssb_scs}}
         ssb_period: 10
         ssb_offset: 0
         ssb_duration: 5

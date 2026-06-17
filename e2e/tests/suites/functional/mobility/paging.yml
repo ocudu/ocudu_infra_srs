@@ -9,7 +9,6 @@ baseline: &base_config
     config: [1cell.cfg, paging.cfg]
     parameters:
       dl_bitrate: 10.0e+3
-      ul_bitrate: 10.0e+3
       nof_paging: 1
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, inactivity_timer.yml, mac_pcap.yml]
@@ -41,7 +40,6 @@ drx:
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
-      drx_long_cycle: 80
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-SVCS-16-6]
   criteria:
@@ -72,7 +70,6 @@ rrc_idle_mt_multi:
     config: [1cell.cfg, paging.cfg]
     parameters:
       dl_bitrate: 10.0e+3
-      ul_bitrate: 10.0e+3
       nof_paging: 3
   criteria:
     <<: *base_criteria
@@ -86,9 +83,7 @@ rrc_idle_mo:
   ue:
     config: [1cell.cfg, mo_initiate.cfg]
     parameters:
-      dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
-      nof_paging: 1
   feature_ids: [MVP-FUNC-MOB-11]
   criteria:
     <<: *base_criteria
@@ -103,7 +98,6 @@ rrc_inactive_mt:
     config: [1cell.cfg, paging.cfg]
     parameters:
       dl_bitrate: 10.0e+3
-      ul_bitrate: 10.0e+3
       nof_paging: 1
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
@@ -124,7 +118,6 @@ rrc_inactive_mt_multi:
     config: [1cell.cfg, paging.cfg]
     parameters:
       dl_bitrate: 10.0e+3
-      ul_bitrate: 10.0e+3
       nof_paging: 3
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
@@ -144,7 +137,6 @@ rrc_inactive_mo:
   ue:
     config: [1cell.cfg, mo_initiate.cfg]
     parameters:
-      dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]

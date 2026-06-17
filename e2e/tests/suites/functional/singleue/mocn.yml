@@ -38,6 +38,10 @@ moran:
   <<: *base_config
   ue:
     config: [2cell_intrafreq.cfg, mocn.cfg]
+    parameters:
+      num_cells: 2
   gnb:
     config: [mocn.yml, cu_cp.yml, du.yml, 2cell_moran.yml]
+    parameters:
+      num_cells: 2
   feature_ids: [MVP-FUNC-RANS-16-2]

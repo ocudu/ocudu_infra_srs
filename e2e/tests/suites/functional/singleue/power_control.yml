@@ -49,14 +49,14 @@ closed_loop_pc_fdd:
       ul_bitrate: 10.0e+6
       dl_nr_arfcn: 368500
       ssb_nr_arfcn: 364090
-      common_scs: 15
       band: 3
       bandwidth: 50
+      common_scs: 15
   gnb:
     config: [cu_cp.yml, du.yml, closed_loop_pc.yml, pucch_config.yml]
     parameters:
-      cfg_earfcn: 368500
-      cfg_bandwidth: 50
-      cfg_band: 3
-      cfg_common_scs: 15
+      dl_nr_arfcn: 368500
+      bandwidth: 50
+      band: 3
+      common_scs: 15
       pucch_format: "f0_and_f2"

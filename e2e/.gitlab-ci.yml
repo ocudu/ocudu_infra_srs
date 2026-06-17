@@ -38,6 +38,7 @@ e2e tests tox:
         - e2e/conftest.py
         - e2e/pyproject.toml
         - e2e/retina_requests/**/*
+        - retina/**/*.py
   variables:
     PY_DIR: e2e
   before_script:

@@ -10,7 +10,6 @@ slicing: &base_config
     parameters:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
-      test_duration: 1
   gnb:
     config: [dual_slice.yml, cu_cp.yml, du.yml, mac_pcap.yml, tdd_default.yml, sib16.yml, slice_rach.yml]
   core:

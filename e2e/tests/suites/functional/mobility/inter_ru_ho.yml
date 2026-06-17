@@ -12,8 +12,11 @@ baseline: &base_config
       ul_bitrate: 1.0e+6
       test_duration: 100
       nof_ue: &nof_ue 1
+      num_cells: 2
   gnb:
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
+    parameters:
+      num_cells: 2
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-9, MVP-FUNC-MOB-14, MVP-FUNC-BAS-16-2, DU-GEN-2-a, CU-GEN-5]
@@ -43,17 +46,18 @@ fr2:
       test_duration: 100
       nof_ue: *nof_ue
       band: 261
-      bandwidth: 100
       dl_nr_arfcn: 2074171
       ssb_nr_arfcn: 2073691
       common_scs: 120
+      num_cells: 2
   gnb:
     config: [cu_cp.yml, du.yml, prach_config.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml]
     parameters:
-      cfg_band: 261
-      cfg_earfcn: 2074171
-      cfg_common_scs: 120
-      cfg_bandwidth: 100
+      num_cells: 2
+      zero_correlation_zone: 0
+      band: 261
+      dl_nr_arfcn: 2074171
+      common_scs: 120
       prach_config_index: 121
   feature_ids: [MVP-FUNC-MOB-1-b]
 
@@ -67,10 +71,11 @@ conditional_ho:
       ul_bitrate: 1.0e+6
       test_duration: 100
       nof_ue: *nof_ue
+      num_cells: 2
   gnb:
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, conditional_ho.yml, tdd_default.yml, mac_pcap.yml]
     parameters:
-      trigger_handover: false
+      num_cells: 2
   feature_ids: [MVP-FUNC-MOB-15]
   criteria:
     du.dl_bitrate_gt: 0
@@ -94,10 +99,11 @@ cfra_ho:
       ul_bitrate: 1.0e+6
       test_duration: 100
       nof_ue: *nof_ue
+      num_cells: 2
   gnb:
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, cfra_ho.yml, tdd_default.yml, mac_pcap.yml]
     parameters:
-      trigger_handover: false
+      num_cells: 2
   feature_ids: [DU-GEN-2-b]
   criteria:
     du.dl_bitrate_gt: 0

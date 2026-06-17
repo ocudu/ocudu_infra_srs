@@ -5,11 +5,10 @@ baseline:
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [1cell_chsim.cfg, multiue_ping.cfg.jinja]
+    config: [1cell_chsim.cfg, ping.cfg]
     parameters:
-      nof_sim_ues: &nof_ue 1
-      traffic_duration_sec: 10
-      staggered_traffic_start: false
+      nof_ue: &nof_ue 1
+      test_duration: 10
       log_com_level: "debug"
       log_prod_level: "debug"
       pdcch_decode_opt_threshold: 0.7

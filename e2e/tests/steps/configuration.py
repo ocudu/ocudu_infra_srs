@@ -60,6 +60,7 @@ def configure_test_parameters(
     warning_allowlist: Optional[List[str]] = None,
     enable_2gnbs: bool = False,
     inter_freq_ho: bool = False,
+    gnb_id_bit_length: int = 22,
 ):
     """
     Configure test parameters
@@ -167,6 +168,7 @@ def configure_test_parameters(
         "gnb": {
             "node_list": gnb_node_list,
             "parameters": {
+                "gnb_id_bit_length": gnb_id_bit_length,
                 "band": band,
                 "dl_arfcn": _get_dl_arfcn(band),
                 "common_scs": common_scs,

@@ -1,8 +1,10 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
-ran_node_name: {{ran_node_name_cfg|default("ocudu01")}}
+{%- set ran_node_name = ran_node_name | default("ocudu01") %}
+
+gnb_id_bit_length: {{gnb_id_bit_length}}
+ran_node_name: {{ran_node_name}}
 
 # Baseline single slice configuration
 cu_cp:

@@ -1,12 +1,17 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+{%- set pucch_format = pucch_format | default("f1_and_f2") %}
+{%- set resource_set_size = resource_set_size | default(8) %}
+{%- set nof_cell_sr_res = nof_cell_sr_res | default(7) %}
+{%- set nof_cell_csi_res = nof_cell_csi_res | default(7) %}
+
 cell_cfg:
   pucch:
-    formats: {{pucch_format | default("f1_and_f2")}}
-    resource_set_size: {{resource_set_size|default(8)}}
-    nof_cell_res_set_configs: {{nof_cell_res_set_configs|default(2)}}
-    f1_nof_cyclic_shifts: {{f1_nof_cyclic_shifts|default(2)}}
-    f1_enable_occ: {{f1_enable_occ|default("false")}}
-    nof_cell_sr_res: {{nof_cell_sr_res|default(7)}}
-    nof_cell_csi_res: {{nof_cell_csi_res|default(7)}}
+    formats: {{pucch_format}}
+    resource_set_size: {{resource_set_size}}
+    nof_cell_res_set_configs: 2
+    f1_nof_cyclic_shifts: 2
+    f1_enable_occ: false
+    nof_cell_sr_res: {{nof_cell_sr_res}}
+    nof_cell_csi_res: {{nof_cell_csi_res}}

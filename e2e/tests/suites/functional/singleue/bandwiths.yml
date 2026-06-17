@@ -12,20 +12,16 @@ bw_tdd_10: &base_config
       bandwidth: 10
       dl_nr_arfcn: 520002
       ssb_nr_arfcn: 519870
-      common_scs: 30
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
-      nof_antennas: 1
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml, mac_pcap.yml]
     parameters:
-      cfg_band: 41
-      cfg_earfcn: 520002
-      cfg_bandwidth: 10
-      nof_antennas: 1
-      cfg_common_scs: 30
+      band: 41
+      dl_nr_arfcn: 520002
+      bandwidth: 10
   core:
     config: [baseline.cfg]
   feature_ids: []
@@ -50,48 +46,14 @@ bw_tdd_50:
       bandwidth: 50
       dl_nr_arfcn: 520002
       ssb_nr_arfcn: 516030
-      common_scs: 30
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
-      nof_antennas: 1
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]
     parameters:
-      cfg_band: 41
-      cfg_earfcn: 520002
-      cfg_bandwidth: 50
-      nof_antennas: 1
-      cfg_common_scs: 30
+      band: 41
+      dl_nr_arfcn: 520002
+      bandwidth: 50
   feature_ids: []
-
-# Baseline band n256 at 5 MHz
-bw_fdd_ntn_5:
-  <<: *base_config
-  template: ue_simulator.test_gnb
-  request: zmq_ntn
-  ue:
-    config: [1cell.cfg, udp_bi.cfg]
-    parameters:
-      band: 256
-      bandwidth: 5
-      dl_nr_arfcn: 436000
-      ssb_nr_arfcn: 436090
-      common_scs: 15
-      # TODO: add NTN parameters
-  gnb:
-    config: [cu_cp.yml, du.yml, prach_config.yml, pucch_config.yml, mac_pcap.yml]
-    parameters:
-      cfg_band: 256
-      cfg_earfcn: 436000
-      cfg_common_scs: 15
-      cfg_bandwidth: 5
-      prach_config_index: 16
-      resource_set_size: 7
-      nof_cell_res_set_configs: 1
-      f1_nof_cyclic_shifts: 1
-      f1_enable_occ: true
-      nof_cell_sr_res: 7
-      nof_cell_csi_res: 7
-  feature_ids: [skip] # TODO: remove this when test is ready

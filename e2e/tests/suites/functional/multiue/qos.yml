@@ -8,22 +8,20 @@ baseline:
   ue:
     config: [1cell_chsim.cfg, 2ues_qos_gbr_ngbr.cfg]
     parameters:
-      nof_ue: 2
       non_gbr_bitrate: 50.0e+6
-      gbr_bitrate: 1.0e+6
       dl_nr_arfcn: 368500
       ssb_nr_arfcn: 367930
-      common_scs: 15
       band: 3
       bandwidth: 10
+      common_scs: 15
       test_duration: 20
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, vonr_qos.yml]
     parameters:
-      cfg_earfcn: 368500
-      cfg_bandwidth: 10
-      cfg_band: 3
-      cfg_common_scs: 15
+      dl_nr_arfcn: 368500
+      bandwidth: 10
+      band: 3
+      common_scs: 15
       time_multiplier: 2
   core:
     config: [baseline.cfg]

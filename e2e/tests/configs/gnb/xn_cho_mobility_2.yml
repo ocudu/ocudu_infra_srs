@@ -14,7 +14,7 @@ cu_cp:
             report_configs: [2]
       # External gNB1 cell (SSB/PCI provided here)
       - nr_cell_id: 0x19B0
-        gnb_id_bit_length: {{gnb_id_bit_length_cfg|default(32)}}
+        gnb_id_bit_length: {{gnb_id_bit_length}}
         plmn: "00101"
         tac: 7
         pci: 1

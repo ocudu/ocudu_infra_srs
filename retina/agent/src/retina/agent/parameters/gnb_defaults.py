@@ -24,17 +24,17 @@ convert_to_parameter_source(__name__, ParameterNamespace.DU)
 ##########
 # pylint: disable=invalid-name
 gnb_id: int = 411
-gnb_id_bit_length: int = 22
+gnb_id_bit_length: int = 32
 gnb_du_id: int = 0
 log_level: str = "info"
 log_rlc_level: str = "warning"
 enable_high_latency_diagnostics: bool = False
 tx_gain: float = -1  # Default value in testbed
 rx_gain: float = -1  # Default value in testbed
-common_scs: int = 15
+common_scs: int = 30
 sample_rate: int = -1  # Default value in testbed
-band: int = 7
-bandwidth: int = 20
+band: int = 78
+bandwidth: int = 100
 dl_arfcn: int = 536020
 tac: int = 7
 pci: int = 1
