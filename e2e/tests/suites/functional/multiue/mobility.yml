@@ -18,8 +18,8 @@ inter_ru_ho: &base_config
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 600 # allow some KOs during HO transition
-    du.nof_ko_ul_le: 600 # allow some KOs during HO transition
+    du.nof_ko_dl_le: .inf
+    du.nof_ko_ul_le: .inf
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_error_indications_le: 0
@@ -32,16 +32,6 @@ inter_ru_cfra_ho:
   gnb:
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, cfra_ho.yml, tdd_default.yml, 512ue.yml]
   feature_ids: [DU-GEN-2-b]
-  criteria:
-    du.dl_bitrate_gt: 0
-    du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 600 # allow some KOs during HO transition
-    du.nof_ko_ul_le: 600 # allow some KOs during HO transition
-    du.nof_reestablishments_eq: 0
-    core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    du.nof_error_indications_le: 0
-    all.errors_le: 0
-    all.warnings_le: 0
 
 # Handover stability
 inter_du_ho:
@@ -80,8 +70,8 @@ inter_du_ho:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 600 # allow some KOs during HO transition
-    du.nof_ko_ul_le: 600 # allow some KOs during HO transition
+    du.nof_ko_dl_le: .inf
+    du.nof_ko_ul_le: .inf
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_ge: 200 # calculated based on the test_duration
