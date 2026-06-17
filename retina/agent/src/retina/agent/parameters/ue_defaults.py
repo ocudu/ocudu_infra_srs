@@ -22,6 +22,8 @@ convert_to_parameter_source(__name__, ParameterNamespace.UE)
 log_level: str = "info"
 log_ip_level: str = ""
 log_s72_level: str = ""
+log_com_level: str = ""
+log_prod_level: str = ""
 mac_filename: str = "mac.pcap"
 mac_nr_filename: str = "mac_nr.pcap"
 nas_filename: str = "ue_nas.pcap"
