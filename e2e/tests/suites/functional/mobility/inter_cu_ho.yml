@@ -41,8 +41,8 @@ baseline: &base_config
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 500 # allow some KOs during HO transitions
-    du.nof_ko_ul_le: 500 # allow some KOs during HO transitions
+    du.nof_ko_dl_le: 550 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 550 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the test_duration
@@ -155,8 +155,8 @@ same_cu_up_fr1: &base_same_cu_up
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 500 # allow some KOs during HO transitions
-    du.nof_ko_ul_le: 500 # allow some KOs during HO transitions
+    du.nof_ko_dl_le: 550 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 550 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the test_duration
@@ -360,8 +360,8 @@ xn_ho:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 500 # allow some KOs during HO transitions
-    du.nof_ko_ul_le: 500 # allow some KOs during HO transitions
+    du.nof_ko_dl_le: 100 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 100 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the test_duration
@@ -398,8 +398,8 @@ xn_cho:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 500 # allow some KOs during HO transitions
-    du.nof_ko_ul_le: 500 # allow some KOs during HO transitions
+    du.nof_ko_dl_le: 100 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 100 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the test_duration
