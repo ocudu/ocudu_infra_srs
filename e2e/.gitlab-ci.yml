@@ -37,6 +37,7 @@ e2e tests tox:
         - e2e/scripts/**/*
         - e2e/conftest.py
         - e2e/pyproject.toml
+        - e2e/retina_requests/**/*
   variables:
     PY_DIR: e2e
   before_script:
@@ -57,17 +58,7 @@ e2e dynamic tests validation:
         - e2e/pyproject.toml
   script:
     - cd ${CI_PROJECT_DIR}/e2e
-    - retina-launcher --collect-only
-    - |
-      missing=0
-      while IFS= read -r config; do
-        name=$(basename "$config")
-        if ! grep -rq "$name" tests/suites/; then
-          echo "NOT REFERENCED: $config"
-          missing=$((missing + 1))
-        fi
-      done < <(find tests/configs/ -type f)
-      [ "$missing" -eq 0 ] && echo "All configs referenced." || { echo "$missing config(s) not referenced in any suite."; exit 1; }
+    - retina-launcher -W error --collect-only
   needs:
     - get retina version
     - job: retina containers [launcher]

@@ -205,13 +205,7 @@ class c_srs_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.c_srs for s in self._stub_array)
 
 
-class b_srs_eq(DuCriteria):
-    """b-SRS"""
-
-    operator_method = operator.eq
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).du.b_srs for s in self._stub_array)
+# b-SRS supported in retina but no criterion used in any test
 
 
 class t312_eq(DuCriteria):
@@ -245,15 +239,6 @@ class nof_rrc_suspend_eq(DuCriteria):
     """RRC Suspend"""
 
     operator_method = operator.eq
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_suspend for s in self._stub_array)
-
-
-class nof_rrc_suspend_ge(DuCriteria):
-    """RRC Suspend"""
-
-    operator_method = operator.ge
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_suspend for s in self._stub_array)
@@ -304,13 +289,7 @@ class nof_sib4_ge(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_sib4_transmissions for s in self._stub_array)
 
 
-class nof_sib5_ge(DuCriteria):
-    """SIB5 Transmissions"""
-
-    operator_method = operator.ge
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).du.nof_sib5_transmissions for s in self._stub_array)
+# nof_sib5_transmissions supported in retina but not used in any test criterion
 
 
 class nof_sib8_ge(DuCriteria):
@@ -340,13 +319,7 @@ class nof_sib16_ge(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_sib16_transmissions for s in self._stub_array)
 
 
-class nof_sib19_ge(DuCriteria):
-    """SIB19 Transmissions"""
-
-    operator_method = operator.ge
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).du.nof_sib19_transmissions for s in self._stub_array)
+# nof_sib19_transmissions supported in retina but not used in any test criterion
 
 
 class dl_max_mcs_ge(DuCriteria):
@@ -449,24 +422,8 @@ class ul_ue_mid10_bitrate(DuCriteria):
         return [ue.ul_av_mid10_samples for ue in du.GetMetrics(Empty()).ue_array]
 
 
-class pdsch_prbs_used_per_tdd_slot_mean(DuCriteria):
-    """PDSCH PRBs used per TDD slot index"""
-
-    operator_method = operator.ge
-
-    def callback(self):
-        du = self._stub_array[0]
-        return round(mean(du.GetMetrics(Empty()).du.pdsch_prbs_used_per_tdd_slot_idx), 1)
-
-
-class pusch_prbs_used_per_tdd_slot_mean(DuCriteria):
-    """PUSCH PRBs used per TDD slot index"""
-
-    operator_method = operator.ge
-
-    def callback(self):
-        du = self._stub_array[0]
-        return round(mean(du.GetMetrics(Empty()).du.pusch_prbs_used_per_tdd_slot_idx), 1)
+# pdsch_prbs_used_per_tdd_slot_idx supported in retina but not used in any test criterion
+# pusch_prbs_used_per_tdd_slot_mean supported in retina but not used in any test criterion
 
 
 class pdsch_prbs_mid10_per_tdd_slot_mean(DuCriteria):

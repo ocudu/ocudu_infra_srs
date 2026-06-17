@@ -206,6 +206,7 @@ envlist =
   format
   lint
   type
+  static
 
 [testenv:format]
 skip_install = true
@@ -229,4 +230,13 @@ deps =
   mypy <= 1.20.0
 commands =
   mypy --check-untyped-defs tests scripts conftest.py
+
+[testenv:static]
+skip_install = true
+deps =
+  jinja2
+  jsonschema
+  pyyaml
+commands =
+  python3 scripts/static_checks.py
 """

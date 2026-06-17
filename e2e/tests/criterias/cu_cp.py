@@ -50,15 +50,6 @@ class nof_e_cid_measurement_initiation_response_eq(CuCpCriteria):
         return sum(s.GetMetrics(Empty()).cu_cp.nof_e_cid_measurement_initiation_response for s in self._stub_array)
 
 
-class nof_e_cid_measurement_report_eq(CuCpCriteria):
-    """E-CID Measurement Report"""
-
-    operator_method = operator.eq
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu_cp.nof_e_cid_measurement_report for s in self._stub_array)
-
-
 class nof_e_cid_measurement_report_geq(CuCpCriteria):
     """E-CID Measurement Report"""
 
@@ -86,15 +77,6 @@ class trp_information_response_eq(CuCpCriteria):
         return sum(s.GetMetrics(Empty()).cu_cp.nof_trp_information_response for s in self._stub_array)
 
 
-class nof_xn_handover_request_acknowledge_eq(CuCpCriteria):
-    """XN Handover Request Acknowledge"""
-
-    operator_method = operator.eq
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu_cp.nof_xn_handover_request_acknowledge for s in self._stub_array)
-
-
 class nof_xn_handover_request_acknowledge_geq(CuCpCriteria):
     """XN Handover Request Acknowledge"""
 
@@ -102,15 +84,6 @@ class nof_xn_handover_request_acknowledge_geq(CuCpCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).cu_cp.nof_xn_handover_request_acknowledge for s in self._stub_array)
-
-
-class nof_sn_status_transfer_eq(CuCpCriteria):
-    """SN Status Transfer"""
-
-    operator_method = operator.eq
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu_cp.nof_sn_status_transfer for s in self._stub_array)
 
 
 class nof_sn_status_transfer_geq(CuCpCriteria):
