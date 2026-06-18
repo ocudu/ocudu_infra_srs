@@ -264,7 +264,7 @@ _NODE_CONFIGS: Dict[storage.NodeTypeEnum, _NodeConfig] = {
     storage.NodeTypeEnum.CU_UP: _NodeConfig("cu_up", "gnb", ["cu", "qos"]),
     storage.NodeTypeEnum.DU: _NodeConfig("du", "gnb", ["du", "qos"]),
     storage.NodeTypeEnum.GNB: _NodeConfig("gnb", "gnb", ["cu", "du", "qos"]),
-    storage.NodeTypeEnum.FIVEGC: _NodeConfig("core", "core", ["core", "ims"]),
+    storage.NodeTypeEnum.FIVEGC: _NodeConfig("core", "core", ["core"]),
 }
 
 

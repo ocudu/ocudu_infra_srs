@@ -378,13 +378,13 @@ class Amarisoft5gc(FiveGCDriver):
         )
 
 
-class LocalAmarisoft5gc(_AmarisoftMme):
+class LocalAmarisoft5gc(Amarisoft5gc):
     """
     AmarisoftMME 5GC Agent for local
     """
 
     def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs, executor=LocalExecutor())
+        super().__init__(*args, **kwargs, executor=LocalExecutor(), ims_cls=_AmarisoftIms, mme_cls=_AmarisoftMme)
         testbed_defaults.api_address = testbed_defaults.ip
 
 
