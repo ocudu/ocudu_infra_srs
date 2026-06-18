@@ -13,12 +13,16 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
   {% endif %}
   log_filename: "{{log_filename}}",
 
+  {% if license_server %}
+  license_server: {
+    server_addr: "{{license_server}}",
+    tag: "{{license_args}}",
+  },
+  {% endif %}
+
   /* SIP bind address */
   sip_addr: [
       {addr: "{{subnet_prefix}}.4.1", bind_addr: "{{subnet_prefix}}.4.1", port_min: 10000, port_max: 20000},
-      //"2001:468:3000:1::",
-      {addr: "{{subnet_prefix}}.5.1", bind_addr: "{{subnet_prefix}}.5.1", port_min: 10000, port_max: 20000},
-      //"2001:468:4000:1::"
   ],
 
   mms_server_bind_addr: "{{subnet_prefix}}.3.1:1111",
