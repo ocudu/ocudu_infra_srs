@@ -228,6 +228,7 @@ message CoreMetrics {
   uint32 nof_tau_request                             = 4;
   uint32 nof_pdu_session_modification_complete       = 5;
   uint32 nof_pdu_session_modification_command_reject = 6;
+  uint32 nof_ims_nas_registered_ue                   = 7;
 };
 
 message CuCpMetrics {
@@ -245,6 +246,7 @@ message CuCpMetrics {
   uint32 nof_rohc_profile_2_configured = 9;
   uint32 nof_5qi_1_drb_configured      = 10;
   uint32 nof_5qi_2_drb_configured      = 11;
+  uint32 nof_5qi_5_drb_configured      = 12;
 };
 
 message Metrics {

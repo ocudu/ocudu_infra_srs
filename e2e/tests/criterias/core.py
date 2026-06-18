@@ -74,3 +74,12 @@ class nof_pdu_session_modification_command_reject_eq(FiveGcCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).core.nof_pdu_session_modification_command_reject for s in self._stub_array)
+
+
+class nof_ims_nas_registered_ue_eq(FiveGcCriteria):
+    """IMS NAS Registered UE"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_ims_nas_registered_ue for s in self._stub_array)

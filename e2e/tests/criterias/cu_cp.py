@@ -147,3 +147,12 @@ class nof_5qi_2_drb_configured_ge(CuCpCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).cu_cp.nof_5qi_2_drb_configured for s in self._stub_array)
+
+
+class nof_5qi_5_drb_configured_ge(CuCpCriteria):
+    """5QI-5 DRBs"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_5qi_5_drb_configured for s in self._stub_array)

@@ -623,12 +623,14 @@ class CoreMetrics(google.protobuf.message.Message):
     NOF_TAU_REQUEST_FIELD_NUMBER: builtins.int
     NOF_PDU_SESSION_MODIFICATION_COMPLETE_FIELD_NUMBER: builtins.int
     NOF_PDU_SESSION_MODIFICATION_COMMAND_REJECT_FIELD_NUMBER: builtins.int
+    NOF_IMS_NAS_REGISTERED_UE_FIELD_NUMBER: builtins.int
     nof_pdu_session_establishment_accept: builtins.int
     nof_nas_service_accept: builtins.int
     nof_ng_paging: builtins.int
     nof_tau_request: builtins.int
     nof_pdu_session_modification_complete: builtins.int
     nof_pdu_session_modification_command_reject: builtins.int
+    nof_ims_nas_registered_ue: builtins.int
     def __init__(
         self,
         *,
@@ -638,8 +640,9 @@ class CoreMetrics(google.protobuf.message.Message):
         nof_tau_request: builtins.int = ...,
         nof_pdu_session_modification_complete: builtins.int = ...,
         nof_pdu_session_modification_command_reject: builtins.int = ...,
+        nof_ims_nas_registered_ue: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_modification_command_reject", b"nof_pdu_session_modification_command_reject", "nof_pdu_session_modification_complete", b"nof_pdu_session_modification_complete", "nof_tau_request", b"nof_tau_request"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_ims_nas_registered_ue", b"nof_ims_nas_registered_ue", "nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_modification_command_reject", b"nof_pdu_session_modification_command_reject", "nof_pdu_session_modification_complete", b"nof_pdu_session_modification_complete", "nof_tau_request", b"nof_tau_request"]) -> None: ...
 
 Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
 
@@ -658,6 +661,7 @@ class CuCpMetrics(google.protobuf.message.Message):
     NOF_ROHC_PROFILE_2_CONFIGURED_FIELD_NUMBER: builtins.int
     NOF_5QI_1_DRB_CONFIGURED_FIELD_NUMBER: builtins.int
     NOF_5QI_2_DRB_CONFIGURED_FIELD_NUMBER: builtins.int
+    NOF_5QI_5_DRB_CONFIGURED_FIELD_NUMBER: builtins.int
     nof_e_cid_measurement_initiation_request: builtins.int
     nof_e_cid_measurement_initiation_response: builtins.int
     nof_e_cid_measurement_report: builtins.int
@@ -669,6 +673,7 @@ class CuCpMetrics(google.protobuf.message.Message):
     nof_rohc_profile_2_configured: builtins.int
     nof_5qi_1_drb_configured: builtins.int
     nof_5qi_2_drb_configured: builtins.int
+    nof_5qi_5_drb_configured: builtins.int
     def __init__(
         self,
         *,
@@ -683,8 +688,9 @@ class CuCpMetrics(google.protobuf.message.Message):
         nof_rohc_profile_2_configured: builtins.int = ...,
         nof_5qi_1_drb_configured: builtins.int = ...,
         nof_5qi_2_drb_configured: builtins.int = ...,
+        nof_5qi_5_drb_configured: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_5qi_5_drb_configured", b"nof_5qi_5_drb_configured", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge"]) -> None: ...
 
 Global___CuCpMetrics: typing_extensions.TypeAlias = CuCpMetrics
 

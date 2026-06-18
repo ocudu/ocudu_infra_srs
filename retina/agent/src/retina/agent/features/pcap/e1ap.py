@@ -94,3 +94,23 @@ class Fiveqi2DrbAnalyzer(PcapAnalyzer):
 
     def report(self) -> Metrics:
         return Metrics(cu_cp=CuCpMetrics(nof_5qi_2_drb_configured=self._count))
+
+
+class Fiveqi5DrbAnalyzer(PcapAnalyzer):
+    """
+    Counts E1AP frames configuring a DRB with 5QI=5 (IMS signaling bearer).
+    tshark display filter: e1ap.fiveQI == 5
+    """
+
+    def __init__(self) -> None:
+        self._count = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "e1ap.fiveQI == 5"
+
+    def process(self, _) -> None:
+        self._count += 1
+
+    def report(self) -> Metrics:
+        return Metrics(cu_cp=CuCpMetrics(nof_5qi_5_drb_configured=self._count))

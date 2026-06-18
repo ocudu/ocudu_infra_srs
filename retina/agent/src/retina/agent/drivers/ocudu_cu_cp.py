@@ -29,6 +29,7 @@ from retina.agent.features.pcap.analyzer import run_analyzers
 from retina.agent.features.pcap.e1ap import (
     Fiveqi1DrbAnalyzer,
     Fiveqi2DrbAnalyzer,
+    Fiveqi5DrbAnalyzer,
     RohcProfile1Analyzer,
     RohcProfile2Analyzer,
 )
@@ -59,7 +60,13 @@ _XNAP_PCAP_ANALYZER_ARRAY = (
     SNStatusTransferAnalyzer,
 )
 
-_E1AP_PCAP_ANALYZER_ARRAY = (RohcProfile1Analyzer, RohcProfile2Analyzer, Fiveqi1DrbAnalyzer, Fiveqi2DrbAnalyzer)
+_E1AP_PCAP_ANALYZER_ARRAY = (
+    RohcProfile1Analyzer,
+    RohcProfile2Analyzer,
+    Fiveqi1DrbAnalyzer,
+    Fiveqi2DrbAnalyzer,
+    Fiveqi5DrbAnalyzer,
+)
 
 
 class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):

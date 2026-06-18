@@ -190,6 +190,7 @@ class _AmarisoftIms(FiveGCDriver, AmarisoftBaseDriver):
         super().__init__(*args, **kwargs)
         self._plmn = PLMN()
         self._subscriber_array: List[Subscriber] = []
+        self._metrics: Metrics = Metrics()
 
     def _get_binary_name(self) -> str:
         return "lteims"
@@ -258,8 +259,24 @@ class _AmarisoftIms(FiveGCDriver, AmarisoftBaseDriver):
 
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         if self._websocket is not None:
+            with suppress(AttributeError):
+                impi_subscriber_set = {
+                    f"{subscriber.imsi}@ims.mnc0{self._plmn.mnc}.mcc{self._plmn.mcc}.3gppnetwork.org"
+                    for subscriber in self._subscriber_array
+                }
+                nof_nas_registered = sum(
+                    1
+                    for user in self._websocket.send_command_and_wait_response(message="users_get").get("users", ())
+                    if user.get("impi") in impi_subscriber_set
+                )
+                self._metrics = Metrics(core=CoreMetrics(nof_ims_nas_registered_ue=nof_nas_registered))
             self._websocket.quit()
         return super().Stop(request, context)
+
+    def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
+        metrics = super().GetMetrics(request, context)
+        metrics.MergeFrom(self._metrics)
+        return metrics
 
     def GetImsRegisteredUESubscriberArray(self, request: Empty, context: grpc.ServicerContext) -> SubscriberArray:
         impi_subscriber_dict = {
@@ -344,7 +361,10 @@ class Amarisoft5gc(FiveGCDriver):
             return Empty()
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
-        return self._mme.GetMetrics(request, context)
+        metrics = self._mme.GetMetrics(request, context)
+        if fivegc_defaults.ims_mode:
+            metrics.MergeFrom(self._ims.GetMetrics(request, context))
+        return metrics
 
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         ims_response = self._ims.Stop(request, context)
