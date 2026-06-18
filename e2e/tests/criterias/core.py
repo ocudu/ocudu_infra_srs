@@ -65,3 +65,12 @@ class nof_pdu_session_modification_complete_ge(FiveGcCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).core.nof_pdu_session_modification_complete for s in self._stub_array)
+
+
+class nof_pdu_session_modification_command_reject_eq(FiveGcCriteria):
+    """PDU Session Modification Command Reject"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_pdu_session_modification_command_reject for s in self._stub_array)

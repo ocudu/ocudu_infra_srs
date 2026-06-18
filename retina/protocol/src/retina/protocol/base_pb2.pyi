@@ -656,11 +656,13 @@ class CoreMetrics(google.protobuf.message.Message):
     NOF_NG_PAGING_FIELD_NUMBER: builtins.int
     NOF_TAU_REQUEST_FIELD_NUMBER: builtins.int
     NOF_PDU_SESSION_MODIFICATION_COMPLETE_FIELD_NUMBER: builtins.int
+    NOF_PDU_SESSION_MODIFICATION_COMMAND_REJECT_FIELD_NUMBER: builtins.int
     nof_pdu_session_establishment_accept: builtins.int
     nof_nas_service_accept: builtins.int
     nof_ng_paging: builtins.int
     nof_tau_request: builtins.int
     nof_pdu_session_modification_complete: builtins.int
+    nof_pdu_session_modification_command_reject: builtins.int
     def __init__(
         self,
         *,
@@ -669,8 +671,9 @@ class CoreMetrics(google.protobuf.message.Message):
         nof_ng_paging: builtins.int = ...,
         nof_tau_request: builtins.int = ...,
         nof_pdu_session_modification_complete: builtins.int = ...,
+        nof_pdu_session_modification_command_reject: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_modification_complete", b"nof_pdu_session_modification_complete", "nof_tau_request", b"nof_tau_request"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_modification_command_reject", b"nof_pdu_session_modification_command_reject", "nof_pdu_session_modification_complete", b"nof_pdu_session_modification_complete", "nof_tau_request", b"nof_tau_request"]) -> None: ...
 
 Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
 
