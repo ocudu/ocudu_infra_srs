@@ -45,6 +45,17 @@ tdd_dl_heavy:
     parameters:
       log_level: warning
       prach_config_index: 158
+  ue:
+    config: [1cell_chsim.cfg, multiue_udp_bi.cfg.jinja]
+    parameters:
+      nof_sim_ues: *nof_ue
+      traffic_type: "udp_bi"
+      staggered_traffic_start: false
+      brate_dl: 800000
+      brate_ul: 150000
+      traffic_duration_sec: 180
+      log_level: "error"
+      pdcch_decode_threshold: 0.5
   feature_ids: [MVP-FUNC-TDD-16-4]
   criteria:
     du.dl_bitrate_gt: 20.0e+6
