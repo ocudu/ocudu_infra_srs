@@ -32,6 +32,12 @@ cluster_resource_list:
     user: user
     password: password
     path: /my/path
+    network_interface:
+      - interface.A
+      - interface.B
+    du_mac_addr:
+      - 00:11:22:33:44:55
+      - 00:22:33:44:55:66
   - type: api
     model: uesim
     address: 10.11.12.14
@@ -104,18 +110,6 @@ nodes:
         prach_port_id: "[4, 5, 6, 7]"
         dl_port_id: "[0, 1, 2, 3]"
         ul_port_id: "[0, 1, 2, 3]"
-      - type: ru
-        model: s72-fr2-ocudu
-        space: 3
-        address: ""
-        network_interface: ["0000:11:01.0"]
-        du_mac_addr: ["00:11:22:33:44:55"]
-        ru_mac_addr: ["00:33:44:55:66:77"]
-        vlan_tag_cp: ["16"]
-        vlan_tag_up: ["16"]
-        prach_port_id: "[4]"
-        dl_port_id: "[0, 1, 2, 3]"
-        ul_port_id: "[0]"
 
   - name: rf_server
     type: linux-x86

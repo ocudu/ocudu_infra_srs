@@ -84,44 +84,6 @@ ru_ofh:
 
 expert_phy:
   max_proc_delay: 4
-{% elif type == "ru" and model == "s72-fr2-ocudu"%}
-{###################################################}
-{# Special configuration for Amarisoft UE running in split 7.2 mode for FR2 testing #}
-{###################################################}
-ru_ofh:
-  t1a_max_cp_dl: 126
-  t1a_min_cp_dl: 110
-  t1a_max_cp_ul: 126
-  t1a_min_cp_ul: 110
-  t1a_max_up: 120
-  t1a_min_up: 20
-  ta4_max: 375
-  ta4_min: 0
-  is_prach_cp_enabled: true
-  compr_method_ul: bfp
-  compr_bitwidth_ul: 9
-  compr_method_dl: bfp
-  compr_bitwidth_dl: 9
-  compr_method_prach: bfp
-  compr_bitwidth_prach: 9
-  enable_ul_static_compr_hdr: true
-  enable_dl_static_compr_hdr: true
-  ru_reference_level_dBFS: -6
-  subcarrier_rms_backoff_dB: 12
-  cells:
-  {% for ofh_cell in ru_ofh_cells %}
-  - network_interface: {{ ofh_cell.network_interface }}
-    ru_mac_addr: {{ ofh_cell.ru_mac_addr }}
-    du_mac_addr: {{ ofh_cell.du_mac_addr }}
-    vlan_tag_cp: {{ ofh_cell.vlan_tag_cp }}
-    vlan_tag_up: {{ ofh_cell.vlan_tag_up }}
-    prach_port_id: {{ ofh_cell.prach_port_id }}
-    dl_port_id: {{ ofh_cell.dl_port_id }}
-    ul_port_id: {{ ofh_cell.ul_port_id }}
-  {% endfor %}
-
-expert_phy:
-  max_proc_delay: 6
 {% elif type == "ru" %}
 {###################################################}
 {# Special configuration for Amarisoft UE running in split 7.2 mode #}
