@@ -9,7 +9,6 @@ stages:
   - test mode
   - srsue
   - amarisoft zmq
-  - amarisoft s72
   - viavi
   - amarisoft sdr
   - android

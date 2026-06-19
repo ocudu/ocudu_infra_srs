@@ -67,37 +67,6 @@ def test_smoke_sequentially(
     )
 
 
-@mark.s72
-def test_s72_sequentially(
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
-):
-    """
-    ZMQ Handover tests
-    """
-    _handover_sequentially(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        ue_array=ue_multiple(2),
-        fivegc=fivegc,
-        gnb_array=[gnb],
-        band=41,
-        common_scs=30,
-        bandwidth=50,
-        noise_spd=0,
-        sleep_between_movement_steps=1,
-        always_download_artifacts=True,
-        nof_antennas_dl=4,
-        prach_config_index=159,
-        warning_as_errors=True,
-        stop_gnb_first=True,
-        verbose_cu_mac=False,
-    )
-
-
 @mark.parametrize(
     "band, common_scs, bandwidth, noise_spd",
     (

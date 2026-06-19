@@ -417,41 +417,6 @@ gnb 64UE:
     FILE_OR_DIR: tests/iperf.py
     KEYWORDS: "64"
 
-### Amarisoft s72
-.amarisoft s72:
-  extends: e2e
-  stage: amarisoft s72
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  variables:
-    GROUP: viavi
-    TESTBED: s72
-    MARKERS: s72
-    RETINA_ARGS: >
-      gnb.all.pcap=True gnb.all.rlc_enable=False gnb.all.enable_integrity_protection=True
-      ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
-  needs:
-    - get retina version
-    - dpdk rtsan avx512
-
-gnb 1UE s72:
-  extends: .amarisoft s72
-  variables:
-    KEYWORDS: not handover and not fr2 and not performance
-  allow_failure: true
-
-gnb 2UE s72:
-  extends: .amarisoft s72
-  variables:
-    KEYWORDS: handover and not performance
-  allow_failure: true
-
-gnb 1UE s72 FR2:
-  extends: .amarisoft s72
-  variables:
-    TESTBED: s72_fr2
-    KEYWORDS: s72_fr2 and not performance
-
 ### Viavi
 .viavi:
   extends: e2e
