@@ -4,7 +4,6 @@
 dpdk rtsan avx512:
   extends: build
   retry: 2
-  cache: []
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
@@ -19,14 +18,19 @@ dpdk rtsan avx512:
       -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
       -DASSERT_LEVEL=AUTO -DEXIT_TIMEOUT=30
     TEST_MODE: none
+  cache:
+    - key: dpdk rtsan avx512
+      paths: [ocudu/ccache]
+      policy: push
 
 dpdk rtsan avx512 cached:
-  extends: build
-  retry: 2
+  extends: dpdk rtsan avx512
   rules:
     - if: $TRIGGERED_ON_MR == "true"
-  variables:
-    <<: *dpdk_rtsan_avx512_variables
+  cache:
+    - key: dpdk rtsan avx512
+      paths: [ocudu/ccache]
+      policy: pull-push
 
 .performance_e2e:
   extends: e2e

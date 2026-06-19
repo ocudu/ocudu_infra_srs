@@ -13,7 +13,6 @@ zmq driver:
 release with deb info:
   extends: build
   retry: 2
-  cache: []
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
@@ -30,16 +29,19 @@ release with deb info:
     matrix:
       - OCUDU_TARGET: ocucp ocuup ocu odu
       - OCUDU_TARGET: gnb
+  cache:
+    - key: release with deb info $OCUDU_TARGET
+      paths: [ocudu/ccache]
+      policy: push
 
 release with deb info cached:
-  extends: build
-  retry: 2
+  extends: release with deb info
   rules:
     - if: $TRIGGERED_ON_MR == "true"
-  variables:
-    <<: *release_with_deb_info_vars
-  parallel:
-    <<: *release_with_deb_info_parallel
+  cache:
+    - key: release with deb info $OCUDU_TARGET
+      paths: [ocudu/ccache]
+      policy: pull-push
 
 .functional_e2e:
   extends: e2e
