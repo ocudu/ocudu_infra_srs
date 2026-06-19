@@ -12,7 +12,7 @@ baseline: &base_config
       traffic_type: "udp_bi"
       staggered_traffic_start: false
       brate_dl: 800000
-      brate_ul: 350000
+      brate_ul: 180000
       traffic_duration_sec: 180
       log_level: "error"
       pdcch_decode_threshold: 0.5
@@ -40,11 +40,6 @@ baseline: &base_config
 # 512 UEs tdd_dl_heavy
 tdd_dl_heavy:
   <<: *base_config
-  gnb:
-    config: [cu_cp.yml, du.yml, 512ue.yml, tdd_72b.yml, prach_config.yml]
-    parameters:
-      log_level: warning
-      prach_config_index: 158
   ue:
     config: [1cell_chsim.cfg, multiue_udp_bi.cfg.jinja]
     parameters:
@@ -56,6 +51,11 @@ tdd_dl_heavy:
       traffic_duration_sec: 180
       log_level: "error"
       pdcch_decode_threshold: 0.5
+  gnb:
+    config: [cu_cp.yml, du.yml, 512ue.yml, tdd_72b.yml, prach_config.yml]
+    parameters:
+      log_level: warning
+      prach_config_index: 158
   feature_ids: [MVP-FUNC-TDD-16-4]
   criteria:
     du.dl_bitrate_gt: 20.0e+6
@@ -74,6 +74,17 @@ tdd_dl_heavy:
 # 512 UEs tdd_ul_heavy
 tdd_ul_heavy:
   <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, multiue_udp_bi.cfg.jinja]
+    parameters:
+      nof_sim_ues: *nof_ue
+      traffic_type: "udp_bi"
+      staggered_traffic_start: false
+      brate_dl: 300000
+      brate_ul: 350000
+      traffic_duration_sec: 180
+      log_level: "error"
+      pdcch_decode_threshold: 0.5
   gnb:
     config: [cu_cp.yml, du.yml, 512ue.yml, tdd_27.yml]
     parameters:
