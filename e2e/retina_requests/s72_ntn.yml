@@ -3,32 +3,26 @@
 
 - name: amarisoft-ue
   type: ue
-  image: ${RETINA_REGISTRY_URI}/amarisoftue-remote:${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
   nof_ports: 16
   requirements:
     cpu:
-      requests: 5%
-      limits: 5%
+      requests: 100%
+      limits: 100%
     memory:
-      requests: 5%
-      limits: 5%
+      requests: 100%
+      limits: 100%
     ephemeral-storage:
       requests: 6G
   resources:
     - type: license
-      model: amarisoft-ue.*
-    - type: remote
-      model: uesim
-    - type: api
-      model: uesim
+      model: amarisoft-ue-ntn
     - type: ru
-      model: uesim
-      dummy: true
+      model: s72-ue
 
 - name: ocudu-gnb
   type: gnb
   image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
-  ip_uu_source: node
   requirements:
     cpu:
       requests: 80%
@@ -43,7 +37,7 @@
       requests: 15G
   resources:
     - type: ru
-      model: uesim
+      model: s72-ocudu
   environment:
     - RETINA_AGENT: ocudu-gnb
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb_split_7_2
@@ -58,16 +52,16 @@
   image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 15%
-      limits: 15%
+      requests: 20%
+      limits: 20%
     memory:
-      requests: 15%
-      limits: 15%
+      requests: 20%
+      limits: 20%
     ephemeral-storage:
       requests: 6G
   resources:
     - type: license
       model: amarisoft-mme.*
     - type: ru
-      model: uesim
+      model: s72-ocudu
       dummy: true

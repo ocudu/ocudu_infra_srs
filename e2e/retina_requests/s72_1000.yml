@@ -16,9 +16,9 @@
       requests: 6G
   resources:
     - type: license
-      model: amarisoft-ue.*
+      model: amarisoft-ue-1000
     - type: ru
-      model: s72-fr2-ue
+      model: s72-ue
 
 - name: ocudu-gnb
   type: gnb
@@ -37,7 +37,7 @@
       requests: 15G
   resources:
     - type: ru
-      model: s72-fr2-ocudu
+      model: s72-ocudu
   environment:
     - RETINA_AGENT: ocudu-gnb
     - PATH: ${CONTAINER_PATH}:${OCUDU_PATH}/build_retina/apps/gnb_split_7_2
@@ -47,9 +47,9 @@
       remote_path: /usr/local/bin/gnb
       is_executable: true
 
-- name: open5gs
+- name: amarisoft-mme
   type: 5gc
-  image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
       requests: 20%
@@ -60,6 +60,8 @@
     ephemeral-storage:
       requests: 6G
   resources:
+    - type: license
+      model: amarisoft-mme.*
     - type: ru
-      model: s72-fr2-ocudu
+      model: s72-ocudu
       dummy: true

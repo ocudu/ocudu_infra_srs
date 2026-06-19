@@ -4,7 +4,7 @@
 # Paging test, RRC IDLE MT
 baseline: &base_config
   template: ue_simulator.test_gnb
-  request: s72_uesim
+  request: s72
   ue:
     config: [1cell.cfg, paging.cfg]
     parameters:

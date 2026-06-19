@@ -35,7 +35,7 @@ dpdk rtsan avx512 cached:
 .performance_e2e:
   extends: e2e
   variables:
-    GROUP: viavi
+    GROUP: s72
   needs:
     - job: get retina version
       artifacts: true
