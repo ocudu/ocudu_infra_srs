@@ -8,8 +8,8 @@ Steps related with stubs / resources
 import logging
 from concurrent.futures import as_completed, ThreadPoolExecutor
 from contextlib import contextmanager, suppress
-from time import sleep, time
-from typing import Dict, Generator, List, Optional, Sequence, Tuple, Union
+from time import sleep
+from typing import Dict, Generator, List, Optional, Sequence, Tuple
 
 import grpc
 import pytest
@@ -18,9 +18,7 @@ from google.protobuf.empty_pb2 import Empty
 from google.protobuf.text_format import MessageToString
 from google.protobuf.wrappers_pb2 import StringValue, UInt32Value
 from retina.client.exception import ErrorReportedByAgent
-from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.utils import configure_artifacts
 from retina.protocol import RanStub
 from retina.protocol.base_pb2 import (
     CUCPDefinition,
@@ -45,27 +43,19 @@ from retina.protocol.gnb_pb2_grpc import CUCPStub, CUStub, CUUPStub, DUStub, GNB
 from retina.protocol.ric_pb2 import KpmMonXappRequest, NearRtRicStartInfo, RcXappRequest
 from retina.protocol.ric_pb2_grpc import NearRtRicStub
 from retina.protocol.ue_pb2 import (
-    HandoverInfo,
     IPerfDir,
     IPerfProto,
     IPerfRequest,
-    Position,
-    ReestablishmentInfo,
-    RrcMessages,
     UEAttachedInfo,
     UEStartInfo,
 )
 from retina.protocol.ue_pb2_grpc import UEStub
 
-from .configuration import configure_test_parameters
-
-BITRATE_THRESHOLD: float = 0.1
 RF_MAX_TIMEOUT: int = 5 * 60  # Time enough in RF when loading a new image in the sdr
 UE_STARTUP_TIMEOUT: int = RF_MAX_TIMEOUT
 GNB_STARTUP_TIMEOUT: int = 2  # GNB delay (we wait x seconds and check it's still alive). UE later and has a big timeout
 FIVEGC_STARTUP_TIMEOUT: int = RF_MAX_TIMEOUT
 ATTACH_TIMEOUT: int = 90
-RELEASE_TIMEOUT: int = 90
 INTER_UE_START_PERIOD: int = 0
 
 
@@ -137,10 +127,6 @@ def start_network(
     fivegc_startup_timeout: int = FIVEGC_STARTUP_TIMEOUT,
     gnb_pre_cmd: Tuple[str, ...] = tuple(),
     gnb_post_cmd: Tuple[str, ...] = tuple(),
-    cu_pre_cmd: Tuple[str, ...] = tuple(),
-    cu_post_cmd: Tuple[str, ...] = tuple(),
-    du_pre_cmd: Tuple[str, ...] = tuple(),
-    du_post_cmd: Tuple[str, ...] = tuple(),
     plmn: Optional[PLMN] = None,
     ric: Optional[NearRtRicStub] = None,
     channel_emulator: Optional[ChannelEmulatorStub] = None,
@@ -230,8 +216,6 @@ def start_network(
                     fivegc_definition=fivegc_definition,
                     start_info=StartInfo(
                         timeout=gnb_startup_timeout,
-                        pre_commands=cu_pre_cmd,
-                        post_commands=cu_post_cmd,
                     ),
                 )
             )
@@ -282,8 +266,6 @@ def start_network(
                         ric_definition=ric_definition,
                         start_info=StartInfo(
                             timeout=gnb_startup_timeout,
-                            pre_commands=du_pre_cmd,
-                            post_commands=du_post_cmd,
                         ),
                     )
                 )
@@ -399,28 +381,6 @@ def ue_start(
                 )
             )
             sleep(inter_ue_start_period)
-
-
-def ue_await_release(
-    *,  # This enforces keyword-only arguments
-    ue: UEStub,
-    release_timeout: int = RELEASE_TIMEOUT,
-) -> bool:
-    """
-    Wait until an UEs is released from already running gnb and 5gc
-    """
-
-    # Await release
-    ue_release_result: bool = False
-    with suppress(grpc.RpcError):
-        ue_release_result = ue.WaitUntilReleased(UInt32Value(value=release_timeout)) == Empty()
-
-    if ue_release_result:
-        logging.info("UE [%s] released", id(ue))
-    else:
-        pytest.fail("Release timeout reached")
-
-    return ue_release_result
 
 
 def start_kpm_mon_xapp(
@@ -834,267 +794,6 @@ def _iperf_dir_to_str(direction):
         IPerfDir.UPLINK: "uplink",
         IPerfDir.BIDIRECTIONAL: "bidirectional",
     }[direction]
-
-
-def ue_reestablishment(
-    *,  # This enforces keyword-only arguments
-    ue_stub: UEStub,
-    reestablishment_interval: int,
-):
-    """
-    Reestablishment one UE from already running gnb and 5gc
-    """
-    t_before = time()
-    task = _ue_reestablishment_future(ue_stub=ue_stub, reestablishment_interval=reestablishment_interval)
-    result: ReestablishmentInfo = task.result()
-    if not result.status:
-        pytest.fail("Reestablishment failed")
-    with suppress(ValueError):
-        sleep(reestablishment_interval - (time() - t_before))
-
-
-def ue_reestablishment_parallel(
-    *,  # This enforces keyword-only arguments
-    ue_array: Tuple[UEStub, ...],
-    reestablishment_interval: int,
-):
-    """
-    Reestablishment multiple UEs in from already running gnb and 5gc
-    """
-
-    reest_task_array = [
-        _ue_reestablishment_future(ue_stub=ue_stub, reestablishment_interval=reestablishment_interval)
-        for ue_stub in ue_array
-    ]
-    if not all((task.result().status for task in reest_task_array)):
-        pytest.fail("Reestablishment failed.")
-
-
-def _ue_reestablishment_future(
-    *,  # This enforces keyword-only arguments
-    ue_stub: UEStub,
-    reestablishment_interval: int,
-) -> grpc.Future:
-
-    reest_future: grpc.Future = ue_stub.Reestablishment.future(UInt32Value(value=reestablishment_interval))
-    reest_future.add_done_callback(lambda _task, _ue_stub=ue_stub: _log_reestablishment(_task, _ue_stub))
-    return reest_future
-
-
-def _log_reestablishment(future: grpc.Future, ue_stub: UEStub):
-    try:
-        result: ReestablishmentInfo = future.result()
-        log_fn = logging.info if result.status else logging.error
-        log_fn("Reestablishment UE [%s]:\n%s", id(ue_stub), MessageToString(result, indent=2))
-    except grpc.RpcError as err:
-        logging.error("Reestablishment UE [%s] failed: %s", id(ue_stub), ErrorReportedByAgent(err))
-
-
-def ue_move(
-    *,  # This enforces keyword-only arguments
-    ue_stub: UEStub,
-    x_coordinate: float,
-    y_coordinate: float = 0,
-    z_coordinate: float = 0,
-):
-    """
-    Simulated UEs can change its position
-    """
-    ue_stub.Move(Position(x=x_coordinate, y=y_coordinate, z=z_coordinate))
-    logging.info("UE [%s] moved to position %s, %s, %s", id(ue_stub), x_coordinate, y_coordinate, z_coordinate)
-
-
-# pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
-@contextmanager
-def multi_ue_mobility_iperf(
-    *,  # This enforces keyword-only arguments
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    ue_array: Sequence[UEStub],
-    fivegc: FiveGCStub,
-    gnb_array: Sequence[GNBStub],
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    bitrate: int,
-    protocol: IPerfProto,
-    direction: IPerfDir,
-    sample_rate: Optional[int],
-    global_timing_advance: int,
-    time_alignment_calibration: Union[int, str],
-    always_download_artifacts: bool,
-    noise_spd: int,
-    warning_as_errors: bool = True,
-    movement_steps: int = 20,
-    sleep_between_movement_steps: int = 2,
-    cell_position_offset: Tuple[float, float, float] = (1000, 0, 0),
-    nof_movements: int = 2,
-    allow_failure: bool = False,
-    gnb_post_cmd: Tuple[str, ...] = tuple(),
-) -> Generator[
-    Tuple[
-        Dict[UEStub, UEAttachedInfo],
-        Tuple[Tuple[Tuple[float, float, float], Tuple[float, float, float], int, int], ...],
-        int,
-    ],
-    None,
-    None,
-]:
-    """
-    Do mobility with multiple UEs
-    """
-
-    logging.info(
-        "%s-CU Mobility Test (iPerf%s)",
-        "Inter" if len(gnb_array) == 2 else "Intra",
-        ", allowing failure" if allow_failure else "",
-    )
-
-    original_position = (0, 0, 0)
-
-    warning_allowlist = []
-    if allow_failure:
-        warning_allowlist = [
-            "MAC max KOs reached",
-            "Reached maximum number of RETX",
-            "UL buffering timed out",
-            'RRC Setup Procedure" timed out',
-            'RRC Reconfiguration Procedure" timed out',
-            'Intra CU Handover Target Routine" failed',
-            "RRC reconfiguration failed",
-            "Some or all PDUSessionResourceSetupItems failed to setup",
-            "UL buffering timed out",
-            "Discarding SDU",
-            "Discarding PDU",
-            "PDCP unpacking did not provide any SDU",
-            "Could not allocate Paging's DCI in PDCCH",
-        ]
-
-    configure_test_parameters(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=sample_rate,
-        global_timing_advance=global_timing_advance,
-        time_alignment_calibration=time_alignment_calibration,
-        noise_spd=noise_spd,
-        num_cells=2,
-        cell_position_offset=cell_position_offset,
-        log_ip_level="debug",
-        warning_allowlist=warning_allowlist,
-        enable_2gnbs=(gnb_array is not None and len(gnb_array) == 2),
-    )
-
-    configure_artifacts(
-        retina_data=retina_data,
-        always_download_artifacts=always_download_artifacts,
-    )
-
-    start_network(
-        ue_array=ue_array,
-        gnb_array=gnb_array,
-        fivegc_array=[fivegc],
-        gnb_post_cmd=(
-            (
-                (gnb_post_cmd[0] if len(gnb_post_cmd) == 2 else "")
-                + "log --cu_level=debug  --f1ap_level=debug --ngap_level=debug --hex_max_size=32"
-            ),
-            "log --du_level=debug" + gnb_post_cmd[1] if len(gnb_post_cmd) == 2 else "",
-        ),
-    )
-
-    ue_attach_info_dict = ue_start_and_attach(
-        ue_array=ue_array,
-        du_definition=[gnb.GetDefinition(UInt32Value(value=idx)).du_definition for idx, gnb in enumerate(gnb_array)],
-        fivegc_array=[fivegc],
-    )
-
-    # HO while iPerf
-    movement_duration = (movement_steps + 1) * sleep_between_movement_steps
-    movements: Tuple[Tuple[Tuple[float, float, float], Tuple[float, float, float], int, int], ...] = (
-        (original_position, cell_position_offset, movement_steps, sleep_between_movement_steps),
-        (cell_position_offset, original_position, movement_steps, sleep_between_movement_steps),
-    ) * nof_movements
-
-    traffic_seconds = (len(movements) * movement_duration) + len(ue_array)
-
-    # Starting iperf in the UEs
-    iperf_array = []
-    for ue_stub in ue_array:
-        iperf_array.append(
-            (
-                ue_attach_info_dict[ue_stub],
-                *iperf_start(
-                    ue_stub=ue_stub,
-                    ue_attached_info=ue_attach_info_dict[ue_stub],
-                    fivegc=fivegc,
-                    protocol=protocol,
-                    direction=direction,
-                    duration=traffic_seconds,
-                    bitrate=bitrate,
-                ),
-            )
-        )
-
-    yield ue_attach_info_dict, movements, traffic_seconds
-
-    # Stop and validate iperfs.
-    if allow_failure:
-        # The BITRATE_THRESHOLD is reduced because of noise and possible handover failures
-        bitrate_threshold = BITRATE_THRESHOLD * 0.05
-    else:
-        bitrate_threshold = BITRATE_THRESHOLD
-
-    for ue_attached_info, task, iperf_request in iperf_array:
-        iperf_wait_until_finish(
-            ue_attached_info=ue_attached_info,
-            fivegc=fivegc,
-            task=task,
-            iperf_request=iperf_request,
-            bitrate_threshold_ratio=bitrate_threshold,
-        )
-
-    if not allow_failure:
-        for ue_stub in ue_array:
-            ue_validate_no_reattaches(ue_stub)
-
-    stop(
-        ue_array=ue_array,
-        gnb_array=gnb_array,
-        fivegc_array=[fivegc],
-        retina_data=retina_data,
-        ue_stop_timeout=16,
-        warning_as_errors=warning_as_errors,
-    )
-
-
-def ue_expect_handover(*, ue_stub: UEStub, timeout: int) -> grpc.Future:  # The "*" enforces keyword-only arguments
-    """
-    Creates a future object that will finish when a HO takes places or when the timeout is reached
-    """
-    ho_future: grpc.Future = ue_stub.ExpectHandover.future(UInt32Value(value=timeout))
-    ho_future.add_done_callback(lambda _task, _ue_stub=ue_stub: _log_handover(_task, _ue_stub))
-    return ho_future
-
-
-def _log_handover(future: grpc.Future, ue_stub: UEStub):
-    try:
-        result: HandoverInfo = future.result()
-        log_fn = logging.info if result.status else logging.error
-        log_fn("Handover UE [%s]:\n%s", id(ue_stub), MessageToString(result, indent=2))
-    except grpc.RpcError as err:
-        logging.error("Handover UE [%s] failed: %s\n", id(ue_stub), ErrorReportedByAgent(err))
-
-
-def ue_validate_no_reattaches(ue_stub: UEStub):
-    """
-    Fails if there has been any reattach
-    """
-    messages: RrcMessages = ue_stub.GetMessages(Empty())
-    if messages.nof_setup > 1:
-        logging.error("UE [%s] had multiples rrc setups:\n%s", id(ue_stub), MessageToString(messages, indent=2))
 
 
 def validate_ue_registered_via_ims(

@@ -11,7 +11,7 @@ import tempfile
 from collections import defaultdict
 from pathlib import Path
 from pprint import pformat
-from typing import Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Dict, List, NamedTuple, Optional, Union
 
 from retina.client.core import storage
 from retina.client.manager import RetinaTestManager
@@ -37,10 +37,6 @@ def configure_test_parameters(
     prach_config_index: int = -1,
     log_ip_level: str = "",
     ul_noise_spd: int = 0,
-    noise_spd: int = 0,
-    enable_qos_reestablishment: bool = False,
-    num_cells: int = 1,
-    cell_position_offset: Tuple[float, float, float] = (1000, 0, 0),
     enable_security_mode: bool = False,
     rx_to_tx_latency: int = -1,
     enable_dddsu: bool = False,
@@ -51,101 +47,23 @@ def configure_test_parameters(
     pdsch_mcs_table: str = "qam256",
     pusch_mcs_table: str = "qam256",
     cu_cp_inactivity_timer: int = -1,
-    pucch_formats: str = "f1_and_f2",
     pdsch_interleaving_bundle_size: int = 0,
     pdcch_log: bool = False,
-    pdcch_decode_opt_threshold: float = 0,
-    slices: Optional[List[dict]] = None,
-    ue_sds: Optional[List[str]] = None,
     warning_allowlist: Optional[List[str]] = None,
-    enable_2gnbs: bool = False,
-    inter_freq_ho: bool = False,
-    gnb_id_bit_length: int = 22,
 ):
     """
     Configure test parameters
     """
-    gnb_node_list = []
-    if enable_2gnbs:
-        gnb_node_list = [
-            {
-                "name": "ocudu-gnb-1-1",
-                "parameters": {
-                    "gnb_id": 500,
-                    "cell_offset": 0,
-                    "num_cells": 1,
-                },
-            },
-            {
-                "name": "ocudu-gnb-2-1",
-                "parameters": {
-                    "gnb_id": 501,
-                    "cell_offset": 1,
-                    "num_cells": 1,
-                },
-            },
-        ]
-    du_node_list = []
-    ue_cell_bands = []
-    if inter_freq_ho:
-        inter_freq_band = 78
-        inter_freq_cell_1_dl_arfcn = 649980
-        inter_freq_cell_2_dl_arfcn = 650000
-        inter_freq_ssb_nr_arfcn = 649632
-        inter_freq_scs = 30
-        inter_freq_bandwidth = 20
-
-        du_node_list = [
-            {
-                "name": "ocudu-du-1-1",
-                "parameters": {
-                    "band": inter_freq_band,
-                    "dl_arfcn": inter_freq_cell_1_dl_arfcn,
-                    "common_scs": inter_freq_scs,
-                    "bandwidth": inter_freq_bandwidth,
-                },
-            },
-            {
-                "name": "ocudu-du-2-1",
-                "parameters": {
-                    "band": inter_freq_band,
-                    "dl_arfcn": inter_freq_cell_2_dl_arfcn,
-                    "common_scs": inter_freq_scs,
-                    "bandwidth": inter_freq_bandwidth,
-                },
-            },
-        ]
-
-        ue_cell_bands = [
-            {
-                "band": inter_freq_band,
-                "bandwidth": inter_freq_bandwidth,
-                "dl_nr_arfcn": inter_freq_cell_1_dl_arfcn,
-                "ssb_nr_arfcn": inter_freq_ssb_nr_arfcn,
-                "subcarrier_spacing": inter_freq_scs,
-                "ssb_subcarrier_spacing": inter_freq_scs,
-            },
-            {
-                "band": inter_freq_band,
-                "bandwidth": inter_freq_bandwidth,
-                "dl_nr_arfcn": inter_freq_cell_2_dl_arfcn,
-                "ssb_nr_arfcn": inter_freq_ssb_nr_arfcn,
-                "subcarrier_spacing": inter_freq_scs,
-                "ssb_subcarrier_spacing": inter_freq_scs,
-            },
-        ]
-    else:
-        ue_cell_bands = [
-            {
-                "band": band,
-                "bandwidth": bandwidth,
-                "dl_nr_arfcn": _get_dl_arfcn(band),
-                "ssb_nr_arfcn": _get_ssb_arfcn(band, bandwidth),
-                "subcarrier_spacing": common_scs,
-                "ssb_subcarrier_spacing": common_scs,
-            }
-            for _ in range(num_cells)
-        ]
+    ue_cell_bands = [
+        {
+            "band": band,
+            "bandwidth": bandwidth,
+            "dl_nr_arfcn": _get_dl_arfcn(band),
+            "ssb_nr_arfcn": _get_ssb_arfcn(band, bandwidth),
+            "subcarrier_spacing": common_scs,
+            "ssb_subcarrier_spacing": common_scs,
+        }
+    ]
 
     retina_data.test_config = {
         "ue": {
@@ -153,22 +71,22 @@ def configure_test_parameters(
                 "global_timing_advance": global_timing_advance,
                 "log_ip_level": log_ip_level,
                 "ul_noise_spd": ul_noise_spd,
-                "noise_spd": noise_spd,
-                "num_cells": num_cells,
-                "cell_position_offset": cell_position_offset,
+                "noise_spd": 0,
+                "num_cells": 1,
+                "cell_position_offset": (1000, 0, 0),
                 "rx_to_tx_latency": rx_to_tx_latency,
                 "nof_antennas_dl": nof_antennas_dl,
                 "nof_antennas_ul": nof_antennas_ul,
                 "pdcch_log": pdcch_log,
-                "pdcch_decode_opt_threshold": pdcch_decode_opt_threshold,
-                "ue_sds": ue_sds if ue_sds is not None else [],
+                "pdcch_decode_opt_threshold": 0,
+                "ue_sds": [],
                 "cells": ue_cell_bands,
             },
         },
         "gnb": {
-            "node_list": gnb_node_list,
+            "node_list": [],
             "parameters": {
-                "gnb_id_bit_length": gnb_id_bit_length,
+                "gnb_id_bit_length": 22,
                 "band": band,
                 "dl_arfcn": _get_dl_arfcn(band),
                 "common_scs": common_scs,
@@ -176,9 +94,9 @@ def configure_test_parameters(
                 "time_alignment_calibration": time_alignment_calibration,
                 "common_search_space_enable": common_search_space_enable,
                 "prach_config_index": prach_config_index,
-                "enable_channel_noise": noise_spd != 0,
-                "enable_qos_reestablishment": enable_qos_reestablishment,
-                "num_cells": num_cells,
+                "enable_channel_noise": False,
+                "enable_qos_reestablishment": False,
+                "num_cells": 1,
                 "enable_security_mode": enable_security_mode,
                 "enable_dddsu": enable_dddsu,
                 "nof_antennas_dl": nof_antennas_dl,
@@ -187,14 +105,14 @@ def configure_test_parameters(
                 "pdsch_mcs_table": pdsch_mcs_table,
                 "pusch_mcs_table": pusch_mcs_table,
                 "cu_cp_inactivity_timer": cu_cp_inactivity_timer,
-                "pucch_formats": pucch_formats,
+                "pucch_formats": "f1_and_f2",
                 "pdsch_interleaving_bundle_size": pdsch_interleaving_bundle_size,
-                "slices": slices if slices is not None else [],
+                "slices": [],
                 "warning_allowlist": warning_allowlist if warning_allowlist is not None else [],
             },
         },
         "du": {
-            "node_list": du_node_list,
+            "node_list": [],
             "parameters": {
                 "band": band,
                 "dl_arfcn": _get_dl_arfcn(band),
@@ -203,30 +121,30 @@ def configure_test_parameters(
                 "time_alignment_calibration": time_alignment_calibration,
                 "common_search_space_enable": common_search_space_enable,
                 "prach_config_index": prach_config_index,
-                "enable_channel_noise": noise_spd != 0,
-                "enable_qos_reestablishment": enable_qos_reestablishment,
+                "enable_channel_noise": False,
+                "enable_qos_reestablishment": False,
                 "enable_dddsu": enable_dddsu,
                 "nof_antennas_dl": nof_antennas_dl,
                 "nof_antennas_ul": nof_antennas_ul,
                 "enable_drx": enable_drx,
                 "pdsch_mcs_table": pdsch_mcs_table,
                 "pusch_mcs_table": pusch_mcs_table,
-                "pucch_formats": pucch_formats,
+                "pucch_formats": "f1_and_f2",
                 "pdsch_interleaving_bundle_size": pdsch_interleaving_bundle_size,
-                "slices": slices if slices is not None else [],
+                "slices": [],
             },
         },
         "cu": {
             "parameters": {
                 "enable_security_mode": enable_security_mode,
                 "cu_cp_inactivity_timer": cu_cp_inactivity_timer,
-                "num_cells": num_cells,
+                "num_cells": 1,
             },
         },
         "5gc": {
             "parameters": {
                 "ims_mode": ims_mode,
-                "slices": [slice["sd"] for slice in slices] if slices is not None else [],
+                "slices": [],
             }
         },
     }
@@ -331,49 +249,6 @@ def get_minimum_sample_rate_for_bandwidth(bandwidth: int) -> int:
     f_s_list = [5.76, 7.68, 11.52, 15.36, 23.04, 30.72, 61.44, 122.88, 245.76]
     f_s_min = int(1e6 * min(filter(lambda f: f > bandwidth, f_s_list)))
     return f_s_min
-
-
-class NrRasterParams(NamedTuple):
-    """
-    Class to store NR-ARFCN parameters for the global frequency raster,
-    as per Table 5.4.2.1-1, TS 38.104, Rel. 17, version 17.8.0.
-    """
-
-    F_low: float  # Lower frequency in MHz
-    F_high: float  # Upper frequency in MHz
-    delta_F_kHz: int  # Frequency step in kHz
-    F_REF_Offs_MHz: float
-    N_REF_Offs: int
-    N_REF_min: int
-    N_REF_max: int
-
-
-nr_fr_params: List[NrRasterParams] = [
-    NrRasterParams(0, 3000, 5, 0.0, 0, 0, 599999),
-    NrRasterParams(3000, 24250, 15, 3000.0, 600000, 600000, 2016666),
-    NrRasterParams(24250, 100000, 60, 24250.08, 2016667, 2016667, 3279165),
-]
-
-
-def get_raster_params(nr_arfcn: int) -> Optional[NrRasterParams]:
-    """
-    Find the corresponding raster parameters for the given NR ARFCN.
-    """
-    for fr in nr_fr_params:
-        if fr.N_REF_min <= nr_arfcn <= fr.N_REF_max:
-            return fr
-    return None
-
-
-def nr_arfcn_to_freq(nr_arfcn: int) -> float:
-    """
-    Convert NR ARFCN to frequency in Hz using the raster parameters.
-    """
-    params = get_raster_params(nr_arfcn)
-    if params is None:
-        return 0.0
-
-    return int(params.F_REF_Offs_MHz * 1e6 + params.delta_F_kHz * (nr_arfcn - params.N_REF_Offs) * 1e3)
 
 
 class _NodeConfig(NamedTuple):
