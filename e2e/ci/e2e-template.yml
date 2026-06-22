@@ -36,6 +36,13 @@ functional:
     forward:
       pipeline_variables: true
 
+functional promotion:
+  extends: .ocudu promotion
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/ && $OCUDU_PROMOTION_TOKEN
+  variables:
+    BRANCH: srs_functional
+
 performance:
   extends: .trigger e2e
   trigger:
@@ -49,3 +56,10 @@ performance:
     strategy: mirror
     forward:
       pipeline_variables: true
+
+performance promotion:
+  extends: .ocudu promotion
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/ && $OCUDU_PROMOTION_TOKEN
+  variables:
+    BRANCH: srs_performance

@@ -233,7 +233,7 @@ def generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_in
                 f.write("    rules:\n")
                 f.write(f"      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{name}/\n")
             f.write("\n")
-            # MR child pipeline trigger jobs, one per discovered pipeline
+            # MR child pipeline trigger jobs + promotion jobs, one pair per discovered pipeline
             for i, (name, include_path) in enumerate(pipeline_includes):
                 if i > 0:
                     f.write("\n")
@@ -250,6 +250,13 @@ def generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_in
                 f.write("    strategy: mirror\n")
                 f.write("    forward:\n")
                 f.write("      pipeline_variables: true\n")
+                f.write("\n")
+                f.write(f"{name} promotion:\n")
+                f.write("  extends: .ocudu promotion\n")
+                f.write("  rules:\n")
+                f.write(f"    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{name}/ && $OCUDU_PROMOTION_TOKEN\n")
+                f.write("  variables:\n")
+                f.write(f"    BRANCH: srs_{name}\n")
             print(f"🟢 Successfully created {path}")
     except IOError as e:
         print(f"⚠️ Error writing to file: {e}")
