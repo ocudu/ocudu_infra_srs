@@ -8,7 +8,6 @@ stages:
   - e2e
   - test mode
   - srsue
-  - amarisoft zmq
   - viavi
   - amarisoft sdr
   - android

@@ -195,7 +195,6 @@ def generate_stages_file(stages_output_path, dynamic_stages):
                 "e2e",
                 "test mode",
                 "srsue",
-                "amarisoft zmq",
                 "viavi",
                 "amarisoft sdr",
                 "android",

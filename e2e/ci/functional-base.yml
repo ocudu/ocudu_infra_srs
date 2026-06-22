@@ -7,7 +7,6 @@ zmq driver:
   rules:
     - if: $TRIGGERED_ON_MR == "true"
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
 
 release with deb info:
@@ -15,7 +14,6 @@ release with deb info:
   retry: 2
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Watchdog/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
   variables: &release_with_deb_info_vars

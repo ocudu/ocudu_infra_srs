@@ -173,14 +173,6 @@ module "settings" {
   # Pipeline Schedules Configuration
   # =============================================================================
   schedules = {
-    watchdog = {
-      description = "Watchdog"
-      cron        = "00 10-18/2 * * 1-5"
-      timezone    = "Europe/Madrid"
-      ref         = "refs/heads/main"
-      active      = true
-      variables   = {}
-    }
     nightly_setup = {
       description = "Prepare Nightly"
       cron        = "45 20 * * 0-5"
