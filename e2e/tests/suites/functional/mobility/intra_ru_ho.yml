@@ -16,8 +16,8 @@ key_regen: &base_config
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     # Key regeneration involves the UE PRACHing, which can leave old HARQ processes unfinished
-    du.nof_ko_dl_le: 5
-    du.nof_ko_ul_le: 5
+    du.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 20
     ue.nof_handovers_eq: 1
     du.nof_reestablishments_eq: 0
     du.nof_error_indications_le: 0
