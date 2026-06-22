@@ -201,8 +201,7 @@ def _ue_simulator(
 
     # Wait until UE stops
     with suppress(grpc.RpcError):
-        while True:
-            ue.GetMessages(Empty())
+        while ue.IsRunning(Empty()).value:
             sleep(5)
 
     try:

@@ -56,35 +56,10 @@ class UEStub(object):
                 request_serializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.SerializeToString,
                 response_deserializer=retina_dot_protocol_dot_ue__pb2.UEAttachedInfo.FromString,
                 _registered_method=True)
-        self.WaitUntilReleased = channel.unary_unary(
-                '/UE/WaitUntilReleased',
-                request_serializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                _registered_method=True)
         self.IPerf = channel.unary_unary(
                 '/UE/IPerf',
                 request_serializer=retina_dot_protocol_dot_ue__pb2.IPerfRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                _registered_method=True)
-        self.Reestablishment = channel.unary_unary(
-                '/UE/Reestablishment',
-                request_serializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.SerializeToString,
-                response_deserializer=retina_dot_protocol_dot_ue__pb2.ReestablishmentInfo.FromString,
-                _registered_method=True)
-        self.Move = channel.unary_unary(
-                '/UE/Move',
-                request_serializer=retina_dot_protocol_dot_ue__pb2.Position.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                _registered_method=True)
-        self.ExpectHandover = channel.unary_unary(
-                '/UE/ExpectHandover',
-                request_serializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.SerializeToString,
-                response_deserializer=retina_dot_protocol_dot_ue__pb2.HandoverInfo.FromString,
-                _registered_method=True)
-        self.GetMessages = channel.unary_unary(
-                '/UE/GetMessages',
-                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-                response_deserializer=retina_dot_protocol_dot_ue__pb2.RrcMessages.FromString,
                 _registered_method=True)
 
 
@@ -113,43 +88,8 @@ class UEServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def WaitUntilReleased(self, request, context):
-        """Wait until released. Raised an TimeoutError if timeout is reached
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
     def IPerf(self, request, context):
         """Run a iperf
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def Reestablishment(self, request, context):
-        """Run a reestablishment
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def Move(self, request, context):
-        """Move the simulated UE
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def ExpectHandover(self, request, context):
-        """Expect a Handover
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetMessages(self, request, context):
-        """Get messages
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -173,35 +113,10 @@ def add_UEServicer_to_server(servicer, server):
                     request_deserializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.FromString,
                     response_serializer=retina_dot_protocol_dot_ue__pb2.UEAttachedInfo.SerializeToString,
             ),
-            'WaitUntilReleased': grpc.unary_unary_rpc_method_handler(
-                    servicer.WaitUntilReleased,
-                    request_deserializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            ),
             'IPerf': grpc.unary_unary_rpc_method_handler(
                     servicer.IPerf,
                     request_deserializer=retina_dot_protocol_dot_ue__pb2.IPerfRequest.FromString,
                     response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            ),
-            'Reestablishment': grpc.unary_unary_rpc_method_handler(
-                    servicer.Reestablishment,
-                    request_deserializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.FromString,
-                    response_serializer=retina_dot_protocol_dot_ue__pb2.ReestablishmentInfo.SerializeToString,
-            ),
-            'Move': grpc.unary_unary_rpc_method_handler(
-                    servicer.Move,
-                    request_deserializer=retina_dot_protocol_dot_ue__pb2.Position.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            ),
-            'ExpectHandover': grpc.unary_unary_rpc_method_handler(
-                    servicer.ExpectHandover,
-                    request_deserializer=google_dot_protobuf_dot_wrappers__pb2.UInt32Value.FromString,
-                    response_serializer=retina_dot_protocol_dot_ue__pb2.HandoverInfo.SerializeToString,
-            ),
-            'GetMessages': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetMessages,
-                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                    response_serializer=retina_dot_protocol_dot_ue__pb2.RrcMessages.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -297,33 +212,6 @@ class UE(object):
             _registered_method=True)
 
     @staticmethod
-    def WaitUntilReleased(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/UE/WaitUntilReleased',
-            google_dot_protobuf_dot_wrappers__pb2.UInt32Value.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
     def IPerf(request,
             target,
             options=(),
@@ -340,114 +228,6 @@ class UE(object):
             '/UE/IPerf',
             retina_dot_protocol_dot_ue__pb2.IPerfRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def Reestablishment(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/UE/Reestablishment',
-            google_dot_protobuf_dot_wrappers__pb2.UInt32Value.SerializeToString,
-            retina_dot_protocol_dot_ue__pb2.ReestablishmentInfo.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def Move(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/UE/Move',
-            retina_dot_protocol_dot_ue__pb2.Position.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def ExpectHandover(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/UE/ExpectHandover',
-            google_dot_protobuf_dot_wrappers__pb2.UInt32Value.SerializeToString,
-            retina_dot_protocol_dot_ue__pb2.HandoverInfo.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetMessages(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/UE/GetMessages',
-            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            retina_dot_protocol_dot_ue__pb2.RrcMessages.FromString,
             options,
             channel_credentials,
             insecure,

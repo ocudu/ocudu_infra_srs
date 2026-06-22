@@ -13,10 +13,6 @@ service ChannelEmulator {
   rpc GetDefinition(google.protobuf.Empty) returns (ChannelEmulatorDefinition) {};
   // Start the Channel Emulator. Raise an error if can't be started.
   rpc Start(ChannelEmulatorStartInfo) returns (google.protobuf.Empty) {};
-  // Get scenario configs to be used in gnb and UE.
-  rpc GetScenarioConfigs(google.protobuf.Empty) returns (ScenarioConfig) {};
-  // Get Channel Emulator Summary
-  rpc GetChannelEmulatorSummary(google.protobuf.Empty) returns (ChannelEmulatorSummary) {};
 }
 
 // Generic Channel Emulator Messages
@@ -26,9 +22,3 @@ message ChannelEmulatorStartInfo {
   StartInfo                      start_info    = 3;
 };
 
-message ScenarioConfig {
-};
-
-message ChannelEmulatorSummary {
-  uint32 placeholder = 1;
-};

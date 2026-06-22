@@ -50,16 +50,6 @@ class ChannelEmulatorStub(object):
                 request_serializer=retina_dot_protocol_dot_channel__emulator__pb2.ChannelEmulatorStartInfo.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
-        self.GetScenarioConfigs = channel.unary_unary(
-                '/ChannelEmulator/GetScenarioConfigs',
-                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-                response_deserializer=retina_dot_protocol_dot_channel__emulator__pb2.ScenarioConfig.FromString,
-                _registered_method=True)
-        self.GetChannelEmulatorSummary = channel.unary_unary(
-                '/ChannelEmulator/GetChannelEmulatorSummary',
-                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-                response_deserializer=retina_dot_protocol_dot_channel__emulator__pb2.ChannelEmulatorSummary.FromString,
-                _registered_method=True)
 
 
 class ChannelEmulatorServicer(object):
@@ -80,20 +70,6 @@ class ChannelEmulatorServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetScenarioConfigs(self, request, context):
-        """Get scenario configs to be used in gnb and UE.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetChannelEmulatorSummary(self, request, context):
-        """Get Channel Emulator Summary
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_ChannelEmulatorServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -106,16 +82,6 @@ def add_ChannelEmulatorServicer_to_server(servicer, server):
                     servicer.Start,
                     request_deserializer=retina_dot_protocol_dot_channel__emulator__pb2.ChannelEmulatorStartInfo.FromString,
                     response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            ),
-            'GetScenarioConfigs': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetScenarioConfigs,
-                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                    response_serializer=retina_dot_protocol_dot_channel__emulator__pb2.ScenarioConfig.SerializeToString,
-            ),
-            'GetChannelEmulatorSummary': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetChannelEmulatorSummary,
-                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                    response_serializer=retina_dot_protocol_dot_channel__emulator__pb2.ChannelEmulatorSummary.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -173,60 +139,6 @@ class ChannelEmulator(object):
             '/ChannelEmulator/Start',
             retina_dot_protocol_dot_channel__emulator__pb2.ChannelEmulatorStartInfo.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetScenarioConfigs(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/ChannelEmulator/GetScenarioConfigs',
-            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            retina_dot_protocol_dot_channel__emulator__pb2.ScenarioConfig.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetChannelEmulatorSummary(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/ChannelEmulator/GetChannelEmulatorSummary',
-            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            retina_dot_protocol_dot_channel__emulator__pb2.ChannelEmulatorSummary.FromString,
             options,
             channel_credentials,
             insecure,

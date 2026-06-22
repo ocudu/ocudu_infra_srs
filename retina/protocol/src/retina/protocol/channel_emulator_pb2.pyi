@@ -52,28 +52,3 @@ class ChannelEmulatorStartInfo(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["du_definition", b"du_definition", "start_info", b"start_info", "ue_definition", b"ue_definition"]) -> None: ...
 
 Global___ChannelEmulatorStartInfo: typing_extensions.TypeAlias = ChannelEmulatorStartInfo
-
-@typing.final
-class ScenarioConfig(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    def __init__(
-        self,
-    ) -> None: ...
-
-Global___ScenarioConfig: typing_extensions.TypeAlias = ScenarioConfig
-
-@typing.final
-class ChannelEmulatorSummary(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    PLACEHOLDER_FIELD_NUMBER: builtins.int
-    placeholder: builtins.int
-    def __init__(
-        self,
-        *,
-        placeholder: builtins.int = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["placeholder", b"placeholder"]) -> None: ...
-
-Global___ChannelEmulatorSummary: typing_extensions.TypeAlias = ChannelEmulatorSummary

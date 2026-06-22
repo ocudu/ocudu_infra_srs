@@ -286,22 +286,13 @@ Base service provides health checking, version information, and common functiona
 | `GetArtifactsId` | `.google.protobuf.Empty` | `.google.protobuf.StringValue` |No|Get Artifacts ID|
 | `DownloadArtifacts` | `.google.protobuf.Empty` | `.google.protobuf.BytesValue` |Yes|Download the artifacts|
 | `Shutdown` | `.google.protobuf.Empty` | `.google.protobuf.Empty` |No|Stop the sut and close the agent server|
+| `IsRunning` | `.google.protobuf.Empty` | `.google.protobuf.BoolValue` |No|Returns true if the underlying process is running|
 
 ---
 
 ## retina/protocol/ue.proto
 
 ### Messages
-
-#### HandoverInfo
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `status` | `bool` |||
-| `previous_pci` | `uint32` |||
-| `last_pci` | `uint32` |||
-| `previous_messages` | `RrcMessages` |||
-| `last_messages` | `RrcMessages` |||
 
 #### IPerfRequest
 
@@ -322,23 +313,6 @@ Base service provides health checking, version information, and common functiona
 | `x` | `double` |||
 | `y` | `double` |||
 | `z` | `double` |||
-
-#### ReestablishmentInfo
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `status` | `bool` |||
-| `previous_messages` | `RrcMessages` |||
-| `last_messages` | `RrcMessages` |||
-
-#### RrcMessages
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `nof_setup` | `uint32` |||
-| `nof_reestablishment_complete` | `uint32` |||
-| `nof_reconfiguration` | `uint32` |||
-| `nof_reconfiguration_complete` | `uint32` |||
 
 #### UEAttachedInfo
 
@@ -391,12 +365,7 @@ UE service manages user equipment operations including attachment, movement, and
 | `GetDefinition` | `.google.protobuf.Empty` | `.UEDefinition` |No|Get Basic information about the UE, like public ip or IDs|
 | `Start` | `.UEStartInfo` | `.google.protobuf.Empty` |No|Start the UE. Raise an error if can't be started.|
 | `WaitUntilAttached` | `.google.protobuf.UInt32Value` | `.UEAttachedInfo` |No|Wait until attached. Raised an TimeoutError if timeout is reached|
-| `WaitUntilReleased` | `.google.protobuf.UInt32Value` | `.google.protobuf.Empty` |No|Wait until released. Raised an TimeoutError if timeout is reached|
 | `IPerf` | `.IPerfRequest` | `.google.protobuf.Empty` |No|Run a iperf|
-| `Reestablishment` | `.google.protobuf.UInt32Value` | `.ReestablishmentInfo` |No|Run a reestablishment|
-| `Move` | `.Position` | `.google.protobuf.Empty` |No|Move the simulated UE|
-| `ExpectHandover` | `.google.protobuf.UInt32Value` | `.HandoverInfo` |No|Expect a Handover|
-| `GetMessages` | `.google.protobuf.Empty` | `.RrcMessages` |No|Get messages|
 
 ---
 
@@ -632,14 +601,6 @@ Generic Channel Emulator Messages
 | `ue_definition` | `UEDefinition` ||Required in ZMQ mode|
 | `start_info` | `StartInfo` |||
 
-#### ChannelEmulatorSummary
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `placeholder` | `uint32` |||
-
-#### ScenarioConfig
-
 ### Services
 
 #### ChannelEmulator
@@ -650,7 +611,5 @@ ChannelEmulator service manages wireless channel emulation for testing
 |---|---|---|---|---|
 | `GetDefinition` | `.google.protobuf.Empty` | `.ChannelEmulatorDefinition` |No|Get Basic information about the Channel Emulator|
 | `Start` | `.ChannelEmulatorStartInfo` | `.google.protobuf.Empty` |No|Start the Channel Emulator. Raise an error if can't be started.|
-| `GetScenarioConfigs` | `.google.protobuf.Empty` | `.ScenarioConfig` |No|Get scenario configs to be used in gnb and UE.|
-| `GetChannelEmulatorSummary` | `.google.protobuf.Empty` | `.ChannelEmulatorSummary` |No|Get Channel Emulator Summary|
 
 ---

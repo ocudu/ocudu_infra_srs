@@ -16,18 +16,8 @@ service UE {
   rpc Start(UEStartInfo) returns (google.protobuf.Empty) {};
   // Wait until attached. Raised an TimeoutError if timeout is reached
   rpc WaitUntilAttached(google.protobuf.UInt32Value) returns (UEAttachedInfo) {};
-  // Wait until released. Raised an TimeoutError if timeout is reached
-  rpc WaitUntilReleased(google.protobuf.UInt32Value) returns (google.protobuf.Empty) {};
   // Run a iperf
   rpc IPerf(IPerfRequest) returns (google.protobuf.Empty) {};
-  // Run a reestablishment
-  rpc Reestablishment(google.protobuf.UInt32Value) returns (ReestablishmentInfo) {};
-  // Move the simulated UE
-  rpc Move(Position) returns (google.protobuf.Empty) {};
-  // Expect a Handover
-  rpc ExpectHandover(google.protobuf.UInt32Value) returns (HandoverInfo) {};
-  // Get messages
-  rpc GetMessages(google.protobuf.Empty) returns (RrcMessages) {};
 };
 
 message UEStartInfo {
@@ -76,23 +66,4 @@ message Position {
   double z = 3;
 };
 
-message RrcMessages {
-  uint32 nof_setup                    = 1;
-  uint32 nof_reestablishment_complete = 2;
-  uint32 nof_reconfiguration          = 3;
-  uint32 nof_reconfiguration_complete = 4;
-};
 
-message ReestablishmentInfo {
-  bool        status            = 1;
-  RrcMessages previous_messages = 2;
-  RrcMessages last_messages     = 3;
-};
-
-message HandoverInfo {
-  bool        status            = 1;
-  uint32      previous_pci      = 2;
-  uint32      last_pci          = 3;
-  RrcMessages previous_messages = 4;
-  RrcMessages last_messages     = 5;
-};

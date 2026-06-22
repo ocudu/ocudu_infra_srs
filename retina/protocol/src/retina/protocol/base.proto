@@ -24,6 +24,8 @@ service Base {
   rpc DownloadArtifacts(google.protobuf.Empty) returns (stream google.protobuf.BytesValue) {};
   // Stop the sut and close the agent server
   rpc Shutdown(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  // Returns true if the underlying process is running
+  rpc IsRunning(google.protobuf.Empty) returns (google.protobuf.BoolValue) {};
 };
 
 message RetinaInfo {

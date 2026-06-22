@@ -20,7 +20,7 @@ from typing import Generator, Iterable, List, Optional, TextIO, Tuple
 import grpc
 import psutil
 from google.protobuf.empty_pb2 import Empty
-from google.protobuf.wrappers_pb2 import UInt32Value
+from google.protobuf.wrappers_pb2 import BoolValue, UInt32Value
 from retina.protocol.base_pb2 import DuMetrics, Metrics, StopResponse
 from retina.protocol.exit_codes import exit_code_to_message
 
@@ -309,6 +309,9 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         return Metrics(
             du=DuMetrics(nof_lates=self._nof_lates, nof_under=self._nof_under, nof_seq_err=self._nof_seq_err)
         )
+
+    def IsRunning(self, request: Empty, context: grpc.ServicerContext) -> BoolValue:
+        return BoolValue(value=self._process is not None and self._is_alive)
 
 
 #########

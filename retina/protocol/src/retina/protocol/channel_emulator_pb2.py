@@ -29,7 +29,7 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from retina.protocol import base_pb2 as retina_dot_protocol_dot_base__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n&retina/protocol/channel_emulator.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1aretina/protocol/base.proto\"\x86\x01\n\x18\x43hannelEmulatorStartInfo\x12$\n\rdu_definition\x18\x01 \x01(\x0b\x32\r.DUDefinition\x12$\n\rue_definition\x18\x02 \x01(\x0b\x32\r.UEDefinition\x12\x1e\n\nstart_info\x18\x03 \x01(\x0b\x32\n.StartInfo\"\x10\n\x0eScenarioConfig\"-\n\x16\x43hannelEmulatorSummary\x12\x13\n\x0bplaceholder\x18\x01 \x01(\r2\xa7\x02\n\x0f\x43hannelEmulator\x12\x45\n\rGetDefinition\x12\x16.google.protobuf.Empty\x1a\x1a.ChannelEmulatorDefinition\"\x00\x12<\n\x05Start\x12\x19.ChannelEmulatorStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x12?\n\x12GetScenarioConfigs\x12\x16.google.protobuf.Empty\x1a\x0f.ScenarioConfig\"\x00\x12N\n\x19GetChannelEmulatorSummary\x12\x16.google.protobuf.Empty\x1a\x17.ChannelEmulatorSummary\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n&retina/protocol/channel_emulator.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1aretina/protocol/base.proto\"\x86\x01\n\x18\x43hannelEmulatorStartInfo\x12$\n\rdu_definition\x18\x01 \x01(\x0b\x32\r.DUDefinition\x12$\n\rue_definition\x18\x02 \x01(\x0b\x32\r.UEDefinition\x12\x1e\n\nstart_info\x18\x03 \x01(\x0b\x32\n.StartInfo2\x96\x01\n\x0f\x43hannelEmulator\x12\x45\n\rGetDefinition\x12\x16.google.protobuf.Empty\x1a\x1a.ChannelEmulatorDefinition\"\x00\x12<\n\x05Start\x12\x19.ChannelEmulatorStartInfo\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -38,10 +38,6 @@ if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_CHANNELEMULATORSTARTINFO']._serialized_start=100
   _globals['_CHANNELEMULATORSTARTINFO']._serialized_end=234
-  _globals['_SCENARIOCONFIG']._serialized_start=236
-  _globals['_SCENARIOCONFIG']._serialized_end=252
-  _globals['_CHANNELEMULATORSUMMARY']._serialized_start=254
-  _globals['_CHANNELEMULATORSUMMARY']._serialized_end=299
-  _globals['_CHANNELEMULATOR']._serialized_start=302
-  _globals['_CHANNELEMULATOR']._serialized_end=597
+  _globals['_CHANNELEMULATOR']._serialized_start=237
+  _globals['_CHANNELEMULATOR']._serialized_end=387
 # @@protoc_insertion_point(module_scope)
