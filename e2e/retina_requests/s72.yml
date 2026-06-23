@@ -7,11 +7,11 @@
   nof_ports: 16
   requirements:
     cpu:
-      requests: 100%
-      limits: 100%
+      requests: 80%
+      limits: 80%
     memory:
-      requests: 100%
-      limits: 100%
+      requests: 80%
+      limits: 80%
     ephemeral-storage:
       requests: 6G
   resources:
@@ -25,11 +25,11 @@
   image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 80%
-      limits: 80%
+      requests: 100%
+      limits: 100%
     memory:
-      requests: 80%
-      limits: 80%
+      requests: 100%
+      limits: 100%
     hugepages-1Gi:
       requests: 2Gi
       limits: 2Gi
@@ -63,5 +63,5 @@
     - type: license
       model: amarisoft-mme.*
     - type: ru
-      model: s72-ocudu
+      model: s72-ue
       dummy: true
