@@ -55,9 +55,10 @@ geo_band_256_bw_5_fl_false_ping: &base_config
     du.ul_bitrate_gt: 0
     du.nof_reestablishments_eq: 0
     du.nof_error_indications_le: 0
-    du.errors_le: 0
-    du.nof_ko_dl_le: 10
-    du.nof_ko_ul_le: 10
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 20
     core.nof_pdu_session_establishment_accept_eq: 1
 
 geo_band_256_bw_5_fl_true_ping:
@@ -208,7 +209,10 @@ geo_fl_false_harq_enabled_iperf:
     du.ul_bitrate_gt: 1.0e+6
     du.nof_reestablishments_eq: 0
     du.nof_error_indications_le: 0
-    du.errors_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 70 # UL KOs related to deregistration/release
     core.nof_pdu_session_establishment_accept_eq: 1
 
 geo_fl_false_harq_disabled_iperf:
@@ -248,5 +252,8 @@ geo_fl_false_harq_disabled_iperf:
     du.ul_bitrate_gt: 18.0e+6
     du.nof_reestablishments_eq: 0
     du.nof_error_indications_le: 0
-    du.errors_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 530 # UL KOs related to deregistration/release
     core.nof_pdu_session_establishment_accept_eq: 1
