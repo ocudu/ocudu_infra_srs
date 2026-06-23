@@ -53,7 +53,9 @@ from retina.protocol.ue_pb2_grpc import UEStub
 
 RF_MAX_TIMEOUT: int = 5 * 60  # Time enough in RF when loading a new image in the sdr
 UE_STARTUP_TIMEOUT: int = RF_MAX_TIMEOUT
-GNB_STARTUP_TIMEOUT: int = 2  # GNB delay (we wait x seconds and check it's still alive). UE later and has a big timeout
+GNB_STARTUP_TIMEOUT: int = (
+    15  # GNB delay (we wait x seconds and check it's still alive). UE later and has a big timeout
+)
 FIVEGC_STARTUP_TIMEOUT: int = RF_MAX_TIMEOUT
 ATTACH_TIMEOUT: int = 90
 INTER_UE_START_PERIOD: int = 0
