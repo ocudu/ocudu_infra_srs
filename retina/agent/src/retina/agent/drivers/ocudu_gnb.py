@@ -7,6 +7,7 @@ OCUDU gNB Agent
 
 import logging
 from dataclasses import dataclass
+from time import sleep
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
@@ -70,6 +71,7 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
     GNB_CONF_QOS_NAME: str = "ocudu_gnb_qos.yml"
     GNB_CONF_METRICS_NAME: str = "ocudu_gnb_metrics.yml"
     GNB_START_UP_TIMEOUT: int = 5
+    GNB_EXTRA_SLEEP_AFTER_START: int = 3
     GNB_VERSION_REGEX: str = r"(\d+\.\d+(?:\.\d+)? \(\w+\))"
 
     def __init__(self, *args, **kwargs) -> None:
@@ -185,14 +187,11 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
                 # If not found, we check if it's still alive
                 try:
                     self.read_from_log(
-                        (
-                            r"==== gNB started ===",
-                            r"Lower PHY started successfully",
-                            r"Cell pci=",
-                        ),
+                        (r"==== gNB started ===",),
                         True,
                         timeout=request.start_info.timeout if request.start_info.timeout else self.GNB_START_UP_TIMEOUT,
                     )
+                    sleep(self.GNB_EXTRA_SLEEP_AFTER_START)
                 except TimeoutError as err:
                     logging.warning("Timeout reached while looking for GNB starting reference.")
                     if not self._is_alive:

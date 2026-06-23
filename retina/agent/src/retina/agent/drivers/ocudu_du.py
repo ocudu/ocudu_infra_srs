@@ -124,6 +124,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
     DU_QOS_NAME: str = "ocudu_gnb_qos.yml"
     DU_CONF_METRICS_NAME: str = "ocudu_gnb_metrics.yml"
     DU_START_UP_TIMEOUT: int = 5
+    DU_EXTRA_SLEEP_AFTER_START: int = 3
     _METRICS_ENCODING: str = "utf-8"
 
     def __init__(self, *args, **kwargs) -> None:
@@ -257,6 +258,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                         True,
                         timeout=request.start_info.timeout if request.start_info.timeout else self.DU_START_UP_TIMEOUT,
                     )
+                    sleep(self.DU_EXTRA_SLEEP_AFTER_START)
                 except TimeoutError as err:
                     logging.warning("Timeout reached while looking for DU starting reference.")
                     if not self._is_alive:

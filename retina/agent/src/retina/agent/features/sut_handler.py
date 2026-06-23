@@ -271,22 +271,43 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
                 )
             ) from None
 
+    @staticmethod
+    def _open_log(path: str, yield_existing: bool) -> Tuple[TextIO, List[str]]:
+        fd = open(path, "r", encoding="utf-8")  # pylint: disable=consider-using-with
+        existing_lines = fd.readlines()
+        lines = [remove_ansi_escapes(line) for line in existing_lines] if yield_existing else []
+        return fd, lines
+
     def _get_log_line(self, timeout: Optional[int], from_beginning: bool) -> Generator[str, None, None]:
-        with open(self._last_log_array[0], "r", encoding="utf-8") as file_descriptor:
-            for line in file_descriptor.readlines():
-                if from_beginning:
-                    yield remove_ansi_escapes(line)
+        existing_at_start = {path for path in self._last_log_array if Path(path).exists()}
+        file_descriptors: List[Optional[TextIO]] = [None] * len(self._last_log_array)
+        partial_lines = [""] * len(self._last_log_array)
+        try:
             timeout_handler = TimeoutHandler(timeout)
-            line = ""
             while timeout_handler.not_reached():
                 if not self._check_alive_thread.is_alive():
                     raise ChildProcessError("Process is dead")
-                line += file_descriptor.readline()
-                if not line:
+                got_data = False
+                for i, path in enumerate(self._last_log_array):
+                    if file_descriptors[i] is None:
+                        if not Path(path).exists():
+                            continue
+                        yield_existing = from_beginning or path not in existing_at_start
+                        file_descriptors[i], initial_lines = self._open_log(path, yield_existing)
+                        yield from initial_lines
+                    chunk = file_descriptors[i].readline()  # type: ignore[union-attr]
+                    if chunk:
+                        got_data = True
+                        partial_lines[i] += chunk
+                        if partial_lines[i].endswith(os.linesep):
+                            yield remove_ansi_escapes(partial_lines[i])
+                            partial_lines[i] = ""
+                if not got_data:
                     sleep(self._READ_FROM_FILE_STEP)
-                elif line.endswith(os.linesep):
-                    yield remove_ansi_escapes(line)
-                    line = ""
+        finally:
+            for fd in file_descriptors:
+                if fd is not None:
+                    fd.close()
 
     @staticmethod
     def _re_search_files(path_array: Iterable[str], regex: str) -> List[str]:
