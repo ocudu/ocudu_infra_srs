@@ -6,6 +6,8 @@ cu_cp:
   request_pdu_session_timeout: 10
   rrc:
     rrc_procedure_guard_time_ms: 12800
+  f1ap:
+    procedure_timeout: 5000
 
 log:
   ntn_level: {{log_level}}
