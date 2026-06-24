@@ -157,7 +157,7 @@ def configure_test_parameters(
     if is_tdd(band):
         retina_data.test_config["ue"]["parameters"]["rx_ant"] = "rx"
 
-    logging.info("Test config: \n%s", pformat(retina_data.test_config))
+    logging.debug("Test config: \n%s", pformat(retina_data.test_config))
     retina_manager.parse_configuration(retina_data.test_config)
     retina_manager.push_all_config()
 

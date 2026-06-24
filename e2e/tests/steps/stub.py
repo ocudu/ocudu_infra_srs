@@ -162,7 +162,7 @@ def start_network(
         else:
             # Set PLMN to HPLMN of first UE
             plmn = ue_hplmn
-            logging.info("Setting PLMN to HPLMN of first UE. MCC=%s MNC=%s", plmn.mcc, plmn.mnc)
+            logging.debug("Setting PLMN to HPLMN of first UE. MCC=%s MNC=%s", plmn.mcc, plmn.mnc)
         for fivegc in fivegc_array:
             fivegc.AddUESubscriber(ue_def.subscriber)
         if ue_def.zmq_ip is not None:
@@ -891,7 +891,8 @@ def stop(
                 log_search=log_search,
                 warning_as_errors=warning_as_errors,
             )
-        error_msg_array.append(error_message)
+            logging.info("GNB [%s] stopped", id(gnb))
+            error_msg_array.append(error_message)
 
     for index, ue_stub in enumerate(ue_array):
         error_message, _ = _stop_stub(
@@ -903,6 +904,7 @@ def stop(
             warning_as_errors=False,
         )
         error_msg_array.append(error_message)
+        logging.info("UE [%s] stopped", id(ue_stub))
 
     if (stop_gnb_first is False) and (gnb_array is not None):
         for index, gnb in enumerate(gnb_array):
@@ -914,6 +916,7 @@ def stop(
                 log_search=log_search,
                 warning_as_errors=warning_as_errors,
             )
+            logging.info("GNB [%s] stopped", id(gnb))
             error_msg_array.append(error_message)
 
     if du_array is not None:
@@ -926,6 +929,7 @@ def stop(
                 log_search=log_search,
                 warning_as_errors=warning_as_errors,
             )
+            logging.info("DU [%s] stopped", id(du_stub))
             error_msg_array.append(error_message)
 
     if cu is not None:
@@ -937,6 +941,7 @@ def stop(
             log_search=log_search,
             warning_as_errors=warning_as_errors,
         )
+        logging.info("CU [%s] stopped", id(cu))
         error_msg_array.append(error_message)
 
     if cu_up_array is not None:
@@ -949,6 +954,7 @@ def stop(
                 log_search=log_search,
                 warning_as_errors=warning_as_errors,
             )
+            logging.info("CU-UP [%s] stopped", id(cu_up))
             error_msg_array.append(error_message)
 
     if cu_cp_array is not None:
@@ -961,6 +967,7 @@ def stop(
                 log_search=log_search,
                 warning_as_errors=warning_as_errors,
             )
+            logging.info("CU-CP [%s] stopped", id(cu_cp))
             error_msg_array.append(error_message)
 
     if fivegc_array is not None:
@@ -973,6 +980,7 @@ def stop(
                 log_search=log_search,
                 warning_as_errors=False,
             )
+            logging.info("5GC [%s] stopped", id(fivegc))
             error_msg_array.append(error_message)
 
     if ric is not None:
@@ -984,6 +992,7 @@ def stop(
             log_search=log_search,
             warning_as_errors=warning_as_errors,
         )
+        logging.info("RIC [%s] stopped", id(ric))
         error_msg_array.append(error_message)
 
     if channel_emulator is not None:
@@ -995,6 +1004,7 @@ def stop(
             log_search=log_search,
             warning_as_errors=warning_as_errors,
         )
+        logging.info("CHANNEL_EMULATOR [%s] stopped", id(ric))
         error_msg_array.append(error_message)
 
     # Fail if stop errors
@@ -1096,8 +1106,6 @@ def _stop_stub(
 
         if error_msg:
             logging.error(error_msg)
-        else:
-            logging.info("%s has stopped", name)
 
         error_count += stop_info.error_count
         if warning_as_errors:
