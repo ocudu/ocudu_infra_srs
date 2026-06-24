@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends llvm gdb \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /usr/local/bin/install_dependencies.sh /usr/local/bin/install_ocudu_dependencies.sh
+COPY --from=builder /usr/local/bin/common.sh /usr/local/bin/common.sh
 COPY --from=builder /opt/dpdk /opt/dpdk
 COPY --from=builder /opt/uhd /opt/uhd
 COPY --from=builder /opt/rohc /opt/rohc
