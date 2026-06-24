@@ -12,13 +12,12 @@ from typing import Callable, Dict, Generator, Optional, Tuple
 
 import grpc
 import pytest
-from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
 from requests import HTTPError
 from retina.client.exception import ErrorReportedByAgent
 from retina.client.manager import RetinaTestManager
 from retina.protocol import RanStub
-from retina.protocol.base_pb2 import Metrics, StopResponse
+from retina.protocol.base_pb2 import StopResponse
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.exit_codes import exit_code_to_message
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
@@ -410,34 +409,9 @@ def _stop_stub(
                 exit_code_to_message(stop_info.exit_code),
             )
         else:
-            logging.info("%s has successfully stopped", name)
-        if stop_info.error_count or stop_info.warning_count:
-            log_msg = f"{name} has {stop_info.error_count} errors and {stop_info.warning_count} warnings. "
-            if stop_info.error_count:
-                log_msg += f"First error is: {stop_info.error_msg}"
-            elif stop_info.warning_count:
-                log_msg += f"First warning is: {stop_info.warning_msg}"
-            logging.warning(log_msg)
+            logging.debug("%s has successfully stopped", name)
     except grpc.RpcError as err:
         logging.error("%s stop %s.", name, ErrorReportedByAgent(err))
-
-    _log_metrics(stub, name)
-
-
-def _log_metrics(
-    stub: RanStub,
-    name: str,
-) -> None:
-    try:
-        metrics: Metrics = stub.GetMetrics(Empty())
-        if metrics.du.nof_lates:
-            logging.warning("%s has %s UHD Lates", name, metrics.du.nof_lates)
-        if metrics.du.nof_under:
-            logging.warning("%s has %s UHD Underflows", name, metrics.du.nof_under)
-        if metrics.du.nof_seq_err:
-            logging.warning("%s has %s UHD Sequence errors", name, metrics.du.nof_seq_err)
-    except grpc.RpcError:
-        logging.error("%s metrics couldn't be recovered.", name)
 
 
 @pytest.fixture

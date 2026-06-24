@@ -180,7 +180,7 @@ class TestbedService(TestbedPort):
             for client in client_array:
                 if not client.closed:
                     try:
-                        logging.info("Closing %s [%s]", client.name, id(client.stub))
+                        logging.debug("Closing %s [%s]", client.name, id(client.stub))
                         self._call_close_client(client)
                     except Exception as err:  # pylint: disable=broad-exception-caught
                         failures = True

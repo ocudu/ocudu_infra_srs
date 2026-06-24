@@ -116,7 +116,7 @@ def archive_artifact_folder(
     """
     Return the complete report folder in a tar.gz file
     """
-    logging.info("Artifact requested")
+    logging.debug("Artifact requested")
     folder_to_archive = Path(folder_to_archive_path).resolve()
     if not folder_to_archive.exists():
         raise FileNotFoundError(f"Folder to archive '{folder_to_archive}' doesn't exist.")
@@ -133,7 +133,7 @@ def archive_artifact_folder(
                     if chunk:
                         yield chunk
                     else:  # The chunk was empty, which means we're at the end of the file
-                        logging.info("Artifact completed")
+                        logging.debug("Artifact completed")
                         return
 
 
@@ -157,7 +157,7 @@ def download_archived_artifact(stub: RanStub, folder_to_unpack_path: str, max_at
                 downloaded_bytes = tmp_file.tell()
                 if downloaded_bytes == 0:
                     raise RuntimeError("Downloaded artifact archive is empty — gRPC stream may have been interrupted")
-                logging.info(
+                logging.debug(
                     "Artifact archive downloaded: %d bytes (attempt %d/%d)", downloaded_bytes, attempt, max_attempts
                 )
                 shutil.unpack_archive(tmp_file.name, str(folder_to_unpack), _ARCHIVE_FORMAT, filter="data")

@@ -199,11 +199,11 @@ class OrchestratorManager:
             pool_request = get_pool_request_reservation_from_config(config=req, orch_id=orch_id, user_name=user_name)
 
             # Reserve cluster resources
-            logging.info("Looking for cluster resources...")
+            logging.debug("Looking for cluster resources...")
             pool_request.reserve_cluster_resources(self.k_server, timeout_handler)
 
             # Reserve node resources
-            logging.info("Looking for node resources...")
+            logging.debug("Looking for node resources...")
             pool_request.reserve_node_resources(self.k_server, timeout_handler)
 
             # Create orchestration network in parallel
@@ -313,7 +313,6 @@ class OrchestratorManager:
             response = self.k_server.create_config_map(config_map_config)
             if response == ErrorCode.OK:
                 create_check = False
-        logging.debug("Configmap created.")
         return port_number
 
     def get_orchestration_network_id(self, user_name: str):
@@ -333,8 +332,6 @@ class OrchestratorManager:
             response = self.k_server.create_config_map(config_map_config)
             if response == ErrorCode.OK:
                 create_check = False
-        msg = f"Orchestration network ID created: {orch_id}"
-        logging.debug(msg)
         return orch_id
 
     ############################################################################
@@ -443,7 +440,7 @@ class OrchestratorManager:
             grace_period=request_reservation.grace_period,
         )
 
-        logging.info(
+        logging.debug(
             "Creating %s for: %s with taints %s",
             "pod" if not dev_mode else "deployment",
             pod_name,
@@ -498,7 +495,7 @@ class OrchestratorManager:
         if dev_mode:
             logging.info("Deployment ready: %s", retina_pod.pod_name)
         else:
-            logging.info("Pod ready: %s", retina_pod.pod_name)
+            logging.debug("Pod ready: %s", retina_pod.pod_name)
 
         return retina_pod
 
@@ -518,10 +515,10 @@ class OrchestratorManager:
                 check_binary_can_exec(local_path)
 
             msg = f'Copying local folder "{local_path}" to "{remote_path}" {pod_name}'
-            logging.info(msg)
+            logging.debug(msg)
             # Copy binary
             self.k_server.copy_to_pod(local_path, remote_path, pod_name, DEFAULT_NAMESPACE)
-            logging.info("Copied!")
+            logging.debug("Copied!")
 
     def print_orchestration_network_info(self, orch_id: str, retina_setup: Iterable[RetinaPod]):
         """
@@ -549,7 +546,7 @@ Ochestration network ID = {orch_id}
 - Resource space: {space}
 *************************************************************    
 """
-        logging.info(msg)
+        logging.debug(msg)
 
     def check_pod_port_list(
         self, ip_add: str, port_number_array: Optional[Tuple], timeout_handler: TimeoutHandler

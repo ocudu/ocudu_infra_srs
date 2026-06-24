@@ -90,7 +90,7 @@ def retina_request(request: pytest.FixtureRequest) -> RetinaRequest:
     )
     req.in_cluster = request.config.getoption("retina_in_cluster")
     if req.in_cluster:
-        logging.info("Running in in_cluster mode")
+        logging.debug("Running in in_cluster mode")
 
     if retina_request_raw and retina_testbed_raw:
         retina_request_raw = ""
@@ -107,14 +107,14 @@ def retina_request(request: pytest.FixtureRequest) -> RetinaRequest:
             retina_request_path = Path(request.param).resolve()
         if not retina_request_path.exists():
             raise ValueError(f"Specified retina request [{retina_request_path}] is not valid.")
-        logging.info("Request: %s", retina_request_path)
+        logging.debug("Request: %s", retina_request_path)
         req.request = str(retina_request_path)
 
     if retina_testbed_raw:
         retina_testbed_path: Path = Path(retina_testbed_raw).resolve()
         if not retina_testbed_path.exists():
             raise ValueError(f"Specified retina testbed [{retina_testbed_raw}] is not valid.")
-        logging.info("Testbed: %s", retina_testbed_path)
+        logging.debug("Testbed: %s", retina_testbed_path)
         req.testbed = str(retina_testbed_path)
 
     return req
@@ -155,7 +155,7 @@ def force_download(request: pytest.FixtureRequest) -> bool:
     Force artifacts download
     """
     value = request.config.getoption("force_download")
-    logging.info("Force download: %s", value)
+    logging.debug("Force download: %s", value)
     return value
 
 
@@ -196,7 +196,7 @@ def register_parameter(
     Agent parameters
     """
     client_parameters = _parse_parameters(request.config.getoption("register_parameter"))
-    logging.info("Register parameters: %s", client_parameters)
+    logging.debug("Register parameters: %s", client_parameters)
     return client_parameters
 
 
@@ -208,7 +208,7 @@ def register_template(
     Agent templates
     """
     client_templates = _parse_parameters(request.config.getoption("register_template"))
-    logging.info("Register templates: %s", client_templates)
+    logging.debug("Register templates: %s", client_templates)
     return tuple(client_templates)
 
 

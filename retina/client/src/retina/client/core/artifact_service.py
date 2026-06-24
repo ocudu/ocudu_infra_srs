@@ -33,7 +33,7 @@ class ArtifactService(ArtifactPort):
         raise KeyError("Client was never created or it's already closed")
 
     def download_all_artifacts(self, report_folder: str) -> None:
-        logging.info("Downloading artifacts")
+        logging.debug("Downloading artifacts")
         artifact_id_dict: Dict[str, List[storage.Client]] = {}
         for client_array in storage.clients.values():
             for client in client_array:
@@ -50,7 +50,7 @@ class ArtifactService(ArtifactPort):
 
             client = client_array[0]
             if not client.closed:
-                logging.info("Downloading artifacts from %s", folder_name)
+                logging.debug("Downloading artifacts from %s", folder_name)
                 self._com_handler.download_artifacts(
                     client.stub,
                     str(Path(report_folder).joinpath(folder_name).resolve()),
