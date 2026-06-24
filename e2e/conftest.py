@@ -5,6 +5,7 @@
 Pytest configuration
 """
 
+import logging
 import os
 from collections import OrderedDict
 
@@ -16,6 +17,9 @@ def pytest_configure(config):
     """
     Add custom variables to the report
     """
+
+    logging.getLogger("kubernetes").setLevel(logging.INFO)
+
     md = config.stash[metadata_key]
     md.clear()
     md.update(
