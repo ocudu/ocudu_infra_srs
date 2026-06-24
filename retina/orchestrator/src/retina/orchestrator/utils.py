@@ -14,7 +14,6 @@ import shutil
 import socket
 import string
 import subprocess
-import tempfile
 from concurrent.futures import as_completed, ThreadPoolExecutor
 from contextlib import suppress
 from datetime import datetime
@@ -207,31 +206,6 @@ def check_port(ip_add: str, port: int) -> bool:
                 sock.connect((ip_add, port))
                 return True
     return False
-
-
-def validate_manifest(manifest: Dict) -> bool:
-    """
-    Validate manifest
-    """
-    is_valid = True
-    with tempfile.NamedTemporaryFile(delete=False, mode="w") as temp_file:
-        yaml.dump(manifest, temp_file, default_flow_style=False)
-        temp_file_path = temp_file.name
-
-    try:
-        binary_name = "kubeval"
-        find_in_path(binary_name)
-        output = run_command(f"{binary_name} --strict --ignore-missing-schemas {temp_file_path}")
-
-    except FileNotFoundError:
-        is_valid = True
-    except subprocess.CalledProcessError as err:
-        output = err.stdout.decode("utf-8").lower()
-        if "failed initializing schema" not in output and "PASS" not in output:
-            is_valid = False
-    finally:
-        os.remove(temp_file_path)
-    return is_valid
 
 
 def get_kubeconfig_extra_list() -> List[str]:

@@ -7,7 +7,6 @@ creating, deleting and managing Kubernetes resources such as config maps and pod
 """
 
 import contextlib
-import json
 import logging
 import os
 import subprocess
@@ -37,7 +36,7 @@ from kubernetes.config.config_exception import ConfigException
 from kubernetes.config.incluster_config import SERVICE_HOST_ENV_NAME, SERVICE_PORT_ENV_NAME, SERVICE_TOKEN_FILENAME
 
 import retina.orchestrator.const as cnt
-from retina.orchestrator.utils import get_kubeconfig_extra_list, run_command, validate_manifest
+from retina.orchestrator.utils import get_kubeconfig_extra_list, run_command
 
 KUBERNETES_SKIP_TAINT_ARRAY = (
     "node.kubernetes.io/not-ready",  # Node is not ready. NodeCondition Ready is "False".
@@ -149,10 +148,6 @@ class KubernetesManager(metaclass=ABCMeta):  # pylint: disable=too-few-public-me
         :param namespace: namespace
         :return: result code
         """
-        if not validate_manifest(manifest):
-            logging.error("Invalid manifest: %s", json.dumps(manifest, indent=4))
-            raise RuntimeError("Invalid manifest")
-
         return_code = self._get_error_code(0)
         try:
             f_create(
