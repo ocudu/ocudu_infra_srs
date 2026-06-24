@@ -20,7 +20,7 @@ from typing import Dict, Generator, Optional, Set, Tuple
 import grpc
 import websocket
 from google.protobuf.empty_pb2 import Empty
-from google.protobuf.wrappers_pb2 import Int32Value, UInt32Value
+from google.protobuf.wrappers_pb2 import BoolValue, Int32Value, UInt32Value
 from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition
 from retina.protocol.ue_pb2 import Position, UEAttachedInfo, UEStartInfo
 
@@ -361,6 +361,13 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                             rnti=int(ue_info["rnti"]),
                             ue_id=int(ue_info["ue_id"]),
                         )
+
+    def IsRunning(self, request: Empty, context: grpc.ServicerContext) -> BoolValue:
+        result = super().IsRunning(request, context)
+        if result.value:
+            with notify_grpc_exception(context):
+                self._get_stats()  # Populates metrics
+        return result
 
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         with self._amarisoft_lock:
