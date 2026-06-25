@@ -9,16 +9,28 @@ log:
   filename: {{log_filename}}
   all_level: {{log_level}}
   lib_level: {{log_level}}
-  config_level: debug
-{%+ if du_ip or not cucp_ip +%}
+  {%- if log_phy_level %}
+  phy_level: {{log_phy_level}}
+  {%- endif %}
+  {%- if log_mac_level %}
+  mac_level: {{log_mac_level}}
+  {%- endif %}
+  {%- if log_broadcast_enabled %}
+  broadcast_enabled: {{log_broadcast_enabled}}
+  {%- endif %}
+  {%- if log_gtpu_level %}
+  gtpu_level: {{log_gtpu_level}}
+  {%- endif %}
+  {%- if du_ip or not cucp_ip %}
   rlc_level: {{log_rlc_level}}
-{% endif %}
+  {%- endif %}
+  config_level: debug
 
 metrics:
   enable_log: true
 
 {# DU #}
-{%+ if du_ip +%}
+{% if du_ip %}
 f1ap:
   addrs: {{cucp_ip}}
   bind_addrs: {{du_ip}}
@@ -31,7 +43,7 @@ f1u:
 {% else %}
 
 {# CU #}
-{%+ if cucp_ip and cucp_ip == cuup_ip +%}
+{% if cucp_ip and cucp_ip == cuup_ip %}
 cu_cp:
   f1ap:
     bind_addrs: {{cucp_ip}}
@@ -48,7 +60,7 @@ cu_up:
 {% endif %}
 
 {# CU-CP #}
-{%+ if cucp_ip and not cuup_ip +%}
+{% if cucp_ip and not cuup_ip %}
 cu_cp:
   f1ap:
     bind_addrs: {{cucp_ip}}
@@ -83,5 +95,4 @@ cu_up:
     socket:
       - bind_addr: {{cuup_ip}}
 {% endif %}
-
 {% endif %}
