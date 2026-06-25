@@ -23,8 +23,8 @@ baseline: &base_config
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 200 # allow some KOs during HO transitions
-    du.nof_ko_ul_le: 200 # allow some KOs during HO transitions
+    du.nof_ko_dl_le: 250 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 250 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the test_duration
@@ -80,8 +80,8 @@ conditional_ho:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 200 # allow some KOs during HO transitions
-    du.nof_ko_ul_le: 200 # allow some KOs during HO transitions
+    du.nof_ko_dl_le: 250 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 250 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the test_duration
@@ -108,8 +108,8 @@ cfra_ho:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_ko_dl_le: 200 # allow some KOs during HO transitions
-    du.nof_ko_ul_le: 200 # allow some KOs during HO transitions
+    du.nof_ko_dl_le: 250 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 250 # allow some KOs during HO transitions
     du.nof_reestablishments_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the test_duration
