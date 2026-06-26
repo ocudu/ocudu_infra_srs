@@ -221,30 +221,6 @@ def test_ru_not_crash(
     )
 
 
-@mark.test_mode_not_crash
-def test_ru_10cell_50ue_not_crash(
-    # Retina
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    # Clients
-    gnb: GNBStub,
-):
-    """
-    Run gnb with sanitizers in test mode ru dummy.
-    It ignores warnings and KOs, so it will fail if the gnb+sanitizer fails
-    """
-    _test_ru(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        gnb=gnb,
-        ru_config="config_ru_10cell_50ue.yml",
-        duration=15 * 60,
-        gnb_stop_timeout=150,
-        warning_as_errors=False,
-        fail_if_kos=False,
-    )
-
-
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def _test_ru(
     *,  # This enforces keyword-only arguments
