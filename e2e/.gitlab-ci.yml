@@ -103,13 +103,14 @@ dynamically generated pipeline validation:
       python3 e2e/scripts/generate_pipelines.py --input_path=e2e/tests/suites --pipelines_output_path=e2e/ci --stages_output_path=.
       is-pristine-repo.sh
 
-## MR child pipeline triggers
+## Child pipeline triggers
 .trigger e2e:
   stage: e2e
   rules:
     - if: $ON_MR
-      when: manual
-      allow_failure: true
+    - if: $ON_WEB
+  when: manual
+  allow_failure: true
   variables:
     TRIGGERED_ON_MR: "true"
   needs:

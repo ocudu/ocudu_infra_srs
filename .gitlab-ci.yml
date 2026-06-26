@@ -3,7 +3,7 @@
 
 spec:
   inputs:
-    # Build job configuration for web and api triggered pipelines
+    # Build job configuration for api triggered pipelines
     ocudu_path:
       type: string
       default: ocudu/ocudu
@@ -44,7 +44,7 @@ spec:
       type: string
       default: none
       description: "Run ctest selecting tests with labels matching regular expression. `none` wont run any test at all."
-    # E2E job configuration for web and api triggered pipelines
+    # E2E job configuration for api triggered pipelines
     testbed:
       type: string
       default: none
@@ -106,7 +106,7 @@ include:
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
-  # Custom build and e2e jobs triggered from web and api
+  # Custom build and e2e jobs triggered from api
   - local: templates/build.yml
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
@@ -114,7 +114,6 @@ include:
       ocudu_build_dir: build_retina
       job: build
       rules:
-        - if: $ON_WEB
         - if: $ON_API
       tags: $[[ inputs.build_tags ]]
       os: $[[ inputs.os ]]
@@ -137,7 +136,6 @@ include:
       rules:
         - if: '"$[[ inputs.testbed ]]" !~ /^(zmq|dynamic)/'
           when: never
-        - if: $ON_WEB
         - if: $ON_API
       tags: $[[ inputs.build_tags ]]
       os: $[[ inputs.os ]]
@@ -160,7 +158,6 @@ include:
       rules:
         - if: '"$[[ inputs.testbed ]]" == "none"'
           when: never
-        - if: $ON_WEB
         - if: $ON_API
       testbed: $[[ inputs.testbed ]]
       markers: $[[ inputs.markers ]]
