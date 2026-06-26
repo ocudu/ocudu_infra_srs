@@ -22,7 +22,7 @@ include:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
       ocudu_build_dir: build_retina
-      job: build
+      job: .build
       rules:
         - when: never
   # `build trx driver` base, extended by `zmq driver`.
@@ -31,7 +31,7 @@ include:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
       ocudu_build_dir: build_retina
-      job: build trx driver
+      job: .build trx driver
       rules:
         - when: never
       compiler: gcc
@@ -45,7 +45,7 @@ include:
   # `e2e` base (and `get retina version`), extended by .functional_e2e / .performance_e2e / etc.
   - local: templates/e2e.yml
     inputs:
-      job: e2e
+      job: .e2e
       stage: e2e
       rules:
         - when: never

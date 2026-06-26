@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 zmq driver:
-  extends: build trx driver
+  extends: .build trx driver
   retry: 2
   rules:
     - if: $TRIGGERED_ON_MR == "true"
@@ -10,7 +10,7 @@ zmq driver:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
 
 release with deb info:
-  extends: build
+  extends: .build
   retry: 2
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
@@ -42,7 +42,7 @@ release with deb info cached:
       policy: pull-push
 
 .functional_e2e:
-  extends: e2e
+  extends: .e2e
   variables:
     GROUP: zmq
   needs:

@@ -21,9 +21,9 @@ spec:
       default: ubuntu-24.04
       description: "Operating system."
     ocudu_target:
-      type: string
-      default: ""
-      description: "Build target. Keep it empty to use the default target."
+      type: array
+      default: [""]
+      description: "Build targets. Each entry creates a parallel job. Use an empty string for the default target."
     compiler:
       type: string
       default: gcc
@@ -106,37 +106,30 @@ include:
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
-  # Custom build and e2e jobs triggered from api
+  # Template build and e2e jobs
   - local: templates/build.yml
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
       ocudu_build_dir: build_retina
-      job: build
+      job: .build
       rules:
-        - if: $ON_API
+        - when: never
       tags: $[[ inputs.build_tags ]]
       os: $[[ inputs.os ]]
       compiler: $[[ inputs.compiler ]]
-      ocudu_target: $[[ inputs.ocudu_target ]]
       build_args: $[[ inputs.build_args ]]
       uhd_version: $[[ inputs.uhd_version ]]
       dpdk_version: $[[ inputs.dpdk_version ]]
       test_mode: $[[ inputs.test_mode ]]
-      cache:
-        - key: $[[ inputs.os ]]-$[[ inputs.compiler ]]
-          paths: [ocudu/ccache]
-          policy: pull-push
   - local: templates/build.yml
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
       ocudu_build_dir: build_retina
-      job: build trx driver
+      job: .build trx driver
       rules:
-        - if: '"$[[ inputs.testbed ]]" !~ /^(zmq|dynamic)/'
-          when: never
-        - if: $ON_API
+        - when: never
       tags: $[[ inputs.build_tags ]]
       os: $[[ inputs.os ]]
       compiler: gcc
@@ -149,16 +142,10 @@ include:
       test_mode: none
   - local: templates/e2e.yml
     inputs:
-      job: e2e
+      job: .e2e
       stage: e2e
-      needs:
-        - job: build
-        - job: build trx driver
-          optional: true
       rules:
-        - if: '"$[[ inputs.testbed ]]" == "none"'
-          when: never
-        - if: $ON_API
+        - when: never
       testbed: $[[ inputs.testbed ]]
       markers: $[[ inputs.markers ]]
       file_or_dir: $[[ inputs.file_or_dir ]]
@@ -221,3 +208,35 @@ tf lint:
         echo ""
       done
   needs: []
+
+## API jobs
+build:
+  extends: .build
+  rules:
+    - if: $ON_API
+  cache:
+    - key: $[[ inputs.os ]]-$[[ inputs.compiler ]]
+      paths: [ocudu/ccache]
+      policy: pull-push
+  parallel:
+    matrix:
+      - OCUDU_TARGET: $[[ inputs.ocudu_target ]]
+
+build trx driver:
+  extends: .build trx driver
+  rules:
+    - if: '"$[[ inputs.testbed ]]" !~ /^(zmq|dynamic)/'
+      when: never
+    - if: $ON_API
+
+e2e:
+  extends: .e2e
+  rules:
+    - if: '"$[[ inputs.testbed ]]" == "none"'
+      when: never
+    - if: $ON_API
+  needs:
+    - job: get retina version
+    - job: build
+    - job: build trx driver
+      optional: true

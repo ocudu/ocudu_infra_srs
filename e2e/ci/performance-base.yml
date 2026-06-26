@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 dpdk rtsan avx512:
-  extends: build
+  extends: .build
   retry: 2
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
@@ -33,7 +33,7 @@ dpdk rtsan avx512 cached:
       policy: pull-push
 
 .performance_e2e:
-  extends: e2e
+  extends: .e2e
   variables:
     GROUP: s72
   needs:

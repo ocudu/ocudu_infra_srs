@@ -129,6 +129,9 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
             try:
                 job: ProjectJob = project.jobs.get(job_id)
                 variable_dict.update(_extract_variables_from_job(project, job.id))
+                if "LAUNCHER_ARGS" not in variable_dict:
+                    variable_dict["BUILD_TAGS"] = job.tag_list
+                return variable_dict
             except gitlab.exceptions.GitlabGetError:
                 continue
         print(
@@ -160,7 +163,7 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
     return variable_dict
 
 
-def _extract_variables_from_job(project: Project, job_id: int) -> Dict[str, str]:
+def _extract_variables_from_job(project: Project, job_id: int) -> Dict[str, Any]:
     job = project.jobs.get(job_id)
     if "driver" in job.name:
         return {}  # Filter out driver jobs
@@ -169,13 +172,27 @@ def _extract_variables_from_job(project: Project, job_id: int) -> Dict[str, str]
         return {}  # Filter out jobs without output - we can't extract variables
     print(f'🟢 Job "{job.name}" found (id: {job.id})')
 
-    variable_dict = {}
+    variable_dict: Dict[str, Any] = {}
+    ocudu_targets: list = []
+
     for needs_job_id in re.findall(NEEDS_REGEX, job_log):
-        variable_dict.update(_extract_variables_from_job(project, needs_job_id))
+        dep = _extract_variables_from_job(project, needs_job_id)
+        dep_target = dep.pop("OCUDU_TARGET", None)
+        if dep_target is not None:
+            ocudu_targets.extend(dep_target if isinstance(dep_target, list) else [dep_target])
+        for k, v in dep.items():
+            variable_dict.setdefault(k, v)
+
     for item in re.findall(VARIABLE_REGEX, job_log):
         key, value = item
         if key.isupper() and "$" not in value:
-            variable_dict[key] = value.strip()
+            if key == "OCUDU_TARGET":
+                ocudu_targets.append(value.strip())
+            else:
+                variable_dict[key] = value.strip()
+
+    if ocudu_targets:
+        variable_dict["OCUDU_TARGET"] = ocudu_targets
 
     return variable_dict
 

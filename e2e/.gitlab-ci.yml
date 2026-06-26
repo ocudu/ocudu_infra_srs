@@ -161,9 +161,8 @@ retina demolition:
 # In performance-base.yml - dpdk rtsan avx512
 
 debug:
-  extends: build
+  extends: .build
   retry: 2
-  cache: []
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
@@ -176,9 +175,8 @@ debug:
     TEST_MODE: none
 
 asan:
-  extends: build
+  extends: .build
   retry: 2
-  cache: []
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
@@ -192,9 +190,8 @@ asan:
     TEST_MODE: none
 
 tsan:
-  extends: build
+  extends: .build
   retry: 2
-  cache: []
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
@@ -209,7 +206,7 @@ tsan:
 ## Emulated Nightly
 ### Test mode
 .test mode ue:
-  extends: e2e
+  extends: .e2e
   stage: test mode
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
@@ -233,7 +230,7 @@ test ue asan:
     - asan
 
 .test mode ru:
-  extends: e2e
+  extends: .e2e
   stage: test mode
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
@@ -271,7 +268,7 @@ ru dummy test many ues:
 
 ### SRSUE
 .srsue:
-  extends: e2e
+  extends: .e2e
   stage: srsue
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
@@ -296,7 +293,7 @@ ric:
 
 ### Viavi
 .viavi:
-  extends: e2e
+  extends: .e2e
   stage: viavi
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
@@ -365,7 +362,7 @@ ric:
 ## RF Nightly
 ### SDR
 .amarisoft sdr:
-  extends: e2e
+  extends: .e2e
   stage: amarisoft sdr
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
@@ -388,7 +385,7 @@ b200 asan:
 
 ### Android
 .android:
-  extends: e2e
+  extends: .e2e
   stage: android
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
