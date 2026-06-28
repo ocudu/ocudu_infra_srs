@@ -78,19 +78,20 @@ cell_cfg:
       sfn: 0  # only placeholders, gnb overwrites it
       subframe_number: 0  # only placeholders, gnb overwrites it
     epoch_timestamp: '{{utc_timestamp}}'
-    {% if feeder_link %}
+    ntn_ul_sync_validity_dur: {{ntn_ul_sync_validity_dur}}
     feeder_link:
       dl_freq: {{dl_freq}}
       enable_doppler_compensation: false
       ul_freq: {{ul_freq}}
+    {% if feeder_link %}
     gateway_location:
       altitude: {{gw_altitude}}
       latitude: {{gw_latitude}}
       longitude: {{gw_longitude}}
-    {% endif %}
-    ntn_ul_sync_validity_dur: {{ntn_ul_sync_validity_dur}}
+    {% else %}
     ta_info:
       ta_common: {{ta_common}}
       ta_common_drift: {{ta_common_drift}}
       ta_common_drift_variant: {{ta_common_drift_variant}}
+    {% endif %}
     use_state_vector: false

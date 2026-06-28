@@ -89,7 +89,6 @@ geo_band_256_bw_5_fl_true_ping:
       gw_latitude: -2.3271013947022157
       gw_longitude: -106.89695816700173
       gw_altitude: 1.0
-      ta_common: 239391.90
       eccentricity: 0.0002596177199746916
       inclination: 0.1319550252630127
       longitude: 0.9650375632437326
@@ -149,7 +148,6 @@ leo_band_256_bw_5_fl_true_ping:
       feeder_link: true
       dl_harq_disabled: false
       ul_harq_disabled: false
-      ta_common: 7874.9497
       cell_specific_koffset: 16
       ta_meas_slot_prohibit_period: 26
       gw_altitude: 1.0
