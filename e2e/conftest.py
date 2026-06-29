@@ -34,6 +34,16 @@ def pytest_configure(config):
         )
     )
 
+    if job_name := os.getenv("CI_JOB_NAME", ""):
+        config._inicache["junit_suite_name"] = job_name  # pylint: disable=protected-access
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _junit_suite_properties(record_testsuite_property):
+    record_testsuite_property("ocudu_commit", os.getenv("OCUDU_COMMIT", ""))
+    record_testsuite_property("test_commit", os.getenv("CI_COMMIT_SHA", ""))
+    record_testsuite_property("url", os.getenv("CI_JOB_URL", ""))
+
 
 def pytest_collection_modifyitems(items):
     """
