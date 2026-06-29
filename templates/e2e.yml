@@ -43,16 +43,13 @@ spec:
         - none
     group:
       type: string
+      default: zmq
       description: "Retina group to use."
-      rules:
-        - if: $[[ inputs.testbed ]] =~ /^(zmq|test_mode_ue)/
-          default: zmq
-        - if: $[[ inputs.testbed ]] =~ /s72/
-          default: s72
-        - if: $[[ inputs.testbed ]] =~ /^(viavi|test_mode_ru)/
-          default: viavi
-        - if: $[[ inputs.testbed ]] =~ /^(rf|android)/
-          default: rf
+      options:
+        - zmq
+        - s72
+        - viavi
+        - rf
     markers:
       type: string
       default: ""
@@ -134,6 +131,7 @@ get retina version:
       export OCUDU_COMMIT=$(cat ${OCUDU_DIR}/.gitlab/ci/version.txt)
     # Print E2E parameters
     - |
+      echo "GROUP"=${GROUP}
       echo "TESTBED=${TESTBED}"
       echo "MARKERS=${MARKERS}"
       echo "FILE_OR_DIR=${FILE_OR_DIR}"

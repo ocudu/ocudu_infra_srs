@@ -45,6 +45,15 @@ spec:
       default: none
       description: "Run ctest selecting tests with labels matching regular expression. `none` wont run any test at all."
     # E2E job configuration for api triggered pipelines
+    group:
+      type: string
+      default: zmq
+      description: "Retina group to use."
+      options:
+        - zmq
+        - s72
+        - viavi
+        - rf
     testbed:
       type: string
       default: none
@@ -146,6 +155,7 @@ include:
       stage: e2e
       rules:
         - when: never
+      group: $[[ inputs.group ]]
       testbed: $[[ inputs.testbed ]]
       markers: $[[ inputs.markers ]]
       file_or_dir: $[[ inputs.file_or_dir ]]
