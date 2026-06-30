@@ -380,7 +380,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                 )
             self._metrics_parsing_done = True
 
-    def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
+    def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         metrics_json_path = self.stop_listening_metrics()
         pcap_args = self.get_metrics_parsing_arguments()
         response = super().Stop(request, context)

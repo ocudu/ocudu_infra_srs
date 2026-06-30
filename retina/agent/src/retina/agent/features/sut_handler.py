@@ -18,14 +18,13 @@ from time import sleep
 from typing import Generator, Iterable, List, Optional, TextIO, Tuple
 
 import grpc
-import psutil
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import BoolValue, UInt32Value
 from retina.protocol.base_pb2 import DuMetrics, Metrics, StopResponse
 from retina.protocol.exit_codes import exit_code_to_message
 
 from retina.agent.drivers.base import BaseDriver
-from retina.agent.features.executor import LocalExecutor
+from retina.agent.features.executor import LocalExecutor, SutProcessLike
 from retina.agent.tools.cgroups import log_cgroups_warnings_and_errors
 from retina.agent.tools.string import remove_ansi_escapes
 from retina.agent.tools.threading import join_thread
@@ -62,7 +61,7 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         self._nof_under: int = 0
         self._nof_seq_err: int = 0
         # Process
-        self._process: Optional[psutil.Process] = None
+        self._process: Optional[SutProcessLike] = None
         # Logs
         self._last_log_array: Tuple[str, ...] = ()
         self._last_stop_result: StopInfo = StopInfo()
@@ -120,7 +119,8 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         """
         while not self._check_alive_event.is_set():
             if self._process is not None and not self._is_alive:
-                logging.warning("Process has died with return code %d", self._process.returncode)
+                returncode = self._process.returncode
+                logging.warning("Process has died with return code %d", returncode)
                 self._check_alive_event.set()
             else:
                 self._write_ps_info()
@@ -180,21 +180,22 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
             # End child process and save if a child process has exit code != 0
             if self._exit_children_first and self._process.is_running():
                 for child_process in self._process.children():
-                    child_failed |= int(self._executor.exit_process(child_process, timeout=stop_timeout)) != 0
+                    exit_code = self._executor.exit_process(child_process, timeout=stop_timeout)
+                    child_failed |= int(exit_code) != 0
 
             # End process
-            return_code = int(self._executor.exit_process(self._process, timeout=stop_timeout))
+            rc = int(self._executor.exit_process(self._process, timeout=stop_timeout))
             self._process = None
             self._logfile_descriptor.flush()
             self._logfile_descriptor.close()
-            logging.info("sut stopped with return code %d (%s)", return_code, exit_code_to_message(return_code))
+            logging.info("sut stopped with return code %d (%s)", rc, exit_code_to_message(rc))
 
             # Tweak exit code
-            if return_code in self._expected_exit_code_array:
-                return_code = 0
-            if not return_code and child_failed:
-                return_code = -256
-            self._last_stop_result.exit_code = return_code
+            if rc in self._expected_exit_code_array:
+                rc = 0
+            if not rc and child_failed:
+                rc = -256
+            self._last_stop_result.exit_code = rc
 
             # Error and warning searching
             error_list = (
@@ -236,7 +237,7 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         return self._last_stop_result
 
     def read_from_log(
-        self, regex_list: Tuple[str, ...], found_any: bool, timeout: Optional[int], from_beginning: bool = False
+        self, regex_list: Tuple[str, ...], found_any: bool, timeout: Optional[float], from_beginning: bool = False
     ) -> List[Tuple[str, ...]]:
         """
         Reads from binary output until it matches any of the the specified regex's.
@@ -278,7 +279,7 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
         lines = [remove_ansi_escapes(line) for line in existing_lines] if yield_existing else []
         return fd, lines
 
-    def _get_log_line(self, timeout: Optional[int], from_beginning: bool) -> Generator[str, None, None]:
+    def _get_log_line(self, timeout: Optional[float], from_beginning: bool) -> Generator[str, None, None]:
         existing_at_start = {path for path in self._last_log_array if Path(path).exists()}
         file_descriptors: List[Optional[TextIO]] = [None] * len(self._last_log_array)
         partial_lines = [""] * len(self._last_log_array)
@@ -295,7 +296,10 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
                         yield_existing = from_beginning or path not in existing_at_start
                         file_descriptors[i], initial_lines = self._open_log(path, yield_existing)
                         yield from initial_lines
-                    chunk = file_descriptors[i].readline()  # type: ignore[union-attr]
+                    fd = file_descriptors[i]
+                    if fd is None:
+                        continue
+                    chunk = fd.readline()
                     if chunk:
                         got_data = True
                         partial_lines[i] += chunk

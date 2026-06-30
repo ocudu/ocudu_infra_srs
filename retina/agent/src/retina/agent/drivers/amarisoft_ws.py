@@ -121,7 +121,7 @@ class AmarisoftWebSocket:
         self._ws = websocket.create_connection(
             f"ws://{testbed_defaults.api_address}:{testbed_defaults.api_port}", timeout=timeout
         )
-        self._queue_dict: Dict[int, Queue] = {}
+        self._queue_dict: Dict[int, Queue[Dict]] = {}
         self._msg_id_counter: int = 0
 
         # Parse Startup message
@@ -143,7 +143,7 @@ class AmarisoftWebSocket:
 
         # Create queue
         if message_id not in self._queue_dict:
-            self._queue_dict[message_id] = Queue()
+            self._queue_dict[message_id] = Queue[Dict]()
 
         # Send message with the generated message id
         msg_str = json.dumps({**kwargs, "message_id": str(message_id)})
@@ -155,7 +155,7 @@ class AmarisoftWebSocket:
     def _read_message(self) -> Dict:
         raw = self._ws.recv()
         try:
-            msg = json.loads(raw)
+            msg: Dict = json.loads(raw)
         except json.JSONDecodeError:
             if raw:
                 msg = {"raw": raw}

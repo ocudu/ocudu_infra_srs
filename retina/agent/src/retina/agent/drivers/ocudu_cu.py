@@ -6,7 +6,7 @@ OCUDU CU Agent
 """
 
 import logging
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
@@ -49,9 +49,9 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._cu_cp = OcuduCuCp(*args, **kwargs)
-        self._cu_cp.get_current_report_folder = self.get_current_report_folder
+        self._cu_cp.get_current_report_folder = self.get_current_report_folder  # type: ignore[method-assign]
         self._cu_up = OcuduCuUp(*args, **kwargs)
-        self._cu_up.get_current_report_folder = self.get_current_report_folder
+        self._cu_up.get_current_report_folder = self.get_current_report_folder  # type: ignore[method-assign]
 
     def _get_sut_version(self) -> str:
         output = tuple(
@@ -83,7 +83,7 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
                 neighbor_cucp_definition=neighbor_cucp_definition,
             ),
             **self._cu_up.get_parameters(
-                cucp_definition=(self.GetDefinition(Empty(), grpc.ServicerContext),),
+                cucp_definition=(self.GetDefinition(Empty(), None),),
                 fivegc_definition=fivegc_definition,
             ),
         }
@@ -160,7 +160,7 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
         """
         self._cu_cp.extract_metrics(*args)
 
-    def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
+    def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         pcap_args = self._cu_cp.get_metrics_parsing_arguments()
         response = super().Stop(request, context)
         self._cu_cp.extract_metrics(*pcap_args)

@@ -8,17 +8,16 @@ Flexric RIC Agent
 import logging
 import os
 import re
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import grpc
-import psutil
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
 from retina.protocol.ric_pb2 import KpmMonXappRequest, NearRtRicStartInfo, NearRtRicSummary, RcXappRequest
 
 from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.ric import NearRtRicDriver
-from retina.agent.features.executor import LocalExecutor
+from retina.agent.features.executor import LocalExecutor, SutProcessLike
 from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import template_defaults, testbed_defaults
@@ -36,9 +35,9 @@ class FlexricRic(NearRtRicDriver, BaseDriverSutHandler):
     FLEXRIC_START_UP_TIMEOUT: int = 3
 
     def __init__(self, *args, **kwargs) -> None:
-        self._xapp_process_dict: Dict[str, psutil.Process] = {}
+        self._xapp_process_dict: Dict[str, SutProcessLike] = {}
         self._xapp_log_dict: Dict[str, str] = {}
-        self.ric_logfile = None
+        self.ric_logfile: Optional[str] = None
         self.ric_summary_report = NearRtRicSummary()
         super().__init__(*args, **kwargs)
 
@@ -58,7 +57,8 @@ class FlexricRic(NearRtRicDriver, BaseDriverSutHandler):
         )
 
         # Launch
-        self.ric_logfile = self.get_filepath_in_report_folder(self.FLEXRIC_STDOUT_NAME) + ".log"
+        ric_log = self.get_filepath_in_report_folder(self.FLEXRIC_STDOUT_NAME) + ".log"
+        self.ric_logfile = ric_log
         self._last_log_array = (self.ric_logfile,)
 
         self.start_sut(
@@ -71,7 +71,7 @@ class FlexricRic(NearRtRicDriver, BaseDriverSutHandler):
             config_file,
             *(item for post_command in request.start_info.post_commands for item in post_command.split(" ")),
             dryrun=request.start_info.dryrun,
-            logfile=self.ric_logfile,
+            logfile=ric_log,
         )
 
         # Wait until RIC is up and running

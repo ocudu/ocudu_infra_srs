@@ -7,7 +7,7 @@ OCUDU CU-CP Agent
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, Sequence, Tuple
+from typing import Any, Dict, Optional, Sequence, Tuple
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
@@ -220,7 +220,7 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
                 )
             self._metrics_parsing_done = True
 
-    def Stop(self, request: UInt32Value, context: grpc.ServicerContext):
+    def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]):
         pcap_args = self.get_metrics_parsing_arguments()
         response = super().Stop(request, context)
         self.extract_metrics(*pcap_args)

@@ -112,9 +112,13 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
                 self._ul_avg_ri[rnti] = ul_ri
             return
 
-        t_old = (self._time_last[rnti] - self._time_first[rnti]).total_seconds()  # type: ignore[operator]
-        t_new = (timestamp - self._time_last[rnti]).total_seconds()  # type: ignore[operator]
-        t_beginning = (timestamp - self._time_first[rnti]).total_seconds()  # type: ignore[operator]
+        time_first = self._time_first[rnti]
+        time_last = self._time_last[rnti]
+        if time_first is None or time_last is None:
+            return
+        t_old = (time_last - time_first).total_seconds()
+        t_new = (timestamp - time_last).total_seconds()
+        t_beginning = (timestamp - time_first).total_seconds()
 
         if t_beginning > 0:
             self._dl_bitrate[rnti] = ((self._dl_bitrate[rnti] * t_old) + (dl_brate * t_new)) / t_beginning

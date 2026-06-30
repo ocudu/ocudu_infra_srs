@@ -18,7 +18,7 @@ from typing import Optional, Tuple
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition, UeMetrics
+from retina.protocol.base_pb2 import Metrics, StopResponse, Subscriber, UEDefinition, UeMetrics
 from retina.protocol.ue_pb2 import UEAttachedInfo, UEStartInfo
 
 from retina.agent.drivers.base import notify_grpc_exception
@@ -49,7 +49,7 @@ class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instanc
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._epc_mask: int
-        self._subscriber_client: SubscriberWithStatus = SubscriberWithStatus("", 0)
+        self._subscriber_client: SubscriberWithStatus = SubscriberWithStatus(Subscriber(), 0)
         self._attach_thread = Thread(target=self._validate_attach)
         self._attach_info: Optional[UEAttachedInfo] = None
         self._ue_metric_src_file: str = ""
@@ -144,10 +144,11 @@ class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instanc
         self._subscriber_client.started = True
         logging.info("Power on user with id %s", subscriber_id)
 
-        with suppress(BrokenPipeError, AttributeError):
-            # Enter (stop previous command) + power_on + t
-            self._process.stdin.write("\nt\n")
-            self._process.stdin.flush()
+        if self._process is not None and self._process.stdin is not None:
+            with suppress(BrokenPipeError):
+                # Enter (stop previous command) + power_on + t
+                self._process.stdin.write("\nt\n")
+                self._process.stdin.flush()
 
         return Empty()
 
@@ -186,7 +187,6 @@ class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instanc
             rnti=rnti,
         )
 
-    # pylint: disable=inconsistent-return-statements
     def WaitUntilAttached(self, request: UInt32Value, context: grpc.ServicerContext) -> UEAttachedInfo:
         with notify_grpc_exception(context):
             timeout_handler = TimeoutHandler(request.value)
@@ -194,6 +194,7 @@ class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instanc
                 if self._attach_info is not None:
                     return self._attach_info
                 sleep(self.SRS_UE_INFO_WAIT)
+        return UEAttachedInfo()
 
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         # Kill attach thread if still alive and running

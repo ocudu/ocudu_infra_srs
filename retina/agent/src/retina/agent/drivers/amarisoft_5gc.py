@@ -8,8 +8,7 @@ Amarisoft 5GC Agent
 import ipaddress
 import json
 import logging
-from contextlib import suppress
-from typing import List, Type
+from typing import List, Optional, Type
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
@@ -59,7 +58,7 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
         return Empty()
 
     def _get_tun_sh(self) -> str:
-        return template_path(self.AMARISOFT_MME_TUN_SH)
+        return str(template_path(self.AMARISOFT_MME_TUN_SH))
 
     def Start(self, request: FiveGCStartInfo, context: grpc.ServicerContext) -> Empty:
         self.Stop(UInt32Value(value=request.start_info.timeout), context)
@@ -126,8 +125,8 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
 
         return Empty()
 
-    def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
-        with suppress(AttributeError):
+    def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
+        if self._websocket is not None:
             stats = self._websocket.send_command_and_wait_response(message="stats", samples=False, rf=False)
             self._websocket.quit()
             # Save metrics into file
@@ -257,8 +256,8 @@ class _AmarisoftIms(FiveGCDriver, AmarisoftBaseDriver):
 
         return Empty()
 
-    def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
-        with suppress(AttributeError):
+    def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
+        if self._websocket is not None:
             self._websocket.quit()
         return super().Stop(request, context)
 
@@ -269,11 +268,11 @@ class _AmarisoftIms(FiveGCDriver, AmarisoftBaseDriver):
         }
 
         result = super().GetImsRegisteredUESubscriberArray(request, context)
-        for user in self._websocket.send_command_and_wait_response(message="users_get", registered_only=True).get(
-            "users", tuple()
-        ):
-            if user["impi"] in impi_subscriber_dict:
-                result.value.append(impi_subscriber_dict[user["impi"]])
+        if self._websocket is not None:
+            response = self._websocket.send_command_and_wait_response(message="users_get", registered_only=True)
+            for user in response.get("users", tuple()):
+                if user["impi"] in impi_subscriber_dict:
+                    result.value.append(impi_subscriber_dict[user["impi"]])
         return result
 
 
@@ -347,7 +346,7 @@ class Amarisoft5gc(FiveGCDriver):
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         return self._mme.GetMetrics(request, context)
 
-    def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
+    def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         ims_response = self._ims.Stop(request, context)
         mme_response = self._mme.Stop(request, context)
         return StopResponse(

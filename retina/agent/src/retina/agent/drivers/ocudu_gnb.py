@@ -8,6 +8,7 @@ OCUDU gNB Agent
 import logging
 from dataclasses import dataclass
 from time import sleep
+from typing import Optional
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
@@ -77,11 +78,11 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._cu = OcuduCu(*args, **kwargs)
-        self._cu.get_current_report_folder = self.get_current_report_folder
-        self._cu._cu_cp.get_current_report_folder = self.get_current_report_folder
-        self._cu._cu_up.get_current_report_folder = self.get_current_report_folder
+        self._cu.get_current_report_folder = self.get_current_report_folder  # type: ignore[method-assign]
+        self._cu._cu_cp.get_current_report_folder = self.get_current_report_folder  # type: ignore[method-assign]
+        self._cu._cu_up.get_current_report_folder = self.get_current_report_folder  # type: ignore[method-assign]
         self._du = OcuduDu(*args, **kwargs)
-        self._du.get_current_report_folder = self.get_current_report_folder
+        self._du.get_current_report_folder = self.get_current_report_folder  # type: ignore[method-assign]
 
     def _get_sut_version(self) -> str:
         output = tuple(
@@ -203,7 +204,7 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
 
         return Empty()
 
-    def Stop(self, request: UInt32Value, context: grpc.ServicerContext) -> StopResponse:
+    def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         metrics_json_path = self._du.stop_listening_metrics()
         du_pcap_args = self._du.get_metrics_parsing_arguments()
         cu_pcap_args = self._cu.get_metrics_parsing_arguments()

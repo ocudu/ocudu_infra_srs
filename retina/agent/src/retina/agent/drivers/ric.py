@@ -23,7 +23,7 @@ class NearRtRicDriver(NearRtRicServicer, BaseDriver, metaclass=ABCMeta):
 
     def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> NearRtRicDefinition:
         return NearRtRicDefinition(
-            enabled=1,
+            enabled=True,
             ric_ip=testbed_defaults.ip,
             ric_port=testbed_defaults.port_array[0],
         )

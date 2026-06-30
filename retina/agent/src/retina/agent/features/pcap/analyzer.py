@@ -131,7 +131,8 @@ def _load_analyzer(spec: str) -> PcapAnalyzer:
     cls = getattr(mod, class_name, None)
     if cls is None:
         raise AttributeError(f"'{class_name}' not found in '{full_module}'")
-    return cls()
+    analyzer: PcapAnalyzer = cls()
+    return analyzer
 
 
 def _main():

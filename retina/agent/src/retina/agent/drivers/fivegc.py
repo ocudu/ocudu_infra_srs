@@ -13,7 +13,6 @@ from contextlib import suppress
 from typing import Any, Dict, List, Optional, Tuple
 
 import grpc
-import psutil
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import StringValue, UInt32Value
 from retina.protocol.base_pb2 import FiveGCDefinition, IPerfServer, StopResponse, SubscriberArray
@@ -21,6 +20,7 @@ from retina.protocol.fivegc_pb2 import IPerfResponse, IPerfSummary
 from retina.protocol.fivegc_pb2_grpc import FiveGCServicer
 
 from retina.agent.drivers.base import BaseDriver, notify_grpc_exception
+from retina.agent.features.executor import SutProcessLike
 from retina.agent.parameters import fivegc_defaults, testbed_defaults
 from retina.agent.tools.time import now_timestamp_file
 
@@ -31,7 +31,7 @@ class FiveGCDriver(FiveGCServicer, BaseDriver, metaclass=ABCMeta):
     """
 
     def __init__(self, *args, **kwargs) -> None:
-        self._iperf_process_dict: Dict[Tuple[str, int], psutil.Process] = {}
+        self._iperf_process_dict: Dict[Tuple[str, int], SutProcessLike] = {}
         self._iperf_log_dict: Dict[Tuple[str, int], str] = {}
         super().__init__(*args, **kwargs)
 
@@ -122,8 +122,9 @@ class FiveGCDriver(FiveGCServicer, BaseDriver, metaclass=ABCMeta):
             raise ChildProcessError("IPerf Data Invalid") from None
 
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
-        for server_ip, server_port in dict(self._iperf_process_dict):
-            self.StopIPerfService(IPerfServer(ip=server_ip, port=server_port), context)
+        if context is not None:
+            for server_ip, server_port in dict(self._iperf_process_dict):
+                self.StopIPerfService(IPerfServer(ip=server_ip, port=server_port), context)
         return super().Stop(request, context)
 
     def GetImsRegisteredUESubscriberArray(self, request: Empty, context: grpc.ServicerContext) -> SubscriberArray:

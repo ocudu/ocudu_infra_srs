@@ -11,7 +11,7 @@ import logging
 import math
 import os
 from contextlib import suppress
-from dataclasses import dataclass
+from dataclasses import dataclass, field as dataclass_field
 from datetime import datetime
 from threading import Lock
 from time import sleep
@@ -20,7 +20,7 @@ from typing import Dict, Generator, Optional, Set, Tuple
 import grpc
 import websocket
 from google.protobuf.empty_pb2 import Empty
-from google.protobuf.wrappers_pb2 import BoolValue, Int32Value, UInt32Value
+from google.protobuf.wrappers_pb2 import BoolValue, UInt32Value
 from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition
 from retina.protocol.ue_pb2 import Position, UEAttachedInfo, UEStartInfo
 
@@ -29,6 +29,7 @@ from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.ue import SubscriberWithStatus, UEDriver
 from retina.agent.features.executor import LocalExecutor, SshExecutor
 from retina.agent.features.json_metrics.amarisoft_ue_metrics import AmarisoftUeMetricsAnalyzer
+from retina.agent.features.sut_handler import StopInfo
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import template_defaults, testbed_defaults, ue_defaults
 from retina.agent.templates import template_path
@@ -45,7 +46,7 @@ class _CellInfo:
     ssb_nr_arfcn: int
     subcarrier_spacing: int
     ssb_subcarrier_spacing: int
-    position: Position = 0
+    position: Position = dataclass_field(default_factory=Position)
     pdcch_log_filename: str = ""
 
 
@@ -302,10 +303,11 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             self._peer_ue_ids.clear()
 
             if testbed_defaults.type == "ru":
-                with suppress(BrokenPipeError, AttributeError):
-                    # Enter (stop previous command) + t
-                    self._process.stdin.write("\nt s72\n")
-                    self._process.stdin.flush()
+                if self._process is not None and self._process.stdin is not None:
+                    with suppress(BrokenPipeError):
+                        # Enter (stop previous command) + t
+                        self._process.stdin.write("\nt s72\n")
+                        self._process.stdin.flush()
 
             while timeout_handler.not_reached():
                 cells: Dict = self._websocket.send_command_and_wait_response(message="config_get").get("cells", {})
@@ -316,10 +318,11 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         if self._websocket is None:
             raise ChildProcessError("Process has died")
 
-        with suppress(BrokenPipeError, AttributeError):
-            # Enter (stop previous command) + t
-            self._process.stdin.write("\nt\n")
-            self._process.stdin.flush()
+        if self._process is not None and self._process.stdin is not None:
+            with suppress(BrokenPipeError):
+                # Enter (stop previous command) + t
+                self._process.stdin.write("\nt\n")
+                self._process.stdin.flush()
 
         if len(self._subscriber_client_dict) > 0:
             subscriber_id = self._subscriber_client_dict[context.peer()].subscriber_id
@@ -335,7 +338,6 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
         return Empty()
 
-    # pylint: disable=inconsistent-return-statements
     def WaitUntilAttached(self, request: UInt32Value, context: grpc.ServicerContext) -> UEAttachedInfo:
         with notify_grpc_exception(context):
             for ue_info in self._ue_get(
@@ -361,6 +363,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                             rnti=int(ue_info["rnti"]),
                             ue_id=int(ue_info["ue_id"]),
                         )
+        return UEAttachedInfo()
 
     def IsRunning(self, request: Empty, context: grpc.ServicerContext) -> BoolValue:
         result = super().IsRunning(request, context)
@@ -477,7 +480,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         cmd: str,
         field: str,
         state_list: Tuple[str, ...],
-        timeout: int = AMARISOFT_STOP_TIMEOUT,
+        timeout: float = AMARISOFT_STOP_TIMEOUT,
     ):  # pylint: disable=too-many-arguments
         subscriber_id = self._subscriber_client_dict[context_peer].subscriber_id
 
@@ -496,7 +499,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             if ue_info.get(field, "") in state_list:
                 return
 
-    def _stop_binary(self, stop_timeout: int = 0) -> Int32Value:
+    def _stop_binary(self, stop_timeout: int = 0) -> StopInfo:
         process_running = self._process is not None and self._process.is_running()
         if process_running:
             sleep(self.AMARISOFT_WAIT_BEFORE_STOP)

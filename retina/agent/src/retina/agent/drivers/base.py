@@ -13,6 +13,7 @@ import tempfile
 import traceback
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
+from importlib.metadata import version
 from pathlib import Path
 from typing import Callable, Dict, Generator, Optional, Tuple
 
@@ -31,11 +32,6 @@ from retina.agent.app.resource_manager import ResourceManager
 from retina.agent.features.executor import Executor
 from retina.agent.templates import template_path
 from retina.agent.tools.time import now_timestamp_file, now_utc_timestamp
-
-try:
-    from importlib.metadata import version
-except ImportError:
-    from importlib_metadata import version  # type: ignore
 
 
 class BaseDriver(BaseServicer, metaclass=ABCMeta):
@@ -58,7 +54,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         self._base_folder.mkdir(parents=True, exist_ok=True)
         self._resource_folder: Path = Path(resource_folder).resolve()
         self._resource_folder.mkdir(parents=True, exist_ok=True)
-        self._last_artifact_id = None
+        self._last_artifact_id: Optional[str] = None
         self._shutdown_callback: Optional[Callable] = None
         ResourceManager.load_resources(self._resource_folder)
         self._save_to_testbed()
@@ -173,7 +169,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
             set_parameter("testbed.type", "accelerator")
             set_parameter("testbed.accelerator_model", available_resources.accelerator.model)
             set_parameter("testbed.accelerator_hwacc_type", available_resources.accelerator.hwacc_type)
-            add_log_secret(available_resources.accelerator.id)
+            add_log_secret(str(available_resources.accelerator.id))
             set_parameter("testbed.accelerator_id", available_resources.accelerator.id)
             set_parameter("testbed.accelerator_cb_mode", available_resources.accelerator.cb_mode)
             set_parameter(
@@ -282,14 +278,14 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
                     for line in self._executor.run_binary("apt", "update"):
                         logging.debug(line)
                     for deb_path in deb_path_array:
-                        for line in self._executor.run_binary("apt", "install", "-y", deb_path):
+                        for line in self._executor.run_binary("apt", "install", "-y", str(deb_path)):
                             logging.debug(line)
 
     @abstractmethod
     def _get_sut_version(self) -> str:
         pass
 
-    def _parse_sut_version(self, text: Tuple[str], regex: str) -> str:
+    def _parse_sut_version(self, text: Tuple[str, ...], regex: str) -> str:
         for line in text:
             match = re.search(
                 regex,
@@ -331,7 +327,7 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         return StringValue(value=self._last_artifact_id)
 
     def DownloadArtifacts(self, request: Empty, context) -> Generator[BytesValue, None, None]:
-        for chunk in archive_artifact_folder(self._base_folder):
+        for chunk in archive_artifact_folder(str(self._base_folder)):
             yield BytesValue(value=chunk)
 
     def _get_ping_binary(self, context: grpc.ServicerContext) -> Tuple[str, ...]:  # pylint: disable=unused-argument
@@ -367,8 +363,8 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
         rrt_re = re.search(self.PING_RTT_REGEX, output)
         return PingResponse(
             status=num_sent == num_received,
-            sent=num_sent,
-            received=num_received,
+            sent=num_sent or 0,
+            received=num_received or 0,
             min=float(rrt_re.group(1)) if rrt_re is not None else -1,
             avg=float(rrt_re.group(2)) if rrt_re is not None else -1,
             max=float(rrt_re.group(3)) if rrt_re is not None else -1,

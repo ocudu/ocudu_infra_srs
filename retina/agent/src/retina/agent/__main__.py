@@ -11,7 +11,7 @@ import signal
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict
+from typing import Callable, Dict
 
 import grpc
 from google.protobuf.wrappers_pb2 import UInt32Value
@@ -60,7 +60,7 @@ from retina.agent.drivers.open5gs_5gc import LocalOpen5gs5gc
 from retina.agent.drivers.srs_ue import LocalSrsUe
 from retina.agent.tools.time import now_timestamp_file
 
-_DRIVER_CODENAME_DICT: Dict[str, BaseDriver] = {
+_DRIVER_CODENAME_DICT: Dict[str, Callable[..., BaseDriver]] = {
     "amarisoft-ue": LocalAmarisoftUe,
     "amarisoft-ue-remote": RemoteAmarisoftUe,
     "android": AdbAndroidUE,
@@ -213,7 +213,8 @@ def main():
     """
 
     arguments = _argument_parser()
-    retina_log_setup(Path(arguments.report_folder).joinpath("agent-log-" + now_timestamp_file() + ".log").resolve())
+    log_path = Path(arguments.report_folder).joinpath("agent-log-" + now_timestamp_file() + ".log").resolve()
+    retina_log_setup(str(log_path))
     _agent_factory(arguments.codename, arguments.report_folder, arguments.resource_folder, arguments.grpc_config)
 
 

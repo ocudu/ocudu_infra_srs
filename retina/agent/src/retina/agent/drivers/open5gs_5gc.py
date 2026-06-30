@@ -134,7 +134,7 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
             )
         )
         self._ue_ip_offset += self._UE_IP_OFFSET_INTERVAL
-        sub_data = {
+        sub_data: Dict[str, Any] = {
             "imsi": request.imsi,
             "subscribed_rau_tau_timer": 12,
             "network_access_mode": 2,

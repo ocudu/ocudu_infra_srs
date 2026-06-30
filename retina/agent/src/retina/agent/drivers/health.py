@@ -7,6 +7,7 @@ Retina custom logic on top of the health checking protocol for gRPC
 
 import logging
 import signal
+import threading
 from datetime import datetime
 from threading import Event, Thread
 
@@ -24,13 +25,14 @@ class RetinaHealth(HealthServicer):
 
     def __init__(self, keep_alive_timeout: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._lock: threading.RLock = threading.RLock()
         self._keep_alive_timeout = keep_alive_timeout
         self._last_keep_alive_date: datetime = datetime.now()
         self._alive_thread: Thread = Thread(target=self._still_alive)
         self._alive_event: Event = Event()
         self._alive_thread.start()
 
-    def Check(self, request: HealthCheckRequest, context: grpc.RpcContext) -> HealthCheckResponse:
+    def Check(self, request: HealthCheckRequest, context: grpc.ServicerContext) -> HealthCheckResponse:
         with self._lock:
             self._last_keep_alive_date = datetime.now()
         return super().Check(request, context)
