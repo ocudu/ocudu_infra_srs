@@ -7,9 +7,8 @@ Port interface for artifact handling
 
 from abc import abstractmethod
 
-from retina.protocol import RanStub
-
 from retina.client.core.communication_port import CommunicationPort
+from retina.protocol import RanClient
 
 
 class ArtifactPort:
@@ -22,7 +21,7 @@ class ArtifactPort:
         super().__init__(*args, **kwargs)
 
     @abstractmethod
-    def download_client_artifacts(self, stub: RanStub, report_folder: str) -> None:
+    def download_client_artifacts(self, stub: RanClient, report_folder: str) -> None:
         """
         Download artifacts for the specified client
         """

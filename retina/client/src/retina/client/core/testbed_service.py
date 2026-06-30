@@ -9,20 +9,26 @@ import json
 import logging
 import typing
 from collections import OrderedDict
-from typing import Dict
+from typing import cast, Dict
 
 from jsonschema import validate, ValidationError
-from retina.protocol import RanStub
-from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import CUStub, DUStub, GNBStub
-from retina.protocol.ric_pb2_grpc import NearRtRicStub
-from retina.protocol.ue_pb2_grpc import UEStub
 
 from retina.client.core import storage
 from retina.client.core.storage import Client, NodeTypeEnum
 from retina.client.core.testbed_port import NodeInfo, TestbedPort
 from retina.client.schemas import schema_path
+from retina.protocol import (
+    ChannelEmulatorClient,
+    CUClient,
+    CUCPClient,
+    CUUPClient,
+    DUClient,
+    FiveGCClient,
+    GNBClient,
+    NearRtRicClient,
+    RanClient,
+    UEClient,
+)
 
 
 class TestbedService(TestbedPort):
@@ -98,34 +104,34 @@ class TestbedService(TestbedPort):
     def get_testbed_info(self) -> Dict[str, typing.OrderedDict[str, NodeInfo]]:
         return self._testbed_info
 
-    def get_ue(self, index: int = 0) -> UEStub:
-        return self._get_item(NodeTypeEnum.UE, index)
+    def get_ue(self, index: int = 0) -> UEClient:
+        return cast(UEClient, self._get_item(NodeTypeEnum.UE, index))
 
-    def get_gnb(self, index: int = 0) -> GNBStub:
-        return self._get_item(NodeTypeEnum.GNB, index)
+    def get_gnb(self, index: int = 0) -> GNBClient:
+        return cast(GNBClient, self._get_item(NodeTypeEnum.GNB, index))
 
-    def get_cu(self, index: int = 0) -> CUStub:
-        return self._get_item(NodeTypeEnum.CU, index)
+    def get_cu(self, index: int = 0) -> CUClient:
+        return cast(CUClient, self._get_item(NodeTypeEnum.CU, index))
 
-    def get_cu_cp(self, index: int = 0) -> CUStub:
-        return self._get_item(NodeTypeEnum.CU_CP, index)
+    def get_cu_cp(self, index: int = 0) -> CUCPClient:
+        return cast(CUCPClient, self._get_item(NodeTypeEnum.CU_CP, index))
 
-    def get_cu_up(self, index: int = 0) -> CUStub:
-        return self._get_item(NodeTypeEnum.CU_UP, index)
+    def get_cu_up(self, index: int = 0) -> CUUPClient:
+        return cast(CUUPClient, self._get_item(NodeTypeEnum.CU_UP, index))
 
-    def get_du(self, index: int = 0) -> DUStub:
-        return self._get_item(NodeTypeEnum.DU, index)
+    def get_du(self, index: int = 0) -> DUClient:
+        return cast(DUClient, self._get_item(NodeTypeEnum.DU, index))
 
-    def get_5gc(self, index: int = 0) -> FiveGCStub:
-        return self._get_item(NodeTypeEnum.FIVEGC, index)
+    def get_5gc(self, index: int = 0) -> FiveGCClient:
+        return cast(FiveGCClient, self._get_item(NodeTypeEnum.FIVEGC, index))
 
-    def get_ric(self, index: int = 0) -> NearRtRicStub:
-        return self._get_item(NodeTypeEnum.RIC, index)
+    def get_ric(self, index: int = 0) -> NearRtRicClient:
+        return cast(NearRtRicClient, self._get_item(NodeTypeEnum.RIC, index))
 
-    def get_channel_emulator(self, index: int = 0) -> ChannelEmulatorStub:
-        return self._get_item(NodeTypeEnum.CHANNEL_EMULATOR, index)
+    def get_channel_emulator(self, index: int = 0) -> ChannelEmulatorClient:
+        return cast(ChannelEmulatorClient, self._get_item(NodeTypeEnum.CHANNEL_EMULATOR, index))
 
-    def _get_item(self, stub_type: NodeTypeEnum, index: int = 0) -> RanStub:
+    def _get_item(self, stub_type: NodeTypeEnum, index: int = 0) -> RanClient:
         if stub_type.value not in self._testbed_info:
             raise KeyError(
                 f"No nodes of type `{stub_type.value}`. "
@@ -167,7 +173,7 @@ class TestbedService(TestbedPort):
 
         return storage.clients[stub_type][index].stub
 
-    def close_client(self, stub: RanStub) -> None:
+    def close_client(self, stub: RanClient) -> None:
         for client_array in storage.clients.values():
             for client in client_array:
                 if client.stub is stub:

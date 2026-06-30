@@ -7,9 +7,8 @@ Port interface for parsing and processing the client version
 
 from abc import abstractmethod
 
-from retina.protocol import RanStub
-
 from retina.client.core.communication_port import CommunicationPort
+from retina.protocol import RanClient
 
 
 class IncompatibleRetinaVersion(Exception):
@@ -29,7 +28,7 @@ class VersionPort:
         super().__init__(*args, **kwargs)
 
     @abstractmethod
-    def validate_client_version(self, stub: RanStub) -> None:
+    def validate_client_version(self, stub: RanClient) -> None:
         """
         Check if client version is compatible with this client.
         Raises IncompatibleRetinaVersion if they're not compatible

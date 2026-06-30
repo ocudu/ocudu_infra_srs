@@ -10,10 +10,9 @@ import os
 from pathlib import Path
 from typing import Dict, List
 
-from retina.protocol import RanStub
-
 from retina.client.core import storage
 from retina.client.core.artifact_port import ArtifactPort
+from retina.protocol import RanClient
 
 
 class ArtifactService(ArtifactPort):
@@ -21,7 +20,7 @@ class ArtifactService(ArtifactPort):
     Artifact handling
     """
 
-    def download_client_artifacts(self, stub: RanStub, report_folder: str) -> None:
+    def download_client_artifacts(self, stub: RanClient, report_folder: str) -> None:
         for client_array in storage.clients.values():
             for client in client_array:
                 if client.stub is stub and not client.closed:

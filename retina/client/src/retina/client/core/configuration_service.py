@@ -11,11 +11,11 @@ from typing import Any, Dict, Optional
 
 import yaml
 from jsonschema import validate, ValidationError
-from retina.protocol import RanStub
 
 from retina.client.core import storage
 from retina.client.core.configuration_port import ConfigurationPort
 from retina.client.schemas import schema_path
+from retina.protocol import RanClient
 
 
 class ConfigurationService(ConfigurationPort):
@@ -199,7 +199,7 @@ class ConfigurationService(ConfigurationPort):
                     **self._templates_from_cli.get(node_type, {}).get(client.name, {}),
                 }
 
-    def push_client_config(self, stub: RanStub) -> None:
+    def push_client_config(self, stub: RanClient) -> None:
         self._calculate_parameters()
 
         for node_type, client_array in storage.clients.items():

@@ -9,14 +9,19 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Dict, OrderedDict
 
-from retina.protocol import RanStub
-from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import CUStub, DUStub, GNBStub
-from retina.protocol.ric_pb2_grpc import NearRtRicStub
-from retina.protocol.ue_pb2_grpc import UEStub
-
 from retina.client.core.communication_port import CommunicationPort
+from retina.protocol import (
+    ChannelEmulatorClient,
+    CUClient,
+    CUCPClient,
+    CUUPClient,
+    DUClient,
+    FiveGCClient,
+    GNBClient,
+    NearRtRicClient,
+    RanClient,
+    UEClient,
+)
 
 
 @dataclass(frozen=True)
@@ -46,70 +51,70 @@ class TestbedPort:
         """
 
     @abstractmethod
-    def get_ue(self, index: int = 0) -> UEStub:
+    def get_ue(self, index: int = 0) -> UEClient:
         """
         Return a UE stub in the specified index.
         If not exists, raises an Exception.
         """
 
     @abstractmethod
-    def get_gnb(self, index: int = 0) -> GNBStub:
+    def get_gnb(self, index: int = 0) -> GNBClient:
         """
         Return a gnb stub in the specified index.
         If not exists, raises an Exception.
         """
 
     @abstractmethod
-    def get_cu(self, index: int = 0) -> CUStub:
+    def get_cu(self, index: int = 0) -> CUClient:
         """
         Return a cu stub in the specified index.
         If not exists, raises an Exception.
         """
 
     @abstractmethod
-    def get_cu_cp(self, index: int = 0) -> CUStub:
+    def get_cu_cp(self, index: int = 0) -> CUCPClient:
         """
         Return a cu-cp stub in the specified index.
         If not exists, raises an Exception.
         """
 
     @abstractmethod
-    def get_cu_up(self, index: int = 0) -> CUStub:
+    def get_cu_up(self, index: int = 0) -> CUUPClient:
         """
         Return a cu-up stub in the specified index.
         If not exists, raises an Exception.
         """
 
     @abstractmethod
-    def get_du(self, index: int = 0) -> DUStub:
+    def get_du(self, index: int = 0) -> DUClient:
         """
         Return a du stub in the specified index.
         If not exists, raises an Exception.
         """
 
     @abstractmethod
-    def get_5gc(self, index: int = 0) -> FiveGCStub:
+    def get_5gc(self, index: int = 0) -> FiveGCClient:
         """
         Return a 5gc stub in the specified index.
         If not exists, raises an Exception.
         """
 
     @abstractmethod
-    def get_ric(self, index: int = 0) -> NearRtRicStub:
+    def get_ric(self, index: int = 0) -> NearRtRicClient:
         """
         Return a RIC stub in the specified index.
         If not exists, raises an Exception.
         """
 
     @abstractmethod
-    def get_channel_emulator(self, index: int = 0) -> ChannelEmulatorStub:
+    def get_channel_emulator(self, index: int = 0) -> ChannelEmulatorClient:
         """
         Return a Channel Emulator stub in the specified index.
         If not exists, raises an Exception.
         """
 
     @abstractmethod
-    def close_client(self, stub: RanStub) -> None:
+    def close_client(self, stub: RanClient) -> None:
         """
         Close client for specified
         """

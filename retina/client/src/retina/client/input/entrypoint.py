@@ -9,20 +9,28 @@ import argparse
 from dataclasses import dataclass
 from pathlib import Path
 from time import time
-from typing import Any, Callable, Dict, Optional, OrderedDict
+from typing import Any, Callable, Dict, Optional, OrderedDict, TypeVar
 
 import yaml
-from retina.protocol import RanStub
-from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import CUStub, DUStub, GNBStub
-from retina.protocol.ric_pb2_grpc import NearRtRicStub
-from retina.protocol.ue_pb2_grpc import UEStub
 
 from retina.client.core.artifact_port import ArtifactPort
 from retina.client.core.configuration_port import ConfigurationPort
 from retina.client.core.testbed_port import NodeInfo, TestbedPort
 from retina.client.core.version_port import IncompatibleRetinaVersion, VersionPort
+from retina.protocol import (
+    ChannelEmulatorClient,
+    CUClient,
+    CUCPClient,
+    CUUPClient,
+    DUClient,
+    FiveGCClient,
+    GNBClient,
+    NearRtRicClient,
+    RanClient,
+    UEClient,
+)
+
+_T = TypeVar("_T", bound=RanClient)
 
 
 @dataclass(frozen=True)
@@ -156,7 +164,7 @@ class RetinaEntrypoint:
         """
         return self._configuration_service.register_parameter(kind, name, key, value)
 
-    def get_ue(self, *args, **kwargs) -> UEStub:
+    def get_ue(self, *args, **kwargs) -> UEClient:
         """
         Return a UE stub in the specified index.
         If not exists, raises an Exception.
@@ -164,7 +172,7 @@ class RetinaEntrypoint:
         """
         return self._get_item(self._testbed_service.get_ue, *args, **kwargs)
 
-    def get_gnb(self, *args, **kwargs) -> GNBStub:
+    def get_gnb(self, *args, **kwargs) -> GNBClient:
         """
         Return a gnb stub in the specified index.
         If not exists, raises an Exception.
@@ -172,7 +180,7 @@ class RetinaEntrypoint:
         """
         return self._get_item(self._testbed_service.get_gnb, *args, **kwargs)
 
-    def get_cu(self, *args, **kwargs) -> CUStub:
+    def get_cu(self, *args, **kwargs) -> CUClient:
         """
         Return a cu stub in the specified index.
         If not exists, raises an Exception.
@@ -180,7 +188,7 @@ class RetinaEntrypoint:
         """
         return self._get_item(self._testbed_service.get_cu, *args, **kwargs)
 
-    def get_cu_cp(self, *args, **kwargs) -> CUStub:
+    def get_cu_cp(self, *args, **kwargs) -> CUCPClient:
         """
         Return a cu-cp stub in the specified index.
         If not exists, raises an Exception.
@@ -188,7 +196,7 @@ class RetinaEntrypoint:
         """
         return self._get_item(self._testbed_service.get_cu_cp, *args, **kwargs)
 
-    def get_cu_up(self, *args, **kwargs) -> CUStub:
+    def get_cu_up(self, *args, **kwargs) -> CUUPClient:
         """
         Return a cu-up stub in the specified index.
         If not exists, raises an Exception.
@@ -196,7 +204,7 @@ class RetinaEntrypoint:
         """
         return self._get_item(self._testbed_service.get_cu_up, *args, **kwargs)
 
-    def get_du(self, *args, **kwargs) -> DUStub:
+    def get_du(self, *args, **kwargs) -> DUClient:
         """
         Return a du stub in the specified index.
         If not exists, raises an Exception.
@@ -204,7 +212,7 @@ class RetinaEntrypoint:
         """
         return self._get_item(self._testbed_service.get_du, *args, **kwargs)
 
-    def get_5gc(self, *args, **kwargs) -> FiveGCStub:
+    def get_5gc(self, *args, **kwargs) -> FiveGCClient:
         """
         Return a 5gc stub in the specified index.
         If not exists, raises an Exception.
@@ -212,7 +220,7 @@ class RetinaEntrypoint:
         """
         return self._get_item(self._testbed_service.get_5gc, *args, **kwargs)
 
-    def get_ric(self, *args, **kwargs) -> NearRtRicStub:
+    def get_ric(self, *args, **kwargs) -> NearRtRicClient:
         """
         Return a RIC stub in the specified index.
         If not exists, raises an Exception.
@@ -220,7 +228,7 @@ class RetinaEntrypoint:
         """
         return self._get_item(self._testbed_service.get_ric, *args, **kwargs)
 
-    def get_channel_emulator(self, *args, **kwargs) -> ChannelEmulatorStub:
+    def get_channel_emulator(self, *args, **kwargs) -> ChannelEmulatorClient:
         """
         Return a Channel Emulator stub in the specified index.
         If not exists, raises an Exception.
@@ -230,11 +238,11 @@ class RetinaEntrypoint:
 
     def _get_item(
         self,
-        get_fun: Callable,
+        get_fun: Callable[[int], _T],
         index: int = 0,
         push_config: bool = True,
         timeout: float = GET_ITEM_TIMEOUT,
-    ) -> RanStub:
+    ) -> _T:
         client = get_fun(index)
 
         maximum_time = time() + timeout
@@ -253,7 +261,7 @@ class RetinaEntrypoint:
 
         return client
 
-    def push_client_config(self, stub: RanStub) -> None:
+    def push_client_config(self, stub: RanClient) -> None:
         """
         Send configured parameters to the client's agent
         """
@@ -271,7 +279,7 @@ class RetinaEntrypoint:
         """
         return self._configuration_service.reset_all_config()
 
-    def download_client_artifacts(self, stub: RanStub) -> None:
+    def download_client_artifacts(self, stub: RanClient) -> None:
         """
         Download artifacts for the specified client
         """
@@ -284,7 +292,7 @@ class RetinaEntrypoint:
         """
         return self._artifact_service.download_all_artifacts(self._report_folder)
 
-    def close_client(self, stub: RanStub) -> None:
+    def close_client(self, stub: RanClient) -> None:
         """
         Close client for specified
         """

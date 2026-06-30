@@ -8,9 +8,8 @@ Port interface for handling configuration and parameters
 from abc import abstractmethod
 from typing import Any, Dict, Optional
 
-from retina.protocol import RanStub
-
 from retina.client.core.communication_port import CommunicationPort
+from retina.protocol import RanClient
 
 
 class ConfigurationPort:
@@ -41,7 +40,7 @@ class ConfigurationPort:
         """
 
     @abstractmethod
-    def push_client_config(self, stub: RanStub) -> None:
+    def push_client_config(self, stub: RanClient) -> None:
         """
         Send configured parameters to the client's agent
         """

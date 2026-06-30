@@ -9,6 +9,7 @@ import inspect
 import sys
 import traceback
 from types import TracebackType
+from typing import cast
 
 import grpc
 
@@ -69,9 +70,10 @@ class ErrorReportedByAgent(grpc.RpcError):
     # instead of "retina.client...ErrorReportedByAgent"
     __module__ = "builtins"
 
-    def __init__(self, error) -> None:
-        self.code: grpc.StatusCode = error._state.code
-        self.details: str = error._state.details.strip()
+    def __init__(self, error: grpc.RpcError) -> None:
+        call = cast(grpc.Call, error)
+        self.code: grpc.StatusCode = call.code()  # type: ignore[assignment]  # shadows grpc.RpcError.code()
+        self.details: str = call.details().strip()  # type: ignore[assignment]  # shadows grpc.RpcError.details()
 
     def __repr__(self) -> str:
         return self.details if self.details else f"RPC method terminated with {self.code}"

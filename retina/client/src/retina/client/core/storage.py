@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List
 
-from retina.protocol import RanStub
+from retina.protocol import RanClient
 
 
 @dataclass()
@@ -20,7 +20,7 @@ class Client:
     """
 
     name: str
-    stub: RanStub
+    stub: RanClient
     closed: bool = False
 
 

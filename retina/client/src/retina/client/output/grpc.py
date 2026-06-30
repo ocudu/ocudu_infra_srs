@@ -11,24 +11,29 @@ from contextlib import suppress
 from random import randint
 from threading import Event, Thread
 from time import sleep, time
-from typing import Any, Dict, Optional, Tuple, Type
+from typing import Any, Callable, Dict, Optional, Tuple
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from grpc_health.v1.health_pb2 import HealthCheckRequest, HealthCheckResponse
 from grpc_health.v1.health_pb2_grpc import HealthStub
-from retina.protocol import RanStub
-from retina.protocol.artifact import download_archived_artifact
-from retina.protocol.base_pb2 import Parameter
-from retina.protocol.base_pb2_grpc import BaseStub
-from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import CUCPStub, CUStub, CUUPStub, DUStub, GNBStub
-from retina.protocol.ric_pb2_grpc import NearRtRicStub
-from retina.protocol.ue_pb2_grpc import UEStub
 
 from retina.client.core.communication_port import CommunicationPort, Version
 from retina.client.exception import ErrorReportedByAgent
+from retina.protocol import (
+    ChannelEmulatorClient,
+    CUClient,
+    CUCPClient,
+    CUUPClient,
+    DUClient,
+    FiveGCClient,
+    GNBClient,
+    NearRtRicClient,
+    RanClient,
+    UEClient,
+)
+from retina.protocol.artifact import download_archived_artifact
+from retina.protocol.base_pb2 import Parameter
 
 
 class GrpcAdaptor(CommunicationPort):
@@ -36,27 +41,27 @@ class GrpcAdaptor(CommunicationPort):
     Handle Retina Communication with the agent. GRPC Adaptor
     """
 
-    _KIND_CODENAME_DICT: Dict[str, Type[RanStub]] = {
-        "ue": UEStub,
-        "gnb": GNBStub,
-        "cu": CUStub,
-        "cu_cp": CUCPStub,
-        "cu_up": CUUPStub,
-        "du": DUStub,
-        "5gc": FiveGCStub,
-        "ric": NearRtRicStub,
-        "channel-emulator": ChannelEmulatorStub,
+    _KIND_CODENAME_DICT: Dict[str, Callable[..., RanClient]] = {
+        "ue": UEClient,
+        "gnb": GNBClient,
+        "cu": CUClient,
+        "cu_cp": CUCPClient,
+        "cu_up": CUUPClient,
+        "du": DUClient,
+        "5gc": FiveGCClient,
+        "ric": NearRtRicClient,
+        "channel-emulator": ChannelEmulatorClient,
     }
     _DEFAULT_KEEP_ALIVE_PERIOD: int = 60
 
     def __init__(self, *args, **kwargs) -> None:
-        self._grpc_channel_dict: Dict[RanStub, grpc.Channel] = {}
-        self._thread_alive_dict: Dict[RanStub, Thread] = {}
-        self._event_alive_dict: Dict[RanStub, Event] = {}
-        self._stub_address_dict: Dict[RanStub, Tuple[str, int]] = {}
+        self._grpc_channel_dict: Dict[RanClient, grpc.Channel] = {}
+        self._thread_alive_dict: Dict[RanClient, Thread] = {}
+        self._event_alive_dict: Dict[RanClient, Event] = {}
+        self._stub_address_dict: Dict[RanClient, Tuple[str, int]] = {}
         super().__init__(*args, **kwargs)
 
-    def create_client(self, node_type: str, *com_args) -> RanStub:
+    def create_client(self, node_type: str, *com_args) -> RanClient:
         ip_address, port = com_args
 
         interceptors = (
@@ -72,12 +77,9 @@ class GrpcAdaptor(CommunicationPort):
             *interceptors,
         )
 
-        stub = BaseStub(channel)
-        # pylint: disable=unnecessary-dunder-call
+        stub: RanClient = self._KIND_CODENAME_DICT[node_type](channel)
         HealthStub.__init__(stub, channel)
         self._wait_for_agent(stub)
-
-        self._KIND_CODENAME_DICT[node_type].__init__(stub, channel)
         self._grpc_channel_dict[stub] = channel
         self._stub_address_dict[stub] = (ip_address, port)
         self._event_alive_dict[stub] = Event()
@@ -86,7 +88,7 @@ class GrpcAdaptor(CommunicationPort):
 
         return stub
 
-    def get_version(self, stub: RanStub) -> Version:
+    def get_version(self, stub: RanClient) -> Version:
         client_version = stub.GetRetinaInfo(Empty())
         return Version(
             agent=client_version.agent_version,
@@ -94,7 +96,7 @@ class GrpcAdaptor(CommunicationPort):
         )
 
     @staticmethod
-    def push_parameter(stub: RanStub, key: str, value: Any, param_namespace: str) -> None:
+    def push_parameter(stub: RanClient, key: str, value: Any, param_namespace: str) -> None:
         stub.SetParameter(Parameter(name=f"{param_namespace}.{key}", value=str(value)))
 
     def _close_all_keep_alive(self) -> None:
@@ -103,7 +105,7 @@ class GrpcAdaptor(CommunicationPort):
                 self._event_alive_dict[stub].set()
                 self._thread_alive_dict[stub].join()
 
-    def close_client(self, stub: RanStub) -> None:
+    def close_client(self, stub: RanClient) -> None:
         # When closing, we need to first close all keep alive threads to avoid fake comm error messages reported
         self._close_all_keep_alive()
         if stub in self._grpc_channel_dict:
@@ -115,16 +117,16 @@ class GrpcAdaptor(CommunicationPort):
             self._grpc_channel_dict[stub].close()
 
     @staticmethod
-    def download_artifacts(stub: RanStub, report_folder: str) -> None:
+    def download_artifacts(stub: RanClient, report_folder: str) -> None:
         try:
             download_archived_artifact(stub, report_folder)
         except grpc.RpcError as err:
             logging.error(ErrorReportedByAgent(err))
 
     @staticmethod
-    def get_artifact_id(stub: RanStub) -> str:
+    def get_artifact_id(stub: RanClient) -> str:
         try:
-            return stub.GetArtifactsId(Empty()).value
+            return str(stub.GetArtifactsId(Empty()).value)
         except grpc.RpcError as err:
             logging.error(ErrorReportedByAgent(err))
             return str(id(stub))
@@ -134,7 +136,7 @@ class GrpcAdaptor(CommunicationPort):
         deadline = time() + timeout
         while time() < deadline:
             try:
-                response: HealthCheckResponse = stub.Check(HealthCheckRequest())
+                response: HealthCheckResponse = stub.Check(HealthCheckRequest())  # type: ignore[attr-defined]
                 if response.status == HealthCheckResponse.SERVING:
                     return
             except grpc.RpcError:
@@ -149,7 +151,7 @@ class GrpcAdaptor(CommunicationPort):
         """
         while not event.is_set():
             try:
-                response: HealthCheckResponse = stub.Check(HealthCheckRequest())
+                response: HealthCheckResponse = stub.Check(HealthCheckRequest())  # type: ignore[attr-defined]
                 if response.status is not HealthCheckResponse.SERVING:
                     logging.error(
                         "GRPC Health check failed: %s",
@@ -189,7 +191,7 @@ class _RetryOnRpcErrorClientInterceptor(grpc.UnaryUnaryClientInterceptor, grpc.S
             response = continuation(client_call_details, request_or_iterator)
 
             # pylint: disable=protected-access
-            if isinstance(response, grpc._channel._MultiThreadedRendezvous):
+            if isinstance(response, grpc._channel._MultiThreadedRendezvous):  # type: ignore[attr-defined]
                 break
 
             if isinstance(response, grpc.RpcError):

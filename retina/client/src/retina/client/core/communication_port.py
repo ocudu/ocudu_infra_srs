@@ -9,7 +9,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
-from retina.protocol import RanStub
+from retina.protocol import RanClient
 
 
 @dataclass(frozen=True)
@@ -28,27 +28,27 @@ class CommunicationPort:
     """
 
     @abstractmethod
-    def create_client(self, node_type: str, *com_args) -> RanStub:
+    def create_client(self, node_type: str, *com_args) -> RanClient:
         """
         Create a client for the specified agent.
         Raises an Exception if can't be created
         """
 
     @abstractmethod
-    def get_version(self, stub: RanStub) -> Version:
+    def get_version(self, stub: RanClient) -> Version:
         """
         Get Agent and SUT version
         """
 
     @staticmethod
     @abstractmethod
-    def push_parameter(stub: RanStub, key: str, value: Any, param_namespace: str) -> None:
+    def push_parameter(stub: RanClient, key: str, value: Any, param_namespace: str) -> None:
         """
         Send a parameter to the agent
         """
 
     @abstractmethod
-    def close_client(self, stub: RanStub) -> None:
+    def close_client(self, stub: RanClient) -> None:
         """
         Close client connection
         Raises an Exception if can't be closed
@@ -56,14 +56,14 @@ class CommunicationPort:
 
     @staticmethod
     @abstractmethod
-    def download_artifacts(stub: RanStub, report_folder: str) -> None:
+    def download_artifacts(stub: RanClient, report_folder: str) -> None:
         """
         Download artifacts from agent
         """
 
     @staticmethod
     @abstractmethod
-    def get_artifact_id(stub: RanStub) -> str:
+    def get_artifact_id(stub: RanClient) -> str:
         """
         Get artifact ID
         """

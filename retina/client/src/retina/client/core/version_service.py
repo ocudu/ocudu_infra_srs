@@ -6,16 +6,11 @@ In charge of parsing and processing the client version
 """
 
 import logging
-
-from retina.protocol import RanStub
+from importlib.metadata import version
 
 import retina.client
 from retina.client.core.version_port import VersionPort
-
-try:
-    from importlib.metadata import version
-except ImportError:
-    from importlib_metadata import version  # type: ignore
+from retina.protocol import RanClient
 
 
 class VersionService(VersionPort):
@@ -29,7 +24,7 @@ class VersionService(VersionPort):
         self._client_version = version(retina.client.__name__).split(".")
         super().__init__(*args, **kwargs)
 
-    def validate_client_version(self, stub: RanStub) -> None:
+    def validate_client_version(self, stub: RanClient) -> None:
         agent_version = self._com_handler.get_version(stub).agent.split(".")
         is_compatible = False
         if self._client_version[0] == agent_version[0] and self._client_version[1] >= agent_version[1]:
