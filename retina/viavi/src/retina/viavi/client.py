@@ -178,7 +178,7 @@ class Viavi(SSHClient):
         """
         timeout_handler = TimeoutHandler(timeout, "Campaign did not start in the expected timeout")
         try:
-            result = post(
+            post(
                 f"{self.url_base}/tmas/{self.TMA_NUMBER}/campaigns/actions/run",
                 {
                     "CAMPAIGN_NAME": campaign_name,
@@ -194,7 +194,6 @@ class Viavi(SSHClient):
                 break
             except HTTPError:
                 time.sleep(1)
-        return result
 
     def stop_running_campaign(self, timeout: float = DEFAULT_TIMEOUT) -> None:
         """

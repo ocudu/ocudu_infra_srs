@@ -37,20 +37,21 @@ combine_as_imports = true
 float_to_top = true
 force_alphabetical_sort_within_sections = true
 include_trailing_comma = true
+known_first_party = ["retina"]
 line_length = 120
 profile = "black"
 remove_redundant_aliases = true
 
 [tool.mypy]
 check_untyped_defs = true
-ignore_missing_imports = true
+explicit_package_bases = true
 install_types = true
+mypy_path = ["src"]
 non_interactive = true
-warn_return_any = false
+warn_return_any = true
 warn_unused_configs = true
 
 [tool.pylint]
-ignore-signatures = true
 max-line-length = 120
 
 [tool.coverage.run]
