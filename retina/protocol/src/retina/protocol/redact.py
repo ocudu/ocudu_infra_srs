@@ -8,7 +8,7 @@ Helpers to redact sensitive values from log messages
 import logging
 import os
 import re
-from typing import Optional, Set
+from typing import Optional, overload, Set
 
 
 class _SecretFilter(logging.Filter):
@@ -33,6 +33,12 @@ class _SecretFilter(logging.Filter):
         secret = secret.strip()
         if len(secret) > 1 and secret not in self._NOT_REDACT_ARRAY:
             self._secrets.add(secret)
+
+    @overload
+    def redact(self, value: str) -> str: ...
+
+    @overload
+    def redact(self, value: None) -> None: ...
 
     def redact(self, value: Optional[str]) -> Optional[str]:
         """Return the input string with all secrets replaced by the mask."""
@@ -67,6 +73,14 @@ def setup_secret_log_filter() -> None:
     Add the shared secret filter to the root logger.
     """
     logging.root.addFilter(_SECRET_FILTER)
+
+
+@overload
+def redact_string(value: str) -> str: ...
+
+
+@overload
+def redact_string(value: None) -> None: ...
 
 
 def redact_string(value: Optional[str]) -> Optional[str]:

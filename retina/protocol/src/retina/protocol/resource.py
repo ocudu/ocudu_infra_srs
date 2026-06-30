@@ -5,11 +5,17 @@
 Model classes for resources used in the testbed configuration.
 """
 
+import sys
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
 import yaml
+
+if sys.version_info >= (3, 12):  # dataclass_transform added to typing in 3.12
+    from typing import dataclass_transform
+else:
+    from typing_extensions import dataclass_transform
 
 
 class _ResourceSerializer:
@@ -29,7 +35,8 @@ class _ResourceSerializer:
             result = asdict(obj)
             result["type"] = obj.__class__.__name__
             return result
-        return vars(obj)  # type: ignore
+        obj_vars: Dict[str, Any] = vars(obj)
+        return obj_vars
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> Any:
@@ -94,6 +101,7 @@ def _construct_resource(loader, node):
 _ResourceLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_resource)
 
 
+@dataclass_transform(eq_default=True)
 def resource(cls):
     """Decorator that combines @resource with automatic registration"""
     cls = dataclass(cls, eq=True)
@@ -107,7 +115,8 @@ def dump_resource_list_to_str(resource_list: List) -> str:
     :param resource_list: List of Resource dataclasses to convert.
     :return: List of dictionaries representing the resources.
     """
-    return yaml.dump([_ResourceSerializer.to_dict(resource) for resource in resource_list])
+    result: str = yaml.dump([_ResourceSerializer.to_dict(resource) for resource in resource_list])
+    return result
 
 
 def dump_resource_list_to_file(resource_list: List, file_path_str: str) -> None:
@@ -144,32 +153,32 @@ def load_resources_from_file(file_path_str: Union[str, Path]) -> List[Any]:
 
 
 @resource
-class Node:  # pylint: disable=too-few-public-methods
+class Node:  # pylint: disable=too-few-public-methods,invalid-field-call
     """Node configuration."""
 
-    node_ip: str = field(default="")  # pylint: disable=invalid-field-call
-    backhaul_ip: str = field(default="")  # pylint: disable=invalid-field-call
-    port_array: List[int] = field(default_factory=list)  # pylint: disable=invalid-field-call
-    lcores_eal: str = field(default="")  # pylint: disable=invalid-field-call
-    n2n3_bind_address: str = field(default="")  # pylint: disable=invalid-field-call
+    node_ip: str = field(default="")
+    backhaul_ip: str = field(default="")
+    port_array: List[int] = field(default_factory=list)
+    lcores_eal: str = field(default="")
+    n2n3_bind_address: str = field(default="")
 
 
 @resource
-class Remote:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
+class Remote:  # pylint: disable=too-few-public-methods,too-many-instance-attributes,invalid-field-call
     """Remote configuration."""
 
     address: str
     user: str
     password: str
     path: str
-    network_interface: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
-    ru_mac_address: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
-    du_mac_address: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
-    vlan_tag_up: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
-    vlan_tag_cp: List[str] = field(default_factory=list)  # pylint: disable=invalid-field-call
-    prach_port_id: str = field(default="")  # pylint: disable=invalid-field-call
-    dl_port_id: str = field(default="")  # pylint: disable=invalid-field-call
-    ul_port_id: str = field(default="")  # pylint: disable=invalid-field-call
+    network_interface: List[str] = field(default_factory=list)
+    ru_mac_address: List[str] = field(default_factory=list)
+    du_mac_address: List[str] = field(default_factory=list)
+    vlan_tag_up: List[str] = field(default_factory=list)
+    vlan_tag_cp: List[str] = field(default_factory=list)
+    prach_port_id: str = field(default="")
+    dl_port_id: str = field(default="")
+    ul_port_id: str = field(default="")
 
 
 @resource

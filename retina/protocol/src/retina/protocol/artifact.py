@@ -15,7 +15,7 @@ from typing import Generator
 
 from google.protobuf.empty_pb2 import Empty
 
-from retina.protocol import RanStub
+from retina.protocol import RanClient
 from retina.protocol.redact import redact_string
 
 _ARCHIVE_FORMAT: str = "xztar"
@@ -137,7 +137,7 @@ def archive_artifact_folder(
                         return
 
 
-def download_archived_artifact(stub: RanStub, folder_to_unpack_path: str, max_attempts: int = 3):
+def download_archived_artifact(stub: RanClient, folder_to_unpack_path: str, max_attempts: int = 3):
     """
     Request archived artifacts to a stub and unpack them.
     Retries up to max_attempts times on download or extraction failure.
