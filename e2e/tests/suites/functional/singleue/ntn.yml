@@ -36,6 +36,7 @@ geo_band_256_bw_5_fl_false_ping: &base_config
         zero_correlation_zone: 0
         warning_allowlist:
           - Slot point to time point mapping not available.
+        ntn_log_level: debug
       feeder_link: false
       dl_harq_disabled: false
       ul_harq_disabled: false

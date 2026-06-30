@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+{%- set ntn_log_level = ntn_log_level | default('info') %}
+
 cu_cp:
   inactivity_timer: 7200
   request_pdu_session_timeout: 10
@@ -10,4 +12,4 @@ cu_cp:
     procedure_timeout: 5000
 
 log:
-  ntn_level: {{log_level}}
+  ntn_level: {{ntn_log_level}}
