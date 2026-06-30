@@ -57,23 +57,75 @@ combine_as_imports = true
 float_to_top = true
 force_alphabetical_sort_within_sections = true
 include_trailing_comma = true
+known_first_party = ["retina"]
 line_length = 120
 profile = "black"
 remove_redundant_aliases = true
 
 [tool.mypy]
 check_untyped_defs = true
-ignore_missing_imports = true
+explicit_package_bases = true
 install_types = true
+mypy_path = [
+  "src",
+  "../client/src",
+  "../orchestrator/src",
+  "../protocol/src",
+  "../viavi/src",
+]
 non_interactive = true
-warn_return_any = false
+warn_return_any = true
 warn_unused_configs = true
 
+[[tool.mypy.overrides]]
+module = [
+  "retina.protocol.base_pb2",
+  "retina.protocol.base_pb2_grpc",
+  "retina.protocol.ue_pb2",
+  "retina.protocol.ue_pb2_grpc",
+  "retina.protocol.gnb_pb2",
+  "retina.protocol.gnb_pb2_grpc",
+  "retina.protocol.fivegc_pb2",
+  "retina.protocol.fivegc_pb2_grpc",
+  "retina.protocol.ric_pb2",
+  "retina.protocol.ric_pb2_grpc",
+  "retina.protocol.channel_emulator_pb2",
+  "retina.protocol.channel_emulator_pb2_grpc",
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+  "_pytest",
+  "_pytest.mark",
+  "_pytest.mark.structures",
+  "click",
+  "dotenv",
+  "jinja2",
+  "kubernetes",
+  "kubernetes.client",
+  "kubernetes.client.exceptions",
+  "kubernetes.config",
+  "kubernetes.config.config_exception",
+  "kubernetes.config.incluster_config",
+  "pytest",
+  "pytest_html",
+  "rich",
+  "rich.console",
+  "rich.table",
+  "websockets",
+  "websockets.asyncio.client",
+  "websockets.exceptions",
+]
+ignore_missing_imports = true
+
 [tool.pylint]
-disable = ["no-name-in-module", "wrong-import-order"]
 ignore-signatures = true
 load-plugins = "pylint_pytest"
 max-line-length = 120
+
+[tool.pylint.typecheck]
+ignored-modules = ["google.protobuf.*", "retina.protocol.*pb2*"]
 
 [tool.coverage.run]
 branch = true

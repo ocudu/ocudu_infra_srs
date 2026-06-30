@@ -11,9 +11,9 @@ from typing import Dict, Generator
 
 import pytest
 import yaml
-from retina.orchestrator.orchestration_network import OrchestratorManager
 
 from retina.launcher.cmd_args import RetinaRequest
+from retina.orchestrator.orchestration_network import OrchestratorManager
 
 
 @pytest.fixture
@@ -40,6 +40,7 @@ def orchestration(
             except Exception as err:  # pylint: disable=broad-exception-caught
                 logging.exception(err)
     else:
+        assert retina_request.testbed is not None, "Either request or testbed must be set in RetinaRequest"
         with open(
             retina_request.testbed,
             encoding="utf-8",

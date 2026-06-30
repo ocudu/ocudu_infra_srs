@@ -14,19 +14,9 @@ import grpc
 import pytest
 from google.protobuf.wrappers_pb2 import UInt32Value
 from requests import HTTPError
+
 from retina.client.exception import ErrorReportedByAgent
 from retina.client.manager import RetinaTestManager
-from retina.protocol import RanStub
-from retina.protocol.base_pb2 import StopResponse
-from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
-from retina.protocol.exit_codes import exit_code_to_message
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import CUCPStub, CUStub, CUUPStub, DUStub, GNBStub
-from retina.protocol.resource import API, Core, Remote
-from retina.protocol.ric_pb2_grpc import NearRtRicStub
-from retina.protocol.ue_pb2_grpc import UEStub
-from retina.viavi.client import CampaignStatusEnum, Viavi
-
 from retina.launcher.artifacts import RetinaTestData, TEST_SUCCESS_FIELD
 from retina.launcher.criteria import (
     AllCriteria,
@@ -41,6 +31,22 @@ from retina.launcher.criteria import (
     ViaviCriteria,
 )
 from retina.launcher.reporter import create_report
+from retina.protocol import (
+    ChannelEmulatorClient,
+    CUClient,
+    CUCPClient,
+    CUUPClient,
+    DUClient,
+    FiveGCClient,
+    GNBClient,
+    NearRtRicClient,
+    RanClient,
+    UEClient,
+)
+from retina.protocol.base_pb2 import StopResponse
+from retina.protocol.exit_codes import exit_code_to_message
+from retina.protocol.resource import API, Core, Remote
+from retina.viavi.client import CampaignStatusEnum, Viavi
 
 
 @pytest.fixture
@@ -128,13 +134,13 @@ def retina_data(
 @pytest.fixture
 def ue_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[UEStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[UEClient, ...]], None, None]:
     """
     Return a factory that creates N UEs
     """
     created = []
 
-    def _factory(count: int) -> Tuple[UEStub, ...]:
+    def _factory(count: int) -> Tuple[UEClient, ...]:
         stub_array = tuple(retina_manager.get_ue(index) for index in range(count))
         for cls in UeCriteria.subclasses:
             cls(criteria, stub_array)
@@ -149,7 +155,7 @@ def ue_multiple(
 
 
 @pytest.fixture
-def ue(ue_multiple: Callable[[int], Tuple[UEStub, ...]]) -> UEStub:
+def ue(ue_multiple: Callable[[int], Tuple[UEClient, ...]]) -> UEClient:
     """Return an UE"""
     return ue_multiple(1)[0]
 
@@ -157,13 +163,13 @@ def ue(ue_multiple: Callable[[int], Tuple[UEStub, ...]]) -> UEStub:
 @pytest.fixture
 def cu_cp_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[CUCPStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[CUCPClient, ...]], None, None]:
     """
     Return a factory that creates N CU-CPs
     """
     created = []
 
-    def _factory(count: int) -> Tuple[CUCPStub, ...]:
+    def _factory(count: int) -> Tuple[CUCPClient, ...]:
         stub_array = tuple(retina_manager.get_cu_cp(index) for index in range(count))
         for cls in CuCpCriteria.subclasses:
             cls(criteria, stub_array)
@@ -178,7 +184,7 @@ def cu_cp_multiple(
 
 
 @pytest.fixture
-def cu_cp(cu_cp_multiple: Callable[[int], Tuple[CUCPStub, ...]]) -> CUCPStub:
+def cu_cp(cu_cp_multiple: Callable[[int], Tuple[CUCPClient, ...]]) -> CUCPClient:
     """Return a CU-CP"""
     return cu_cp_multiple(1)[0]
 
@@ -186,13 +192,13 @@ def cu_cp(cu_cp_multiple: Callable[[int], Tuple[CUCPStub, ...]]) -> CUCPStub:
 @pytest.fixture
 def cu_up_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[CUUPStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[CUUPClient, ...]], None, None]:
     """
     Return a factory that creates N CU-UPs
     """
     created = []
 
-    def _factory(count: int) -> Tuple[CUUPStub, ...]:
+    def _factory(count: int) -> Tuple[CUUPClient, ...]:
         stub_array = tuple(retina_manager.get_cu_up(index) for index in range(count))
         for cls in CuUpCriteria.subclasses:
             cls(criteria, stub_array)
@@ -207,7 +213,7 @@ def cu_up_multiple(
 
 
 @pytest.fixture
-def cu_up(cu_up_multiple: Callable[[int], Tuple[CUUPStub, ...]]) -> CUUPStub:
+def cu_up(cu_up_multiple: Callable[[int], Tuple[CUUPClient, ...]]) -> CUUPClient:
     """Return a CU-UP"""
     return cu_up_multiple(1)[0]
 
@@ -215,13 +221,13 @@ def cu_up(cu_up_multiple: Callable[[int], Tuple[CUUPStub, ...]]) -> CUUPStub:
 @pytest.fixture
 def cu_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[CUStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[CUClient, ...]], None, None]:
     """
     Return a factory that creates N CUs
     """
     created = []
 
-    def _factory(count: int) -> Tuple[CUStub, ...]:
+    def _factory(count: int) -> Tuple[CUClient, ...]:
         stub_array = tuple(retina_manager.get_cu(index) for index in range(count))
         for cls in (*CuCpCriteria.subclasses, *CuUpCriteria.subclasses):
             cls(criteria, stub_array)
@@ -236,7 +242,7 @@ def cu_multiple(
 
 
 @pytest.fixture
-def cu(cu_multiple: Callable[[int], Tuple[CUStub, ...]]) -> CUStub:
+def cu(cu_multiple: Callable[[int], Tuple[CUClient, ...]]) -> CUClient:
     """Return a CU"""
     return cu_multiple(1)[0]
 
@@ -244,13 +250,13 @@ def cu(cu_multiple: Callable[[int], Tuple[CUStub, ...]]) -> CUStub:
 @pytest.fixture
 def du_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[DUStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[DUClient, ...]], None, None]:
     """
     Return a factory that creates N DUs
     """
     created = []
 
-    def _factory(count: int) -> Tuple[DUStub, ...]:
+    def _factory(count: int) -> Tuple[DUClient, ...]:
         stub_array = tuple(retina_manager.get_du(index) for index in range(count))
         for cls in DuCriteria.subclasses:
             cls(criteria, stub_array)
@@ -266,7 +272,7 @@ def du_multiple(
 
 @pytest.fixture
 # pylint: disable=invalid-name
-def du(du_multiple: Callable[[int], Tuple[DUStub, ...]]) -> DUStub:
+def du(du_multiple: Callable[[int], Tuple[DUClient, ...]]) -> DUClient:
     """Return a DU"""
     return du_multiple(1)[0]
 
@@ -274,13 +280,13 @@ def du(du_multiple: Callable[[int], Tuple[DUStub, ...]]) -> DUStub:
 @pytest.fixture
 def gnb_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[GNBStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[GNBClient, ...]], None, None]:
     """
     Return a factory that creates N GNBs
     """
     created = []
 
-    def _factory(count: int) -> Tuple[GNBStub, ...]:
+    def _factory(count: int) -> Tuple[GNBClient, ...]:
         stub_array = tuple(retina_manager.get_gnb(index) for index in range(count))
         for cls in (*CuCpCriteria.subclasses, *CuUpCriteria.subclasses, *DuCriteria.subclasses):
             cls(criteria, stub_array)
@@ -295,21 +301,21 @@ def gnb_multiple(
 
 
 @pytest.fixture
-def gnb(gnb_multiple: Callable[[int], Tuple[GNBStub, ...]]) -> GNBStub:
-    """Return an UE"""
+def gnb(gnb_multiple: Callable[[int], Tuple[GNBClient, ...]]) -> GNBClient:
+    """Return a GNB"""
     return gnb_multiple(1)[0]
 
 
 @pytest.fixture
 def fivegc_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[FiveGCStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[FiveGCClient, ...]], None, None]:
     """
     Return a factory that creates N 5GC instances
     """
     created = []
 
-    def _factory(count: int) -> Tuple[FiveGCStub, ...]:
+    def _factory(count: int) -> Tuple[FiveGCClient, ...]:
         stub_array = tuple(retina_manager.get_5gc(index) for index in range(count))
         for cls in FiveGcCriteria.subclasses:
             cls(criteria, stub_array)
@@ -324,7 +330,7 @@ def fivegc_multiple(
 
 
 @pytest.fixture
-def fivegc(fivegc_multiple: Callable[[int], Tuple[FiveGCStub, ...]]) -> FiveGCStub:
+def fivegc(fivegc_multiple: Callable[[int], Tuple[FiveGCClient, ...]]) -> FiveGCClient:
     """Return a 5GC"""
     return fivegc_multiple(1)[0]
 
@@ -332,13 +338,13 @@ def fivegc(fivegc_multiple: Callable[[int], Tuple[FiveGCStub, ...]]) -> FiveGCSt
 @pytest.fixture
 def ric_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[NearRtRicStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[NearRtRicClient, ...]], None, None]:
     """
     Return a factory that creates N RICs
     """
     created = []
 
-    def _factory(count: int) -> Tuple[NearRtRicStub, ...]:
+    def _factory(count: int) -> Tuple[NearRtRicClient, ...]:
         stub_array = tuple(retina_manager.get_ric(index) for index in range(count))
         created.append(stub_array)
         return stub_array
@@ -351,7 +357,7 @@ def ric_multiple(
 
 
 @pytest.fixture
-def ric(ric_multiple: Callable[[int], Tuple[NearRtRicStub, ...]]) -> NearRtRicStub:
+def ric(ric_multiple: Callable[[int], Tuple[NearRtRicClient, ...]]) -> NearRtRicClient:
     """Return a RIC"""
     return ric_multiple(1)[0]
 
@@ -359,13 +365,13 @@ def ric(ric_multiple: Callable[[int], Tuple[NearRtRicStub, ...]]) -> NearRtRicSt
 @pytest.fixture
 def channel_emulator_multiple(
     retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[ChannelEmulatorStub, ...]], None, None]:
+) -> Generator[Callable[[int], Tuple[ChannelEmulatorClient, ...]], None, None]:
     """
     Return a factory that creates N Channel Emulators
     """
     created = []
 
-    def _factory(count: int) -> Tuple[ChannelEmulatorStub, ...]:
+    def _factory(count: int) -> Tuple[ChannelEmulatorClient, ...]:
         stub_array = tuple(retina_manager.get_channel_emulator(index) for index in range(count))
         created.append(stub_array)
         return stub_array
@@ -379,15 +385,15 @@ def channel_emulator_multiple(
 
 @pytest.fixture
 def channel_emulator(
-    channel_emulator_multiple: Callable[[int], Tuple[ChannelEmulatorStub, ...]],
-) -> ChannelEmulatorStub:
+    channel_emulator_multiple: Callable[[int], Tuple[ChannelEmulatorClient, ...]],
+) -> ChannelEmulatorClient:
     """Return a Channel Emulator"""
     return channel_emulator_multiple(1)[0]
 
 
 # pylint: disable=redefined-outer-name
 def _stop_stub(
-    stub: RanStub,
+    stub: RanClient,
     name: str,
     retina_data: RetinaTestData,
     rpc_timeout: int = 300,

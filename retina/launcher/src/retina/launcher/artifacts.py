@@ -12,8 +12,8 @@ from typing import Dict
 import grpc
 import pytest
 from pytest_html import extras
-from retina.client.exception import clean_grpc_traceback, ErrorReportedByAgent
 
+from retina.client.exception import clean_grpc_traceback, ErrorReportedByAgent
 from retina.launcher.cmd_args import get_folder_name
 from retina.launcher.reporter import REPORT_FILENAME
 
@@ -28,14 +28,15 @@ def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo):  # pyli
     # Exchange grpc exception for a custom one
     if call.excinfo is not None and isinstance(call.excinfo.value, grpc.RpcError):
         # pylint: disable=protected-access
-        # Remove pure grpc entries in the traceback
-        clean_grpc_traceback(call.excinfo._excinfo[2])
-        # Set custom execinfo
-        call.excinfo._excinfo = (
-            ErrorReportedByAgent,
-            ErrorReportedByAgent(call.excinfo.value),
-            call.excinfo._excinfo[2],
-        )
+        if call.excinfo._excinfo is not None:
+            # Remove pure grpc entries in the traceback
+            clean_grpc_traceback(call.excinfo._excinfo[2])
+            # Set custom execinfo
+            call.excinfo._excinfo = (
+                ErrorReportedByAgent,
+                ErrorReportedByAgent(call.excinfo.value),
+                call.excinfo._excinfo[2],
+            )
     outcome = yield
     report: pytest.TestReport = outcome.get_result()
 
@@ -51,8 +52,9 @@ def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo):  # pyli
             .joinpath(REPORT_FILENAME)
             .relative_to(Path(item.config.getoption("htmlpath")).resolve().parent)
         )
-        report.extras = getattr(report, "extras", [])
-        report.extras.append(extras.url(href, name="🔗 Go to logs and configs"))
+        existing_extras = getattr(report, "extras", [])
+        existing_extras.append(extras.url(href, name="🔗 Go to logs and configs"))
+        setattr(report, "extras", existing_extras)
 
 
 def pytest_html_report_title(report) -> None:

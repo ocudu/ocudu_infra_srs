@@ -12,16 +12,15 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, ClassVar, Dict, final, List, Sequence
 
 import pytest
-from retina.protocol.fivegc_pb2_grpc import FiveGC
-from retina.protocol.gnb_pb2_grpc import CUStub, DUStub
-from retina.protocol.ue_pb2_grpc import UEStub
-from retina.viavi.client import Viavi
 from rich.console import Console
 from rich.table import Table
 
+from retina.protocol import CUCPClient, CUUPClient, DUClient, FiveGCClient, UEClient
+from retina.viavi.client import Viavi
+
 _UNSET = object()
 
-_OPERATOR_SYMBOLS = {
+_OPERATOR_SYMBOLS: Dict[Callable[..., bool], str] = {
     operator.lt: "<",
     operator.le: "<=",
     operator.eq: "==",
@@ -49,7 +48,7 @@ def _number_to_str(value: Any) -> str:
 class Criteria(ABC):  # pylint: disable=too-few-public-methods
     """Base class for pass/fail criteria definitions."""
 
-    def __init__(self, table: "CriteriaTable", stub_array: Sequence) -> None:
+    def __init__(self, table: "CriteriaTable", stub_array: Any) -> None:
         self._stub_array = stub_array
         self._table = table
         self._input: Any = None
@@ -68,10 +67,7 @@ class Criteria(ABC):  # pylint: disable=too-few-public-methods
         """Human-readable name derived from the class docstring."""
         return type(self).__doc__ or ""
 
-    @property
-    def operator_method(self) -> Callable:
-        """Comparison operator; defaults to eq. Override as a class attribute."""
-        return operator.eq
+    operator_method: ClassVar[Callable[..., bool]] = operator.eq
 
     @property
     def expected(self) -> Any:
@@ -102,7 +98,8 @@ class Criteria(ABC):  # pylint: disable=too-few-public-methods
     @final
     def is_ok(self) -> bool:
         """Return True if result satisfies operator_method(result, expected)."""
-        return self.operator_method(self.result, self.expected)
+        op: Callable[..., bool] = getattr(type(self), "operator_method")
+        return bool(op(self.result, self.expected))
 
     @abstractmethod
     def callback(self) -> Any:
@@ -166,7 +163,7 @@ class UeCriteria(Criteria):  # pylint: disable=too-few-public-methods
     """Base class for UE pass/fail criteria definitions."""
 
     subclasses: ClassVar[List[type]] = []
-    _stub_array: Sequence[UEStub]
+    _stub_array: Sequence[UEClient]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -177,7 +174,7 @@ class CuCpCriteria(Criteria):  # pylint: disable=too-few-public-methods
     """Base class for CU-CP pass/fail criteria definitions."""
 
     subclasses: ClassVar[List[type]] = []
-    _stub_array: Sequence[CUStub]
+    _stub_array: Sequence[CUCPClient]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -188,7 +185,7 @@ class CuUpCriteria(Criteria):  # pylint: disable=too-few-public-methods
     """Base class for CU-UP pass/fail criteria definitions."""
 
     subclasses: ClassVar[List[type]] = []
-    _stub_array: Sequence[CUStub]
+    _stub_array: Sequence[CUUPClient]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -219,7 +216,7 @@ class DuCriteria(Criteria):  # pylint: disable=too-few-public-methods
     """Base class for DU/gNB pass/fail criteria definitions."""
 
     subclasses: ClassVar[List[type]] = []
-    _stub_array: Sequence[DUStub]
+    _stub_array: Sequence[DUClient]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -250,7 +247,7 @@ class FiveGcCriteria(Criteria):  # pylint: disable=too-few-public-methods
     """Base class for 5GC pass/fail criteria definitions."""
 
     subclasses: ClassVar[List[type]] = []
-    _stub_array: Sequence[FiveGC]
+    _stub_array: Sequence[FiveGCClient]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -280,7 +277,7 @@ class AllCriteria(Criteria):  # pylint: disable=too-few-public-methods
         super().__init_subclass__(**kwargs)
         AllCriteria.subclasses.append(cls)
 
-    def callback(self) -> int:
+    def callback(self) -> Any:
         results = []
         seen_stubs: set = set()
         for cid, c in self._table._criteria.items():  # pylint: disable=protected-access

@@ -10,6 +10,7 @@ import signal
 import sys
 
 import pytest
+
 from retina.protocol.redact import setup_secret_log_filter
 
 

@@ -156,7 +156,8 @@ def force_download(request: pytest.FixtureRequest) -> bool:
     """
     value = request.config.getoption("force_download")
     logging.debug("Force download: %s", value)
-    return value
+    force_download_value: bool = value
+    return force_download_value
 
 
 REGISTER_PARAM_ALL_ITEMS: str = "all"
@@ -223,4 +224,5 @@ def _get_cmd_and_ini(config: pytest.Config, name: str) -> str:
     value_cmd = config.getoption(name)
     if value_cmd is not None:
         value = value_cmd
-    return value
+    result: str = value
+    return result

@@ -13,6 +13,7 @@ from pprint import pformat
 from typing import Any, Dict, List
 
 import jinja2
+
 from retina.protocol.redact import redact_string
 
 _IGNORE_EXTENSIONS_TO_HTML = (".pcap", ".dat", ".idx")
