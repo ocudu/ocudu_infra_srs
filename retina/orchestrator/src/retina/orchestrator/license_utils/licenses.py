@@ -74,7 +74,8 @@ class LicenseClient:
             await self._handshake(ws)
             await ws.send(json.dumps(payload))
             resp = await ws.recv()
-            return json.loads(resp)
+            result: dict = json.loads(resp)
+            return result
 
     def _run(self, coro):
         """Runs the coroutine in the event loop."""
@@ -90,7 +91,8 @@ class LicenseClient:
         """
         payload = {"message": message, "message_id": str(uuid.uuid4())}
         payload.update(params)
-        return self._run(self._send(payload))
+        response: dict = self._run(self._send(payload))
+        return response
 
     # Convenience methods
     def config_get(self) -> dict:

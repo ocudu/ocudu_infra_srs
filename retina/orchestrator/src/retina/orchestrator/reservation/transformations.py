@@ -10,7 +10,7 @@ import itertools
 from random import shuffle
 from typing import Dict, List
 
-import retina.orchestrator.reservation.resources as rs
+from retina.orchestrator.reservation import resources as rs
 from retina.orchestrator.retina_kubernetes import Kubernetes
 
 
@@ -22,12 +22,26 @@ def get_cluster_resources(resource_list: rs.ResourceList) -> rs.ResourceList:
     return rs.ResourceList(new_list)
 
 
+def get_typed_cluster_resources(resource_list: rs.ResourceList) -> List[rs.ClusterResource]:
+    """
+    Get cluster resources as a typed list.
+    """
+    return [r for r in resource_list.get_resources() if isinstance(r, rs.ClusterResource)]
+
+
 def get_node_resources(resource_list: rs.ResourceList) -> rs.ResourceList:
     """
     Get node resources
     """
     new_list = [r for r in resource_list.get_resources() if isinstance(r, rs.NodeResource)]
     return rs.ResourceList(new_list)
+
+
+def get_typed_node_resources(resource_list: rs.ResourceList) -> List[rs.NodeResource]:
+    """
+    Get node resources as a typed list.
+    """
+    return [r for r in resource_list.get_resources() if isinstance(r, rs.NodeResource)]
 
 
 def get_available_resources(kubernetes: Kubernetes, resource_list: rs.ResourceList) -> rs.ResourceList:
@@ -63,15 +77,20 @@ def get_match_resources(
         matching_resource_dict[index] = []  # List of resources matching this resource_input
         for resource_complete in complete_resource_list.get_resources():
             if resource_input == resource_complete and resource_complete.get_id() is None:
-                if isinstance(resource_input, rs.ClusterResource) or resource_input.node is None:
+                is_cluster_resource = isinstance(resource_input, rs.ClusterResource)
+                if is_cluster_resource or resource_input.node is None:
                     matching_resource_dict[index].append(resource_complete)
                 else:
-                    configured_taints = tuple(sorted(resource_input.node.get_taint_list_as_string()))
-                    reserved_taints = tuple(sorted(resource_complete.node.get_taint_list_as_string()))
+                    node_in = resource_input.node
+                    configured_taints = tuple(sorted(node_in.get_taint_list_as_string())) if node_in else ()
+                    node_out = resource_complete.node
+                    if node_out is None:
+                        continue
+                    reserved_taints = tuple(sorted(node_out.get_taint_list_as_string()))
                     if (
                         not configured_taints
                         or (configured_taints == reserved_taints or configured_taints in reserved_taints)
-                    ) and resource_complete.node.check_label_list(resource_input.node.label_list):
+                    ) and node_out.check_label_list(node_in.label_list if node_in else []):
                         if resource_input.capacity == 0:
                             resource_complete = copy.deepcopy(resource_complete)
                             resource_complete.capacity = -index
@@ -107,6 +126,8 @@ def group_by_resource_space(input_resource_list: rs.ResourceList) -> Dict[int, r
 
     for cls_inst in input_resource_list.get_resources():
         space = cls_inst.space
+        if space is None:
+            continue
         if space in rs_groups:
             rs_groups[space].add_resource(cls_inst)
         else:

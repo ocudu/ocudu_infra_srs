@@ -49,14 +49,14 @@ def get_cluster_resource_name(name: str):
     return f"{const.CLUSTER_RESOURCE_SPACE_PREFIX}-{name}"
 
 
-def get_space_name(space):
+def get_space_name(space: int) -> str:
     """
     Get space name for configmap
     """
     return f"{const.RESOURCE_SPACE_PREFIX}-{space}"
 
 
-def reserve_space_configmap(k_server: Kubernetes, space: str, orch_id: str, user_name: str, timeout: int):
+def reserve_space_configmap(k_server: Kubernetes, space: int, orch_id: str, user_name: str, timeout: int) -> bool:
     """
     Reserver resource space with configmap
     """
@@ -112,7 +112,7 @@ def check_if_space_is_available(k_server: Kubernetes, space: int):
     """
     Check is resource space is reserved
     """
-    return not k_server.config_map_exists(get_space_name(str(space)))
+    return not k_server.config_map_exists(get_space_name(space))
 
 
 def check_space_user_reservation(k_server: Kubernetes, space: int):

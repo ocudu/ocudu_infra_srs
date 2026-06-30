@@ -152,7 +152,7 @@ class Kubernetes(KubernetesManager):
         :return result
         """
 
-        manifest = {
+        manifest: Dict[str, Any] = {
             "apiVersion": "v1",
             "kind": "ConfigMap",
             "metadata": {
@@ -418,8 +418,9 @@ class Kubernetes(KubernetesManager):
         while max_attempts > 0:
             max_attempts -= 1
             pod = self._get_pod_dict(namespace=DEFAULT_NAMESPACE).get(pod_name, None)
-            if pod is not None and pod.status.pod_ip is not None:
-                return pod.status.pod_ip
+            if pod is not None and pod.status is not None and pod.status.pod_ip is not None:
+                pod_ip: str = pod.status.pod_ip
+                return pod_ip
             time.sleep(2)
         raise RuntimeError("Error getting pod IP")
 
@@ -852,7 +853,7 @@ class Kubernetes(KubernetesManager):
 
             # Get taints
             taint_list = node.spec.taints
-            taint_key_list: List[str] = []
+            taint_key_list: List[TaintDefinition] = []
             if taint_list:
                 for taint_inst in taint_list:
                     taint_key_list.append(
@@ -886,8 +887,10 @@ class Kubernetes(KubernetesManager):
 
         :return: info
         """
-        ip_dict = {}
+        ip_dict: Dict[str, str] = {}
         node = self._get_node_dict(False).get(node_name, None)
+        if node is None:
+            return ip_dict
         for addr_dict in node.status.addresses:
             try:
                 ipaddress.ip_address(addr_dict.address)

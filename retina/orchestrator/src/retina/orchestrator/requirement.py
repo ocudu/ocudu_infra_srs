@@ -50,7 +50,7 @@ class RequirementManager:
         value = label.split("=")[1]
         self.label_list.append(LabelDefinition(key, value))
 
-    def get_label_list(self):
+    def get_label_list(self) -> List[LabelDefinition]:
         """
         Get labels
         """

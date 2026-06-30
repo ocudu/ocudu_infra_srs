@@ -10,12 +10,28 @@ import logging
 import random
 import re
 from abc import ABC, abstractmethod
-from contextlib import suppress
 from dataclasses import dataclass
 from enum import Enum
 from time import sleep
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
+from retina.orchestrator import const
+from retina.orchestrator.const import (
+    RESERVATION_NUM_RETRIES,
+    RESERVATION_NUM_SECONDS_BETWEEN_RETRIES,
+    TERMINATION_GRACE_PERIOD_SECONDS,
+)
+from retina.orchestrator.elements import LabelDefinition, Node, TaintDefinition
+from retina.orchestrator.kubernetes import KUBERNETES_SKIP_TAINT_ARRAY
+from retina.orchestrator.requirement import RequirementDefinition, RequirementManager
+from retina.orchestrator.reservation.utils import (
+    create_resource_data_configmap,
+    get_cluster_resource_name,
+    get_resource_data_configmap_name,
+    get_space_name,
+    reserve_cluster_resource_configmap,
+)
+from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.protocol.redact import add_log_secret
 from retina.protocol.resource import (
     Accelerator,
@@ -28,24 +44,6 @@ from retina.protocol.resource import (
     Sdr,
     Ue,
 )
-
-from retina.orchestrator import const
-from retina.orchestrator.const import (
-    RESERVATION_NUM_RETRIES,
-    RESERVATION_NUM_SECONDS_BETWEEN_RETRIES,
-    TERMINATION_GRACE_PERIOD_SECONDS,
-)
-from retina.orchestrator.elements import Node, TaintDefinition
-from retina.orchestrator.kubernetes import KUBERNETES_SKIP_TAINT_ARRAY
-from retina.orchestrator.requirement import RequirementDefinition, RequirementManager
-from retina.orchestrator.reservation.utils import (
-    create_resource_data_configmap,
-    get_cluster_resource_name,
-    get_resource_data_configmap_name,
-    get_space_name,
-    reserve_cluster_resource_configmap,
-)
-from retina.orchestrator.retina_kubernetes import Kubernetes
 
 ################################################################################
 # Types
@@ -95,6 +93,8 @@ class ResourceType(ABC):
         self.model = model
         self.connection = connection
         self.id_name: Optional[str] = None
+        self.node: Optional[Node] = None
+        self.space: Optional[int] = None
 
     def set_id(self, id_name: Optional[str]):
         """
@@ -110,6 +110,12 @@ class ResourceType(ABC):
 
     def __contains__(self, element):
         return self.__eq__(element)
+
+    @abstractmethod
+    def get_full_name(self) -> str:
+        """
+        Get full name
+        """
 
     @abstractmethod
     def reserve(
@@ -173,8 +179,10 @@ class ClusterResource(ResourceType):
         """
         Get user name
         """
-        with suppress(AttributeError):
-            return kubernetes.get_config_map(get_cluster_resource_name(self.get_full_name())).data.get("user_name", "")
+        config_map = kubernetes.get_config_map(get_cluster_resource_name(self.get_full_name()))
+        if config_map.data is not None:
+            user_name: str = config_map.data.get("user_name", "unknown")
+            return user_name
         return "unknown"
 
     def __eq__(self, value) -> bool:
@@ -242,7 +250,8 @@ class ResourceLicense(ClusterResource):
             model=model,
             connection=ConnectionType.NETWORK,
         )
-        add_log_secret(ip_address)
+        if ip_address is not None:
+            add_log_secret(ip_address)
         self.ip_address = ip_address
         self.args = args
 
@@ -253,7 +262,7 @@ class ResourceLicense(ClusterResource):
         """
         Get resource data
         """
-        return [License(address=self.ip_address, args=self.args)]
+        return [License(address=self.ip_address or "", args=self.args or "")]
 
 
 # pylint: disable=too-many-instance-attributes
@@ -286,9 +295,11 @@ class ResourceRemote(ClusterResource):
             model=model,
             connection=ConnectionType.NETWORK,
         )
-        add_log_secret(user)
+        if user is not None:
+            add_log_secret(user)
         self.user = user
-        add_log_secret(password)
+        if password is not None:
+            add_log_secret(password)
         self.password = password
         self.address = address
         self.path = path
@@ -329,10 +340,10 @@ class ResourceRemote(ClusterResource):
         """
         return [
             Remote(
-                address=self.address,
-                user=self.user,
-                password=self.password,
-                path=self.path,
+                address=self.address or "",
+                user=self.user or "",
+                password=self.password or "",
+                path=self.path or "",
                 network_interface=self.network_interface or [],
                 ru_mac_address=self.ru_mac_addr or [],
                 du_mac_address=self.du_mac_addr or [],
@@ -373,7 +384,7 @@ class ResourceAPI(ClusterResource):
         """
         Get resource data
         """
-        return [API(address=self.address, port=self.port)]
+        return [API(address=self.address or "", port=self.port or 0)]
 
 
 class ResourceCore(ClusterResource):
@@ -407,7 +418,7 @@ class ResourceCore(ClusterResource):
         """
         Get resource data
         """
-        return [Core(address=self.address, port=self.port, mask=self.mask)]
+        return [Core(address=self.address or "", port=self.port or 0, mask=self.mask or 0)]
 
 
 ################################################################################
@@ -519,7 +530,8 @@ class ResourceSDR(NodeResource):
             capacity=capacity, type_r=Sdr.__name__, model=model, connection=connection, space=space, node=node
         )
 
-        add_log_secret(args)
+        if args is not None:
+            add_log_secret(args)
         self.args = args
         self.sample_rate = sample_rate
         self.tx_gain = tx_gain
@@ -545,11 +557,11 @@ class ResourceSDR(NodeResource):
         return [
             Sdr(
                 model=self.model,
-                args=self.args,
-                sample_rate=self.sample_rate,
-                tx_gain=self.tx_gain,
-                rx_gain=self.rx_gain,
-                sync=self.sync,
+                args=self.args or "",
+                sample_rate=self.sample_rate or 0,
+                tx_gain=self.tx_gain or 0,
+                rx_gain=self.rx_gain or 0,
+                sync=self.sync or "",
             )
         ]
 
@@ -619,14 +631,14 @@ class ResourceRU(NodeResource):
         return [
             Ru(
                 model=self.model,
-                network_interface=self.network_interface,
-                ru_mac_address=self.ru_mac_addr,
-                du_mac_address=self.du_mac_addr,
-                vlan_tag_up=self.vlan_tag_up,
-                vlan_tag_cp=self.vlan_tag_cp,
-                prach_port_id=self.prach_port_id,
-                dl_port_id=self.dl_port_id,
-                ul_port_id=self.ul_port_id,
+                network_interface=self.network_interface or [],
+                ru_mac_address=self.ru_mac_addr or [],
+                du_mac_address=self.du_mac_addr or [],
+                vlan_tag_up=self.vlan_tag_up or [],
+                vlan_tag_cp=self.vlan_tag_cp or [],
+                prach_port_id=self.prach_port_id or "",
+                dl_port_id=self.dl_port_id or "",
+                ul_port_id=self.ul_port_id or "",
             )
         ]
 
@@ -646,7 +658,7 @@ class ResourceAccelerator(NodeResource):
         node: Optional[Node] = None,
         hwacc_type: Optional[str] = None,
         accelerator_id: Optional[int] = None,
-        pdsch_enc_nof_hwacc: Optional[str] = None,
+        pdsch_enc_nof_hwacc: Optional[int] = None,
         cb_mode: Optional[bool] = None,
         pusch_dec_nof_hwacc: Optional[int] = None,
         harq_context_size: Optional[int] = None,
@@ -679,13 +691,13 @@ class ResourceAccelerator(NodeResource):
         return [
             Accelerator(
                 model=self.model,
-                id=self.accelerator_id,
-                cb_mode=self.cb_mode,
-                hwacc_type=self.hwacc_type,
-                pdsch_enc_nof_hwacc=self.pdsch_enc_nof_hwacc,
-                pusch_dec_nof_hwacc=self.pusch_dec_nof_hwacc,
-                harq_context_size=self.harq_context_size,
-                args=self.extra_eal_args,
+                id=self.accelerator_id or 0,
+                cb_mode=self.cb_mode or False,
+                hwacc_type=self.hwacc_type or "",
+                pdsch_enc_nof_hwacc=self.pdsch_enc_nof_hwacc or 0,
+                pusch_dec_nof_hwacc=self.pusch_dec_nof_hwacc or 0,
+                harq_context_size=self.harq_context_size or 0,
+                args=self.extra_eal_args or "",
             )
         ]
 
@@ -719,13 +731,15 @@ class ResourceAndroid(NodeResource):
             space=space,
             node=node,
         )
-        add_log_secret(serial_id)
+        if serial_id is not None:
+            add_log_secret(serial_id)
         self.serial_id = serial_id
         self.imsi = imsi
         self.k = k
         self.amf = amf
         self.opc = opc
-        add_log_secret(adb_key)
+        if adb_key is not None:
+            add_log_secret(adb_key)
         self.adb_key = adb_key
 
     def __hash__(self):
@@ -738,12 +752,12 @@ class ResourceAndroid(NodeResource):
         return [
             Ue(
                 model=self.model,
-                serial_id=self.serial_id,
-                imsi=self.imsi,
-                k=self.k,
-                amf=self.amf,
-                opc=self.opc,
-                adb_key=self.adb_key,
+                serial_id=self.serial_id or "",
+                imsi=str(self.imsi) if self.imsi is not None else "",
+                k=self.k or "",
+                amf=self.amf or "",
+                opc=self.opc or "",
+                adb_key=self.adb_key or "",
             )
         ]
 
@@ -780,8 +794,8 @@ class ResourceList:
     Resource list
     """
 
-    def __init__(self, resources: List[ResourceType]):
-        self.resources: List[ResourceType] = resources
+    def __init__(self, resources: Sequence[ResourceType]):
+        self.resources: List[ResourceType] = list(resources)
 
     def get_resources(self) -> List[ResourceType]:
         """
@@ -965,7 +979,8 @@ class RequestReservation:
         node_name = self.get_node_name(k_server=k_server)
         for node in k_server.get_cluster_configuration()["nodes"]:
             if node["name"] == node_name and "cpu_isolation" in node:
-                return node["cpu_isolation"].get("lcores_eal_args", "")
+                lcores_eal_args: str = node["cpu_isolation"].get("lcores_eal_args", "")
+                return lcores_eal_args
         return ""
 
     def get_uu_ip(self, k_server: Kubernetes) -> str:
@@ -986,9 +1001,10 @@ class RequestReservation:
         node_name = self.get_node_name(k_server=k_server)
         for node in k_server.get_cluster_configuration()["nodes"]:
             if node["name"] == node_name:
-                return node.get("backhaul", {}).get(
+                address: str = node.get("backhaul", {}).get(
                     "n2n3_bind_address", k_server.get_node_ip_dict(node_name).get("InternalIP", "")
                 )
+                return address
         return ""
 
     def _get_node(self, k_server: Kubernetes) -> Node:
@@ -1026,12 +1042,12 @@ class RequestReservation:
                 node_match_list_copy.remove(node)
 
         if len(node_match_list_copy) == 0:
-            label_list = ""
+            label_list_str = ""
             for label in self.requirement_manager.get_label_list():
-                label_list += f"{label.name}={label.value}, "
+                label_list_str += f"{label.name}={label.value}, "
 
-            logging.error("Looking for nodes with labels: %s", label_list)
-            logging.error(get_nodelist_status(node_dict.values()))
+            logging.error("Looking for nodes with labels: %s", label_list_str)
+            logging.error(get_nodelist_status(list(node_dict.values())))
             raise RuntimeError("No node found")
 
         return node_match_list_copy[random.randint(0, len(node_match_list_copy) - 1)]
@@ -1042,7 +1058,7 @@ class RequestReservation:
         """
         return self._get_node(k_server=k_server).taint_list
 
-    def get_labels(self) -> List[str]:
+    def get_labels(self) -> List[LabelDefinition]:
         """
         Get labels
         """
@@ -1127,7 +1143,7 @@ def get_resource_from_config(config: Dict) -> ResourceType:
     config_model = config.get("model", ".*")
     config_capacity = int(not config.get("dummy", False))
 
-    return {
+    resource_classes: Dict[str, Callable[..., ResourceType]] = {
         # Cluster resources
         "license": ResourceLicense,
         "remote": ResourceRemote,
@@ -1139,7 +1155,8 @@ def get_resource_from_config(config: Dict) -> ResourceType:
         "accelerator": ResourceAccelerator,
         "android": ResourceAndroid,
         "zmq": ResourceZmq,
-    }[config_type](model=config_model, capacity=config_capacity)
+    }
+    return resource_classes[config_type](model=config_model, capacity=config_capacity)
 
 
 # pylint: disable=too-many-branches
@@ -1272,7 +1289,8 @@ def get_compute_resources_for_node_from_cluster_info(
     """
     for node in k_server.get_cluster_configuration()["nodes"]:
         if node["name"] == node_name and "compute-resources" in node:
-            return node.get("compute-resources", {})
+            compute_resources: Dict[str, RequirementDefinition] = node["compute-resources"]
+            return compute_resources
     return {}
 
 

@@ -101,7 +101,10 @@ class KubernetesElement:
         Get age in seconds
         """
         current_time = datetime.now(timezone.utc)
-        age_seconds = (current_time - self.data.medatada.creation_timestamp).total_seconds()
+        if self.data.medatada.creation_timestamp is None:
+            return 0.0
+        creation_timestamp: datetime = self.data.medatada.creation_timestamp
+        age_seconds = (current_time - creation_timestamp).total_seconds()
         return age_seconds
 
     def get_retina_type(self) -> Tuple[RetinaType, str]:
@@ -156,7 +159,8 @@ class KubernetesElement:
         Get annotation
         """
         with contextlib.suppress(Exception):
-            return self.data.annotations[key]
+            annotation: str = self.data.annotations[key]
+            return annotation
         return ""
 
 

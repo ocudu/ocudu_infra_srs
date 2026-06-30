@@ -13,8 +13,6 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Iterable, List, Optional, Tuple
 
-from retina.protocol.resource import dump_resource_list_to_str, Node
-
 from retina.orchestrator import configs, const, utils
 from retina.orchestrator.const import DEFAULT_RESERVATION_TIMEOUT, MAX_NUMBER_OF_EXTRA_PORTS
 from retina.orchestrator.elements import get_taint_list_as_string
@@ -36,6 +34,7 @@ from retina.orchestrator.utils import (
     get_port_configmap_name,
     parse_request,
 )
+from retina.protocol.resource import dump_resource_list_to_str, Node
 
 
 @dataclass
@@ -402,7 +401,7 @@ class OrchestratorManager:
             orch_id=orch_id,
             user_name=user_name,
             data={const.RESOURCE_DATA_FILE: dump_resource_list_to_str([node_resource])},
-            timeout=timeout_handler.get_remaining_timeout(),
+            timeout=int(timeout_handler.get_remaining_timeout()),
         )
 
         ########################################################################
@@ -423,8 +422,8 @@ class OrchestratorManager:
                     if not isinstance(resource, ResourceZmq) and resource.capacity > 0
                 ),
             ],
-            retina_ports=retina_ports_number_array,
-            extra_ports=extra_ports_number_array,
+            retina_ports=list(retina_ports_number_array),
+            extra_ports=list(extra_ports_number_array),
             privileged=True,
             timeout=int(timeout_handler.get_remaining_timeout()),
             taint_list=request_reservation.get_taints(k_server=self.k_server),

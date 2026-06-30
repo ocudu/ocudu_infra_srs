@@ -11,13 +11,13 @@ from typing import Dict, List
 from rich.console import Console
 from rich.table import Table
 
-import retina.orchestrator.reservation.transformations as ts
 from retina.orchestrator.elements import Node
 from retina.orchestrator.entry_points.utils import (
     GITLAB_RUNNER_NAMESPACE,
     GITLAB_RUNNER_POD_PREFIX,
     set_default_colored_logger,
 )
+from retina.orchestrator.reservation import transformations as ts
 from retina.orchestrator.reservation.managers import get_resources_in_cluster
 from retina.orchestrator.reservation.resources import ClusterResource, NodeResource
 from retina.orchestrator.reservation.utils import check_cluster_resource_user_reservation, check_space_user_reservation
@@ -107,14 +107,11 @@ def print_node_resources(resource_list: List[NodeResource], k_server: Kubernetes
     table.add_column("Arguments", style="magenta")
 
     for resource in sorted(resource_list, key=lambda x: (x.space, x.get_full_name())):
-        node_name = resource.node.name
-        try:
-            arguments = resource.args
-        except AttributeError:
-            arguments = ""
+        node_name = resource.node.name if resource.node is not None else ""
+        arguments = getattr(resource, "args", "")
 
         resource_space = str(resource.space)
-        resource_reservation_user = check_space_user_reservation(k_server=k_server, space=resource.space)
+        resource_reservation_user = check_space_user_reservation(k_server=k_server, space=resource.space or 0)
         table.add_row(
             resource.get_full_name(),
             node_name,
@@ -200,8 +197,8 @@ def show_resources(verbose: bool, in_cluster: bool = False):
     cluster_info = k_server.get_cluster_configuration()
 
     resource_list = get_resources_in_cluster(k_server)
-    node_resources = ts.get_node_resources(resource_list).get_resources()
-    cluster_resources = ts.get_cluster_resources(resource_list).get_resources()
+    node_resources = ts.get_typed_node_resources(resource_list)
+    cluster_resources = ts.get_typed_cluster_resources(resource_list)
 
     retina_node_dict = k_server.get_retina_node_dict(True, False)
 

@@ -11,7 +11,6 @@ from typing import Dict, List
 
 import click
 
-import retina.orchestrator.reservation.transformations as ts
 from retina.orchestrator.elements import Node
 from retina.orchestrator.entry_points.dev_mode_utils import (
     DEFAULT_DOCKER_IMAGE,
@@ -29,6 +28,7 @@ from retina.orchestrator.entry_points.resource_utils import (
 from retina.orchestrator.entry_points.show_resources_utils import show_resources
 from retina.orchestrator.entry_points.utils import check_user_name, set_default_colored_logger
 from retina.orchestrator.license_utils.license_utils import display_license_info
+from retina.orchestrator.reservation import transformations as ts
 from retina.orchestrator.reservation.managers import get_resources_in_cluster
 from retina.orchestrator.reservation.resources import ClusterResource, NodeResource
 from retina.orchestrator.reservation.utils import check_cluster_resource_user_reservation, check_space_user_reservation
@@ -50,8 +50,8 @@ def get_list_of_resources(in_cluster=False) -> tuple[List[NodeResource], List[Cl
     k_server = Kubernetes(is_incluster=in_cluster)
 
     resource_list = get_resources_in_cluster(k_server)
-    node_resources = ts.get_node_resources(resource_list).get_resources()
-    cluster_resources = ts.get_cluster_resources(resource_list).get_resources()
+    node_resources = ts.get_typed_node_resources(resource_list)
+    cluster_resources = ts.get_typed_cluster_resources(resource_list)
     retina_node_dict = k_server.get_retina_node_dict(True, False)
 
     return node_resources, cluster_resources, retina_node_dict
@@ -72,8 +72,8 @@ def resource_is_in_cluster(
             return True
 
     # node resource
-    for resource in node_resources:
-        if resource.get_full_name() == resource_id:
+    for node_resource in node_resources:
+        if node_resource.get_full_name() == resource_id:
             return True
 
     # node

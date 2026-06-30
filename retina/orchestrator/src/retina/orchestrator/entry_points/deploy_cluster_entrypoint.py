@@ -16,7 +16,7 @@ from typing import Dict
 
 import yaml
 
-from retina.orchestrator import configs
+from retina.orchestrator.configs import ConfigmapConfig
 from retina.orchestrator.const import CLUSTER_CONFIGURATION_CONFIGMAP_NAME
 from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.orchestrator.utils import get_current_time, validate
@@ -45,7 +45,7 @@ def _deploy_config_map(k_server: Kubernetes, config_map_data: Dict):
     while k_server.config_map_exists(CLUSTER_CONFIGURATION_CONFIGMAP_NAME):
         time.sleep(1)
     k_server.create_config_map(
-        configs.ConfigmapConfig(
+        ConfigmapConfig(
             orch_id="retinaadmin",
             user_name="retinaadmin",
             timeout=None,

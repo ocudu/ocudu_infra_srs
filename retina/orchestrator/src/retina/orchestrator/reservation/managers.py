@@ -10,12 +10,10 @@ from random import shuffle
 from time import sleep
 from typing import Generator, List, Tuple
 
-import retina.orchestrator.reservation.resources as rs
-import retina.orchestrator.reservation.transformations as ts
 from retina.orchestrator.const import RESERVATION_NUM_SECONDS_BETWEEN_RETRIES, TERMINATION_GRACE_PERIOD_SECONDS
 from retina.orchestrator.elements import Node
 from retina.orchestrator.requirement import RequirementManager
-from retina.orchestrator.reservation import utils
+from retina.orchestrator.reservation import resources as rs, transformations as ts, utils
 from retina.orchestrator.reservation.utils import get_space_name
 from retina.orchestrator.retina_kubernetes import Kubernetes
 from retina.orchestrator.timeout_handler import TimeoutHandler
@@ -222,8 +220,7 @@ def reserve_node_resources(
                 resource_space,
                 k_server.get_config_map(get_space_name(resource_space)).data.get("user_name", ""),
                 " | ".join(
-                    f"{possible_resource.model} ({possible_resource.node.name})"
-                    for possible_resource in matched_resources.get_resources()
+                    f"{r.model} ({r.node.name if r.node else 'unknown'})" for r in matched_resources.get_resources()
                 ),
             )
         raise err
@@ -231,7 +228,7 @@ def reserve_node_resources(
 
 def _calculate_resource_space_from_request(
     input_request: rs.ResourceList, node_resources: rs.ResourceList
-) -> Generator[Tuple[str, rs.ResourceList], None, None]:
+) -> Generator[Tuple[int, rs.ResourceList], None, None]:
     resource_space_groups = ts.group_by_resource_space(node_resources)
 
     # Shuffle resource space so we don't always try them in same order
@@ -294,11 +291,12 @@ def reserve_cluster_resources(
 
     except TimeoutError as err:
         for possible_resource in possible_cluster_resources.get_resources():
-            logging.error(
-                "Resource %s is occupied by user %s.",
-                possible_resource.get_full_name(),
-                possible_resource.get_user_name(k_server),
-            )
+            if isinstance(possible_resource, rs.ClusterResource):
+                logging.error(
+                    "Resource %s is occupied by user %s.",
+                    possible_resource.get_full_name(),
+                    possible_resource.get_user_name(k_server),
+                )
         raise err
 
 

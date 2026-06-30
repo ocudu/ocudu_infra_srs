@@ -17,6 +17,7 @@ from rich.table import Table
 from retina.orchestrator.license_utils.licenses import LicenseClient
 from retina.orchestrator.orchestration_network import Kubernetes
 from retina.orchestrator.reservation.managers import get_resources_in_cluster
+from retina.orchestrator.reservation.resources import ResourceLicense
 from retina.orchestrator.reservation.transformations import get_cluster_resources
 
 
@@ -34,8 +35,8 @@ def get_license_client(k_server: Kubernetes) -> LicenseClient:
         Configured LicenseClient instance
     """
     for resource in get_cluster_resources(get_resources_in_cluster(k_server)).get_resources():
-        if resource.model.startswith("amarisoft"):
-            return LicenseClient(host=resource.ip_address, port=9006, password=None, use_ssl=False)
+        if isinstance(resource, ResourceLicense) and resource.model.startswith("amarisoft"):
+            return LicenseClient(host=resource.ip_address or "", port=9006, password=None, use_ssl=False)
     raise RuntimeError("Amarisoft License Server not found in the cluster")
 
 

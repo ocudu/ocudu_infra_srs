@@ -37,7 +37,7 @@ def get_retina_user():
     return user_name.lower()
 
 
-def run_command(command: str, timeout: int = 30 * 60):
+def run_command(command: str, timeout: int = 30 * 60) -> str:
     """
     Exec command
     """
@@ -152,7 +152,7 @@ def parse_request(request_path: str, max_name_size=MAX_NAME_SIZE) -> List[Dict]:
         if value is not None:
             target_content = target_content.replace(f"${{{key}}}", value)
 
-    req = yaml.load(target_content, Loader=yaml.FullLoader)
+    req: List[Dict] = yaml.load(target_content, Loader=yaml.FullLoader)
 
     # Check the request
     with open(

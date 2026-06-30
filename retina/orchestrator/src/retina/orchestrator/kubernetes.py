@@ -35,7 +35,7 @@ from kubernetes.config import load_incluster_config, load_kube_config
 from kubernetes.config.config_exception import ConfigException
 from kubernetes.config.incluster_config import SERVICE_HOST_ENV_NAME, SERVICE_PORT_ENV_NAME, SERVICE_TOKEN_FILENAME
 
-import retina.orchestrator.const as cnt
+from retina.orchestrator import const as cnt
 from retina.orchestrator.utils import get_kubeconfig_extra_list, run_command
 
 KUBERNETES_SKIP_TAINT_ARRAY = (
