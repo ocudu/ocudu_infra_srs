@@ -10,9 +10,6 @@
 {%- set gw_latitude = gw_latitude | default(0) %}
 {%- set gw_longitude = gw_longitude | default(0) %}
 {%- set ntn_ul_sync_validity_dur = ntn_ul_sync_validity_dur | default(5) %}
-{%- set ta_common = ta_common | default(0.0) %}
-{%- set ta_common_drift = ta_common_drift | default(0.0) %}
-{%- set ta_common_drift_variant = ta_common_drift_variant | default(0.0) %}
 {%- set feeder_link = feeder_link | default(false) %}
 
 cell_cfg:
@@ -79,19 +76,14 @@ cell_cfg:
       subframe_number: 0  # only placeholders, gnb overwrites it
     epoch_timestamp: '{{utc_timestamp}}'
     ntn_ul_sync_validity_dur: {{ntn_ul_sync_validity_dur}}
+    {% if feeder_link %}
     feeder_link:
       dl_freq: {{dl_freq}}
       enable_doppler_compensation: false
       ul_freq: {{ul_freq}}
-    {% if feeder_link %}
     gateway_location:
       altitude: {{gw_altitude}}
       latitude: {{gw_latitude}}
       longitude: {{gw_longitude}}
-    {% else %}
-    ta_info:
-      ta_common: {{ta_common}}
-      ta_common_drift: {{ta_common_drift}}
-      ta_common_drift_variant: {{ta_common_drift_variant}}
     {% endif %}
     use_state_vector: false
