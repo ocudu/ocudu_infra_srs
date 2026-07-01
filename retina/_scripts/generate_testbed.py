@@ -6,6 +6,7 @@ Generate a testbed.yml file from docker-compose.yml.
 """
 
 import argparse
+import logging
 from pathlib import Path
 
 import yaml
@@ -23,6 +24,10 @@ def main():
     """
     Main function to parse arguments and generate .env file.
     """
+    logging.basicConfig(
+        format="%(asctime)s \x1b[32;20m[%(levelname)s]\x1b[0m %(message)s",
+        level=logging.INFO,
+    )
 
     parser = argparse.ArgumentParser(description="Testbed generator from docker compose tool")
     parser.add_argument("--profile", required=True, help="docker compose profile")
@@ -68,6 +73,8 @@ def main():
 
     with open(output_file, "w", encoding="utf-8") as f:
         yaml.dump({"id": "local", "node_list": service_info}, f, sort_keys=False)
+
+    logging.info("Generated testbed file in %s", output_file)
 
 
 if __name__ == "__main__":

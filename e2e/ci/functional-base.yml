@@ -42,7 +42,7 @@ release with deb info cached:
       policy: pull-push
 
 .functional_e2e:
-  extends: .e2e
+  extends: .e2e_amarisoft
   variables:
     GROUP: zmq
   needs:

@@ -85,7 +85,7 @@ def main():
         logging.warning("Skipped Amarisoft support: path not provided (do it by adding --amari-path argument)")
         amarisoft_version = root_variables["AMARISOFT_VERSION"]
     else:
-        amarisoft_version = manage_amari_binaries(retina_dir, amari_path)
+        amarisoft_version = manage_amari_binaries(amari_path)
 
     if ocudu_path is None:
         logging.warning(
@@ -119,27 +119,26 @@ def main():
     for key, value in env_vars.items():
         env_vars[key] = Template(value).substitute(env_vars)  # Resolve references
 
-    with open(current_working_directory / ".env", "w", encoding="utf-8") as env_file:
+    env_file = current_working_directory / ".env"
+    with env_file.open("w", encoding="utf-8") as f:
         for key, value in env_vars.items():
-            env_file.write(f"{key}={value}\n")
+            f.write(f"{key}={value}\n")
 
-    logging.info("Generated .env file")
+    logging.info("Generated .env file in %s", env_file)
 
 
-def manage_amari_binaries(base_path: Path, amari_path: Path) -> str:
+def manage_amari_binaries(amari_path: Path) -> str:
     """
     Manages the Amarisoft binaries by performing the following steps:
     1. Gets the version of the Amarisoft binaries.
     2. Searches for a tar.gz file matching the pattern "trx_uhd(-linux)?-{amarisoft_version}.tar.gz" in the given amari_path.
     3. Extracts the contents of the found tar.gz file.
     4. Ensures that both the tar.gz file and the extracted folder have two different names for compatibility.
-    5. Copies the amari_path folder to the Amarisoft UE Retina Image context build directory.
 
     Args:
-        base_path (Path): The base path where the Amarisoft UE Retina Image context build directory is located.
         amari_path (Path): The path where the Amarisoft binaries are located.
     Returns:
-        str: A message indicating the success or failure of the operation.
+        str: Amarisoft Version
     """
 
     if not amari_path.exists():
@@ -154,6 +153,11 @@ def manage_amari_binaries(base_path: Path, amari_path: Path) -> str:
     tar_file = Path(matching_file)
     amarisoft_version = pattern.match(matching_file.name).group(1)
 
+    # Check if already extracted
+    pattern = re.compile(rf"trx_uhd-{amarisoft_version}")
+    if [folder for folder in amari_path.iterdir() if folder.is_dir() and pattern.match(folder.name)]:
+        return amarisoft_version
+
     # Extract the tar file
     with tarfile.open(tar_file, "r:gz") as tar:
         tar.extractall(path=amari_path)
@@ -166,42 +170,17 @@ def manage_amari_binaries(base_path: Path, amari_path: Path) -> str:
     extracted_folder = Path(matching_folder)
     logging.info("Amarisoft TRX UHD Driver extracted to: %s", extracted_folder)
 
-    # Ensure the tar file and the extracted folder both have two different names for compatibility
-    for suffix in ["", "-linux"]:
-        # tar.gz
-        target_file = amari_path / f"trx_uhd{suffix}-{amarisoft_version}.tar.gz"
-        with suppress(shutil.SameFileError):
-            shutil.copy(tar_file, target_file)
-        # Folder
-        target_folder = amari_path / f"trx_uhd{suffix}-{amarisoft_version}"
-        if target_folder.exists() and target_folder != extracted_folder:
-            shutil.rmtree(target_folder)
-        if target_folder != extracted_folder:
-            shutil.copytree(extracted_folder, target_folder)
-
-    # Copy amari folder to Amarisoft UE Retina Image context build
-    amari_path_inside_context = base_path / f"images/amarisoftue/amarisoft/{amarisoft_version}"
-    if amari_path != amari_path_inside_context:
-        if amari_path_inside_context.exists():
-            if amari_path_inside_context.is_symlink():
-                amari_path_inside_context.unlink()
-            else:
-                shutil.rmtree(amari_path_inside_context)
-        amari_path_inside_context.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(amari_path, amari_path_inside_context)
-        logging.info("Amarisoft folder copied inside AmariUE Retina build context: %s", amari_path_inside_context)
-
-    # Copy amari folder to Amarisoft MME Retina Image context build
-    amari_path_inside_context = base_path / f"images/amarisoft5gc/amarisoft/{amarisoft_version}"
-    if amari_path != amari_path_inside_context:
-        if amari_path_inside_context.exists():
-            if amari_path_inside_context.is_symlink():
-                amari_path_inside_context.unlink()
-            else:
-                shutil.rmtree(amari_path_inside_context)
-        amari_path_inside_context.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(amari_path, amari_path_inside_context)
-        logging.info("Amarisoft folder copied inside Amarisoft 5GC Retina build context: %s", amari_path_inside_context)
+    # Ensure the tar file and the extracted folder both have the right name (old amari versions have -linux in the name)
+    # tar.gz
+    target_file = amari_path / f"trx_uhd-{amarisoft_version}.tar.gz"
+    with suppress(shutil.SameFileError):
+        shutil.copy(tar_file, target_file)
+    # Folder
+    target_folder = amari_path / f"trx_uhd-{amarisoft_version}"
+    if target_folder.exists() and target_folder != extracted_folder:
+        shutil.rmtree(target_folder)
+    if target_folder != extracted_folder:
+        shutil.copytree(extracted_folder, target_folder)
 
     return amarisoft_version
 

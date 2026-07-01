@@ -19,7 +19,7 @@ RUN apk add --no-cache curl tar \
     && rm -Rf /tmp/*
 
 # Install auxiliar tools
-RUN apk add --no-cache git yq coreutils zip sshpass openssh-client
+RUN apk add --no-cache git yq coreutils zip sshpass openssh-client wget
 RUN apk add py-spy --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
 
 # Install Python packages

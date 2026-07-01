@@ -50,7 +50,7 @@ services:
     image: ${BUILDER_IMAGE}
     volumes:
       - ${OCUDU_PATH}:/builds/ocudu/ocudu
-      - ${AMARISOFT_PATH}:/builds/amarisoftue
+      - ${AMARISOFT_PATH}:/builds/amarisoft/bin:ro
     environment:
       CLICOLOR_FORCE: 1
     network_mode: "none"
@@ -72,7 +72,7 @@ services:
         "-DENABLE_ZEROMQ=True",
         "-DENABLE_TRX_DRIVER=True",
         "-DMARCH=x86-64-v3",
-        "-DTRX_DRIVER_DIR=/builds/amarisoftue/trx_uhd-linux-${AMARISOFT_VERSION}",
+        "-DTRX_DRIVER_DIR=/builds/amarisoft/bin/trx_uhd-${AMARISOFT_VERSION}",
         "/builds/ocudu/ocudu",
       ]
 
@@ -154,7 +154,7 @@ services:
       - all
       - zmq_amariue_mme
       - zmq_amariue_open5gs
-    image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/amarisoftue:${RETINA_VERSION}
     build:
       context: ../images/amarisoftue
       additional_contexts:
@@ -177,7 +177,8 @@ services:
       - net.ipv6.conf.default.disable_ipv6=0
     volumes: &agent_volumes
       - ${OCUDU_PATH}:/builds/ocudu/ocudu
-      - ${OCUDU_PATH}/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so:/opt/lteue/trx_ocudu.so
+      - ${AMARISOFT_PATH}:/builds/amarisoft/bin:ro
+      - ${OCUDU_PATH}/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so:/builds/amarisoft/trx_ocudu.so
       # Following lines overwrite the retina code inside the container with your current code
       - ../protocol/src/retina/protocol:/usr/local/lib/python3.12/dist-packages/retina/protocol
       - ../agent/src/retina/agent:/usr/local/lib/python3.12/dist-packages/retina/agent
@@ -397,7 +398,7 @@ services:
     profiles:
       - all
       - zmq_amariue_mme
-    image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+    image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${RETINA_VERSION}
     build:
       context: ../images/amarisoft5gc
       args:
@@ -476,7 +477,7 @@ configs:
         address: ${AMARISOFT_REMOTE_UE_IP:-}
         user: unknown
         password: unknown
-        path: "/opt/lteue"
+        path: "/opt/amarisoft/ue"
       - type: API
         address: ${AMARISOFT_REMOTE_UE_IP:-}
         port: 9002

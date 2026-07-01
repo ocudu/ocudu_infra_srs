@@ -109,47 +109,7 @@ include:
   tags: $[[ inputs.tags ]]
   script:
     # Download pre-build packages
-    - |
-      echo "${DOWNLOAD_URLS_PRE_BUILD}" | while IFS= read -r line; do
-        # Skip empty lines
-        [[ -z "$line" ]] && continue
-
-        # Parse line: extract wget options and URL
-        # Assume the last token is the URL, everything before are wget options
-        url=$(echo "$line" | awk '{print $NF}')
-        wget_opts=$(echo "$line" | sed "s|${url}$||" | xargs)
-
-        echo "Downloading: $url"
-        # Download file
-        filename=$(basename "$url")
-        max_attempts=10
-        attempt=1
-        while [ $attempt -le $max_attempts ]; do
-          wget $wget_opts "$url" -O "$filename" > /dev/null 2>&1 && break || true
-          sleep 10
-          echo "Retrying... (attempt $attempt/$max_attempts)"
-          attempt=$((attempt + 1))
-        done
-        if [ $attempt -gt $max_attempts ]; then
-          echo "Error: Failed to download $url after $max_attempts attempts"
-          exit 1
-        fi
-        echo "Downloaded to: $filename"
-
-        # Extract main tar.gz file
-        extract_dir="${filename%.tar.gz}"
-        mkdir -p "$extract_dir"
-        tar -zxf "$filename" -C "$extract_dir"
-
-        # Extract nested tar.gz files if any exist
-        for nested_file in "$extract_dir"/*/*.tar.gz; do
-          if [[ -f "$nested_file" ]]; then
-            tar -zxf "$nested_file" -C "$extract_dir/"
-          fi
-        done
-        echo "Extracted to: $extract_dir"
-
-      done
+    - sh ${CI_PROJECT_DIR}/templates/download_and_extract.sh
     # Setup OCUDU repository
     - |
       mkdir -p ${OCUDU_DIR}

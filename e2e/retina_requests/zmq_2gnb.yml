@@ -3,7 +3,7 @@
 
 - name: amarisoft-ue
   type: ue
-  image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/amarisoftue:${RETINA_VERSION}
   nof_ports: 64
   requirements:
     cpu:
@@ -17,8 +17,11 @@
     - type: license
       model: amarisoft-ue.*
   shared_files:
+    - local_path: ${AMARISOFT_PATH}
+      remote_path: /builds/amarisoft/bin
+      is_executable: false
     - local_path: ${OCUDU_PATH}/build_retina/utils/trx_ocudu/libtrx_ocudu.so
-      remote_path: /opt/lteue/trx_ocudu.so
+      remote_path: /builds/amarisoft/trx_ocudu.so
       is_executable: true
 
 - name: ocudu-gnb-1
@@ -67,7 +70,7 @@
 
 - name: amarisoft-mme
   type: 5gc
-  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 10%
@@ -80,3 +83,7 @@
       model: amarisoft-mme.*
     - type: zmq
       dummy: true
+  shared_files:
+    - local_path: ${AMARISOFT_PATH}
+      remote_path: /builds/amarisoft/bin
+      is_executable: false

@@ -272,25 +272,40 @@ class KubernetesManager(metaclass=ABCMeta):  # pylint: disable=too-few-public-me
     def copy_to_pod(self, local_folder: str, remote_folder: str, pod_name: str, namespace: str) -> str:
         """
         Copy local folder to Pod
+
+        Copies to a temporary sibling path first, then atomically moves it into place.
+        kubectl cp streams the copy in over time, so consumers waiting on remote_folder's
+        existence (e.g. shell scripts polling for a mounted path) could otherwise observe
+        a partially-copied directory.
         """
         result = None
         extra_args = f"--kubeconfig={self._kubeconfig_path}" if self._kubeconfig_path else ""
-        # Creates destination folder
+        remote_tmp_folder = f"{remote_folder}.tmp"
+        # Creates destination's parent folder and clears any stale temporary copy
         for _ in range(3):  # Retry up to 3 times
             with contextlib.suppress(subprocess.CalledProcessError):
                 run_command(
-                    f"kubectl {extra_args} exec {pod_name} -n {namespace} -- mkdir -p {Path(remote_folder).parent}"
+                    f"kubectl {extra_args} exec {pod_name} -n {namespace} -- "
+                    f"sh -c 'mkdir -p {Path(remote_folder).parent} && rm -rf {remote_tmp_folder}'"
                 )
                 break
-        # Copies the file or dir
+        # Copies the file or dir to the temporary path
         for _ in range(3):  # Retry up to 3 times
             with contextlib.suppress(subprocess.CalledProcessError):
                 result = run_command(
-                    f"kubectl {extra_args} cp --retries=-1 {local_folder} {namespace}/{pod_name}:{remote_folder}"
+                    f"kubectl {extra_args} cp --retries=-1 {local_folder} {namespace}/{pod_name}:{remote_tmp_folder}"
                 )
                 break
         if result is None:
             raise RuntimeError("Exception calling application kubectl")
+        # Atomically replace the destination with the fully-copied folder
+        for _ in range(3):  # Retry up to 3 times
+            with contextlib.suppress(subprocess.CalledProcessError):
+                run_command(
+                    f"kubectl {extra_args} exec {pod_name} -n {namespace} -- "
+                    f"sh -c 'rm -rf {remote_folder} && mv {remote_tmp_folder} {remote_folder}'"
+                )
+                break
         return result
 
     def _create_pod(self, manifest: Dict, namespace: str) -> ErrorCode:

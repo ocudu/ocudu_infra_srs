@@ -51,11 +51,11 @@ if [ "$type" = "ipv4" ] ; then
 
     # run ltesim_server
     echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3000 with -S $MME_TIME_MULTIPLIER"
-    /opt/ltemme/ltesim_server -S "$MME_TIME_MULTIPLIER" -a $tun_ip_prefix.$first_subnet.1:3000 &
+    /opt/amarisoft/mme/ltesim_server -S "$MME_TIME_MULTIPLIER" -a $tun_ip_prefix.$first_subnet.1:3000 &
     echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3001 with -S $MME_TIME_MULTIPLIER"
-    /opt/ltemme/ltesim_server -S "$MME_TIME_MULTIPLIER" -a $tun_ip_prefix.$first_subnet.1:3001 &
+    /opt/amarisoft/mme/ltesim_server -S "$MME_TIME_MULTIPLIER" -a $tun_ip_prefix.$first_subnet.1:3001 &
     echo "*** Running ltesim_server for $tun_ip_prefix.$first_subnet.1:3002 with -S $MME_TIME_MULTIPLIER"
-    /opt/ltemme/ltesim_server -S "$MME_TIME_MULTIPLIER" -a $tun_ip_prefix.$first_subnet.1:3002 &
+    /opt/amarisoft/mme/ltesim_server -S "$MME_TIME_MULTIPLIER" -a $tun_ip_prefix.$first_subnet.1:3002 &
 else
 
     ll="$5"     # ipv6 link local address

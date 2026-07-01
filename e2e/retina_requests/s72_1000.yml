@@ -3,7 +3,7 @@
 
 - name: amarisoft-ue
   type: ue
-  image: ${RETINA_REGISTRY_URI}/amarisoftue:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/amarisoftue:${RETINA_VERSION}
   nof_ports: 16
   requirements:
     cpu:
@@ -19,6 +19,10 @@
       model: amarisoft-ue-1000
     - type: ru
       model: s72-ue
+  shared_files:
+    - local_path: ${AMARISOFT_PATH}
+      remote_path: /builds/amarisoft/bin
+      is_executable: false
 
 - name: ocudu-gnb
   type: gnb
@@ -50,7 +54,7 @@
 
 - name: amarisoft-mme
   type: 5gc
-  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${RETINA_VERSION}
   requirements:
     cpu:
       requests: 20%
@@ -67,3 +71,7 @@
     - type: ru
       model: s72-ue
       dummy: true
+  shared_files:
+    - local_path: ${AMARISOFT_PATH}
+      remote_path: /builds/amarisoft/bin
+      is_executable: false

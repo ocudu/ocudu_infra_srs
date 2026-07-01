@@ -378,7 +378,7 @@ ric:
 ## RF Nightly
 ### SDR
 .amarisoft sdr:
-  extends: .e2e
+  extends: .e2e_amarisoft
   stage: amarisoft sdr
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/

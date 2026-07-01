@@ -163,6 +163,27 @@ include:
       retina_args: $[[ inputs.retina_args ]]
       launcher_args: $[[ inputs.launcher_args ]]
       timeout: $[[ inputs.e2e_timeout ]]
+  - local: templates/e2e.yml
+    inputs:
+      job: .e2e_amarisoft
+      stage: e2e
+      rules:
+        - when: never
+      group: $[[ inputs.group ]]
+      testbed: $[[ inputs.testbed ]]
+      markers: $[[ inputs.markers ]]
+      file_or_dir: $[[ inputs.file_or_dir ]]
+      keywords: $[[ inputs.keywords ]]
+      retina_args: $[[ inputs.retina_args ]]
+      launcher_args: $[[ inputs.launcher_args ]]
+      timeout: $[[ inputs.e2e_timeout ]]
+      download_urls_pre_build: >
+        --user="${AMARISOFT_PACKAGE_REG_USER}" --password="${AMARISOFT_PACKAGE_REG_PWD}" ${AMARISOFT_PACKAGE_REGISTRY}/${AMARISOFT_VERSION}/amarisoft.${AMARISOFT_VERSION}.tar.gz
+      cache:
+        - key: amarisoft-${AMARISOFT_VERSION}
+          paths:
+            - amarisoft.${AMARISOFT_VERSION}/
+          policy: pull-push
   # CI/CD for each item in the repository
   - local: retina/.gitlab-ci.yml
     inputs:
@@ -240,7 +261,7 @@ build trx driver:
     - if: $ON_API
 
 e2e:
-  extends: .e2e
+  extends: .e2e_amarisoft
   rules:
     - if: '"$[[ inputs.testbed ]]" == "none"'
       when: never
