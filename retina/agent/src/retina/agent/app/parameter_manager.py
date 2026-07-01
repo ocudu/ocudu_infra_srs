@@ -38,7 +38,6 @@ class ParameterNamespace(Enum):
     DU = "du"
     FIVEGC = "5gc"
     RIC = "ric"
-    CHANNEL_EMULATOR = "channel-emulator"
 
 
 _param_root_dict: Dict[ParameterNamespace, ModuleType] = {}

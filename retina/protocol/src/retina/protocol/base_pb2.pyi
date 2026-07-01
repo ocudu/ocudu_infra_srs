@@ -12,7 +12,6 @@ import builtins
 import collections.abc
 import google.protobuf.descriptor
 import google.protobuf.internal.containers
-import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
 import sys
 import typing
@@ -23,21 +22,6 @@ else:
     import typing_extensions
 
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
-
-class _ChannelEmulatorType:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
-
-class _ChannelEmulatorTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_ChannelEmulatorType.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
-    UNKNOWN: _ChannelEmulatorType.ValueType  # 0
-    TN: _ChannelEmulatorType.ValueType  # 1
-
-class ChannelEmulatorType(_ChannelEmulatorType, metaclass=_ChannelEmulatorTypeEnumTypeWrapper): ...
-
-UNKNOWN: ChannelEmulatorType.ValueType  # 0
-TN: ChannelEmulatorType.ValueType  # 1
-Global___ChannelEmulatorType: typing_extensions.TypeAlias = ChannelEmulatorType
 
 @typing.final
 class RetinaInfo(google.protobuf.message.Message):
@@ -271,31 +255,6 @@ class NearRtRicDefinition(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["enabled", b"enabled", "ric_ip", b"ric_ip", "ric_port", b"ric_port"]) -> None: ...
 
 Global___NearRtRicDefinition: typing_extensions.TypeAlias = NearRtRicDefinition
-
-@typing.final
-class ChannelEmulatorDefinition(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    TYPE_FIELD_NUMBER: builtins.int
-    ZMQ_IP_FIELD_NUMBER: builtins.int
-    DL_ZMQ_PORT_FIELD_NUMBER: builtins.int
-    UL_ZMQ_PORT_FIELD_NUMBER: builtins.int
-    type: Global___ChannelEmulatorType.ValueType
-    zmq_ip: builtins.str
-    """Empty if not zmq mode"""
-    dl_zmq_port: builtins.int
-    ul_zmq_port: builtins.int
-    def __init__(
-        self,
-        *,
-        type: Global___ChannelEmulatorType.ValueType = ...,
-        zmq_ip: builtins.str = ...,
-        dl_zmq_port: builtins.int = ...,
-        ul_zmq_port: builtins.int = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["dl_zmq_port", b"dl_zmq_port", "type", b"type", "ul_zmq_port", b"ul_zmq_port", "zmq_ip", b"zmq_ip"]) -> None: ...
-
-Global___ChannelEmulatorDefinition: typing_extensions.TypeAlias = ChannelEmulatorDefinition
 
 @typing.final
 class PLMN(google.protobuf.message.Message):

@@ -71,8 +71,6 @@ module = [
   "retina.protocol.fivegc_pb2_grpc",
   "retina.protocol.ric_pb2",
   "retina.protocol.ric_pb2_grpc",
-  "retina.protocol.channel_emulator_pb2",
-  "retina.protocol.channel_emulator_pb2_grpc",
 ]
 ignore_errors = true
 
@@ -126,8 +124,7 @@ commands =
     src/retina/protocol/ue.proto \
     src/retina/protocol/gnb.proto \
     src/retina/protocol/fivegc.proto \
-    src/retina/protocol/ric.proto \
-    src/retina/protocol/channel_emulator.proto
+    src/retina/protocol/ric.proto
   python scripts/add_copyright_header.py
 
 [testenv:format]

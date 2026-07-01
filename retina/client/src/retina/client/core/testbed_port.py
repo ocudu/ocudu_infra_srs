@@ -11,7 +11,6 @@ from typing import Dict, OrderedDict
 
 from retina.client.core.communication_port import CommunicationPort
 from retina.protocol import (
-    ChannelEmulatorClient,
     CUClient,
     CUCPClient,
     CUUPClient,
@@ -103,13 +102,6 @@ class TestbedPort:
     def get_ric(self, index: int = 0) -> NearRtRicClient:
         """
         Return a RIC stub in the specified index.
-        If not exists, raises an Exception.
-        """
-
-    @abstractmethod
-    def get_channel_emulator(self, index: int = 0) -> ChannelEmulatorClient:
-        """
-        Return a Channel Emulator stub in the specified index.
         If not exists, raises an Exception.
         """
 

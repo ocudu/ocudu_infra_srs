@@ -21,7 +21,6 @@ from grpc_health.v1.health_pb2_grpc import HealthStub
 from retina.client.core.communication_port import CommunicationPort, Version
 from retina.client.exception import ErrorReportedByAgent
 from retina.protocol import (
-    ChannelEmulatorClient,
     CUClient,
     CUCPClient,
     CUUPClient,
@@ -50,7 +49,6 @@ class GrpcAdaptor(CommunicationPort):
         "du": DUClient,
         "5gc": FiveGCClient,
         "ric": NearRtRicClient,
-        "channel-emulator": ChannelEmulatorClient,
     }
     _DEFAULT_KEEP_ALIVE_PERIOD: int = 60
 

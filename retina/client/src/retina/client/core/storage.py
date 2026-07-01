@@ -37,7 +37,6 @@ class NodeTypeEnum(Enum):
     DU = "du"
     FIVEGC = "5gc"
     RIC = "ric"
-    CHANNEL_EMULATOR = "channel-emulator"
 
 
 clients: Dict[NodeTypeEnum, List[Client]] = {}

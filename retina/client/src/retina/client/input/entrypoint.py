@@ -18,7 +18,6 @@ from retina.client.core.configuration_port import ConfigurationPort
 from retina.client.core.testbed_port import NodeInfo, TestbedPort
 from retina.client.core.version_port import IncompatibleRetinaVersion, VersionPort
 from retina.protocol import (
-    ChannelEmulatorClient,
     CUClient,
     CUCPClient,
     CUUPClient,
@@ -227,14 +226,6 @@ class RetinaEntrypoint:
         If `push_config` is set, it will send the configured parameters to the client
         """
         return self._get_item(self._testbed_service.get_ric, *args, **kwargs)
-
-    def get_channel_emulator(self, *args, **kwargs) -> ChannelEmulatorClient:
-        """
-        Return a Channel Emulator stub in the specified index.
-        If not exists, raises an Exception.
-        If `push_config` is set, it will send the configured parameters to the client
-        """
-        return self._get_item(self._testbed_service.get_channel_emulator, *args, **kwargs)
 
     def _get_item(
         self,

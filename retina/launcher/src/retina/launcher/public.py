@@ -32,7 +32,6 @@ from retina.launcher.criteria import (
 )
 from retina.launcher.reporter import create_report
 from retina.protocol import (
-    ChannelEmulatorClient,
     CUClient,
     CUCPClient,
     CUUPClient,
@@ -360,35 +359,6 @@ def ric_multiple(
 def ric(ric_multiple: Callable[[int], Tuple[NearRtRicClient, ...]]) -> NearRtRicClient:
     """Return a RIC"""
     return ric_multiple(1)[0]
-
-
-@pytest.fixture
-def channel_emulator_multiple(
-    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
-) -> Generator[Callable[[int], Tuple[ChannelEmulatorClient, ...]], None, None]:
-    """
-    Return a factory that creates N Channel Emulators
-    """
-    created = []
-
-    def _factory(count: int) -> Tuple[ChannelEmulatorClient, ...]:
-        stub_array = tuple(retina_manager.get_channel_emulator(index) for index in range(count))
-        created.append(stub_array)
-        return stub_array
-
-    yield _factory
-
-    for stub_array in created:
-        for index, stub in enumerate(stub_array):
-            _stop_stub(stub, f"CHANNEL_EMULATOR_{index + 1}", retina_data)
-
-
-@pytest.fixture
-def channel_emulator(
-    channel_emulator_multiple: Callable[[int], Tuple[ChannelEmulatorClient, ...]],
-) -> ChannelEmulatorClient:
-    """Return a Channel Emulator"""
-    return channel_emulator_multiple(1)[0]
 
 
 # pylint: disable=redefined-outer-name

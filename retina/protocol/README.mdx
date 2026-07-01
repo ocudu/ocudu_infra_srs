@@ -25,15 +25,6 @@ import TOCInline from '@theme/TOCInline';
 | `cuup_ip` | `string` |||
 | `e1_port` | `uint32` |||
 
-#### ChannelEmulatorDefinition
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `type` | `ChannelEmulatorType` |||
-| `zmq_ip` | `string` ||Empty if not zmq mode|
-| `dl_zmq_port` | `uint32` |||
-| `ul_zmq_port` | `uint32` |||
-
 #### CoreMetrics
 
 | Field | Type | Label | Description |
@@ -262,15 +253,6 @@ import TOCInline from '@theme/TOCInline';
 | `ul_av_mid10_samples` | `double` |||
 | `bsr_avg` | `double` ||BSR (Buffer Status Report)|
 | `bsr_max` | `uint32` |||
-
-### Enums
-
-#### ChannelEmulatorType
-
-| Name | Number | Description |
-|---|---:|---|
-| `UNKNOWN` | 0 ||
-| `TN` | 1 ||
 
 ### Services
 
@@ -586,32 +568,5 @@ NearRtRic service manages the Near-Real-Time RAN Intelligent Controller
 | `StartRcXapp` | `.RcXappRequest` | `.google.protobuf.Empty` |No|Start a RC xApp|
 | `StopRcXapp` | `.google.protobuf.Empty` | `.google.protobuf.Empty` |No|Stop a RC xApp|
 | `GetNearRtRicSummary` | `.google.protobuf.Empty` | `.NearRtRicSummary` |No|Get KPM xApp Summary|
-
----
-
-## retina/protocol/channel_emulator.proto
-
-### Messages
-
-#### ChannelEmulatorStartInfo
-
-Generic Channel Emulator Messages
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `du_definition` | `DUDefinition` ||Requird in ZMQ mode|
-| `ue_definition` | `UEDefinition` ||Required in ZMQ mode|
-| `start_info` | `StartInfo` |||
-
-### Services
-
-#### ChannelEmulator
-
-ChannelEmulator service manages wireless channel emulation for testing
-
-| Method | Request | Response | Streaming | Description |
-|---|---|---|---|---|
-| `GetDefinition` | `.google.protobuf.Empty` | `.ChannelEmulatorDefinition` |No|Get Basic information about the Channel Emulator|
-| `Start` | `.ChannelEmulatorStartInfo` | `.google.protobuf.Empty` |No|Start the Channel Emulator. Raise an error if can't be started.|
 
 ---

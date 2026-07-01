@@ -91,18 +91,6 @@ message NearRtRicDefinition {
   uint32 ric_port = 3;
 };
 
-enum ChannelEmulatorType {
-  UNKNOWN = 0;
-  TN      = 1;
-}
-
-message ChannelEmulatorDefinition {
-  ChannelEmulatorType type        = 1;
-  string              zmq_ip      = 2; // Empty if not zmq mode
-  uint32              dl_zmq_port = 3;
-  uint32              ul_zmq_port = 4;
-};
-
 message PLMN {
   string mcc = 1;
   string mnc = 2;

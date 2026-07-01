@@ -16,7 +16,6 @@ from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts, param
 from retina.protocol import (
-    ChannelEmulatorClient,
     FiveGCClient,
     GNBClient,
     NearRtRicClient,
@@ -380,7 +379,6 @@ def _iperf(
     assess_bitrate: bool = False,
     stop_gnb_first: bool = False,
     packet_length: int = 0,
-    channel_emulator: Optional[ChannelEmulatorClient] = None,
     min_dl_bitrate: float = 0,
     min_ul_bitrate: float = 0,
     pdsch_interleaving_bundle_size: int = 0,
@@ -423,7 +421,6 @@ def _iperf(
         plmn=plmn,
         inter_ue_start_period=inter_ue_start_period,
         ric=ric,
-        channel_emulator=channel_emulator,
         ue_startup_timeout=ue_startup_timeout,
     )
 

@@ -18,7 +18,6 @@ from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts, param
 from retina.protocol import FiveGCClient, GNBClient, UEClient
 from retina.protocol.base_pb2 import PLMN
-from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 
 from .steps.configuration import (
     configure_test_parameters,
@@ -405,7 +404,6 @@ def _ping(
     pdsch_mcs_table: str = "qam256",
     pusch_mcs_table: str = "qam256",
     ping_interval: float = 1.0,
-    channel_emulator: Optional[ChannelEmulatorStub] = None,
     ul_noise_spd: int = 0,
     rx_to_tx_latency: int = -1,
     pdcch_log: bool = False,
@@ -448,13 +446,11 @@ def _ping(
         gnb_pre_cmd=pre_command,
         gnb_post_cmd=post_command,
         plmn=plmn,
-        channel_emulator=channel_emulator,
     )
     ue_attach_info_dict = ue_start_and_attach(
         ue_array=ue_array,
         du_definition=[gnb.GetDefinition(UInt32Value(value=0)).du_definition],
         fivegc_array=[fivegc],
-        channel_emulator=channel_emulator,
     )
 
     try:

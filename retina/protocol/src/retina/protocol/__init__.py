@@ -12,7 +12,6 @@ from typing import Union
 from grpc_health.v1.health_pb2_grpc import HealthStub
 
 from retina.protocol.base_pb2_grpc import BaseStub
-from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2_grpc import (
     CUCPStub,
@@ -97,15 +96,6 @@ class NearRtRicClient(NearRtRicStub, HealthStub, BaseStub):
         NearRtRicStub.__init__(self, channel)
 
 
-class ChannelEmulatorClient(ChannelEmulatorStub, HealthStub, BaseStub):
-    """Channel emulator agent stub — ChannelEmulator service methods + Base service methods."""
-
-    def __init__(self, channel) -> None:
-        BaseStub.__init__(self, channel)
-        HealthStub.__init__(self, channel)
-        ChannelEmulatorStub.__init__(self, channel)
-
-
 RanClient = Union[
     UEClient,
     CUCPClient,
@@ -115,5 +105,4 @@ RanClient = Union[
     GNBClient,
     FiveGCClient,
     NearRtRicClient,
-    ChannelEmulatorClient,
 ]

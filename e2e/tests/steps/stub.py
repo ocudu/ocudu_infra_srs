@@ -20,7 +20,6 @@ from google.protobuf.wrappers_pb2 import UInt32Value
 from retina.client.exception import ErrorReportedByAgent
 from retina.launcher.artifacts import RetinaTestData
 from retina.protocol import (
-    ChannelEmulatorClient,
     CUClient,
     CUCPClient,
     CUUPClient,
@@ -43,7 +42,6 @@ from retina.protocol.base_pb2 import (
     StopResponse,
     UEDefinition,
 )
-from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.exit_codes import exit_code_to_message
 from retina.protocol.fivegc_pb2 import FiveGCStartInfo
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
@@ -79,7 +77,6 @@ def start_and_attach(
     plmn: Optional[PLMN] = None,
     inter_ue_start_period=INTER_UE_START_PERIOD,
     ric: Optional[NearRtRicClient] = None,
-    channel_emulator: Optional[ChannelEmulatorClient] = None,
 ) -> Dict[UEClient, UEAttachedInfo]:
     """
     Start stubs & wait until attach
@@ -94,7 +91,6 @@ def start_and_attach(
         gnb_post_cmd=gnb_post_cmd,
         plmn=plmn,
         ric=ric,
-        channel_emulator=channel_emulator,
     )
 
     return ue_start_and_attach(
@@ -104,7 +100,6 @@ def start_and_attach(
         ue_startup_timeout=ue_startup_timeout,
         attach_timeout=attach_timeout,
         inter_ue_start_period=inter_ue_start_period,
-        channel_emulator=channel_emulator,
     )
 
 
@@ -134,7 +129,6 @@ def start_network(
     gnb_post_cmd: Tuple[str, ...] = tuple(),
     plmn: Optional[PLMN] = None,
     ric: Optional[NearRtRicStub] = None,
-    channel_emulator: Optional[ChannelEmulatorStub] = None,
 ):
     """
     Start Network (5GC + gNB/CU+DU/CUCP+CUUP+DU + RIC(optional))
@@ -174,12 +168,6 @@ def start_network(
     fivegc_definition = [
         fivegc_start(fivegc, plmn=plmn, fivegc_startup_timeout=fivegc_startup_timeout) for fivegc in fivegc_array
     ]
-
-    if channel_emulator and ue_def_for_gnb.zmq_ip is not None:
-        # Overwrite the ZMQ IP and port, so the GNB connects to the channel emulator.
-        channel_emulator_definition = channel_emulator.GetDefinition(Empty())
-        ue_def_for_gnb.zmq_ip = channel_emulator_definition.zmq_ip
-        ue_def_for_gnb.zmq_port_array[0] = channel_emulator_definition.ul_zmq_port
 
     ric_definition: NearRtRicDefinition = NearRtRicDefinition()
     if ric:
@@ -332,13 +320,12 @@ def ue_start_and_attach(
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     attach_timeout: int = ATTACH_TIMEOUT,
     inter_ue_start_period: int = INTER_UE_START_PERIOD,
-    channel_emulator: Optional[ChannelEmulatorStub] = None,
 ) -> Dict[UEClient, UEAttachedInfo]:
     """
     Start an array of UEs and wait until attached to already running gnb and 5gc
     """
 
-    ue_start(ue_array, du_definition, fivegc_array, ue_startup_timeout, inter_ue_start_period, channel_emulator)
+    ue_start(ue_array, du_definition, fivegc_array, ue_startup_timeout, inter_ue_start_period)
 
     # Attach in parallel
     ue_attach_task_dict: Dict[UEClient, grpc.Future] = {
@@ -365,17 +352,10 @@ def ue_start(
     fivegc_array: Sequence[FiveGCStub],
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     inter_ue_start_period: int = INTER_UE_START_PERIOD,
-    channel_emulator: Optional[ChannelEmulatorStub] = None,
 ):
     """
     Start an array of UEs
     """
-
-    if channel_emulator and du_definition[0].zmq_ip is not None:
-        # Overwrite the ZMQ IP and port, so the UE connects to the channel emulator.
-        channel_emulator_definition = channel_emulator.GetDefinition(Empty())
-        du_definition[0].zmq_ip = channel_emulator_definition.zmq_ip
-        du_definition[0].zmq_port_array[0] = channel_emulator_definition.dl_zmq_port
 
     fivegc_definition = [f.GetDefinition(Empty()) for f in fivegc_array]
     for ue_stub in ue_array:
@@ -548,7 +528,6 @@ def stop(
     warning_as_errors: bool = True,
     fail_if_kos: bool = False,
     ric: Optional[NearRtRicClient] = None,
-    channel_emulator: Optional[ChannelEmulatorClient] = None,
     stop_gnb_first: bool = False,
 ):
     """
@@ -668,18 +647,6 @@ def stop(
             warning_as_errors=warning_as_errors,
         )
         logging.info("RIC [%s] stopped", id(ric))
-        error_msg_array.append(error_message)
-
-    if channel_emulator is not None:
-        error_message, _ = _stop_stub(
-            stub=channel_emulator,
-            name="CHANNEL_EMULATOR",
-            retina_data=retina_data,
-            timeout=gnb_stop_timeout,
-            log_search=log_search,
-            warning_as_errors=warning_as_errors,
-        )
-        logging.info("CHANNEL_EMULATOR [%s] stopped", id(channel_emulator))
         error_msg_array.append(error_message)
 
     # Fail if stop errors

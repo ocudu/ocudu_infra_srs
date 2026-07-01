@@ -18,11 +18,6 @@ from google.protobuf.wrappers_pb2 import UInt32Value
 from grpc_health.v1.health_pb2 import HealthCheckResponse
 from grpc_health.v1.health_pb2_grpc import add_HealthServicer_to_server
 from retina.protocol.base_pb2_grpc import add_BaseServicer_to_server, Base
-from retina.protocol.channel_emulator_pb2_grpc import (
-    add_ChannelEmulatorServicer_to_server,
-    ChannelEmulator,
-    ChannelEmulatorServicer,
-)
 from retina.protocol.fivegc_pb2_grpc import add_FiveGCServicer_to_server, FiveGC, FiveGCServicer
 from retina.protocol.gnb_pb2_grpc import (
     add_CUCPServicer_to_server,
@@ -179,9 +174,6 @@ def _agent_factory(
     if isinstance(retina_servicer, NearRtRicServicer):
         health_servicer.set(NearRtRic.__name__, HealthCheckResponse.SERVING)
         add_NearRtRicServicer_to_server(retina_servicer, server)
-    if isinstance(retina_servicer, ChannelEmulatorServicer):
-        health_servicer.set(ChannelEmulator.__name__, HealthCheckResponse.SERVING)
-        add_ChannelEmulatorServicer_to_server(retina_servicer, server)
 
     def close():
         logging.info("Closing the agent")

@@ -18,7 +18,6 @@ from retina.client.core.storage import Client, NodeTypeEnum
 from retina.client.core.testbed_port import NodeInfo, TestbedPort
 from retina.client.schemas import schema_path
 from retina.protocol import (
-    ChannelEmulatorClient,
     CUClient,
     CUCPClient,
     CUUPClient,
@@ -127,9 +126,6 @@ class TestbedService(TestbedPort):
 
     def get_ric(self, index: int = 0) -> NearRtRicClient:
         return cast(NearRtRicClient, self._get_item(NodeTypeEnum.RIC, index))
-
-    def get_channel_emulator(self, index: int = 0) -> ChannelEmulatorClient:
-        return cast(ChannelEmulatorClient, self._get_item(NodeTypeEnum.CHANNEL_EMULATOR, index))
 
     def _get_item(self, stub_type: NodeTypeEnum, index: int = 0) -> RanClient:
         if stub_type.value not in self._testbed_info:

@@ -83,8 +83,6 @@ module = [
   "retina.protocol.fivegc_pb2_grpc",
   "retina.protocol.ric_pb2",
   "retina.protocol.ric_pb2_grpc",
-  "retina.protocol.channel_emulator_pb2",
-  "retina.protocol.channel_emulator_pb2_grpc",
 ]
 ignore_errors = true
 
