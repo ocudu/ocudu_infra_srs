@@ -46,6 +46,7 @@ KUBERNETES_SKIP_TAINT_ARRAY = (
     "node.kubernetes.io/pid-pressure",  # Node has PID pressure.
     "node.kubernetes.io/network-unavailable",  # Node's network is unavailable.
     "node.kubernetes.io/unschedulable",  # Node is unschedulable.
+    "node.cilium.io/agent-not-ready",  # Network issue in the node.
 )
 
 
