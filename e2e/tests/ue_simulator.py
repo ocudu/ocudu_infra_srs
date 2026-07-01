@@ -16,9 +16,15 @@ from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.criteria import CriteriaTable
 from retina.launcher.public import UInt32Value
 from retina.launcher.utils import configure_artifacts
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import CUCPStub, CUStub, CUUPStub, DUStub, GNBStub
-from retina.protocol.ue_pb2_grpc import UEStub
+from retina.protocol import (
+    CUClient,
+    CUCPClient,
+    CUUPClient,
+    DUClient,
+    FiveGCClient,
+    GNBClient,
+    UEClient,
+)
 
 from .steps.configuration import set_config_files
 from .steps.stub import start_network, stop, ue_start
@@ -32,9 +38,9 @@ def test_gnb(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEStub,
-    gnb: GNBStub,
-    fivegc: FiveGCStub,
+    ue: UEClient,
+    gnb: GNBClient,
+    fivegc: FiveGCClient,
 ):
     """Template test function for UE simulator + gNB + Core"""
     _ue_simulator(
@@ -55,9 +61,9 @@ def test_2gnb(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEStub,
+    ue: UEClient,
     gnb_multiple,
-    fivegc: FiveGCStub,
+    fivegc: FiveGCClient,
 ):
     """Template test function for UE simulator + 2 gNB + Core"""
     _ue_simulator(
@@ -78,10 +84,10 @@ def test_cu_2du(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEStub,
-    cu: CUStub,
+    ue: UEClient,
+    cu: CUClient,
     du_multiple,
-    fivegc: FiveGCStub,
+    fivegc: FiveGCClient,
 ):
     """Template test function for UE simulator + CU + 2 DU + Core"""
     _ue_simulator(
@@ -103,11 +109,11 @@ def test_cucp_cuup(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEStub,
-    cu_cp: CUCPStub,
-    cu_up: CUUPStub,
-    du: DUStub,
-    fivegc: FiveGCStub,
+    ue: UEClient,
+    cu_cp: CUCPClient,
+    cu_up: CUUPClient,
+    du: DUClient,
+    fivegc: FiveGCClient,
 ):
     """Template test function for UE simulator + CUCP + CUUP + DU + Core"""
     _ue_simulator(
@@ -130,11 +136,11 @@ def test_2cucp_1cuup_2du(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEStub,
+    ue: UEClient,
     cu_cp_multiple,
-    cu_up: CUUPStub,
+    cu_up: CUUPClient,
     du_multiple,
-    fivegc: FiveGCStub,
+    fivegc: FiveGCClient,
 ):
     """Template test function for UE simulator + 2CUCP + 1 CUUP + 2 DU + Core"""
     _ue_simulator(
@@ -155,13 +161,13 @@ def _ue_simulator(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEStub,
-    fivegc_array: Sequence[FiveGCStub],
-    cu: Optional[CUStub] = None,
-    cu_cp_array: Optional[Sequence[CUCPStub]] = None,
-    cu_up_array: Optional[Sequence[CUUPStub]] = None,
-    du_array: Optional[Sequence[DUStub]] = None,
-    gnb_array: Optional[Sequence[GNBStub]] = None,
+    ue: UEClient,
+    fivegc_array: Sequence[FiveGCClient],
+    cu: Optional[CUClient] = None,
+    cu_cp_array: Optional[Sequence[CUCPClient]] = None,
+    cu_up_array: Optional[Sequence[CUUPClient]] = None,
+    du_array: Optional[Sequence[DUClient]] = None,
+    gnb_array: Optional[Sequence[GNBClient]] = None,
 ):  # pylint: disable=too-many-arguments,too-many-positional-arguments
 
     configure_artifacts(

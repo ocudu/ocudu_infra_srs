@@ -184,16 +184,56 @@ profile = "black"
 remove_redundant_aliases = true
 
 [tool.mypy]
-ignore_missing_imports = true
 install_types = true
+mypy_path = [
+  "../retina/launcher/src",
+  "../retina/client/src",
+  "../retina/orchestrator/src",
+  "../retina/protocol/src",
+  "../retina/viavi/src",
+]
 non_interactive = true
 warn_return_any = true
 warn_unused_configs = true
 
+[[tool.mypy.overrides]]
+module = [
+  "retina.protocol.base_pb2",
+  "retina.protocol.base_pb2_grpc",
+  "retina.protocol.ue_pb2",
+  "retina.protocol.ue_pb2_grpc",
+  "retina.protocol.gnb_pb2",
+  "retina.protocol.gnb_pb2_grpc",
+  "retina.protocol.fivegc_pb2",
+  "retina.protocol.fivegc_pb2_grpc",
+  "retina.protocol.ric_pb2",
+  "retina.protocol.ric_pb2_grpc",
+  "retina.protocol.channel_emulator_pb2",
+  "retina.protocol.channel_emulator_pb2_grpc",
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+  "jinja2",
+  "jinja2.meta",
+  "jinja2.nodes",
+  "gitlab",
+  "gitlab.v4.objects",
+  "pytest_metadata.plugin",
+  "pytest_html",
+  "rich.console",
+  "rich.table",
+]
+ignore_missing_imports = true
+
 [tool.pylint]
-disable = ["no-name-in-module", "duplicate-code", "import-error", "too-many-lines"]
+disable = ["duplicate-code"]
 ignore-signatures = true
 max-line-length = 120
+
+[tool.pylint.typecheck]
+ignored-modules = ["google.protobuf.*", "grpc_health.*", "retina.protocol.*pb2*"]
 
 [tool.tox]
 legacy_tox_ini = """
@@ -218,6 +258,12 @@ commands =
 skip_install = true
 deps =
   pylint <= 4.0.5
+  pylint-pytest <= 1.1.8
+  -e ../retina/launcher
+  -e ../retina/client
+  -e ../retina/orchestrator
+  -e ../retina/protocol
+  -e ../retina/viavi
 commands =
   pylint tests scripts conftest.py
 
@@ -225,6 +271,7 @@ commands =
 skip_install = true
 deps =
   mypy <= 1.20.0
+  pytest < 9
 commands =
   mypy --check-untyped-defs tests scripts conftest.py
 

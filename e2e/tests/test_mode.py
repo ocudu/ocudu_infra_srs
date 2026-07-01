@@ -18,11 +18,10 @@ from pytest import mark, param
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts
+from retina.protocol import FiveGCClient, GNBClient
 from retina.protocol.base_pb2 import FiveGCDefinition, GNBDefinition, Metrics, PLMN, StartInfo, UEDefinition
 from retina.protocol.fivegc_pb2 import FiveGCStartInfo
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2 import GNBStartInfo
-from retina.protocol.gnb_pb2_grpc import GNBStub
 
 from .steps.stub import FIVEGC_STARTUP_TIMEOUT, GNB_STARTUP_TIMEOUT, handle_start_error, stop
 
@@ -46,8 +45,8 @@ def test_ue(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     # Clients
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     # Test
     extra_config: str,
     nof_ant: int,
@@ -144,7 +143,7 @@ def test_ru_acc100(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     # Clients
-    gnb: GNBStub,
+    gnb: GNBClient,
 ):
     """
     Run gnb in test mode ru dummy.
@@ -169,7 +168,7 @@ def test_ru(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     # Clients
-    gnb: GNBStub,
+    gnb: GNBClient,
 ):
     """
     Run gnb in test mode ru dummy.
@@ -183,7 +182,7 @@ def test_ru_10cell_50ue(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     # Clients
-    gnb: GNBStub,
+    gnb: GNBClient,
 ):
     """
     Run gnb in test mode ru dummy.
@@ -204,7 +203,7 @@ def test_ru_not_crash(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     # Clients
-    gnb: GNBStub,
+    gnb: GNBClient,
 ):
     """
     Run gnb with sanitizers in test mode ru dummy.
@@ -228,7 +227,7 @@ def _test_ru(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     # Clients
-    gnb: GNBStub,
+    gnb: GNBClient,
     # Test
     ru_config,
     nof_ant: int = 4,
@@ -317,7 +316,7 @@ def test_mode_many_ues(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     # Clients
-    gnb: GNBStub,
+    gnb: GNBClient,
     # Test
     ru_config="config_ru_800_ues.yml",
     nof_ant: int = 4,

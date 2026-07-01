@@ -6,20 +6,31 @@ Steps related with stubs / resources
 """
 
 import logging
-from concurrent.futures import as_completed, ThreadPoolExecutor
 from contextlib import contextmanager, suppress
+from functools import partial
 from time import sleep
-from typing import Dict, Generator, List, Optional, Sequence, Tuple
+from typing import Dict, Generator, Optional, Sequence, Tuple
 
 import grpc
 import pytest
 from _pytest.outcomes import Failed
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.text_format import MessageToString
-from google.protobuf.wrappers_pb2 import StringValue, UInt32Value
+from google.protobuf.wrappers_pb2 import UInt32Value
 from retina.client.exception import ErrorReportedByAgent
 from retina.launcher.artifacts import RetinaTestData
-from retina.protocol import RanStub
+from retina.protocol import (
+    ChannelEmulatorClient,
+    CUClient,
+    CUCPClient,
+    CUUPClient,
+    DUClient,
+    FiveGCClient,
+    GNBClient,
+    NearRtRicClient,
+    RanClient,
+    UEClient,
+)
 from retina.protocol.base_pb2 import (
     CUCPDefinition,
     DUDefinition,
@@ -27,8 +38,6 @@ from retina.protocol.base_pb2 import (
     GNBDefinition,
     Metrics,
     NearRtRicDefinition,
-    PingRequest,
-    PingResponse,
     PLMN,
     StartInfo,
     StopResponse,
@@ -36,19 +45,13 @@ from retina.protocol.base_pb2 import (
 )
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
 from retina.protocol.exit_codes import exit_code_to_message
-from retina.protocol.fivegc_pb2 import FiveGCStartInfo, IPerfResponse
+from retina.protocol.fivegc_pb2 import FiveGCStartInfo
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2 import CUCPStartInfo, CUStartInfo, CUUPStartInfo, DUStartInfo, GNBStartInfo
 from retina.protocol.gnb_pb2_grpc import CUCPStub, CUStub, CUUPStub, DUStub, GNBStub
 from retina.protocol.ric_pb2 import KpmMonXappRequest, NearRtRicStartInfo, RcXappRequest
 from retina.protocol.ric_pb2_grpc import NearRtRicStub
-from retina.protocol.ue_pb2 import (
-    IPerfDir,
-    IPerfProto,
-    IPerfRequest,
-    UEAttachedInfo,
-    UEStartInfo,
-)
+from retina.protocol.ue_pb2 import UEAttachedInfo, UEStartInfo
 from retina.protocol.ue_pb2_grpc import UEStub
 
 RF_MAX_TIMEOUT: int = 5 * 60  # Time enough in RF when loading a new image in the sdr
@@ -64,9 +67,9 @@ INTER_UE_START_PERIOD: int = 0
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
 def start_and_attach(
     *,  # This enforces keyword-only arguments
-    ue_array: Sequence[UEStub],
-    gnb: GNBStub,
-    fivegc: FiveGCStub,
+    ue_array: Sequence[UEClient],
+    gnb: GNBClient,
+    fivegc: FiveGCClient,
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
     fivegc_startup_timeout: int = FIVEGC_STARTUP_TIMEOUT,
@@ -75,9 +78,9 @@ def start_and_attach(
     attach_timeout: int = ATTACH_TIMEOUT,
     plmn: Optional[PLMN] = None,
     inter_ue_start_period=INTER_UE_START_PERIOD,
-    ric: Optional[NearRtRicStub] = None,
-    channel_emulator: Optional[ChannelEmulatorStub] = None,
-) -> Dict[UEStub, UEAttachedInfo]:
+    ric: Optional[NearRtRicClient] = None,
+    channel_emulator: Optional[ChannelEmulatorClient] = None,
+) -> Dict[UEClient, UEAttachedInfo]:
     """
     Start stubs & wait until attach
     """
@@ -178,7 +181,7 @@ def start_network(
         ue_def_for_gnb.zmq_ip = channel_emulator_definition.zmq_ip
         ue_def_for_gnb.zmq_port_array[0] = channel_emulator_definition.ul_zmq_port
 
-    ric_definition = None
+    ric_definition: NearRtRicDefinition = NearRtRicDefinition()
     if ric:
         ric_startup_timeout = fivegc_startup_timeout
         with handle_start_error(name=f"RIC [{id(ric)}]"):
@@ -283,7 +286,8 @@ def fivegc_start(
     with handle_start_error(name=f"5GC [{id(fivegc)}]"):
         # 5GC Start
         fivegc.Start(FiveGCStartInfo(plmn=plmn, start_info=StartInfo(timeout=fivegc_startup_timeout)))
-    return fivegc.GetDefinition(Empty())
+    result: FiveGCDefinition = fivegc.GetDefinition(Empty())
+    return result
 
 
 def gnb_start(
@@ -316,19 +320,20 @@ def gnb_start(
                 ),
             )
         )
-    return gnb.GetDefinition(UInt32Value(value=cell_offset))
+    result: GNBDefinition = gnb.GetDefinition(UInt32Value(value=cell_offset))
+    return result
 
 
 def ue_start_and_attach(
     *,  # This enforces keyword-only arguments
-    ue_array: Sequence[UEStub],
+    ue_array: Sequence[UEClient],
     du_definition: Sequence[DUDefinition],
     fivegc_array: Sequence[FiveGCStub],
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     attach_timeout: int = ATTACH_TIMEOUT,
     inter_ue_start_period: int = INTER_UE_START_PERIOD,
     channel_emulator: Optional[ChannelEmulatorStub] = None,
-) -> Dict[UEStub, UEAttachedInfo]:
+) -> Dict[UEClient, UEAttachedInfo]:
     """
     Start an array of UEs and wait until attached to already running gnb and 5gc
     """
@@ -336,13 +341,13 @@ def ue_start_and_attach(
     ue_start(ue_array, du_definition, fivegc_array, ue_startup_timeout, inter_ue_start_period, channel_emulator)
 
     # Attach in parallel
-    ue_attach_task_dict: Dict[UEStub, grpc.Future] = {
+    ue_attach_task_dict: Dict[UEClient, grpc.Future] = {
         ue_stub: ue_stub.WaitUntilAttached.future(UInt32Value(value=attach_timeout)) for ue_stub in ue_array
     }
     for ue_stub, task in ue_attach_task_dict.items():
-        task.add_done_callback(lambda _task, _ue_stub=ue_stub: _log_attached_ue(_task, _ue_stub))
+        task.add_done_callback(partial(_log_attached_ue, ue_stub=ue_stub))
 
-    ue_attach_info_dict: Dict[UEStub, UEAttachedInfo] = {}
+    ue_attach_info_dict: Dict[UEClient, UEAttachedInfo] = {}
     with suppress(grpc.RpcError):
         ue_attach_info_dict = {
             ue_stub: task.result() for ue_stub, task in ue_attach_task_dict.items()  # Waiting for attach
@@ -468,336 +473,6 @@ def _log_attached_ue(future: grpc.Future, ue_stub: UEStub):
         )
 
 
-def ping(
-    *,  # This enforces keyword-only arguments
-    ue_attach_info_dict: Dict[UEStub, UEAttachedInfo],
-    fivegc: FiveGCStub,
-    ping_count,
-    time_step: int = 0,
-    ping_interval: float = 1.0,
-):
-    """
-    Ping command between an UE and a 5GC
-    """
-    ping_task_array = ping_start(
-        ue_attach_info_dict=ue_attach_info_dict,
-        fivegc=fivegc,
-        ping_count=ping_count,
-        time_step=time_step,
-        ping_interval=ping_interval,
-    )
-    ping_wait_until_finish(ping_task_array)
-
-
-def ping_start(
-    *,  # This enforces keyword-only arguments
-    ue_attach_info_dict: Dict[UEStub, UEAttachedInfo],
-    fivegc: FiveGCStub,
-    ping_count,
-    time_step: float = 0,
-    ping_interval: float = 1.0,
-) -> List[grpc.Future]:
-    """
-    Ping command between an UE and a 5GC
-    """
-
-    # Launch ping (ue -> 5gc and 5gc -> ue) for each attached ue in parallel
-
-    ping_task_array: List[grpc.Future] = []
-    for ue_stub, ue_attached_info in ue_attach_info_dict.items():
-        ue_to_fivegc: grpc.Future = ue_stub.Ping.future(
-            PingRequest(address=ue_attached_info.ipv4_gateway, count=ping_count, interval=ping_interval)
-        )
-        ue_to_fivegc.add_done_callback(
-            lambda _task, _msg=f"[{ue_attached_info.ipv4}] UE -> 5GC": _print_ping_result(_msg, _task)
-        )
-        fivegc_to_ue: grpc.Future = fivegc.Ping.future(PingRequest(address=ue_attached_info.ipv4, count=ping_count))
-        fivegc_to_ue.add_done_callback(
-            lambda _task, _msg=f"[{ue_attached_info.ipv4}] 5GC -> UE": _print_ping_result(_msg, _task)
-        )
-        ping_task_array.append(ue_to_fivegc)
-        ping_task_array.append(fivegc_to_ue)
-        sleep(time_step)
-
-    return ping_task_array
-
-
-def ping_wait_until_finish(ping_task_array: List[grpc.Future]) -> None:
-    """
-    Wait until the requested ping has finished.
-    """
-    ping_success = True
-    for ping_task in ping_task_array:
-        ping_success &= ping_task.result().status
-
-    if not ping_success:
-        pytest.fail("Ping. Some packages got lost.")
-
-
-def _print_ping_result(msg: str, task: grpc.Future):
-    """
-    Print ping result
-    """
-    log_fn = logging.info
-    try:
-        result: PingResponse = task.result()
-        if not result.status:
-            log_fn = logging.error
-        log_fn("Ping %s:\n%s", msg, MessageToString(result, indent=2))
-    except (grpc.RpcError, grpc.FutureCancelledError, grpc.FutureTimeoutError) as err:
-        logging.error(ErrorReportedByAgent(err))
-
-
-def ping_from_5gc(
-    *,  # This enforces keyword-only arguments
-    ue_attach_info_dict: Dict[UEStub, UEAttachedInfo],
-    fivegc: FiveGCStub,
-    ping_count,
-    time_step: int = 0,
-):
-    """
-    Ping command from a 5GC to a UE
-    """
-    ping_task_array = ping_start_from_5gc(
-        ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=ping_count, time_step=time_step
-    )
-    ping_wait_until_finish(ping_task_array)
-
-
-def ping_start_from_5gc(
-    *,  # This enforces keyword-only arguments
-    ue_attach_info_dict: Dict[UEStub, UEAttachedInfo],
-    fivegc: FiveGCStub,
-    ping_count,
-    time_step: float = 0,
-) -> List[grpc.Future]:
-    """
-    Ping command between a 5GC and an UE
-    """
-
-    # Launch ping (5gc -> ue) for each attached ue in parallel
-
-    ping_task_array: List[grpc.Future] = []
-    for ue_attached_info in ue_attach_info_dict.values():
-        fivegc_to_ue: grpc.Future = fivegc.Ping.future(PingRequest(address=ue_attached_info.ipv4, count=ping_count))
-        fivegc_to_ue.add_done_callback(
-            lambda _task, _msg=f"[{ue_attached_info.ipv4}] 5GC -> UE": _print_ping_result(_msg, _task)
-        )
-        ping_task_array.append(fivegc_to_ue)
-        sleep(time_step)
-
-    return ping_task_array
-
-
-def iperf_parallel(
-    *,  # This enforces keyword-only arguments
-    ue_attach_info_dict: Dict[UEStub, UEAttachedInfo],
-    fivegc: FiveGCStub,
-    protocol: IPerfProto,
-    direction: IPerfDir,
-    iperf_duration: int,
-    bitrate: int,
-    packet_length: int = 0,
-    bitrate_threshold_ratio: float = 0,  # real_bitrate > (bitrate_threshold_ratio * ideal_bitrate)
-    parallel_iperfs: int = 8,
-) -> List[IPerfResponse]:
-    """
-    iperf command between multiple UEs and a 5GC. Runs at <parallel_iperfs> in parallel.
-    """
-
-    iperf_result_list: List[IPerfResponse] = []
-
-    with ThreadPoolExecutor(max_workers=parallel_iperfs) as executor:
-        future_array = (
-            executor.submit(
-                iperf_sequentially,
-                ue_stub=ue_stub,
-                ue_attached_info=ue_attached_info,
-                fivegc=fivegc,
-                protocol=protocol,
-                direction=direction,
-                iperf_duration=iperf_duration,
-                bitrate=bitrate,
-                packet_length=packet_length,
-                bitrate_threshold_ratio=bitrate_threshold_ratio,
-            )
-            for ue_stub, ue_attached_info in ue_attach_info_dict.items()
-        )
-
-        iperf_success = True
-        for future in as_completed(future_array):
-            iperf_response = future.result()
-            iperf_success &= iperf_response[0]
-            iperf_result_list.append(iperf_response[1])
-
-    if not iperf_success:
-        pytest.fail("iperf did not achieve the expected data rate.")
-
-    return iperf_result_list
-
-
-def iperf_sequentially(
-    *,  # This enforces keyword-only arguments
-    ue_stub: UEStub,
-    ue_attached_info: UEAttachedInfo,
-    fivegc: FiveGCStub,
-    protocol: IPerfProto,
-    direction: IPerfDir,
-    iperf_duration: int,
-    bitrate: int,
-    packet_length: int = 0,
-    bitrate_threshold_ratio: float = 0,  # real_bitrate > (bitrate_threshold_ratio * ideal_bitrate)
-    max_retries: int = 5,
-    sleep_between_retries: int = 3,
-) -> Tuple[bool, IPerfResponse]:
-    """
-    iperf command between an UE and a 5GC
-    """
-
-    for _ in range(max_retries):
-        try:
-            task, iperf_request = iperf_start(
-                ue_stub=ue_stub,
-                ue_attached_info=ue_attached_info,
-                fivegc=fivegc,
-                protocol=protocol,
-                direction=direction,
-                duration=iperf_duration,
-                bitrate=bitrate,
-                packet_length=packet_length,
-            )
-            sleep(iperf_duration)
-            iperf_success, iperf_data = iperf_wait_until_finish(
-                ue_attached_info=ue_attached_info,
-                fivegc=fivegc,
-                task=task,
-                iperf_request=iperf_request,
-                bitrate_threshold_ratio=bitrate_threshold_ratio,
-            )
-            if iperf_success:
-                return iperf_success, iperf_data
-        except grpc.RpcError as err:
-            logging.warning(
-                "Iperf %s [%s %s] failed due to %s",
-                ue_attached_info.ipv4,
-                _iperf_proto_to_str(protocol),
-                _iperf_dir_to_str(direction),
-                ErrorReportedByAgent(err),
-            )
-        sleep(sleep_between_retries)
-
-    return False, IPerfResponse()
-
-
-def iperf_start(
-    *,  # This enforces keyword-only arguments
-    ue_stub: UEStub,
-    ue_attached_info: UEAttachedInfo,
-    fivegc: FiveGCStub,
-    protocol: IPerfProto,
-    direction: IPerfDir,
-    duration: int,
-    bitrate: int,
-    packet_length: int = 0,
-) -> Tuple[grpc.Future, IPerfRequest]:
-    """
-    Start a Iperf and keep it running
-    """
-
-    iperf_request = IPerfRequest(
-        server=fivegc.StartIPerfService(StringValue(value=ue_attached_info.ipv4_gateway)),
-        duration=duration,
-        direction=direction,
-        proto=protocol,
-        bitrate=bitrate,
-        packet_length=packet_length,
-    )
-
-    # Run iperf
-    task: grpc.Future = ue_stub.IPerf.future(iperf_request)
-
-    logging.info(
-        "Iperf %s [%s %s] started",
-        ue_attached_info.ipv4,
-        _iperf_proto_to_str(protocol),
-        _iperf_dir_to_str(direction),
-    )
-
-    return (task, iperf_request)
-
-
-def iperf_wait_until_finish(
-    *,  # This enforces keyword-only arguments
-    ue_attached_info: UEAttachedInfo,
-    fivegc: FiveGCStub,
-    task: grpc.Future,
-    iperf_request: IPerfRequest,
-    bitrate_threshold_ratio: float = 0,  # real_bitrate > (bitrate_threshold_ratio * ideal_bitrate)
-) -> Tuple[bool, IPerfResponse]:
-    """
-    Wait until the requested iperf has finished.
-    """
-
-    # Stop server, get results and print it
-    try:
-        task.result()
-        iperf_data: IPerfResponse = fivegc.StopIPerfService(iperf_request.server)
-        logging.info(
-            "Iperf %s [%s %s]:\n%s",
-            ue_attached_info.ipv4,
-            _iperf_proto_to_str(iperf_request.proto),
-            _iperf_dir_to_str(iperf_request.direction),
-            MessageToString(iperf_data, indent=2),
-        )
-    except grpc.RpcError as err:
-        if ErrorReportedByAgent(err).code is grpc.StatusCode.UNAVAILABLE:
-            raise err from None
-        logging.warning(
-            "Iperf %s [%s %s] failed due to %s",
-            ue_attached_info.ipv4,
-            _iperf_proto_to_str(iperf_request.proto),
-            _iperf_dir_to_str(iperf_request.direction),
-            ErrorReportedByAgent(err),
-        )
-        return (False, IPerfResponse())
-
-    # Assertion
-    iperf_success = True
-    if (
-        iperf_request.direction in (IPerfDir.DOWNLINK, IPerfDir.BIDIRECTIONAL)
-        and iperf_data.downlink.bits_per_second <= bitrate_threshold_ratio * iperf_request.bitrate
-    ):
-        logging.warning(
-            "Downlink bitrate too low. Requested: %s - Measured: %s",
-            iperf_request.bitrate,
-            iperf_data.downlink.bits_per_second,
-        )
-        iperf_success = False
-    if (
-        iperf_request.direction in (IPerfDir.UPLINK, IPerfDir.BIDIRECTIONAL)
-        and iperf_data.uplink.bits_per_second <= bitrate_threshold_ratio * iperf_request.bitrate
-    ):
-        logging.warning(
-            "Uplink bitrate too low. Requested: %s - Measured: %s",
-            iperf_request.bitrate,
-            iperf_data.uplink.bits_per_second,
-        )
-        iperf_success = False
-    return (iperf_success, iperf_data)
-
-
-def _iperf_proto_to_str(proto):
-    return {IPerfProto.TCP: "tcp", IPerfProto.UDP: "udp"}[proto]
-
-
-def _iperf_dir_to_str(direction):
-    return {
-        IPerfDir.DOWNLINK: "downlink",
-        IPerfDir.UPLINK: "uplink",
-        IPerfDir.BIDIRECTIONAL: "bidirectional",
-    }[direction]
-
-
 def validate_ue_registered_via_ims(
     *, ue_stub_array: Sequence[UEStub], core: FiveGCStub  # The "*" enforces keyword-only arguments
 ) -> None:
@@ -858,22 +533,22 @@ def ric_validate_e2_interface(
 # pylint: disable=too-many-branches
 def stop(
     *,  # This enforces keyword-only arguments
-    ue_array: Sequence[UEStub],
+    ue_array: Sequence[UEClient],
     retina_data: RetinaTestData,
-    gnb_array: Optional[Sequence[GNBStub]] = None,
-    cu: Optional[CUStub] = None,
-    cu_cp_array: Optional[Sequence[CUCPStub]] = None,
-    cu_up_array: Optional[Sequence[CUUPStub]] = None,
-    du_array: Optional[Sequence[DUStub]] = None,
-    fivegc_array: Optional[Sequence[FiveGCStub]] = None,
+    gnb_array: Optional[Sequence[GNBClient]] = None,
+    cu: Optional[CUClient] = None,
+    cu_cp_array: Optional[Sequence[CUCPClient]] = None,
+    cu_up_array: Optional[Sequence[CUUPClient]] = None,
+    du_array: Optional[Sequence[DUClient]] = None,
+    fivegc_array: Optional[Sequence[FiveGCClient]] = None,
     ue_stop_timeout: int = 0,  # Auto
     gnb_stop_timeout: int = 0,
     fivegc_stop_timeout: int = 0,
     log_search: bool = True,
     warning_as_errors: bool = True,
     fail_if_kos: bool = False,
-    ric: Optional[NearRtRicStub] = None,
-    channel_emulator: Optional[ChannelEmulatorStub] = None,
+    ric: Optional[NearRtRicClient] = None,
+    channel_emulator: Optional[ChannelEmulatorClient] = None,
     stop_gnb_first: bool = False,
 ):
     """
@@ -997,14 +672,14 @@ def stop(
 
     if channel_emulator is not None:
         error_message, _ = _stop_stub(
-            stub=ric,
+            stub=channel_emulator,
             name="CHANNEL_EMULATOR",
             retina_data=retina_data,
             timeout=gnb_stop_timeout,
             log_search=log_search,
             warning_as_errors=warning_as_errors,
         )
-        logging.info("CHANNEL_EMULATOR [%s] stopped", id(ric))
+        logging.info("CHANNEL_EMULATOR [%s] stopped", id(channel_emulator))
         error_msg_array.append(error_message)
 
     # Fail if stop errors
@@ -1037,7 +712,7 @@ def stop(
 
 def ue_stop(
     *,  # This enforces keyword-only arguments
-    ue_array: Sequence[UEStub],
+    ue_array: Sequence[UEClient],
     retina_data: RetinaTestData,
     ue_stop_timeout: int = 0,  # Auto
     log_search: bool = True,
@@ -1067,7 +742,7 @@ def ue_stop(
 
 def _stop_stub(
     *,  # This enforces keyword-only arguments
-    stub: RanStub,
+    stub: RanClient,
     name: str,
     retina_data: RetinaTestData,
     timeout: int = 0,
@@ -1115,7 +790,7 @@ def _stop_stub(
 
 
 def _get_metrics_msg(
-    *, stub: RanStub, name: str, fail_if_kos: bool = False  # The "*" enforces keyword-only arguments
+    *, stub: RanClient, name: str, fail_if_kos: bool = False  # The "*" enforces keyword-only arguments
 ) -> str:
     if fail_if_kos:
         with suppress(grpc.RpcError):

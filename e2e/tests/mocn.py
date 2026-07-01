@@ -14,22 +14,19 @@ from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.criteria import CriteriaTable
 from retina.launcher.utils import configure_artifacts
+from retina.protocol import FiveGCClient, GNBClient, UEClient
 from retina.protocol.base_pb2 import Subscriber
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import GNBStub
 from retina.protocol.ue_pb2 import UEAttachedInfo
-from retina.protocol.ue_pb2_grpc import UEStub
 
 from .steps.configuration import set_config_files
 from .steps.stub import (
     fivegc_start,
     gnb_start,
-    ping_start,
-    ping_wait_until_finish,
     stop,
     ue_start,
 )
 from .steps.test_loader import load_tests, RetinaTestDefinition
+from .steps.traffic import ping_start, ping_wait_until_finish
 
 
 @load_tests
@@ -39,9 +36,9 @@ def test(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEStub,
-    gnb: GNBStub,
-    fivegc_multiple: Callable[[int], Tuple[FiveGCStub, ...]],
+    ue: UEClient,
+    gnb: GNBClient,
+    fivegc_multiple: Callable[[int], Tuple[FiveGCClient, ...]],
 ):
     """
     Multi Core Network Test

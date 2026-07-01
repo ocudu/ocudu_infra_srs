@@ -16,24 +16,22 @@ from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts, param
+from retina.protocol import FiveGCClient, GNBClient, UEClient
 from retina.protocol.base_pb2 import PLMN
 from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import GNBStub
-from retina.protocol.ue_pb2_grpc import UEStub
 
 from .steps.configuration import (
     configure_test_parameters,
     get_minimum_sample_rate_for_bandwidth,
 )
 from .steps.stub import (
-    ping,
     start_network,
     stop,
     ue_start_and_attach,
     ue_stop,
     validate_ue_registered_via_ims,
 )
+from .steps.traffic import ping
 
 
 @mark.parametrize(
@@ -55,9 +53,9 @@ from .steps.stub import (
 def test_android(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -102,9 +100,9 @@ def test_android(
 def test_android_ims(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -152,9 +150,9 @@ def test_android_ims(
 def test_android_hp(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -196,9 +194,9 @@ def test_android_hp(
 def test_android_drx(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -241,9 +239,9 @@ def test_android_drx(
 def test_android_no_drx(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -277,9 +275,9 @@ def test_android_no_drx(
 def test_example(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue_multiple: Callable[[int], Tuple[UEClient, ...]],
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
 ):
     """
     ZMQ Pings
@@ -306,9 +304,9 @@ def test_example(
 def test_example_srsue(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: Tuple[UEStub, ...],
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: Tuple[UEClient, ...],
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
 ):
     """
     ZMQ Pings
@@ -317,7 +315,7 @@ def test_example_srsue(
     _ping(
         retina_manager=retina_manager,
         retina_data=retina_data,
-        ue_array=(ue,),
+        ue_array=ue,
         gnb=gnb,
         fivegc=fivegc,
         band=3,
@@ -343,9 +341,9 @@ def test_example_srsue(
 def test_rf_does_not_crash(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_multiple: Callable[[int], Tuple[UEStub, ...]],
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue_multiple: Callable[[int], Tuple[UEClient, ...]],
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
@@ -380,9 +378,9 @@ def _ping(
     *,  # This enforces keyword-only arguments
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_array: Sequence[UEStub],
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue_array: Sequence[UEClient],
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,

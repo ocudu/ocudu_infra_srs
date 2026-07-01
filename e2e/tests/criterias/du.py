@@ -21,8 +21,8 @@ class dl_bitrate_gt(DuCriteria):
 
     operator_method = operator.gt
 
-    def callback(self):
-        return mean(s.GetMetrics(Empty()).aggregate.dl_bitrate for s in self._stub_array)
+    def callback(self) -> float:
+        return float(mean(s.GetMetrics(Empty()).aggregate.dl_bitrate for s in self._stub_array))
 
 
 class ul_bitrate_gt(DuCriteria):
@@ -30,8 +30,8 @@ class ul_bitrate_gt(DuCriteria):
 
     operator_method = operator.gt
 
-    def callback(self):
-        return mean(s.GetMetrics(Empty()).aggregate.ul_bitrate for s in self._stub_array)
+    def callback(self) -> float:
+        return float(mean(s.GetMetrics(Empty()).aggregate.ul_bitrate for s in self._stub_array))
 
 
 class nof_ko_dl_le(DuCriteria):
@@ -345,8 +345,8 @@ class dl_avg_ri_ge(DuCriteria):
 
     operator_method = operator.ge
 
-    def callback(self):
-        return mean(s.GetMetrics(Empty()).aggregate.dl_avg_ri for s in self._stub_array)
+    def callback(self) -> float:
+        return float(mean(s.GetMetrics(Empty()).aggregate.dl_avg_ri for s in self._stub_array))
 
 
 class ul_avg_ri_ge(DuCriteria):
@@ -354,22 +354,25 @@ class ul_avg_ri_ge(DuCriteria):
 
     operator_method = operator.ge
 
-    def callback(self):
-        return mean(s.GetMetrics(Empty()).aggregate.ul_avg_ri for s in self._stub_array)
+    def callback(self) -> float:
+        return float(mean(s.GetMetrics(Empty()).aggregate.ul_avg_ri for s in self._stub_array))
+
+
+def _all_gt(result: List[float], expected: List[float]) -> bool:
+    ">"
+    return all(a > b for a, b in zip(result, expected))
 
 
 class dl_ue_avg_bitrate(DuCriteria):
     """DL UE average bitrate"""
 
-    def operator_method(self, result: List[float], expected: List[float]) -> bool:
-        ">"
-        return all(a > b for a, b in zip(result, expected))
+    operator_method = _all_gt
 
     @property
     def expected(self):
         return [item["value"] for item in self._input]
 
-    def callback(self):
+    def callback(self) -> List[float]:
         du = self._stub_array[0]
         return [ue.dl_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
 
@@ -377,15 +380,13 @@ class dl_ue_avg_bitrate(DuCriteria):
 class ul_ue_avg_bitrate(DuCriteria):
     """UL UE average bitrate"""
 
-    def operator_method(self, result: List[float], expected: List[float]) -> bool:
-        ">"
-        return all(a > b for a, b in zip(result, expected))
+    operator_method = _all_gt
 
     @property
     def expected(self):
         return [item["value"] for item in self._input]
 
-    def callback(self):
+    def callback(self) -> List[float]:
         du = self._stub_array[0]
         return [ue.ul_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
 
@@ -393,15 +394,13 @@ class ul_ue_avg_bitrate(DuCriteria):
 class dl_ue_mid10_bitrate(DuCriteria):
     """DL UE mid-10 bitrate"""
 
-    def operator_method(self, result: List[float], expected: List[float]) -> bool:
-        ">"
-        return all(a > b for a, b in zip(result, expected))
+    operator_method = _all_gt
 
     @property
     def expected(self):
         return [item["value"] for item in self._input]
 
-    def callback(self):
+    def callback(self) -> List[float]:
         du = self._stub_array[0]
         return [ue.dl_av_mid10_samples for ue in du.GetMetrics(Empty()).ue_array]
 
@@ -409,15 +408,13 @@ class dl_ue_mid10_bitrate(DuCriteria):
 class ul_ue_mid10_bitrate(DuCriteria):
     """UL UE mid-10 bitrate"""
 
-    def operator_method(self, result: List[float], expected: List[float]) -> bool:
-        ">"
-        return all(a > b for a, b in zip(result, expected))
+    operator_method = _all_gt
 
     @property
     def expected(self):
         return [item["value"] for item in self._input]
 
-    def callback(self):
+    def callback(self) -> List[float]:
         du = self._stub_array[0]
         return [ue.ul_av_mid10_samples for ue in du.GetMetrics(Empty()).ue_array]
 
@@ -431,9 +428,9 @@ class pdsch_prbs_mid10_per_tdd_slot_mean(DuCriteria):
 
     operator_method = operator.ge
 
-    def callback(self):
+    def callback(self) -> float:
         du = self._stub_array[0]
-        return round(mean(du.GetMetrics(Empty()).du.pdsch_prbs_mid10_per_tdd_slot_idx), 1)
+        return float(round(mean(du.GetMetrics(Empty()).du.pdsch_prbs_mid10_per_tdd_slot_idx), 1))
 
 
 class pusch_prbs_mid10_per_tdd_slot_mean(DuCriteria):
@@ -441,9 +438,9 @@ class pusch_prbs_mid10_per_tdd_slot_mean(DuCriteria):
 
     operator_method = operator.ge
 
-    def callback(self):
+    def callback(self) -> float:
         du = self._stub_array[0]
-        return round(mean(du.GetMetrics(Empty()).du.pusch_prbs_mid10_per_tdd_slot_idx), 1)
+        return float(round(mean(du.GetMetrics(Empty()).du.pusch_prbs_mid10_per_tdd_slot_idx), 1))
 
 
 class nof_rlm_ssb_resources_ge(DuCriteria):

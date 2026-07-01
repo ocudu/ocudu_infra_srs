@@ -18,9 +18,9 @@ from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.criteria import CriteriaTable
 from retina.launcher.utils import configure_artifacts
+from retina.protocol import GNBClient
 from retina.protocol.base_pb2 import FiveGCDefinition, PLMN, StartInfo
 from retina.protocol.gnb_pb2 import GNBStartInfo
-from retina.protocol.gnb_pb2_grpc import GNBStub
 from retina.viavi.client import CampaignStatusEnum, Viavi
 
 from .steps.stub import _stop_stub, GNB_STARTUP_TIMEOUT, handle_start_error, stop
@@ -129,7 +129,7 @@ def test_viavi_manual(
     test_log_folder: str,
     criteria: CriteriaTable,
     # Clients
-    gnb: GNBStub,
+    gnb: GNBClient,
     viavi: Viavi,
     # Test info
     viavi_manual_campaign_filename: str,  # pylint: disable=redefined-outer-name
@@ -190,7 +190,7 @@ def test_viavi(
     test_log_folder: str,
     criteria: CriteriaTable,
     # Clients
-    gnb: GNBStub,
+    gnb: GNBClient,
     viavi: Viavi,
     # Test info
     test_declaration: _ViaviConfiguration,
@@ -230,7 +230,7 @@ def _test_viavi(
     test_log_folder: str,
     criteria: CriteriaTable,
     # Clients
-    gnb: GNBStub,
+    gnb: GNBClient,
     viavi: Viavi,
     # Test info
     test_declaration: _ViaviConfiguration,
@@ -341,7 +341,7 @@ def _test_viavi(
             report_folder = viavi.generate_report(campaign_name)
             logging.info("Folder with Viavi report: %s", report_folder)
             logging.info("Downloading Viavi report")
-            viavi.download_directory(report_folder, Path(test_log_folder).joinpath("viavi"))
+            viavi.download_directory(report_folder, str(Path(test_log_folder).joinpath("viavi")))
             _stop_stub(
                 stub=gnb,
                 name="GNB",

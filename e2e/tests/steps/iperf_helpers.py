@@ -99,7 +99,10 @@ fdd_dl_tcp = defaultdict(
 
 
 def get_maximum_throughput_tdd(
-    *, bandwidth: int, direction: IPerfDir, protocol: IPerfProto  # The "*" enforces keyword-only arguments
+    *,
+    bandwidth: int,
+    direction: "IPerfDir.ValueType",
+    protocol: "IPerfProto.ValueType",  # The "*" enforces keyword-only arguments
 ) -> int:
     """
     Get the maximum E2E TDD throughput for bandwidth, direction and transport protocol
@@ -118,7 +121,10 @@ def get_maximum_throughput_tdd(
 
 
 def get_maximum_throughput_fdd(
-    *, bandwidth: int, direction: IPerfDir, protocol: IPerfProto  # The "*" enforces keyword-only arguments
+    *,
+    bandwidth: int,
+    direction: "IPerfDir.ValueType",
+    protocol: "IPerfProto.ValueType",  # The "*" enforces keyword-only arguments
 ) -> int:
     """
     Get the maximum E2E FDD throughput for bandwidth, direction and transport protocol
@@ -137,7 +143,11 @@ def get_maximum_throughput_fdd(
 
 
 def get_maximum_throughput(
-    *, bandwidth: int, band: int, direction: IPerfDir, protocol: IPerfProto  # The "*" enforces keyword-only arguments
+    *,
+    bandwidth: int,
+    band: int,
+    direction: "IPerfDir.ValueType",
+    protocol: "IPerfProto.ValueType",  # The "*" enforces keyword-only arguments
 ) -> int:
     """
     Get the maximum E2E throughput for bandwidth, duplex-type, direction and transport protocol

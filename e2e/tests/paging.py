@@ -13,12 +13,11 @@ from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import param
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import GNBStub
-from retina.protocol.ue_pb2_grpc import UEStub
+from retina.protocol import FiveGCClient, GNBClient, UEClient
 
 from .steps.configuration import configure_test_parameters, get_minimum_sample_rate_for_bandwidth
-from .steps.stub import ping, ping_from_5gc, start_network, stop, ue_start_and_attach
+from .steps.stub import start_network, stop, ue_start_and_attach
+from .steps.traffic import ping, ping_from_5gc
 
 
 @mark.parametrize(
@@ -33,9 +32,9 @@ from .steps.stub import ping, ping_from_5gc, start_network, stop, ue_start_and_a
 def test_cots_paging(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,

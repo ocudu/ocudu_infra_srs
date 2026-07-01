@@ -50,7 +50,6 @@ geo_band_256_bw_5_fl_false_ping: &base_config
       semi_major_axis: 42265116.30346734
   core:
     config: [baseline.cfg]
-  feature_ids: [SRS]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0

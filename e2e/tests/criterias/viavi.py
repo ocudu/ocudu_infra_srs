@@ -44,5 +44,5 @@ class procedure_table_eq(ViaviCriteria):
 
     operator_method = operator.eq
 
-    def callback(self):
+    def callback(self) -> int:
         return self._stub_array.get_test_kpis().get_number_of_procedure_failures(["authentication"])

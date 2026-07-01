@@ -15,13 +15,15 @@ from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts, param
+from retina.protocol import (
+    ChannelEmulatorClient,
+    FiveGCClient,
+    GNBClient,
+    NearRtRicClient,
+    UEClient,
+)
 from retina.protocol.base_pb2 import Metrics, PLMN
-from retina.protocol.channel_emulator_pb2_grpc import ChannelEmulatorStub
-from retina.protocol.fivegc_pb2_grpc import FiveGCStub
-from retina.protocol.gnb_pb2_grpc import GNBStub
-from retina.protocol.ric_pb2_grpc import NearRtRicStub
 from retina.protocol.ue_pb2 import IPerfDir, IPerfProto
-from retina.protocol.ue_pb2_grpc import UEStub
 
 from .steps.configuration import (
     configure_test_parameters,
@@ -36,7 +38,6 @@ from .steps.iperf_helpers import (
 )
 from .steps.stub import (
     INTER_UE_START_PERIOD,
-    iperf_parallel,
     ric_validate_e2_interface,
     start_and_attach,
     start_kpm_mon_xapp,
@@ -46,6 +47,7 @@ from .steps.stub import (
     stop_rc_xapp,
     UE_STARTUP_TIMEOUT,
 )
+from .steps.traffic import iperf_parallel
 
 
 @mark.parametrize(
@@ -72,14 +74,14 @@ from .steps.stub import (
 def test_srsue(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
-    protocol: IPerfProto,
-    direction: IPerfDir,
+    protocol: "IPerfProto.ValueType",
+    direction: "IPerfDir.ValueType",
 ):
     """
     ZMQ IPerfs
@@ -126,15 +128,15 @@ def test_srsue(
 def test_ric(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
-    ric: NearRtRicStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
+    ric: NearRtRicClient,
     band: int,
     common_scs: int,
     bandwidth: int,
-    protocol: IPerfProto,
-    direction: IPerfDir,
+    protocol: "IPerfProto.ValueType",
+    direction: "IPerfDir.ValueType",
 ):
     """
     ZMQ IPerfs
@@ -192,14 +194,14 @@ def test_ric(
 def test_android(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
-    protocol: IPerfProto,
-    direction: IPerfDir,
+    protocol: "IPerfProto.ValueType",
+    direction: "IPerfDir.ValueType",
 ):
     """
     Android IPerfs
@@ -243,14 +245,14 @@ def test_android(
 def test_android_interleaving(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
-    protocol: IPerfProto,
-    direction: IPerfDir,
+    protocol: "IPerfProto.ValueType",
+    direction: "IPerfDir.ValueType",
 ):
     """
     Android IPerfs Interleaving
@@ -305,14 +307,14 @@ def test_android_interleaving(
 def test_android_hp(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEStub,  # pylint: disable=invalid-name
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue: UEClient,  # pylint: disable=invalid-name
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
-    protocol: IPerfProto,
-    direction: IPerfDir,
+    protocol: "IPerfProto.ValueType",
+    direction: "IPerfDir.ValueType",
 ):
     """
     Android high performance IPerfs
@@ -345,17 +347,17 @@ def _iperf(
     *,  # This enforces keyword-only arguments
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue_array: Sequence[UEStub],
-    fivegc: FiveGCStub,
-    gnb: GNBStub,
+    ue_array: Sequence[UEClient],
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
     band: int,
     common_scs: int,
     bandwidth: int,
     sample_rate: Optional[int],
     iperf_duration: int,
     bitrate: int,
-    protocol: IPerfProto,
-    direction: IPerfDir,
+    protocol: "IPerfProto.ValueType",
+    direction: "IPerfDir.ValueType",
     global_timing_advance: int,
     time_alignment_calibration: Union[int, str],
     always_download_artifacts: bool,
@@ -374,11 +376,11 @@ def _iperf(
     pdsch_mcs_table: str = "qam256",
     pusch_mcs_table: str = "qam256",
     inter_ue_start_period=INTER_UE_START_PERIOD,
-    ric: Optional[NearRtRicStub] = None,
+    ric: Optional[NearRtRicClient] = None,
     assess_bitrate: bool = False,
     stop_gnb_first: bool = False,
     packet_length: int = 0,
-    channel_emulator: Optional[ChannelEmulatorStub] = None,
+    channel_emulator: Optional[ChannelEmulatorClient] = None,
     min_dl_bitrate: float = 0,
     min_ul_bitrate: float = 0,
     pdsch_interleaving_bundle_size: int = 0,
