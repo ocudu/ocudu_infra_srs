@@ -568,7 +568,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                 # Save metrics from ue_get
                 self._parse_metrics(context_peer, response)
 
-            for ue_info in response["ue_list"]:
+            for ue_info in response.get("ue_list", ()):
                 if ue_info["ue_id"] == subscriber_id:
                     yield {**ue_info, "message_id": response["message_id"]}
 
