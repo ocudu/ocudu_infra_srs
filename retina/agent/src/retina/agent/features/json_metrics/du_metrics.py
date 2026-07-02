@@ -47,6 +47,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
         self._pusch_csis: Dict[int, int] = {}
         self._pusch_harqs: Dict[int, int] = {}
         self._pci: Dict[int, int] = {}
+        self._bsr_mov_av: Dict[int, MovingAverage] = {}
+        self._bsr_max: Dict[int, int] = {}
 
         # Aggregate time-weighted bitrate/RI (time-weighted average of per-record sum)
         self._agg_time_first: Optional[datetime.datetime] = None
@@ -82,6 +84,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
             self._pusch_csis[rnti] = 0
             self._pusch_harqs[rnti] = 0
             self._pci[rnti] = pci
+            self._bsr_mov_av[rnti] = MovingAverage(50)
+            self._bsr_max[rnti] = 0
 
     def _handle_events(self, cell_info: dict) -> None:
         for rnti in list(self._reports_since_last_ue_event):
@@ -227,6 +231,9 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
 
                 self._nof_ko_dl[rnti] += ue_info["dl_nof_nok"]
                 self._nof_ko_ul[rnti] += ue_info["ul_nof_nok"]
+                bsr = ue_info.get("bsr", 0)
+                self._bsr_mov_av[rnti].add(bsr)
+                self._bsr_max[rnti] = max(self._bsr_max[rnti], bsr)
                 self._dl_max_mcs[rnti] = max(self._dl_max_mcs[rnti], ue_info.get("dl_mcs", 0))
                 self._ul_max_mcs[rnti] = max(self._ul_max_mcs[rnti], ue_info.get("ul_mcs", 0))
 
@@ -277,6 +284,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
                     ul_av_30_samples=ul30,
                     dl_av_mid10_samples=dl_mid10,
                     ul_av_mid10_samples=ul_mid10,
+                    bsr_avg=self._bsr_mov_av[rnti].get_average(),
+                    bsr_max=self._bsr_max.get(rnti, 0),
                     nof_ko_dl=self._nof_ko_dl.get(rnti, 0),
                     nof_ko_ul=self._nof_ko_ul.get(rnti, 0),
                     nof_pucch_f0f1_invalid_harqs=self._pucch_f0f1.get(rnti, 0),

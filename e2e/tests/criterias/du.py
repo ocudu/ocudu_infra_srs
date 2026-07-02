@@ -443,6 +443,25 @@ class pusch_prbs_mid10_per_tdd_slot_mean(DuCriteria):
         return float(round(mean(du.GetMetrics(Empty()).du.pusch_prbs_mid10_per_tdd_slot_idx), 1))
 
 
+class ue_bsr_max_le(DuCriteria):
+    """UE BSR MAX less than"""
+
+    def operator_method(self, result: List[float], expected) -> bool:
+        "<"
+        exp = expected if isinstance(expected, list) else [expected] * len(result)
+        return all(a < b for a, b in zip(result, exp))
+
+    @property
+    def expected(self):
+        if isinstance(self._input, list):
+            return [item["value"] for item in self._input]
+        return self._input
+
+    def callback(self):
+        du = self._stub_array[0]
+        return [ue.bsr_max for ue in du.GetMetrics(Empty()).ue_array]
+
+
 class nof_rlm_ssb_resources_ge(DuCriteria):
     """RLM SSB Resources"""
 

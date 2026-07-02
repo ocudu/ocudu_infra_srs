@@ -190,6 +190,10 @@ message UeMetrics {
   // Average of 10 middle samples (all collected samples sorted, extremes trimmed)
   double dl_av_mid10_samples = 27;
   double ul_av_mid10_samples = 28;
+
+  // BSR (Buffer Status Report)
+  double bsr_avg = 29;
+  uint32 bsr_max = 30;
 };
 
 message DuMetrics {

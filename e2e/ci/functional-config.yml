@@ -166,6 +166,17 @@ cmas:
     KEYWORDS: "functional.singleue.cmas."
     TESTBED: dynamic
 
+drb_triggered_ul_grant:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "functional.singleue.drb_triggered_ul_grant."
+    TESTBED: dynamic
+
 fdd_siso:
   stage: singleue
   extends: .functional_e2e
