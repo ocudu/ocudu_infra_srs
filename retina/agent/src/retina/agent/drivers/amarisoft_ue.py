@@ -615,6 +615,7 @@ class LocalAmarisoftUe(AmarisoftUe):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs, executor=LocalExecutor())
+        testbed_defaults.api_address = testbed_defaults.ip
 
 
 class RemoteAmarisoftUe(AmarisoftUe):

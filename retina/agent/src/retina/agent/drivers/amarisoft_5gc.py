@@ -365,6 +365,7 @@ class LocalAmarisoft5gc(_AmarisoftMme):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs, executor=LocalExecutor())
+        testbed_defaults.api_address = testbed_defaults.ip
 
 
 class RemoteAmarisoft5gc(Amarisoft5gc):
