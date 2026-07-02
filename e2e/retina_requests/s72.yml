@@ -35,6 +35,7 @@
       limits: 2Gi
     ephemeral-storage:
       requests: 15G
+  ip_back_source: backhaul
   resources:
     - type: ru
       model: s72-ocudu
@@ -50,6 +51,7 @@
 - name: amarisoft-mme
   type: 5gc
   image: ${RETINA_REGISTRY_URI}/amarisoft5gc:${AMARISOFT_VERSION}_${RETINA_VERSION}
+  ip_back_source: backhaul
   requirements:
     cpu:
       requests: 20%
