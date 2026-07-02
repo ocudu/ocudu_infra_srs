@@ -26,7 +26,7 @@ qos:
       integrity_required: false
       tx:
         sn: 12
-        discard_timer: -1
+        discard_timer: 100
         status_report_required: false
       rx:
         sn: 12
@@ -51,7 +51,7 @@ qos:
       integrity_required: false
       tx:
         sn: 12
-        discard_timer: -1
+        discard_timer: 150
         status_report_required: false
       rx:
         sn: 12
@@ -81,7 +81,7 @@ qos:
       integrity_required: false
       tx:
         sn: 12
-        discard_timer: -1
+        discard_timer: 100
         status_report_required: false
       rx:
         sn: 12
@@ -106,7 +106,7 @@ qos:
       integrity_required: false
       tx:
         sn: 12
-        discard_timer: -1
+        discard_timer: 1500
         status_report_required: false
       rx:
         sn: 12
@@ -136,7 +136,7 @@ qos:
       integrity_required: false
       tx:
         sn: 12
-        discard_timer: -1
+        discard_timer: 1500
         status_report_required: false
       rx:
         sn: 12
@@ -168,7 +168,7 @@ qos:
     pdcp:
       tx:
         sn: 18
-        discard_timer: -1
+        discard_timer: 1500
         status_report_required: false
       rx:
         sn: 18
@@ -185,7 +185,7 @@ qos:
     pdcp:
       tx:
         sn: 18
-        discard_timer: -1
+        discard_timer: 1500
         status_report_required: false
       rx:
         sn: 18
