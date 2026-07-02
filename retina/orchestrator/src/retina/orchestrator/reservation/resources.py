@@ -950,12 +950,14 @@ class RequestReservation:
                 return True
         return False
 
-    def get_enable_network_connection(self) -> str:
+    def get_enable_network_connection(self, k_server: Kubernetes) -> bool:
         """
         Get enable network connection
         """
         if self.enable_host_network_force:
-            return self.enable_host_network_force
+            return bool(self.enable_host_network_force)
+        if self.get_backhaul_ip(k_server):
+            return True
         for resource in self.reserved_resources.get_resources():
             if (
                 isinstance(resource, NodeResource)
@@ -963,8 +965,8 @@ class RequestReservation:
                 and resource.capacity > 0
                 and resource.connection in [ConnectionType.NETWORK, ConnectionType.PCI]
             ):
-                return "InternalIP"
-        return ""
+                return True
+        return False
 
     def get_node_name(self, k_server: Kubernetes) -> str:
         """

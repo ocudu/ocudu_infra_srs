@@ -522,7 +522,7 @@ class Kubernetes(KubernetesManager):
         # Base Pod manifest
         manifest: Dict[str, Any] = {
             "terminationGracePeriodSeconds": int(config.grace_period),
-            "hostNetwork": bool(config.enable_network_connection),
+            "hostNetwork": config.enable_network_connection,
             "dnsPolicy": config.dns_policy,
             "containers": [
                 {

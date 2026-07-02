@@ -43,7 +43,7 @@ class PodConfig(RetinaBaseConfig):
     node_name: Optional[str]
     enable_usb_connection: bool
     enable_pci_connection: bool
-    enable_network_connection: str
+    enable_network_connection: bool
     environment: List[Dict]
     command: Optional[List[str]]
     not_finite_execution: Optional[bool]
