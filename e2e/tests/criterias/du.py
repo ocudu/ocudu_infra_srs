@@ -363,6 +363,12 @@ def _all_gt(result: List[float], expected: List[float]) -> bool:
     return all(a > b for a, b in zip(result, expected))
 
 
+def _all_lt(result: List[float], expected) -> bool:
+    "<"
+    exp = expected if isinstance(expected, list) else [expected] * len(result)
+    return all(a < b for a, b in zip(result, exp))
+
+
 class dl_ue_avg_bitrate(DuCriteria):
     """DL UE average bitrate"""
 
@@ -446,16 +452,7 @@ class pusch_prbs_mid10_per_tdd_slot_mean(DuCriteria):
 class ue_bsr_max_le(DuCriteria):
     """UE BSR MAX less than"""
 
-    def operator_method(self, result: List[float], expected) -> bool:
-        "<"
-        exp = expected if isinstance(expected, list) else [expected] * len(result)
-        return all(a < b for a, b in zip(result, exp))
-
-    @property
-    def expected(self):
-        if isinstance(self._input, list):
-            return [item["value"] for item in self._input]
-        return self._input
+    operator_method = _all_lt
 
     def callback(self):
         du = self._stub_array[0]
