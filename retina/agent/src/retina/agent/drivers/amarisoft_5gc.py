@@ -259,17 +259,16 @@ class _AmarisoftIms(FiveGCDriver, AmarisoftBaseDriver):
 
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         if self._websocket is not None:
-            with suppress(AttributeError):
-                impi_subscriber_set = {
-                    f"{subscriber.imsi}@ims.mnc0{self._plmn.mnc}.mcc{self._plmn.mcc}.3gppnetwork.org"
-                    for subscriber in self._subscriber_array
-                }
-                nof_nas_registered = sum(
-                    1
-                    for user in self._websocket.send_command_and_wait_response(message="users_get").get("users", ())
-                    if user.get("impi") in impi_subscriber_set
-                )
-                self._metrics = Metrics(core=CoreMetrics(nof_ims_nas_registered_ue=nof_nas_registered))
+            impi_subscriber_set = {
+                f"{subscriber.imsi}@ims.mnc0{self._plmn.mnc}.mcc{self._plmn.mcc}.3gppnetwork.org"
+                for subscriber in self._subscriber_array
+            }
+            nof_nas_registered = sum(
+                1
+                for user in self._websocket.send_command_and_wait_response(message="users_get").get("users", ())
+                if user.get("impi") in impi_subscriber_set
+            )
+            self._metrics = Metrics(core=CoreMetrics(nof_ims_nas_registered_ue=nof_nas_registered))
             self._websocket.quit()
         return super().Stop(request, context)
 

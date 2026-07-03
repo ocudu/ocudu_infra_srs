@@ -50,7 +50,7 @@ _DIR_DEFAULTS_FILES = {
 _RENDER_INJECTED_VARS = {
     "gnb": {"utc_timestamp", "neighbor_cucp_definition", "fivegc_definition"},
     "ue": {"utc_timestamp", "cell_ru_cfg", "start_time", "subscriber_array"},
-    "core": {"utc_timestamp"},
+    "core": {"utc_timestamp", "subnet_prefix"},
 }
 
 # Config file extension required per component directory.

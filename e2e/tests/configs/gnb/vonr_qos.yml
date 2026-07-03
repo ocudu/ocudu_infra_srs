@@ -63,6 +63,38 @@ qos:
           sn: 12
           t-reassembly: 50
   -
+    # 5QI = 5 e.g IMS signaling
+    # PDB = 100ms PER = 10^-6
+    five_qi: 5
+    pdcp:
+      tx:
+        sn: 18
+        discard_timer: 100
+        status_report_required: false
+      rx:
+        sn: 18
+        t_reordering: 500
+        out_of_order_delivery: false
+    f1u_cu_up:
+      backoff_timer: 5
+    f1u_du:
+      backoff_timer: 5
+    rlc:
+      mode: am
+      am:
+        tx:
+          sn: 18
+          t-poll-retransmit: 80
+          max-retx-threshold: 4
+          poll-pdu: 64
+          poll-byte: 125
+          queue-size: 16384
+          queue-bytes: 6172672
+        rx:
+          sn: 18
+          t-reassembly: 80
+          t-status-prohibit: 10
+  -
     # 5QI = 9 e.g Video (Buffered Streaming)
     # PDB = 300ms PER = 10^-6
     five_qi: 9
