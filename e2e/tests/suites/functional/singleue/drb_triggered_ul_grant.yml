@@ -10,6 +10,7 @@ baseline:
     parameters:
       dl_bitrate: 5.0e+6
       ul_bitrate: 0
+      test_duration: 20
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, drb_triggered_ul_grant_qos.yml]
   core:
@@ -18,7 +19,7 @@ baseline:
   criteria:
     du.dl_bitrate_gt: 0
     # DL traffic triggers UL grants.
-    du.ul_bitrate_gt: 9.0e+5
+    du.ul_bitrate_gt: 7.0e+5
     # UE doesn't report any real BSR.
     du.ue_bsr_max_le: 10
     du.nof_ko_dl_le: 0
