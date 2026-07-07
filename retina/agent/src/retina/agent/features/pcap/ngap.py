@@ -113,3 +113,46 @@ class TrpInformationResponseAnalyzer(PcapAnalyzer):
 
     def report(self) -> Metrics:
         return Metrics(cu_cp=CuCpMetrics(nof_trp_information_response=self._count))
+
+
+class WriteReplaceWarningRequestAnalyzer(PcapAnalyzer):
+    """
+    Counts NGAP Write-Replace Warning Request messages.
+
+    Sent by the core (AMF) to trigger a PWS (ETWS/CMAS) broadcast at the gNB.
+    tshark display filter: ngap.WriteReplaceWarningRequest_element
+    """
+
+    def __init__(self) -> None:
+        self._count = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "ngap.WriteReplaceWarningRequest_element"
+
+    def process(self, _) -> None:
+        self._count += 1
+
+    def report(self) -> Metrics:
+        return Metrics(cu_cp=CuCpMetrics(nof_write_replace_warning_request=self._count))
+
+
+class WriteReplaceWarningResponseAnalyzer(PcapAnalyzer):
+    """
+    Counts NGAP Write-Replace Warning Response messages.
+
+    tshark display filter: ngap.WriteReplaceWarningResponse_element
+    """
+
+    def __init__(self) -> None:
+        self._count = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "ngap.WriteReplaceWarningResponse_element"
+
+    def process(self, _) -> None:
+        self._count += 1
+
+    def report(self) -> Metrics:
+        return Metrics(cu_cp=CuCpMetrics(nof_write_replace_warning_response=self._count))

@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  sib:
+    si_window_length: 40
+    si_sched_info:
+      - si_period: 64
+        sib_mapping: 6
+      - si_period: 64
+        sib_mapping: 7
+      - si_period: 64
+        sib_mapping: 8

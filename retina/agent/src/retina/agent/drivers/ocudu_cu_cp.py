@@ -38,6 +38,8 @@ from retina.agent.features.pcap.ngap import (
     ECidMeasurementReportAnalyzer,
     TrpInformationRequestAnalyzer,
     TrpInformationResponseAnalyzer,
+    WriteReplaceWarningRequestAnalyzer,
+    WriteReplaceWarningResponseAnalyzer,
 )
 from retina.agent.features.pcap.xnap import (
     HandoverRequestAcknowledgeAnalyzer,
@@ -53,6 +55,8 @@ _NGAP_PCAP_ANALYZER_ARRAY = (
     ECidMeasurementReportAnalyzer,
     TrpInformationRequestAnalyzer,
     TrpInformationResponseAnalyzer,
+    WriteReplaceWarningRequestAnalyzer,
+    WriteReplaceWarningResponseAnalyzer,
 )
 _XNAP_PCAP_ANALYZER_ARRAY = (
     HandoverRequestAcknowledgeAnalyzer,
