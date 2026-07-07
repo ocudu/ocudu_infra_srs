@@ -177,6 +177,17 @@ drb_triggered_ul_grant:
     KEYWORDS: "functional.singleue.drb_triggered_ul_grant."
     TESTBED: dynamic
 
+emergency_call:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "functional.singleue.emergency_call."
+    TESTBED: dynamic
+
 fdd_siso:
   stage: singleue
   extends: .functional_e2e

@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Emergency call test (functional scope of O-RAN TIFG E2E-Test TC 8.7).
+# While the UE has an ongoing non-emergency session, it places an emergency call
+# (e.g. dialing 911/112). Verifies that the network establishes the priority
+# emergency PDN connection (highest ARP, may-trigger-pre-emption) on top of the
+# already active default bearer, without disrupting the ongoing traffic.
+# Note: TC 8.7 is a Load and Stress test that requires overloading the SUT with
+# many UEs; this functional variant checks correct emergency bearer establishment
+# and priority handling with a single UE and light background traffic.
+baseline:
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, emergency_call.cfg]
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, vonr_qos.yml]
+  core:
+    config: [baseline.cfg]
+  feature_ids: []
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_reestablishments_eq: 0
+    du.nof_error_indications_le: 0
+    core.nof_pdu_session_establishment_accept_eq: 2
+    cu_cp.nof_5qi_5_drb_configured_ge: 1
+    all.errors_le: 0
+    all.warnings_le: 0
