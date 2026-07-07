@@ -74,10 +74,11 @@ class PrachConfigIndexAnalyzer(PcapAnalyzer):
 
 class SibAnalyzer(PcapAnalyzer):
     """
-    Counts transmissions of SIB1-SIB5, SIB8, SIB16 and SIB19 in a MAC-NR capture.
+    Counts transmissions of SIB1-SIB8, SIB16 and SIB19 in a MAC-NR capture.
 
     Each SIB is carried inside a SystemInformation message. The per-SIB count
-    is available via sib_count(n) after analysis.
+    is available via sib_count(n) after analysis. SIB6 and SIB7 carry the ETWS
+    primary and secondary notifications respectively; SIB8 carries CMAS.
     tshark display filters: nr-rrc.sib2_element, nr-rrc.sib16_v1700_element, ...
     """
 
@@ -89,6 +90,8 @@ class SibAnalyzer(PcapAnalyzer):
         3: "sib3",
         4: "sib4",
         5: "sib5",
+        6: "sib6",
+        7: "sib7",
         8: "sib8",
         16: "sib16_v1700",
         19: "sib19_v1700",
@@ -125,6 +128,8 @@ class SibAnalyzer(PcapAnalyzer):
                 nof_sib3_transmissions=self._counts[3],
                 nof_sib4_transmissions=self._counts[4],
                 nof_sib5_transmissions=self._counts[5],
+                nof_sib6_transmissions=self._counts[6],
+                nof_sib7_transmissions=self._counts[7],
                 nof_sib8_transmissions=self._counts[8],
                 nof_sib16_transmissions=self._counts[16],
                 nof_sib19_transmissions=self._counts[19],

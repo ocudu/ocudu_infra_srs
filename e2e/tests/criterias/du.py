@@ -292,6 +292,24 @@ class nof_sib4_ge(DuCriteria):
 # nof_sib5_transmissions supported in retina but not used in any test criterion
 
 
+class nof_sib6_ge(DuCriteria):
+    """SIB6 (ETWS primary notification) Transmissions"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_sib6_transmissions for s in self._stub_array)
+
+
+class nof_sib7_ge(DuCriteria):
+    """SIB7 (ETWS secondary notification) Transmissions"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_sib7_transmissions for s in self._stub_array)
+
+
 class nof_sib8_ge(DuCriteria):
     """SIB8 Transmissions"""
 

@@ -219,6 +219,9 @@ message DuMetrics {
 
   uint32 nof_rlm_ssb_resources    = 25;
   uint32 nof_rlm_csi_rs_resources = 26;
+
+  uint32 nof_sib6_transmissions = 29; // ETWS primary notification
+  uint32 nof_sib7_transmissions = 30; // ETWS secondary notification
 };
 
 message CoreMetrics {

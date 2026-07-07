@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  sib:
+    si_window_length: 20
+    si_sched_info:
+      - si_period: 16
+        sib_mapping: 6
+      - si_period: 16
+        sib_mapping: 7
+    etws:
+      message_id: 0x1104       # ETWS CBS ID for other emergency types.
+      serial_num: 0x3000
+      warning_type: 0x0980     # Other warning type, user alert, popup
+      data_coding_scheme: 0x48 # 16-bit UCS-2 text encoding
+      warning_message: "ETWS message"
+  pdcch:
+    common:
+      ss1_n_candidates: [0, 0, 2, 0, 0]
