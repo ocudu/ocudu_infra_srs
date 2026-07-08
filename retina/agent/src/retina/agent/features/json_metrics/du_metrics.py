@@ -21,9 +21,18 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
     bitrate/RI, cumulative KOs and PUCCH (with event-based exclusion).
 
     Aggregate bitrate/RI: time-weighted average of the per-record total, preserving
-    correct multi-UE semantics.  KOs and PUCCH are derived from per-RNTI sums at
-    report() time.
+    correct multi-UE semantics.  The averaging window is gated on traffic activity
+    (see _agg_active_brate_fraction) so that idle records before the first / after
+    the last traffic do not reduce the measured throughput. KOs and PUCCH are
+    derived from per-RNTI sums at report() time.
     """
+
+    # A record counts towards the aggregate bitrate window only while traffic is
+    # active, i.e. its total DL or UL bitrate is above this fraction of the peak
+    # seen so far in that direction. This keeps ramp-up / tail partial-second
+    # samples in the window but drops post-traffic idle records (UE detached, gNB
+    # still emitting metrics).
+    _agg_active_brate_fraction = 0.01
 
     def __init__(self) -> None:
         # Per-RNTI state
@@ -57,6 +66,8 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
         self._agg_ul_bitrate: float = 0.0
         self._agg_dl_ri: float = 0.0
         self._agg_ul_ri: float = 0.0
+        self._agg_peak_dl: float = 0.0
+        self._agg_peak_ul: float = 0.0
 
         # PUCCH event exclusion (shared, called once per cell)
         self._reports_since_last_ue_event: Dict[int, int] = {}
@@ -207,11 +218,6 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
 
             ue_list = cell_info.get("ue_list", [])
 
-            if ue_list and self._agg_time_first is None and timestamp is not None:
-                if self._agg_time_last is None:
-                    self._agg_time_last = timestamp
-                self._agg_time_first = self._agg_time_last
-
             for ue_info in ue_list:
                 rnti = ue_info["rnti"]
                 self._init_rnti(rnti, pci)
@@ -259,9 +265,17 @@ class DuMetricsAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instan
             self._prev_ue_list = ue_list
 
         if timestamp is not None:
-            self._update_agg_bitrate(timestamp, total_dl_brate, total_ul_brate)
-            self._update_agg_ri(timestamp, total_dl_ri, total_dl_ri_count, total_ul_ri, total_ul_ri_count)
-            self._agg_time_last = timestamp
+            self._agg_peak_dl = max(self._agg_peak_dl, total_dl_brate)
+            self._agg_peak_ul = max(self._agg_peak_ul, total_ul_brate)
+            dl_active = total_dl_brate > self._agg_peak_dl * self._agg_active_brate_fraction
+            ul_active = total_ul_brate > self._agg_peak_ul * self._agg_active_brate_fraction
+            if dl_active or ul_active:
+                if self._agg_time_first is None:
+                    self._agg_time_first = timestamp
+                    self._agg_time_last = timestamp
+                self._update_agg_bitrate(timestamp, total_dl_brate, total_ul_brate)
+                self._update_agg_ri(timestamp, total_dl_ri, total_dl_ri_count, total_ul_ri, total_ul_ri_count)
+                self._agg_time_last = timestamp
 
     def report(self) -> Metrics:
         metrics = Metrics()

@@ -532,7 +532,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
     @property
     def _warning_regex(self) -> str:
-        return r"^.*Warning(?!.*unused property)(?!.*CPU hyperthreading is enabled).*$"
+        return r"^.*Warning(?!.*unused property)(?!.*CPU hyperthreading is enabled)(?!.*s72 timestamp rollback on).*$"
 
     @property
     def _error_regex(self) -> str:

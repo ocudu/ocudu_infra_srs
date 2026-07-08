@@ -7,8 +7,8 @@ Unit tests for DU JSON metrics analyzers: DuMetricsAnalyzer and DuCellAnalyzer.
 
 import unittest
 
-from retina.agent.features.json_metrics.du_cell import DuCellAnalyzer
 from retina.agent.features.json_metrics.analyzer import MovingAverage as _MovingAverage
+from retina.agent.features.json_metrics.du_cell import DuCellAnalyzer
 from retina.agent.features.json_metrics.du_metrics import DuMetricsAnalyzer
 
 # ── Timestamps ────────────────────────────────────────────────────────────────
@@ -291,36 +291,57 @@ class TestDuMetricsAnalyzerBitrate(unittest.TestCase):
         )
         self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 500.0)
 
-    def test_bitrate_empty_at_start_and_end(self):
-        # Empty metrics - this one is ignored
+    def test_bitrate_active_window_ignores_leading_and_trailing_idle(self):
+        # Idle records (no traffic) before the first and after the last active
+        # record must not enter the aggregate window: the window opens at the
+        # first active record and stops advancing once traffic ceases.
+
+        # Empty metrics before any traffic - ignored, window not opened.
         self.a.process(make_record(_T0, [make_cell(ue_list=[])]))
         self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 0)
 
-        # Empty metrics - This will be the start time to calculate the bitrate (because the next report is not empty)
+        # Still idle - window stays closed.
         self.a.process(make_record(_T1, [make_cell(ue_list=[])]))
         self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 0)
 
-        # First record with values - Start time to calculate the bitrate is previous report (T1)
+        # First active record - window opens here (not at the earlier idle records).
         self.a.process(
             make_record(_T3, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=50.0)])])
         )
         self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 50.0)
 
-        # Second record - ((T3-T1)*50 + (T4-T3)*500) / (T4-T1) = 600/3 = 200
+        # Second active record - t_old=0 on the second sample, so it replaces the first.
         self.a.process(
             make_record(_T4, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=500.0)])])
         )
-        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 200.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 500.0)
 
-        # Third record - ((T3-T1)*50 + (T4-T3) * 500) / (T5-T1) = 1200/4 = 300
+        # Third active record - (500×(T4-T3) + 600×(T5-T4)) / (T5-T3) = 1100/2 = 550
         self.a.process(
             make_record(_T5, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=600.0)])])
         )
-        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 300.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 550.0)
 
-        # Empty record at the end - NOT ignored - ((T3-T1)*50 + (T4-T3) * 500) / (T6-T1) = 1200/5 = 240
+        # Empty record at the end - IGNORED: the window is not extended into idle,
+        # so the measured throughput stays at the last active value (was 240 before
+        # the active-window gating, which diluted with the trailing idle second).
         self.a.process(make_record(_T6, [make_cell(ue_list=[])]))
-        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 240.0)
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 550.0)
+
+    def test_bitrate_near_zero_residual_trailing_record_is_excluded(self):
+        # A trailing record carrying a tiny residual (< _AGG_ACTIVE_BRATE_FRACTION
+        # of the peak) is treated as idle and must not extend the window.
+        self.a.process(
+            make_record(_T0, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=1000.0)])])
+        )
+        self.a.process(
+            make_record(_T1, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=1000.0)])])
+        )
+        # Residual of 1.0 is 0.1% of the 1000.0 peak -> below the 1% floor -> excluded.
+        self.a.process(
+            make_record(_T2, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_brate=1.0)])])
+        )
+        self.assertAlmostEqual(self.a.report().aggregate.dl_bitrate, 1000.0)
 
     def test_bitrate_zero_when_only_cell_metrics_no_ue_list(self):
         self.a.process(make_record(_T0, [make_cell(cell_metrics=make_cell_metrics())]))
@@ -780,7 +801,9 @@ class TestDuMetricsAnalyzerMaxMcs(unittest.TestCase):
     def test_max_tracked_across_records(self):
         for ts, dl, ul in ((_T0, 20, 25), (_T1, 27, 22), (_T2, 15, 27)):
             self.a.process(
-                make_record(ts, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_mcs=dl, ul_mcs=ul)])])
+                make_record(
+                    ts, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1, dl_mcs=dl, ul_mcs=ul)])]
+                )
             )
         m = self.a.report()
         ue = next(u for u in m.ue_array if u.rnti == 1)
@@ -812,9 +835,7 @@ class TestDuMetricsAnalyzerMaxMcs(unittest.TestCase):
         self.assertEqual(m.aggregate.ul_max_mcs, 24)
 
     def test_missing_mcs_field_defaults_to_zero(self):
-        self.a.process(
-            make_record(_T0, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1)])])
-        )
+        self.a.process(make_record(_T0, [make_cell(cell_metrics=make_cell_metrics(), ue_list=[make_ue(1)])]))
         m = self.a.report()
         ue = next(u for u in m.ue_array if u.rnti == 1)
         self.assertEqual(ue.dl_max_mcs, 0)
