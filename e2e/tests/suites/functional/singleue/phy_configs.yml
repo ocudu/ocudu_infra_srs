@@ -154,7 +154,7 @@ srs_aperiodic:
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
-    du.c_srs_eq: 60
+    du.c_srs_eq: 61
 
 # SRS Wideband configuration test
 srs_wideband:
