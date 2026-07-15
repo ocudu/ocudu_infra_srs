@@ -5,7 +5,6 @@
 OCUDU CU Agent
 """
 
-import logging
 from typing import Any, Dict, Optional, Sequence
 
 import grpc
@@ -130,17 +129,11 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
 
             # Wait until CU has started
             if not request.start_info.dryrun:
-                try:
-                    self.read_from_log(
-                        (r"==== CU started ===",),
-                        True,
-                        timeout=request.start_info.timeout if request.start_info.timeout else self.CU_START_UP_TIMEOUT,
-                    )
-                except TimeoutError as err:
-                    logging.warning("Timeout reached while looking for CU starting reference.")
-                    if not self._is_alive:
-                        with notify_grpc_exception(context):
-                            raise err from None
+                self.read_from_log(
+                    (r"==== CU started ===",),
+                    True,
+                    timeout=request.start_info.timeout if request.start_info.timeout else self.CU_START_UP_TIMEOUT,
+                )
 
         return Empty()
 

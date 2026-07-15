@@ -252,18 +252,12 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
 
             # Wait for DU to start
             if not request.start_info.dryrun:
-                try:
-                    self.read_from_log(
-                        (r"==== DU started ===",),
-                        True,
-                        timeout=request.start_info.timeout if request.start_info.timeout else self.DU_START_UP_TIMEOUT,
-                    )
-                    sleep(self.DU_EXTRA_SLEEP_AFTER_START)
-                except TimeoutError as err:
-                    logging.warning("Timeout reached while looking for DU starting reference.")
-                    if not self._is_alive:
-                        with notify_grpc_exception(context):
-                            raise err from None
+                self.read_from_log(
+                    (r"==== DU started ===",),
+                    True,
+                    timeout=request.start_info.timeout if request.start_info.timeout else self.DU_START_UP_TIMEOUT,
+                )
+                sleep(self.DU_EXTRA_SLEEP_AFTER_START)
 
                 self.start_listening_metrics()
 

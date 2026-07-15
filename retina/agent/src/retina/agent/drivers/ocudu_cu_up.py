@@ -5,7 +5,6 @@
 OCUDU CU-UP Agent
 """
 
-import logging
 import socket
 from typing import Any, Dict, Sequence
 
@@ -126,19 +125,11 @@ class OcuduCuUp(CUUPDriver, BaseDriverSutHandler):
             )
 
             if not request.start_info.dryrun:
-                try:
-                    self.read_from_log(
-                        (r"==== CU-UP started ===",),
-                        True,
-                        timeout=(
-                            request.start_info.timeout if request.start_info.timeout else self.CUUP_START_UP_TIMEOUT
-                        ),
-                    )
-                except TimeoutError as err:
-                    logging.warning("Timeout reached while looking for CU-UP starting reference.")
-                    if not self._is_alive:
-                        with notify_grpc_exception(context):
-                            raise err from None
+                self.read_from_log(
+                    (r"==== CU-UP started ===",),
+                    True,
+                    timeout=(request.start_info.timeout if request.start_info.timeout else self.CUUP_START_UP_TIMEOUT),
+                )
 
         return Empty()
 

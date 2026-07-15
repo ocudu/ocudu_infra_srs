@@ -186,18 +186,12 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
                 # There is no good way to check if the gnb has already started.
                 # We look for those lines in the log during some timeout.
                 # If not found, we check if it's still alive
-                try:
-                    self.read_from_log(
-                        (r"==== gNB started ===",),
-                        True,
-                        timeout=request.start_info.timeout if request.start_info.timeout else self.GNB_START_UP_TIMEOUT,
-                    )
-                    sleep(self.GNB_EXTRA_SLEEP_AFTER_START)
-                except TimeoutError as err:
-                    logging.warning("Timeout reached while looking for GNB starting reference.")
-                    if not self._is_alive:
-                        with notify_grpc_exception(context):
-                            raise err from None
+                self.read_from_log(
+                    (r"==== gNB started ===",),
+                    True,
+                    timeout=request.start_info.timeout if request.start_info.timeout else self.GNB_START_UP_TIMEOUT,
+                )
+                sleep(self.GNB_EXTRA_SLEEP_AFTER_START)
 
                 self._du.start_listening_metrics()
                 self._cu.reset_pcap_metrics()

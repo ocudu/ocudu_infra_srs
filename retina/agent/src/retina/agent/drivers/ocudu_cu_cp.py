@@ -5,7 +5,6 @@
 OCUDU CU-CP Agent
 """
 
-import logging
 from pathlib import Path
 from typing import Any, Dict, Optional, Sequence, Tuple
 
@@ -170,19 +169,11 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
             )
 
             if not request.start_info.dryrun:
-                try:
-                    self.read_from_log(
-                        (r"==== CU-CP started ===",),
-                        True,
-                        timeout=(
-                            request.start_info.timeout if request.start_info.timeout else self.CUCP_START_UP_TIMEOUT
-                        ),
-                    )
-                except TimeoutError as err:
-                    logging.warning("Timeout reached while looking for CU-CP starting reference.")
-                    if not self._is_alive:
-                        with notify_grpc_exception(context):
-                            raise err from None
+                self.read_from_log(
+                    (r"==== CU-CP started ===",),
+                    True,
+                    timeout=(request.start_info.timeout if request.start_info.timeout else self.CUCP_START_UP_TIMEOUT),
+                )
 
         return Empty()
 
