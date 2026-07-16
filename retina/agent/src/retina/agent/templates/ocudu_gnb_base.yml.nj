@@ -25,6 +25,9 @@ log:
   rlc_level: {{log_rlc_level}}
   {%- endif %}
   config_level: debug
+  {%- if flush_app_banner %}
+  flush_app_banner: true
+  {%- endif %}
 
 metrics:
   enable_log: true

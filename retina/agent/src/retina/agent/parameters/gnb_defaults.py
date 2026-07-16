@@ -90,6 +90,7 @@ pucch_formats: str = "f1_and_f2"
 request_pdu_session_timeout: int = -1
 rrc_procedure_guard_time_ms: int = -1
 pdsch_interleaving_bundle_size: int = 0
+flush_app_banner: bool = True
 
 
 class SliceInfo(TypedDict, total=False):
