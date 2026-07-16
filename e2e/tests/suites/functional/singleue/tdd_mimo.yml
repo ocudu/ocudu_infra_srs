@@ -81,3 +81,40 @@ mimo_4x4:
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
+
+# TDD MIMO 8x8 configuration test (max 4 layers, single codeword)
+mimo_8x8_4_layers_1_cw:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      nof_antennas_dl: 8
+      nof_antennas_ul: 8
+      nr_max_mimo_layers_dl: 4
+      nr_max_mimo_layers_ul: 4
+      pdcch_decode_threshold: 0
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, pucch_8ant.yml]
+    parameters:
+      nof_antennas_dl: 8
+      nof_antennas_ul: 8
+  feature_ids: [MVP-FUNC-PHY-16-5, MVP-FUNC-PHY-16-9]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.dl_avg_ri_ge: 1.5
+    du.ul_avg_ri_ge: 1.5
+    du.nof_reestablishments_request_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.nof_pucch_f0f1_invalid_harqs_le: 0
+    du.nof_pucch_f2f3f4_invalid_harqs_le: 0
+    du.nof_pucch_f2f3f4_invalid_csis_le: 0
+    du.nof_pusch_invalid_harqs_le: 0
+    du.nof_pusch_invalid_csis_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0

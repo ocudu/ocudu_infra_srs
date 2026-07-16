@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# With 8 DL antennas the CSI report (RI + PMI + CQI over 8 CSI-RS ports) is larger,
+# so PUCCH Format 2 must carry at least 13 bits. The default 1-RB F2 resource tops out
+# below that, so widen it to 2 RBs (see du_high_config_validator PUCCH payload check).
+cell_cfg:
+  pucch:
+    f2_max_nof_rbs: 2
