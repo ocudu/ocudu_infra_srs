@@ -53,6 +53,10 @@ cell_position_offset: Tuple[float, float, float] = (1000, 0, 0)
 pdcch_log: bool = False
 pdcch_decode_opt_threshold: float = 0
 ue_sds: List[str] = []
+# Opt-in: registers for the pws_msg async event. Kept off by default so a bug
+# in that (newer, less exercised) dispatch path can't cause a hard-to-debug
+# failure in tests that have nothing to do with PWS.
+pws_events: bool = False
 
 # UE
 apn: str = "internet"

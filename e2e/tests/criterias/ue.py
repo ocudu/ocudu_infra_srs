@@ -38,3 +38,21 @@ class nof_pdu_session_establishment_accept_eq(UeCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).core.nof_pdu_session_establishment_accept for s in self._stub_array)
+
+
+class nof_etws_msg_received_ge(UeCriteria):
+    """ETWS Secondary Message Received"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_etws_msg_received for s in self._stub_array)
+
+
+class nof_cmas_msg_received_ge(UeCriteria):
+    """CMAS Message Received"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_cmas_msg_received for s in self._stub_array)

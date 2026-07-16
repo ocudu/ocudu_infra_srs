@@ -15,6 +15,7 @@ etws:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
+      pws_events: true
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, etws.yml, mac_pcap.yml]
   core:
@@ -32,6 +33,7 @@ etws:
     all.warnings_le: 0
     du.nof_sib6_ge: 1
     du.nof_sib7_ge: 1
+    ue.nof_etws_msg_received_ge: 1
 
 # Static ETWS and CMAS test
 etws_cmas:
@@ -43,6 +45,7 @@ etws_cmas:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 2
+      pws_events: true
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, etws_cmas.yml, mac_pcap.yml]
   core:
@@ -59,6 +62,8 @@ etws_cmas:
     all.errors_le: 0
     all.warnings_le: 0
     du.nof_sib8_ge: 1
+    ue.nof_etws_msg_received_ge: 1
+    ue.nof_cmas_msg_received_ge: 1
 
 
 # ETWS test, triggered live from the core (functional scope of O-RAN TIFG
@@ -76,6 +81,7 @@ etws_mme_triggered:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 30
+      pws_events: true
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, sib678.yml, mac_pcap.yml]
   core:
@@ -95,6 +101,7 @@ etws_mme_triggered:
     cu_cp.nof_write_replace_warning_response_ge: 1
     du.nof_sib6_ge: 1
     du.nof_sib7_ge: 1
+    ue.nof_etws_msg_received_ge: 1
 
 # ETWS test, triggered live from the core (functional scope of O-RAN TIFG
 # E2E-Test TC 8.8), instead of statically configuring the warning content at
@@ -111,6 +118,7 @@ etws_mme_triggered_long:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
       test_duration: 30
+      pws_events: true
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, sib678.yml, mac_pcap.yml]
   core:
@@ -130,3 +138,4 @@ etws_mme_triggered_long:
     cu_cp.nof_write_replace_warning_response_ge: 1
     du.nof_sib6_ge: 1
     du.nof_sib7_ge: 1
+    ue.nof_etws_msg_received_ge: 1

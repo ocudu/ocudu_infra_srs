@@ -182,6 +182,10 @@ message UeMetrics {
   // BSR (Buffer Status Report)
   double bsr_avg = 29;
   uint32 bsr_max = 30;
+
+  // Async PWS (ETWS secondary / CMAS) receptions, from the UE's own pws_msg event
+  uint32 nof_etws_msg_received = 31;
+  uint32 nof_cmas_msg_received = 32;
 };
 
 message DuMetrics {

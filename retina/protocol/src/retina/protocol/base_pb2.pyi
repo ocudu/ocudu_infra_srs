@@ -435,6 +435,8 @@ class UeMetrics(google.protobuf.message.Message):
     UL_AV_MID10_SAMPLES_FIELD_NUMBER: builtins.int
     BSR_AVG_FIELD_NUMBER: builtins.int
     BSR_MAX_FIELD_NUMBER: builtins.int
+    NOF_ETWS_MSG_RECEIVED_FIELD_NUMBER: builtins.int
+    NOF_CMAS_MSG_RECEIVED_FIELD_NUMBER: builtins.int
     rnti: builtins.int
     """UE identification"""
     pci: builtins.int
@@ -475,6 +477,9 @@ class UeMetrics(google.protobuf.message.Message):
     bsr_avg: builtins.float
     """BSR (Buffer Status Report)"""
     bsr_max: builtins.int
+    nof_etws_msg_received: builtins.int
+    """Async PWS (ETWS secondary / CMAS) receptions, from the UE's own pws_msg event"""
+    nof_cmas_msg_received: builtins.int
     def __init__(
         self,
         *,
@@ -508,8 +513,10 @@ class UeMetrics(google.protobuf.message.Message):
         ul_av_mid10_samples: builtins.float = ...,
         bsr_avg: builtins.float = ...,
         bsr_max: builtins.int = ...,
+        nof_etws_msg_received: builtins.int = ...,
+        nof_cmas_msg_received: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["bsr_avg", b"bsr_avg", "bsr_max", b"bsr_max", "dl_av_15_samples", b"dl_av_15_samples", "dl_av_30_samples", b"dl_av_30_samples", "dl_av_5_samples", b"dl_av_5_samples", "dl_av_mid10_samples", b"dl_av_mid10_samples", "dl_avg_ri", b"dl_avg_ri", "dl_bitrate", b"dl_bitrate", "dl_max_mcs", b"dl_max_mcs", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_pusch_invalid_csis", b"nof_pusch_invalid_csis", "nof_pusch_invalid_harqs", b"nof_pusch_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_rrc_resume_complete", b"nof_rrc_resume_complete", "nof_rrc_suspend", b"nof_rrc_suspend", "pci", b"pci", "rnti", b"rnti", "ul_av_15_samples", b"ul_av_15_samples", "ul_av_30_samples", b"ul_av_30_samples", "ul_av_5_samples", b"ul_av_5_samples", "ul_av_mid10_samples", b"ul_av_mid10_samples", "ul_avg_ri", b"ul_avg_ri", "ul_bitrate", b"ul_bitrate", "ul_max_mcs", b"ul_max_mcs"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["bsr_avg", b"bsr_avg", "bsr_max", b"bsr_max", "dl_av_15_samples", b"dl_av_15_samples", "dl_av_30_samples", b"dl_av_30_samples", "dl_av_5_samples", b"dl_av_5_samples", "dl_av_mid10_samples", b"dl_av_mid10_samples", "dl_avg_ri", b"dl_avg_ri", "dl_bitrate", b"dl_bitrate", "dl_max_mcs", b"dl_max_mcs", "nof_cmas_msg_received", b"nof_cmas_msg_received", "nof_etws_msg_received", b"nof_etws_msg_received", "nof_handovers", b"nof_handovers", "nof_ko_dl", b"nof_ko_dl", "nof_ko_ul", b"nof_ko_ul", "nof_pucch_f0f1_invalid_harqs", b"nof_pucch_f0f1_invalid_harqs", "nof_pucch_f2f3f4_invalid_csis", b"nof_pucch_f2f3f4_invalid_csis", "nof_pucch_f2f3f4_invalid_harqs", b"nof_pucch_f2f3f4_invalid_harqs", "nof_pusch_invalid_csis", b"nof_pusch_invalid_csis", "nof_pusch_invalid_harqs", b"nof_pusch_invalid_harqs", "nof_reestablishments_complete", b"nof_reestablishments_complete", "nof_reestablishments_request", b"nof_reestablishments_request", "nof_rrc_resume_complete", b"nof_rrc_resume_complete", "nof_rrc_suspend", b"nof_rrc_suspend", "pci", b"pci", "rnti", b"rnti", "ul_av_15_samples", b"ul_av_15_samples", "ul_av_30_samples", b"ul_av_30_samples", "ul_av_5_samples", b"ul_av_5_samples", "ul_av_mid10_samples", b"ul_av_mid10_samples", "ul_avg_ri", b"ul_avg_ri", "ul_bitrate", b"ul_bitrate", "ul_max_mcs", b"ul_max_mcs"]) -> None: ...
 
 Global___UeMetrics: typing_extensions.TypeAlias = UeMetrics
 

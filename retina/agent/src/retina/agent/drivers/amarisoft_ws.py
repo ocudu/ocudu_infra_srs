@@ -12,9 +12,9 @@ from abc import ABCMeta, abstractmethod
 from contextlib import suppress
 from pathlib import Path
 from queue import Queue
-from threading import Thread
+from threading import Lock, Thread
 from time import sleep
-from typing import Dict, Optional
+from typing import Any, Callable, Dict, NamedTuple, Optional
 
 import websocket
 
@@ -22,6 +22,11 @@ from retina.agent.features.sut_handler import BaseDriverSutHandler
 from retina.agent.parameters import testbed_defaults
 from retina.agent.tools.threading import join_thread
 from retina.agent.tools.time import TimeoutHandler
+
+
+class _EventHandler(NamedTuple):
+    matcher: Callable[[Dict], bool]
+    key_fn: Callable[[Dict], Any]
 
 
 class AmarisoftBaseDriver(BaseDriverSutHandler, metaclass=ABCMeta):
@@ -124,6 +129,23 @@ class AmarisoftWebSocket:
         self._queue_dict: Dict[int, Queue[Dict]] = {}
         self._msg_id_counter: int = 0
 
+        # Async/unsolicited event counters, populated as they arrive on the
+        # socket rather than in response to a specific request. Distinct from
+        # _queue_dict: an event's own "message_id" is a domain value (e.g. the
+        # 3GPP PWS Message Identifier), not a request-correlation ID, so it
+        # must never be routed through the message_id-keyed reply queues.
+        # Events aren't self-identifying (unlike command replies, which echo
+        # the command name as a string in "message", an event's own "message"
+        # field holds its payload instead - e.g. pws_msg's is the decoded
+        # warning-text array) so each registered event needs its own matcher
+        # predicate to recognize its shape. Counts are further broken down by
+        # a caller-supplied key (e.g. (ue_id, message_id)) so callers can
+        # attribute occurrences to a specific UE/message rather than only a
+        # global total.
+        self._event_counts: Dict[str, Dict[Any, int]] = {}
+        self._event_handlers: Dict[str, _EventHandler] = {}
+        self._event_lock = Lock()
+
         # Parse Startup message
         response = self._read_message()
         if response.get("message", "") != "ready":
@@ -131,6 +153,37 @@ class AmarisoftWebSocket:
 
         self._read_thread = Thread(target=self._read)
         self._read_thread.start()
+
+    def register_event(self, event_name: str, matcher: Callable[[Dict], bool], key_fn: Callable[[Dict], Any]) -> None:
+        """
+        Subscribe to an async/unsolicited event type (e.g. "pws_msg") and start
+        counting its occurrences, retrievable via event_count()/event_counts().
+        `matcher` decides whether an incoming message is an instance of this
+        event - events don't carry a self-identifying type tag, so this must
+        be based on the event's own distinctive shape (see the pws_msg example
+        caller). `key_fn` extracts a hashable key (e.g. (ue_id, message_id))
+        from a matched message, so occurrences can be attributed rather than
+        only totalled.
+        """
+        with self._event_lock:
+            self._event_counts.setdefault(event_name, {})
+            self._event_handlers[event_name] = _EventHandler(matcher, key_fn)
+        self.send_command_and_wait_response(message="register", register=event_name)
+
+    def event_count(self, event_name: str, key: Any = None) -> int:
+        """
+        Return how many times a registered event has been received. With
+        `key` (as produced by that event's key_fn), return the count for that
+        key only; otherwise the total across all keys.
+        """
+        with self._event_lock:
+            counts = self._event_counts.get(event_name, {})
+            return counts.get(key, 0) if key is not None else sum(counts.values())
+
+    def event_counts(self, event_name: str) -> Dict[Any, int]:
+        """Return a copy of the per-key counts for a registered event."""
+        with self._event_lock:
+            return dict(self._event_counts.get(event_name, {}))
 
     def _send_command(self, **kwargs) -> int:
         """
@@ -169,10 +222,24 @@ class AmarisoftWebSocket:
         while self._ws.connected:
             with suppress(websocket.WebSocketConnectionClosedException, OSError):
                 msg = self._read_message()
-                if msg:
-                    with suppress(KeyError):
-                        # Send msg to waiting queue, if exists
-                        self._queue_dict[int(msg["message_id"])].put(msg)
+                if not msg:
+                    continue
+                if self._count_if_event(msg):
+                    continue
+                with suppress(KeyError):
+                    # Send msg to waiting queue, if exists
+                    self._queue_dict[int(msg["message_id"])].put(msg)
+
+    def _count_if_event(self, msg: Dict) -> bool:
+        """If msg matches a registered async event, tally it and return True."""
+        with self._event_lock:
+            for event_name, handler in self._event_handlers.items():
+                if handler.matcher(msg):
+                    key = handler.key_fn(msg)
+                    counts = self._event_counts[event_name]
+                    counts[key] = counts.get(key, 0) + 1
+                    return True
+            return False
 
     def _wait_response_with_id(self, message_id: int, timeout: Optional[float] = None) -> Dict:
         """

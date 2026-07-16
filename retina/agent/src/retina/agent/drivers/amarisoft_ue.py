@@ -76,6 +76,10 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     AMARISOFT_UE_INFO_WAIT: float = 0.6
     AMARISOFT_ATTACH_WAIT: float = 4
     AMARISOFT_WAIT_BETWEEN_TRAFFIC_AND_STOP: int = 20
+    AMARISOFT_PWS_MSG_EVENT: str = "pws_msg"
+    # 3GPP TS 23.041 table 9.4.1.2.2-1: ETWS message identifiers end at 0x1104
+    # (0x1105-0x1111 reserved); CMAS/EU-Alert/KPAS identifiers start at 0x1112.
+    AMARISOFT_CMAS_MESSAGE_ID_THRESHOLD: int = 0x1112
     _METRICS_ENCODING: str = "utf-8"
 
     def __init__(self, *args, **kwargs) -> None:
@@ -88,6 +92,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         self._metrics_lock: Lock = Lock()
         self._ue_analyzer: AmarisoftUeMetricsAnalyzer = AmarisoftUeMetricsAnalyzer()
         self._peer_ue_ids: Dict[str, Set[Tuple[int, int]]] = {}  # peer -> set of (rnti, pci)
+        # message_id -> count, snapshotted at Stop() (like the "stats" aggregate is)
+        self._pws_msg_counts_snapshot: Dict[int, int] = {}
 
     def _get_binary_name(self) -> str:
         return "lteue"
@@ -296,6 +302,18 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     return self._start_unlock(request, context)
             try:
                 self._websocket = AmarisoftWebSocket()
+                if ue_defaults.pws_events:
+                    # pws_msg events aren't self-identifying: "message" holds
+                    # the decoded warning-text array (not the string
+                    # "pws_msg"), and "message_id"/"serial_number" are the
+                    # 3GPP PWS Message Identifier/Serial Number, not
+                    # request-correlation IDs. Match on that distinctive
+                    # shape instead.
+                    self._websocket.register_event(
+                        self.AMARISOFT_PWS_MSG_EVENT,
+                        matcher=lambda msg: "serial_number" in msg and isinstance(msg.get("message"), list),
+                        key_fn=lambda msg: (msg.get("ue_id"), msg.get("message_id")),
+                    )
             except (ConnectionRefusedError, ConnectionResetError) as err:
                 raise ChildProcessError("Process has died") from err
 
@@ -462,6 +480,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         if self._process is not None and self._websocket is not None:
             sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
             self._get_stats()
+            self._pws_msg_counts_snapshot = self._pws_msg_counts_by_id(subscriber_id=None)
             self._websocket.quit()
             # Close metrics file
             with open(
@@ -600,11 +619,37 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         self._ue_analyzer.process(stats)
         return stats
 
+    def _pws_msg_counts_by_id(self, subscriber_id: Optional[int]) -> Dict[int, int]:
+        """
+        Per-message-id pws_msg counts from the live websocket, summed across
+        UEs matching `subscriber_id` (or all UEs if None).
+        """
+        counts: Dict[int, int] = {}
+        if self._websocket is None:
+            return counts
+        for (ue_id, message_id), count in self._websocket.event_counts(self.AMARISOFT_PWS_MSG_EVENT).items():
+            if subscriber_id is not None and ue_id != subscriber_id:
+                continue
+            counts[message_id] = counts.get(message_id, 0) + count
+        return counts
+
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         metrics = super().GetMetrics(request, context)
         peer = context.peer()
         ue_ids = self._peer_ue_ids.get(peer) if peer in self._subscriber_client_dict else None
         metrics.MergeFrom(self._ue_analyzer.report(ue_ids))
+        if peer in self._subscriber_client_dict:
+            pws_counts = self._pws_msg_counts_by_id(self._subscriber_client_dict[peer].subscriber_id)
+        else:
+            # Stop() already cleared _subscriber_client_dict, so per-UE
+            # attribution is gone; fall back to the snapshot taken at Stop()
+            # time, same as the "stats"-derived aggregate above does.
+            pws_counts = self._pws_msg_counts_snapshot
+        for message_id, count in pws_counts.items():
+            if message_id < self.AMARISOFT_CMAS_MESSAGE_ID_THRESHOLD:
+                metrics.aggregate.nof_etws_msg_received += count
+            else:
+                metrics.aggregate.nof_cmas_msg_received += count
         return metrics
 
 
