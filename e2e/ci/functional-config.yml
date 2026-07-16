@@ -155,17 +155,6 @@ bandwiths:
     KEYWORDS: "functional.singleue.bandwiths."
     TESTBED: dynamic
 
-cmas:
-  stage: singleue
-  extends: .functional_e2e
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - when: manual
-      allow_failure: true
-  variables:
-    KEYWORDS: "functional.singleue.cmas."
-    TESTBED: dynamic
-
 drb_triggered_ul_grant:
   stage: singleue
   extends: .functional_e2e
@@ -263,6 +252,17 @@ power_control:
       allow_failure: true
   variables:
     KEYWORDS: "functional.singleue.power_control."
+    TESTBED: dynamic
+
+pws:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "functional.singleue.pws."
     TESTBED: dynamic
 
 security:

@@ -311,7 +311,7 @@ class nof_sib7_ge(DuCriteria):
 
 
 class nof_sib8_ge(DuCriteria):
-    """SIB8 Transmissions"""
+    """SIB8 (CMAS) Transmissions"""
 
     operator_method = operator.ge
 
