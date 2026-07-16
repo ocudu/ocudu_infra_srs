@@ -95,3 +95,38 @@ etws_mme_triggered:
     cu_cp.nof_write_replace_warning_response_ge: 1
     du.nof_sib6_ge: 1
     du.nof_sib7_ge: 1
+
+# ETWS test, triggered live from the core (functional scope of O-RAN TIFG
+# E2E-Test TC 8.8), instead of statically configuring the warning content at
+# the gNB. Mid-session, the AMF sends a Write-Replace Warning Request over
+# NGAP (pws_write sim_event on the pre-configured pws_msgs entry in
+# pws_trigger.cfg), as a real Cell Broadcast Centre would; the gNB acks it
+# over NGAP and is expected to broadcast SIB6/SIB7 with that content.
+etws_mme_triggered_long:
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_bi.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      test_duration: 30
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, sib678.yml, mac_pcap.yml]
+  core:
+    config: [baseline.cfg, pws_trigger_long.cfg]
+  feature_ids: []
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    cu_cp.nof_write_replace_warning_request_ge: 1
+    cu_cp.nof_write_replace_warning_response_ge: 1
+    du.nof_sib6_ge: 1
+    du.nof_sib7_ge: 1
