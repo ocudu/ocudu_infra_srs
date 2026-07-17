@@ -254,3 +254,111 @@ geo_fl_false_harq_disabled_iperf:
     du.nof_ko_ul_le: 530 # UL KOs related to deregistration/release
     ue.nof_ko_ul_le: 530 # UL KOs related to deregistration/release
     core.nof_pdu_session_establishment_accept_eq: 1
+
+leo_band_256_bw_10_scs_30_fl_false_iperf:
+  <<: *base_config
+  ue:
+    config: [1cell_ntn.cfg, udp_multiue.cfg]
+    parameters:
+      <<: *base_radio_parameters
+      <<: *base_ue_parameters
+      <<: *base_ue_traffic_parameters
+      common_scs: 30
+      bandwidth: 10
+      sample_rate: 11520000
+      satellite: leo
+      feeder_link: false
+      gp_latitude: 7.853110757
+      gp_longitude: -96.817254023
+      gp_altitude: 1
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml, cu_cp_ntn_mobility.yml]
+    parameters:
+      <<: *base_radio_parameters
+      <<: *base_gnb_parameters
+      <<: *base_gnb_iperf_parameters
+      common_scs: 30
+      bandwidth: 10
+      sample_rate: 11520000
+      feeder_link: false
+      dl_harq_disabled: false
+      ul_harq_disabled: false
+      cell_specific_koffset: 8
+      ta_meas_slot_prohibit_period: 18
+      eccentricity: 0.00119596362232265
+      inclination: 0.9295784053909042
+      longitude: 4.50199405531991
+      mean_anomaly: 5.4284631240150425
+      periapsis: 0.8582607015966518
+      semi_major_axis: 6877288.14614692
+  core:
+    config: [baseline.cfg]
+  criteria:
+    du.dl_bitrate_gt: 1.0e+6
+    du.ul_bitrate_gt: 1.0e+6
+    du.nof_reestablishments_request_eq: 0
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.nof_ko_dl_le: 20
+    ue.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 70 # UL KOs related to deregistration/release
+    ue.nof_ko_ul_le: 70 # UL KOs related to deregistration/release
+    core.nof_pdu_session_establishment_accept_eq: 1
+
+leo_band_256_bw_10_scs_30_fl_true_iperf:
+  <<: *base_config
+  ue:
+    config: [1cell_ntn.cfg, udp_multiue.cfg]
+    parameters:
+      <<: *base_radio_parameters
+      <<: *base_ue_parameters
+      <<: *base_ue_traffic_parameters
+      common_scs: 30
+      bandwidth: 10
+      sample_rate: 11520000
+      satellite: leo
+      feeder_link: true
+      gp_latitude: 7.853127064
+      gp_longitude: -41.916586438
+      gp_altitude: 1
+      fp_latitude: 7.853127064
+      fp_longitude: -41.916586438
+      fp_altitude: 1
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml, cu_cp_ntn_mobility.yml]
+    parameters:
+      <<: *base_radio_parameters
+      <<: *base_gnb_parameters
+      <<: *base_gnb_iperf_parameters
+      common_scs: 30
+      bandwidth: 10
+      sample_rate: 11520000
+      feeder_link: true
+      dl_harq_disabled: false
+      ul_harq_disabled: false
+      cell_specific_koffset: 16
+      ta_meas_slot_prohibit_period: 26
+      gw_altitude: 1.0
+      gw_latitude: 7.853127063969279
+      gw_longitude: -41.916586438365854
+      eccentricity: 0.0011959639962285152
+      inclination: 0.9295784053900794
+      longitude: 5.460191249899703
+      mean_anomaly: 5.428463205785937
+      periapsis: 0.8582609750544351
+      semi_major_axis: 6877288.146136846
+  core:
+    config: [baseline.cfg]
+  criteria:
+    du.dl_bitrate_gt: 1.0e+6
+    du.ul_bitrate_gt: 1.0e+6
+    du.nof_reestablishments_request_eq: 0
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.nof_ko_dl_le: 20
+    ue.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 70 # UL KOs related to deregistration/release
+    ue.nof_ko_ul_le: 70 # UL KOs related to deregistration/release
+    core.nof_pdu_session_establishment_accept_eq: 1
