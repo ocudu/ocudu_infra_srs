@@ -24,6 +24,8 @@ from .steps.configuration import (
     get_minimum_sample_rate_for_bandwidth,
 )
 from .steps.stub import (
+    GNB_STARTUP_TIMEOUT,
+    RF_MAX_TIMEOUT,
     start_network,
     stop,
     ue_start_and_attach,
@@ -368,6 +370,7 @@ def test_rf_does_not_crash(
             time_alignment_calibration="264",
             log_search=False,
             always_download_artifacts=True,
+            gnb_startup_timeout=RF_MAX_TIMEOUT,
         )
     stop(ue_array=ue_4, gnb_array=[gnb], fivegc_array=[fivegc], retina_data=retina_data, log_search=False)
 
@@ -408,6 +411,7 @@ def _ping(
     rx_to_tx_latency: int = -1,
     pdcch_log: bool = False,
     warning_allowlist: Optional[List[str]] = None,
+    gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
 ):
     logging.info("Ping Test")
 
@@ -443,6 +447,7 @@ def _ping(
         ue_array=ue_array,
         gnb_array=[gnb],
         fivegc_array=[fivegc],
+        gnb_startup_timeout=gnb_startup_timeout,
         gnb_pre_cmd=pre_command,
         gnb_post_cmd=post_command,
         plmn=plmn,
