@@ -344,24 +344,44 @@ class ResumeCompleteAnalyzer(PcapAnalyzer):
 
 class ReestablishmentAnalyzer(PcapAnalyzer):
     """
-    Counts RRC Reestablishment complete.
+    Counts RRC Reestablishment requests and completions.
 
+    - UL CCCH RRCReestablishmentRequest (nr-rrc.rrcReestablishmentRequest_element)
     - UL DCCH RRCReestablishmentComplete (nr-rrc.rrcReestablishmentComplete_element)
 
     """
 
     def __init__(self) -> None:
+        self._request_count = 0
         self._completion_count = 0
 
     @property
     def display_filter(self) -> str:
-        return "nr-rrc.rrcReestablishmentComplete_element"
+        return "nr-rrc.rrcReestablishmentRequest_element || nr-rrc.rrcReestablishmentComplete_element"
 
     def process(self, packet) -> None:
-        self._completion_count += 1
+        try:
+            layer = _rrc_layer(packet)
+        except KeyError:
+            return
+        try:
+            getattr(layer, "nr_rrc_rrcreestablishmentrequest_element")
+            self._request_count += 1
+        except AttributeError:
+            pass
+        try:
+            getattr(layer, "nr_rrc_rrcreestablishmentcomplete_element")
+            self._completion_count += 1
+        except AttributeError:
+            pass
 
     def report(self) -> Metrics:
-        return Metrics(aggregate=UeMetrics(nof_reestablishments_complete=self._completion_count))
+        return Metrics(
+            aggregate=UeMetrics(
+                nof_reestablishments_request=self._request_count,
+                nof_reestablishments_complete=self._completion_count,
+            )
+        )
 
 
 class RlmConfigAnalyzer(PcapAnalyzer):

@@ -18,7 +18,7 @@ baseline:
     du.dl_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     core.nof_pdu_session_modification_complete_ge: 1
@@ -49,7 +49,7 @@ ims:
     du.dl_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
     core.nof_pdu_session_establishment_accept_eq: 2
     core.nof_ims_nas_registered_ue_eq: 1

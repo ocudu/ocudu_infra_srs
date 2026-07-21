@@ -22,7 +22,7 @@ baseline:
   criteria:
     du.dl_bitrate_gt: 0
     du.nof_ko_dl_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
     core.nof_pdu_session_establishment_accept_eq: 2
     cu_cp.nof_5qi_5_drb_configured_ge: 1

@@ -27,7 +27,7 @@ mocn: &base_config
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     ue.nof_pdu_session_establishment_accept_eq: 2 # there are 2 UEs, one per PLMN
     du.nof_error_indications_le: 0
     all.errors_le: 0

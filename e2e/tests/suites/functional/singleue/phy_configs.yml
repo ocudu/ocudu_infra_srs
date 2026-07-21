@@ -24,7 +24,7 @@ prach_config_b4: &base_config
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -47,7 +47,7 @@ prach_config_0:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -68,7 +68,7 @@ prach_config_1:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -89,7 +89,7 @@ prach_config_a3:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -110,7 +110,7 @@ prach_config_c0:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -130,7 +130,7 @@ prach_config_c2:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -149,7 +149,7 @@ srs_aperiodic:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -167,7 +167,7 @@ srs_wideband:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -185,7 +185,7 @@ srs_narrowband:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -207,7 +207,7 @@ periodic_csi:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     du.nof_pucch_f0f1_invalid_harqs_le: 0
@@ -235,7 +235,7 @@ aperiodic_csi:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     du.nof_pucch_f0f1_invalid_harqs_le: 0
@@ -296,7 +296,7 @@ pdsch_vrb:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: .inf
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -347,7 +347,7 @@ precoding:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     all.errors_le: 0

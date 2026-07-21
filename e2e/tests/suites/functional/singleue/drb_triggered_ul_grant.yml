@@ -24,7 +24,7 @@ baseline:
     du.ue_bsr_max_le: 10
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     all.errors_le: 0

@@ -124,8 +124,26 @@ class nof_pusch_invalid_harqs_le(DuCriteria):
         return sum(s.GetMetrics(Empty()).aggregate.nof_pusch_invalid_harqs for s in self._stub_array)
 
 
-class nof_reestablishments_eq(DuCriteria):
-    """Reestablishments"""
+class nof_reestablishments_request_eq(DuCriteria):
+    """Reestablishment requests"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_reestablishments_request for s in self._stub_array)
+
+
+class nof_reestablishments_request_ge(DuCriteria):
+    """Reestablishment requests"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_reestablishments_request for s in self._stub_array)
+
+
+class nof_reestablishments_complete_eq(DuCriteria):
+    """Reestablishment completions"""
 
     operator_method = operator.eq
 
@@ -133,8 +151,8 @@ class nof_reestablishments_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).aggregate.nof_reestablishments_complete for s in self._stub_array)
 
 
-class nof_reestablishments_ge(DuCriteria):
-    """Reestablishments"""
+class nof_reestablishments_complete_ge(DuCriteria):
+    """Reestablishment completions"""
 
     operator_method = operator.ge
 

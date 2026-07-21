@@ -23,7 +23,7 @@ inter_ru_ho: &base_config
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: .inf
     du.nof_ko_ul_le: .inf
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_error_indications_le: 0
     all.errors_le: 0
@@ -71,7 +71,7 @@ inter_du_ho:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: .inf
     du.nof_ko_ul_le: .inf
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_ge: 200 # calculated based on the test_duration
     du.nof_error_indications_le: 0
@@ -113,7 +113,7 @@ inter_cu_ho:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: .inf
     du.nof_ko_ul_le: .inf
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 200 # calculated based on the test_duration
     du.nof_error_indications_le: 0
@@ -138,7 +138,8 @@ reestablishment:
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_reestablishments_ge: 50 # nof_ue * nof_reestablishments
+    du.nof_reestablishments_request_ge: 50 # nof_ue * nof_reestablishments
+    du.nof_reestablishments_complete_ge: 50 # nof_ue * nof_reestablishments
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_error_indications_le: 0
     all.errors_le: 0

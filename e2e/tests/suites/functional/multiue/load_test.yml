@@ -27,7 +27,7 @@ baseline: &base_config
     du.ul_bitrate_gt: 10.0e+6
     du.nof_ko_dl_le: 50
     du.nof_ko_ul_le: 50
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_eq: 0
     du.max_late_dl_harqs_le: 0
@@ -61,7 +61,7 @@ tdd_dl_heavy:
     du.ul_bitrate_gt: 10.0e+6
     du.nof_ko_dl_le: 50
     du.nof_ko_ul_le: 50
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_eq: 0
     du.max_late_dl_harqs_le: 0
@@ -93,7 +93,7 @@ tdd_ul_heavy:
     du.ul_bitrate_gt: 20.0e+6
     du.nof_ko_dl_le: 50
     du.nof_ko_ul_le: 50
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_eq: 0
     du.max_late_dl_harqs_le: 0

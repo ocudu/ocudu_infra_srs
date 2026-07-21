@@ -23,7 +23,7 @@ position_power: &base_config
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
-    du.nof_reestablishments_eq: 0
+    du.nof_reestablishments_request_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     cu_cp.nof_e_cid_measurement_initiation_request_eq: 1
