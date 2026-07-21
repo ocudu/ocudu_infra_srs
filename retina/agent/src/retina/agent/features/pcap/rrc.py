@@ -5,6 +5,8 @@
 5G NR RRC-layer pcap analyzers.
 """
 
+from typing import Dict, Optional
+
 from retina.protocol.base_pb2 import DuMetrics, Metrics, UeMetrics
 
 from retina.agent.features.pcap.analyzer import PcapAnalyzer
@@ -349,15 +351,34 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
     - UL CCCH RRCReestablishmentRequest (nr-rrc.rrcReestablishmentRequest_element)
     - UL DCCH RRCReestablishmentComplete (nr-rrc.rrcReestablishmentComplete_element)
 
+    RRCReestablishmentComplete rides SRB1 in AM RLC: a NACKed PDU is retransmitted
+    and re-dissected as a separate frame carrying the same RRC element. The AM
+    sequence number can't be used to filter these out, since SRB1 is freshly
+    re-established each time and its SN always restarts at 0. Retransmissions land
+    within tens of milliseconds of the original, while distinct reestablishments of
+    the same UE are seconds apart, so hits for the same UE closer together than
+    _DEDUP_WINDOW_SECONDS are treated as one completion.
     """
+
+    _DEDUP_WINDOW_SECONDS = 1.0
 
     def __init__(self) -> None:
         self._request_count = 0
         self._completion_count = 0
+        self._last_completion_time: Dict[int, float] = {}
 
     @property
     def display_filter(self) -> str:
         return "nr-rrc.rrcReestablishmentRequest_element || nr-rrc.rrcReestablishmentComplete_element"
+
+    @staticmethod
+    def _ueid(packet) -> Optional[int]:
+        for layer in packet.layers:
+            try:
+                return int(layer.rlc_nr_ueid)
+            except AttributeError:
+                continue
+        return None
 
     def process(self, packet) -> None:
         try:
@@ -371,9 +392,16 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
             pass
         try:
             getattr(layer, "nr_rrc_rrcreestablishmentcomplete_element")
-            self._completion_count += 1
         except AttributeError:
-            pass
+            return
+        ueid = self._ueid(packet)
+        if ueid is not None:
+            now = float(packet.sniff_timestamp)
+            last = self._last_completion_time.get(ueid)
+            if last is not None and now - last < self._DEDUP_WINDOW_SECONDS:
+                return
+            self._last_completion_time[ueid] = now
+        self._completion_count += 1
 
     def report(self) -> Metrics:
         return Metrics(
