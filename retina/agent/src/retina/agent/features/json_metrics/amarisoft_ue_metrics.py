@@ -52,9 +52,6 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
                         dl_bitrate=ue_info["dl_bitrate"],
                         nof_ko_ul=ue_info["ul_retx_count"],
                         ul_bitrate=ue_info["ul_bitrate"],
-                        nof_reestablishments_complete=ue_info["counters"]["messages"].get(
-                            "nr_rrc_reconfiguration_complete", 0
-                        ),
                         dl_max_mcs=int(ue_info.get("dl_mcs", 0)),
                         ul_max_mcs=int(ue_info.get("ul_mcs", 0)),
                     )
@@ -78,10 +75,6 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
 
                     self._ue_time[ue_id] = (time_first, timestamp)
 
-                    ue_m.nof_reestablishments_complete = ue_info["counters"]["messages"].get(
-                        "nr_rrc_reconfiguration_complete", 0
-                    )
-
     def _process_stats(self, stats_dict: dict) -> None:
         self._stats_ue_metrics = UeMetrics(
             dl_bitrate=sum(cell["dl_bitrate"] for cell in stats_dict["cells"].values()),
@@ -89,7 +82,6 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
             nof_ko_dl=sum(cell["dl_err_count"] + cell["dl_retx_count"] for cell in stats_dict["cells"].values()),
             nof_ko_ul=sum(cell["ul_retx_count"] for cell in stats_dict["cells"].values()),
             nof_handovers=stats_dict["counters"]["messages"].get("handover_success", 0),
-            nof_reestablishments_complete=stats_dict["counters"]["messages"].get("nr_rrc_reconfiguration_complete", 0),
         )
         self._nof_pdu_session_accept = stats_dict["counters"]["messages"].get(
             "5gs_nas_pdu_session_establishment_accept", 0
@@ -125,7 +117,6 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
             metrics.aggregate.nof_ko_dl += ue_m.nof_ko_dl
             metrics.aggregate.nof_ko_ul += ue_m.nof_ko_ul
             metrics.aggregate.nof_handovers += ue_m.nof_handovers
-            metrics.aggregate.nof_reestablishments_complete += ue_m.nof_reestablishments_complete
 
         metrics.aggregate.dl_max_mcs = max((ue_m.dl_max_mcs for ue_m in selected), default=0)
         metrics.aggregate.ul_max_mcs = max((ue_m.ul_max_mcs for ue_m in selected), default=0)

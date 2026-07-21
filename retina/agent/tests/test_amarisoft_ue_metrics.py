@@ -41,7 +41,6 @@ def make_ue_info(
     ul_retx_count=0,
     dl_mcs=None,
     ul_mcs=None,
-    rrc_reconf_complete=0,
 ):
     ue = {
         "rnti": rnti,
@@ -51,7 +50,6 @@ def make_ue_info(
         "dl_err_count": dl_err_count,
         "dl_retx_count": dl_retx_count,
         "ul_retx_count": ul_retx_count,
-        "counters": {"messages": {"nr_rrc_reconfiguration_complete": rrc_reconf_complete}},
     }
     if dl_mcs is not None:
         ue["dl_mcs"] = dl_mcs
