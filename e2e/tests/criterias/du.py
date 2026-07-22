@@ -387,34 +387,6 @@ def _all_lt(result: List[float], expected) -> bool:
     return all(a < b for a, b in zip(result, exp))
 
 
-class dl_ue_avg_bitrate(DuCriteria):
-    """DL UE average bitrate"""
-
-    operator_method = _all_gt
-
-    @property
-    def expected(self):
-        return [item["value"] for item in self._input]
-
-    def callback(self) -> List[float]:
-        du = self._stub_array[0]
-        return [ue.dl_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
-
-
-class ul_ue_avg_bitrate(DuCriteria):
-    """UL UE average bitrate"""
-
-    operator_method = _all_gt
-
-    @property
-    def expected(self):
-        return [item["value"] for item in self._input]
-
-    def callback(self) -> List[float]:
-        du = self._stub_array[0]
-        return [ue.ul_av_30_samples for ue in du.GetMetrics(Empty()).ue_array]
-
-
 class dl_ue_mid10_bitrate(DuCriteria):
     """DL UE mid-10 bitrate"""
 

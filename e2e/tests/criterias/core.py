@@ -49,15 +49,6 @@ class nof_ng_paging_eq(FiveGcCriteria):
         return sum(s.GetMetrics(Empty()).core.nof_ng_paging for s in self._stub_array)
 
 
-class nof_pdu_session_modification_complete_eq(FiveGcCriteria):
-    """PDU Session Modification Complete"""
-
-    operator_method = operator.eq
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).core.nof_pdu_session_modification_complete for s in self._stub_array)
-
-
 class nof_pdu_session_modification_complete_ge(FiveGcCriteria):
     """PDU Session Modification Complete"""
 
