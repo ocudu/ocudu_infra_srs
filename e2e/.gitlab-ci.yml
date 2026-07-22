@@ -148,12 +148,28 @@ retina demolition:
   before_script:
     - apk add --no-cache git
   script:
-    - git clone -b $[[ inputs.ocudu_ref ]] https://oauth2:${OCUDU_PROMOTION_TOKEN}@${CI_SERVER_HOST}/$[[ inputs.ocudu_path ]].git ocudu
-    - cd ocudu
-    - git fetch origin $BRANCH || echo "$BRANCH does not exist yet"
-    - git checkout -t origin/$BRANCH || git checkout -b $BRANCH
-    - git rebase $[[ inputs.ocudu_ref ]]
-    - git push --set-upstream origin $BRANCH
+    - |
+      if [ -n "${GITLAB_TOKEN}" ]; then
+        echo "OCUDU Infra SRS Promotion"
+        cd $CI_PROJECT_DIR
+        git clone https://gitlab_token:${GITLAB_TOKEN}@${CI_SERVER_SHELL_SSH_HOST}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git ocudu_infra_srs
+        cd ocudu_infra_srs
+        git fetch origin $BRANCH || echo "$BRANCH does not exist yet"
+        git checkout -t origin/$BRANCH || git checkout -b $BRANCH
+        git rebase ${CI_COMMIT_SHA}
+        git push --set-upstream origin $BRANCH
+      fi
+    - |
+      if [ -n "${OCUDU_PROMOTION_TOKEN}" ]; then
+        echo "OCUDU Promotion"
+        cd $CI_PROJECT_DIR
+        git clone -b $[[ inputs.ocudu_ref ]] https://oauth2:${OCUDU_PROMOTION_TOKEN}@${CI_SERVER_HOST}/$[[ inputs.ocudu_path ]].git ocudu
+        cd ocudu
+        git fetch origin $BRANCH || echo "$BRANCH does not exist yet"
+        git checkout -t origin/$BRANCH || git checkout -b $BRANCH
+        git rebase $[[ inputs.ocudu_ref ]]
+        git push --set-upstream origin $BRANCH
+      fi
   dependencies: []
 
 ## Build jobs for Scheduled Pipelines

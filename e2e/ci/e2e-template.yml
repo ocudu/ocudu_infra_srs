@@ -39,7 +39,7 @@ functional:
 functional promotion:
   extends: .ocudu promotion
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/ && $OCUDU_PROMOTION_TOKEN
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
   variables:
     BRANCH: srs_functional
 
@@ -60,6 +60,6 @@ performance:
 performance promotion:
   extends: .ocudu promotion
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/ && $OCUDU_PROMOTION_TOKEN
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
   variables:
     BRANCH: srs_performance

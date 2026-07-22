@@ -252,7 +252,7 @@ def generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_in
                 f.write(f"{name} promotion:\n")
                 f.write("  extends: .ocudu promotion\n")
                 f.write("  rules:\n")
-                f.write(f"    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{name}/ && $OCUDU_PROMOTION_TOKEN\n")
+                f.write(f"    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{name}/\n")
                 f.write("  variables:\n")
                 f.write(f"    BRANCH: srs_{name}\n")
             print(f"🟢 Successfully created {path}")
