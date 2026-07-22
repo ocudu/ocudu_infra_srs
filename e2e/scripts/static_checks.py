@@ -48,9 +48,9 @@ _DIR_DEFAULTS_FILES = {
 # Variables injected by drivers at render time (not in *_defaults.py or parameters:).
 # base.py always injects: report_folder, utc_timestamp
 _RENDER_INJECTED_VARS = {
-    "gnb": {"utc_timestamp", "neighbor_cucp_definition", "fivegc_definition"},
-    "ue": {"utc_timestamp", "cell_ru_cfg", "start_time", "subscriber_array"},
-    "core": {"utc_timestamp", "subnet_prefix"},
+    "gnb": {"report_folder", "utc_timestamp", "neighbor_cucp_definition", "fivegc_definition"},
+    "ue": {"report_folder", "utc_timestamp", "cell_ru_cfg", "start_time", "subscriber_array"},
+    "core": {"report_folder", "utc_timestamp", "subnet_prefix"},
 }
 
 # Config file extension required per component directory.
