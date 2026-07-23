@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+expert_execution:
+  threads:
+    upper_phy:
+      max_pusch_and_srs_concurrency: 4
+    main_pool:
+      nof_threads: 7
+
+expert_phy:
+  max_proc_delay: 6
+
+metrics:
+  layers:
+    enable_ru: true

@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  request: s72
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      traffic_duration: 30
+      dl_bitrate: 1400.0e+6
+      ul_bitrate: 0.0
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      pdcch_decode_threshold: 0.0
+      log_level: "error"
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, du_perf.yml]
+    parameters:
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      log_level: warning
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-PERF-THR-1a]
+  criteria:
+    du.dl_bitrate_gt: 1200.0e+6
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.dl_avg_ri_ge: 3.5
+    du.ul_avg_ri_ge: 0
+    du.nof_reestablishments_request_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0

@@ -8,6 +8,8 @@ ran_node_name: {{ran_node_name}}
 
 # Baseline single slice configuration
 cu_cp:
+  e1ap:
+    procedure_timeout: 4000
   amf:
     supported_tracking_areas:
       - tac: 7

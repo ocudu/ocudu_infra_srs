@@ -95,8 +95,8 @@ ru_ofh:
   t1a_min_cp_ul: 370
   t1a_max_up: 340
   t1a_min_up: 250
-  ta4_max: 600
-  ta4_min: 0                                     
+  ta4_max: 1960
+  ta4_min: 0
   is_prach_cp_enabled: true
   compr_method_ul: bfp
   compr_bitwidth_ul: 9

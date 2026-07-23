@@ -50,3 +50,4 @@ metrics:
     enable_mac: true
     enable_du_proc: true
     enable_executor: true
+    enable_du_low: true
