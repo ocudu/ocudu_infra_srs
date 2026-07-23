@@ -34,7 +34,6 @@ from retina.agent.features.gnb_report import transform_metrics
 from retina.agent.features.json_metrics.du_cell import DuCellAnalyzer
 from retina.agent.features.json_metrics.du_metrics import DuMetricsAnalyzer
 from retina.agent.features.pcap.analyzer import run_analyzers
-from retina.agent.features.pcap.f1ap import ReestablishmentAnalyzer as F1apReestablishmentAnalyzer
 from retina.agent.features.pcap.rrc import (
     DrxLongCycleAnalyzer,
     HandoverAnalyzer,
@@ -57,7 +56,6 @@ from retina.agent.tools.threading import join_thread
 
 _WS_ANALYZER_ARRAY = (DuMetricsAnalyzer, DuCellAnalyzer)
 _MAC_PCAP_ANALYZER_ARRAY = (
-    ReestablishmentAnalyzer,
     PrachConfigIndexAnalyzer,
     SibAnalyzer,
     RachPrioritizationSliceAnalyzer,
@@ -71,14 +69,13 @@ _MAC_PCAP_ANALYZER_ARRAY = (
     RlmConfigAnalyzer,
 )
 _RLC_PCAP_ANALYZER_ARRAY = (
-    ReestablishmentAnalyzer,
     HandoverAnalyzer,
     DrxLongCycleAnalyzer,
     T312Analyzer,
     SrsFreqDomainAnalyzer,
     TransformPrecoderAnalyzer,
 )
-_F1AP_PCAP_ANALYZER_ARRAY = (F1apReestablishmentAnalyzer,)
+_F1AP_PCAP_ANALYZER_ARRAY = (ReestablishmentAnalyzer,)
 
 
 @dataclass
@@ -375,9 +372,6 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                         "-C nr-rlc",
                     )
                 )
-            # F1AP sees each RRC message once (the DU's RLC has already resolved any radio-layer
-            # retransmission before forwarding it), so prefer it over the MAC/RLC-derived counts
-            # above when it's available (i.e. this DU is part of a monolithic gNB).
             if Path(f1ap_pcap_filename).exists():
                 self._metrics.MergeFrom(
                     run_analyzers(

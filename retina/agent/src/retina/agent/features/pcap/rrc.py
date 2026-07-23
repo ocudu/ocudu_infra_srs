@@ -348,16 +348,15 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
     """
     Counts RRC Reestablishment requests and completions.
 
-    - UL CCCH RRCReestablishmentRequest (nr-rrc.rrcReestablishmentRequest_element)
-    - UL DCCH RRCReestablishmentComplete (nr-rrc.rrcReestablishmentComplete_element)
+    - RRCReestablishmentRequest (nr-rrc.rrcReestablishmentRequest_element)
+    - RRCReestablishmentComplete (nr-rrc.rrcReestablishmentComplete_element)
 
-    RRCReestablishmentComplete rides SRB1 in AM RLC: a NACKed PDU is retransmitted
-    and re-dissected as a separate frame carrying the same RRC element. The AM
-    sequence number can't be used to filter these out, since SRB1 is freshly
-    re-established each time and its SN always restarts at 0. Retransmissions land
-    within tens of milliseconds of the original, while distinct reestablishments of
-    the same UE are seconds apart, so hits for the same UE closer together than
-    _DEDUP_WINDOW_SECONDS are treated as one completion.
+    Run against an F1AP capture: the DU's RLC layer has already resolved any radio-layer
+    (ARQ/HARQ) retransmission before forwarding the reassembled RRC message over F1AP, so each
+    logical message appears exactly once. F1AP-layer packets carry no rlc-nr.ueid, so _ueid
+    always returns None and the dedup below is a no-op — it exists only because this analyzer
+    used to also run against MAC-NR/RLC-NR captures, where retransmissions of the same message
+    got redissected as separate frames.
     """
 
     _DEDUP_WINDOW_SECONDS = 1.0
@@ -372,12 +371,7 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
         return "nr-rrc.rrcReestablishmentRequest_element || nr-rrc.rrcReestablishmentComplete_element"
 
     @staticmethod
-    def _ueid(packet) -> Optional[int]:
-        for layer in packet.layers:
-            try:
-                return int(layer.rlc_nr_ueid)
-            except AttributeError:
-                continue
+    def _ueid(_packet) -> Optional[int]:
         return None
 
     def process(self, packet) -> None:
