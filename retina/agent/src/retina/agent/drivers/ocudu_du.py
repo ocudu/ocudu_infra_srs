@@ -34,6 +34,7 @@ from retina.agent.features.gnb_report import transform_metrics
 from retina.agent.features.json_metrics.du_cell import DuCellAnalyzer
 from retina.agent.features.json_metrics.du_metrics import DuMetricsAnalyzer
 from retina.agent.features.pcap.analyzer import run_analyzers
+from retina.agent.features.pcap.f1ap import ReestablishmentAnalyzer as F1apReestablishmentAnalyzer
 from retina.agent.features.pcap.rrc import (
     DrxLongCycleAnalyzer,
     HandoverAnalyzer,
@@ -77,6 +78,7 @@ _RLC_PCAP_ANALYZER_ARRAY = (
     SrsFreqDomainAnalyzer,
     TransformPrecoderAnalyzer,
 )
+_F1AP_PCAP_ANALYZER_ARRAY = (F1apReestablishmentAnalyzer,)
 
 
 @dataclass
@@ -346,6 +348,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         return (
             self.get_filepath_in_report_folder(gnb_defaults.rlc_filename),
             self.get_filepath_in_report_folder(gnb_defaults.mac_filename),
+            self.get_filepath_in_report_folder(gnb_defaults.f1ap_filename),
         )
 
     def extract_metrics(self, *args):
@@ -353,7 +356,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         Extract Metrics
         """
         if not self._metrics_parsing_done:
-            rlc_pcap_filename, mac_pcap_filename = args
+            rlc_pcap_filename, mac_pcap_filename, f1ap_pcap_filename = args
             for ws_analyzer in self._ws_analyzers:
                 self._metrics.MergeFrom(ws_analyzer.report())
             if Path(mac_pcap_filename).exists():
@@ -370,6 +373,16 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                         rlc_pcap_filename,
                         tuple(analyzer_cls() for analyzer_cls in _RLC_PCAP_ANALYZER_ARRAY),
                         "-C nr-rlc",
+                    )
+                )
+            # F1AP sees each RRC message once (the DU's RLC has already resolved any radio-layer
+            # retransmission before forwarding it), so prefer it over the MAC/RLC-derived counts
+            # above when it's available (i.e. this DU is part of a monolithic gNB).
+            if Path(f1ap_pcap_filename).exists():
+                self._metrics.MergeFrom(
+                    run_analyzers(
+                        f1ap_pcap_filename,
+                        tuple(analyzer_cls() for analyzer_cls in _F1AP_PCAP_ANALYZER_ARRAY),
                     )
                 )
             self._metrics_parsing_done = True
