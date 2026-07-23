@@ -6,4 +6,4 @@ cell_cfg:
     type_enabled: periodic
     c_srs: 0
     freq_domain_shift: 20
-    period_ms: 40
+    period_ms: 320

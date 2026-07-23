@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  mac_cell_group:
+    bsr_cfg:
+      periodic_bsr_timer: 40
+  pucch:
+    sr_period_ms: 40
+    resource_set_size: 8
+    nof_cell_res_set_configs: 2
+    nof_cell_sr_res: 90
+    nof_cell_csi_res: 90
+  csi:
+    csi_rs_period: 80
+  ul_common:
+    max_ul_grants_per_slot: 128
+    max_pucchs_per_slot: 112
+  prach:
+    max_msg3_harq_retx: 2
+  pdsch:
+    max_pdschs_per_slot: 16
+    max_alloc_attempts: 16
+    max_ue_mcs: 26
+  pusch:
+    max_puschs_per_slot: 16
+    max_ue_mcs: 25
+  pdcch:
+    common:
+      ss0_index: 0
+      ss1_n_candidates: [0, 0, 8, 0, 0]
+      max_coreset0_duration: 2
+      coreset0_index: 13

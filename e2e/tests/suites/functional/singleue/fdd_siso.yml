@@ -6,7 +6,7 @@ band3_bw50: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
@@ -49,7 +49,7 @@ prach_config_0_fdd:
       prach_config_index: 12
       zero_correlation_zone: 0
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
@@ -85,7 +85,7 @@ prach_config_1_fdd:
       prach_config_index: 42
       zero_correlation_zone: 0
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+3
       ul_bitrate: 10.0e+3
@@ -119,7 +119,7 @@ band3_bw5:
       band: 3
       common_scs: 15
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6

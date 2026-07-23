@@ -1,0 +1,167 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Simultaneous RC_CONNECTED UEs and
+# TIFG E2E test v10.0, TC 8.1
+# The purpose of this test is to connect multiple UEs to the SUT and measure the maximum number of UEs that can be
+# simultaneously maintained in RRC_CONNECTED state. It is similar to TC 8.1 in TIFG E2E but replaces ping with udp traffic
+# in order to stress the u-plane more.
+#
+# All UEs attach staggered every "power_on_stagger_delay" seconds and start bidirectional
+# UDP traffic. After "traffic_duration" seconds, each UE stops doing traffic and the gNB releases
+# the UE due to inactivity.
+#
+# This job tests different TDD and FDD scenarios
+
+# Baseline TDD configuration DDDSU, k1=k2=2, Short PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+# 1000 UEs at 142 UE/s attach rate
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_1000
+  ue:
+    config: [1cell_chsim.cfg, udp_multiue.cfg]
+    parameters:
+      <<: &common_ue_params
+        traffic_duration: 10
+        log_level: "error"
+        pdcch_decode_threshold: 0.5
+        rx_to_tx_latency: 2
+      nof_ue: &nof_ue 1000
+      power_on_stagger_delay: 0.007 # 142 UE/s
+      dl_bitrate: 4.0e+5
+      ul_bitrate: 2.0e+5
+  gnb:
+    config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_default.yml, prach_config.yml, inactivity_timer.yml]
+    parameters:
+      <<: &common_gnb_params
+        log_level: warning
+      <<: &tdd_gnb_params
+        min_k1_k2: 2
+      prach_config_index: 162
+      zero_correlation_zone: 3
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-TDD-16-2]
+  criteria:
+    <<: &common_criteria
+      du.nof_ko_dl_le: 5
+      du.nof_ko_ul_le: 120
+      du.nof_reestablishments_request_eq: 0
+      du.nof_handovers_eq: 0
+      du.max_late_dl_harqs_le: 0
+      du.max_late_ul_harqs_le: 0
+      du.nof_error_indications_le: 0
+      all.errors_le: 0
+      all.warnings_le: 1
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.dl_bitrate_gt: 80.0e+6
+    du.ul_bitrate_gt: 30.0e+6
+
+# TDD 7D1S2U, k1=k2=2, Long PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+# 1000 UEs at 166 UE/s attach rate
+tdd_dl_heavy:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, udp_multiue.cfg]
+    parameters:
+      <<: *common_ue_params
+      nof_ue: *nof_ue
+      power_on_stagger_delay: 0.006 # 166 UE/s
+      dl_bitrate: 4.0e+5
+      ul_bitrate: 2.0e+5
+  gnb:
+    config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, inactivity_timer.yml]
+    parameters:
+      <<: *common_gnb_params
+      <<: *tdd_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+  feature_ids: [MVP-FUNC-TDD-16-4]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.dl_bitrate_gt: 80.0e+6
+    du.ul_bitrate_gt: 30.0e+6
+
+# 2D1S7U UL-heavy TDD, k1=k2=2, Long PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+# 1000 UEs at 100 UE/s attach rate
+tdd_ul_heavy:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, udp_multiue.cfg]
+    parameters:
+      <<: *common_ue_params
+      nof_ue: *nof_ue
+      power_on_stagger_delay: 0.01 # 100 UE/s
+      dl_bitrate: 2.0e+5
+      ul_bitrate: 8.0e+5
+  gnb:
+    config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_27.yml, prach_config.yml, inactivity_timer.yml]
+    parameters:
+      <<: *common_gnb_params
+      <<: *tdd_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+  feature_ids: [MVP-FUNC-TDD-16-1]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.dl_bitrate_gt: 30.0e+6
+    du.ul_bitrate_gt: 80.0e+6
+
+# FDD configuration k1=k2=4, Long PRACH, 20 MHz SISO
+# 128 UEs at 100 UE/s attach rate
+fdd:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, udp_multiue.cfg]
+    parameters:
+      <<: *common_ue_params
+      nof_ue: 128
+      power_on_stagger_delay: 0.01 # 100 UE/s
+      dl_bitrate: 4.0e+5
+      ul_bitrate: 4.0e+5
+      band: 66
+      dl_nr_arfcn: 430000
+      ssb_nr_arfcn: 428650
+      bandwidth: 20
+      common_scs: 15
+  gnb:
+    config: [cu_cp.yml, du.yml, prach_config.yml, inactivity_timer.yml]
+    parameters:
+      band: 66
+      dl_nr_arfcn: 430000
+      bandwidth: 20
+      common_scs: 15
+      prach_config_index: 16
+      <<: *common_gnb_params
+  feature_ids: [MVP-FUNC-PHY-16-1]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: 128
+    du.dl_bitrate_gt: 20.0e+6
+    du.ul_bitrate_gt: 20.0e+6
+
+# Baseline DDDSU configuration, 125 UE/s with 4x4 MIMO in DL and UL and SRS enabled
+srs:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, udp_multiue.cfg]
+    parameters:
+      <<: *common_ue_params
+      nof_ue: *nof_ue
+      power_on_stagger_delay: 0.008 # 125 UE/s
+      dl_bitrate: 4.0e+5
+      ul_bitrate: 2.0e+5
+  gnb:
+    config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_default.yml, prach_config.yml, inactivity_timer.yml, srs_narrowband.yml]
+    parameters:
+      <<: *common_gnb_params
+      <<: *tdd_gnb_params
+      prach_config_index: 162
+      zero_correlation_zone: 3
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.dl_bitrate_gt: 70.0e+6
+    du.ul_bitrate_gt: 30.0e+6

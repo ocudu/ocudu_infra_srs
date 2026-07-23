@@ -6,7 +6,7 @@ closed_loop_pc: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
@@ -43,7 +43,7 @@ closed_loop_pc_f1f3:
 closed_loop_pc_fdd:
   <<: *base_config
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6

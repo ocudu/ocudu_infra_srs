@@ -7,8 +7,7 @@ baseline:
   ue:
     config: [1cell_chsim.cfg, ping.cfg]
     parameters:
-      nof_ue: &nof_ue 1
-      test_duration: 10
+      traffic_duration: 10
       log_com_level: "debug"
       log_prod_level: "debug"
       pdcch_decode_opt_threshold: 0.7
@@ -26,7 +25,7 @@ baseline:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_reestablishments_request_eq: 0
     du.nof_handovers_eq: 0
     du.max_late_dl_harqs_le: 0

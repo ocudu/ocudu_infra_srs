@@ -5,3 +5,7 @@
 pcap:
   e1ap_enable: true
   e1ap_filename: {{e1ap_filename}}
+
+metrics:
+  layers:
+    enable_nrup_cu: true

@@ -17,9 +17,7 @@ geo_band_256_bw_5_fl_false_ping: &base_config
         ssb_nr_arfcn: 437090
         ntn_enable: true
         as_release: 17
-        nof_ue: 1
-        test_duration: 100
-        base_power_on_time: 1
+        traffic_duration: 100
       satellite: geo
       feeder_link: false
       gp_latitude: -2.32724563
@@ -33,7 +31,6 @@ geo_band_256_bw_5_fl_false_ping: &base_config
         dl_freq: 2185000000.0
         ul_freq: 1995000000.0
         time_alignment_calibration: -576
-        zero_correlation_zone: 0
         warning_allowlist:
           - Slot point to time point mapping not available.
         ntn_log_level: debug
@@ -163,7 +160,7 @@ leo_band_256_bw_5_fl_true_ping:
 geo_fl_false_harq_enabled_iperf:
   <<: *base_config
   ue:
-    config: [1cell_ntn.cfg, udp_bi_chsim.cfg]
+    config: [1cell_ntn.cfg, udp_multiue.cfg]
     parameters:
       <<: *base_radio_parameters
       <<: *base_ue_parameters
@@ -171,11 +168,7 @@ geo_fl_false_harq_enabled_iperf:
         log_level: warning
         dl_bitrate: 50.0e+6
         ul_bitrate: 50.0e+6
-        staggered_traffic_start: true
-        test_duration: 50
-        traffic_stop_to_dereg_delay: 1
-        dereg_to_pw_off_delay: 1
-        quit_delay: 1
+        traffic_duration: 50
       satellite: geo
       feeder_link: false
       gp_latitude: -2.32724563
@@ -216,7 +209,7 @@ geo_fl_false_harq_enabled_iperf:
 geo_fl_false_harq_disabled_iperf:
   <<: *base_config
   ue:
-    config: [1cell_ntn.cfg, udp_bi_chsim.cfg]
+    config: [1cell_ntn.cfg, udp_multiue.cfg]
     parameters:
       <<: *base_radio_parameters
       <<: *base_ue_parameters

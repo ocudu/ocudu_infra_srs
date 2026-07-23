@@ -67,28 +67,6 @@ reestablishment:
     KEYWORDS: "functional.mobility.reestablishment."
     TESTBED: dynamic
 
-attach_detach:
-  stage: multiue
-  extends: .functional_e2e
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - when: manual
-      allow_failure: true
-  variables:
-    KEYWORDS: "functional.multiue.attach_detach."
-    TESTBED: dynamic
-
-load_test:
-  stage: multiue
-  extends: .functional_e2e
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - when: manual
-      allow_failure: true
-  variables:
-    KEYWORDS: "functional.multiue.load_test."
-    TESTBED: dynamic
-
 mobility:
   stage: multiue
   extends: .functional_e2e
@@ -98,17 +76,6 @@ mobility:
       allow_failure: true
   variables:
     KEYWORDS: "functional.multiue.mobility."
-    TESTBED: dynamic
-
-ping:
-  stage: multiue
-  extends: .functional_e2e
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - when: manual
-      allow_failure: true
-  variables:
-    KEYWORDS: "functional.multiue.ping."
     TESTBED: dynamic
 
 qos:
@@ -122,6 +89,17 @@ qos:
     KEYWORDS: "functional.multiue.qos."
     TESTBED: dynamic
 
+simultaneous_udp:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "functional.multiue.simultaneous_udp."
+    TESTBED: dynamic
+
 slice:
   stage: multiue
   extends: .functional_e2e
@@ -131,6 +109,17 @@ slice:
       allow_failure: true
   variables:
     KEYWORDS: "functional.multiue.slice."
+    TESTBED: dynamic
+
+ue_state_transition:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "functional.multiue.ue_state_transition."
     TESTBED: dynamic
 
 bands:

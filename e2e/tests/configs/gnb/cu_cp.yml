@@ -24,3 +24,8 @@ pcap:
   e1ap_filename: {{e1ap_filename}}
   f1ap_enable: true
   f1ap_filename: {{f1ap_filename}}
+
+metrics:
+  layers:
+    enable_rrc: true
+    enable_ngap: true

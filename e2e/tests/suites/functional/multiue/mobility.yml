@@ -13,7 +13,7 @@ inter_ru_ho: &base_config
       nof_ue: &nof_ue 10
       num_cells: 2
   gnb:
-    config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, 512ue.yml]
+    config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, 1000ue.yml]
     parameters:
       num_cells: 2
   core:
@@ -33,7 +33,7 @@ inter_ru_ho: &base_config
 inter_ru_cfra_ho:
   <<: *base_config
   gnb:
-    config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, cfra_ho.yml, tdd_default.yml, 512ue.yml]
+    config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, cfra_ho.yml, tdd_default.yml, 1000ue.yml]
     parameters:
       num_cells: 2
   feature_ids: [DU-GEN-2-b]
@@ -56,12 +56,12 @@ inter_du_ho:
     config: [cu_cp.yml, mobility.yml]
   du:
     items:
-      - config: [du.yml, tdd_default.yml, 512ue.yml]
+      - config: [du.yml, tdd_default.yml, 1000ue.yml]
         parameters:
           gnb_du_id: 0
           pci: 1
           sector_id: 0
-      - config: [du.yml, tdd_default.yml, 512ue.yml]
+      - config: [du.yml, tdd_default.yml, 1000ue.yml]
         parameters:
           gnb_du_id: 1
           pci: 2
@@ -130,11 +130,11 @@ reestablishment:
       ul_bitrate: 10.0e+3
       nof_ue: *nof_ue
       nof_reestablishments: 5
-      num_cells: 2
+      num_cells: 1
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, 512ue.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, 1000ue.yml]
     parameters:
-      num_cells: 2
+      num_cells: 1
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0

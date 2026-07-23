@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+{%- set min_k1_k2 = min_k1_k2 | default(4) %}
+
 cell_cfg:
   tdd_ul_dl_cfg:
     dl_ul_tx_period: 10
@@ -8,3 +10,7 @@ cell_cfg:
     nof_ul_slots: 7
     nof_dl_symbols: 7
     nof_ul_symbols: 0
+  pucch:
+    min_k1: {{min_k1_k2}}
+  pusch:
+    min_k2: {{min_k1_k2}}

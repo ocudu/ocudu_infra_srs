@@ -6,7 +6,7 @@ mimo_2x2: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
@@ -52,7 +52,7 @@ mimo_2x2_aperiodic_csi:
 mimo_4x4:
   <<: *base_config
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6

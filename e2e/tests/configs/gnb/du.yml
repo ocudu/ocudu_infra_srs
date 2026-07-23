@@ -6,7 +6,6 @@
 {%- set dl_nr_arfcn = dl_nr_arfcn | default(626668) %}
 {%- set sector_id = sector_id | default(0) %}
 {%- set dmrs_additional_pos = dmrs_additional_pos | default(2) %}
-{%- set zero_correlation_zone = zero_correlation_zone | default(3) %}
 
 gnb_id_bit_length: {{gnb_id_bit_length}}
 gnb_du_id: {{gnb_du_id}}
@@ -27,8 +26,6 @@ cell_cfg:
   pusch:
     dmrs_additional_position: {{dmrs_additional_pos}}
     mcs_table: qam256
-  prach:
-    zero_correlation_zone: {{zero_correlation_zone}}
 
 expert_phy:
   pusch_channel_estimator_cfo_compensation: false

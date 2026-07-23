@@ -6,7 +6,7 @@ band_n30: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       band: 30
       bandwidth: 10
@@ -48,7 +48,7 @@ band_n30: &base_config
 band_fr2:
   <<: *base_config
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       band: 261
       dl_nr_arfcn: 2077915
@@ -71,7 +71,7 @@ band_fr2:
 band_n41:
   <<: *base_config
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       band: 41
       dl_nr_arfcn: 520002
@@ -95,7 +95,7 @@ band_n41:
 band_n66:
   <<: *base_config
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       band: 66
       dl_nr_arfcn: 430000
@@ -124,7 +124,7 @@ band_na_4t4r_dl:
   <<: *base_config
   request: zmq_1000
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       band: 66       # n66 (FDD) is available in the US and the DL carrier is on 2.11-2.2GHz
       dl_nr_arfcn: 430000
@@ -152,7 +152,7 @@ band_na_4t4r_dl:
 band_na_2t2r_ul:
   <<: *base_config
   ue:
-    config: [1cell.cfg, udp_bi.cfg]
+    config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       band: 25       # n25 (FDD) is available in the US and the UL carrier is on 1.85-1.915GHz.
       dl_nr_arfcn: 392000

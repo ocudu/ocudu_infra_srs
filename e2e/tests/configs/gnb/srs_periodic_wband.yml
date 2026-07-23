@@ -4,4 +4,4 @@
 cell_cfg:
   srs:
     type_enabled: periodic
-    period_ms: 20
+    period_ms: 160

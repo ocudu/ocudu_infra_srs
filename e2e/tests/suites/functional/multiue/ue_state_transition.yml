@@ -1,0 +1,128 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# UE State Transition Rate Testing
+# TIFG E2E test v10.0, TC 8.2
+#
+# The purpose of this test is to benchmark the number of UE state transitions that can be processed by the control plane per unit
+# time by connecting multiple UEs with various state transitions to an SUT.
+# This test is similar to 8.2 but attaches the maximum number of UEs in the first iteration instead of increasing on each iteration.
+# All UEs attach staggered every "power_on_stagger_delay" seconds and does lightweight traffic.
+# After "traffic_duration" seconds, each UE stops doing traffic and deregisters and powers off.
+#
+# This job tests different TDD and FDD scenarios
+
+# Baseline TDD configuration DDDSU, k1=k2=2, Short PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+# 1000 UEs at 166 UE/s attach rate
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_1000
+  ue:
+    config: [1cell_chsim.cfg, ue_state_transition.cfg]
+    parameters:
+      <<: &common_ue_params
+        dl_bitrate: 1.0e+3
+        ul_bitrate: 1.0e+3
+        nof_attach_dettach_cycles: 5
+        attach_dettach_delay: 10
+        log_level: "error"
+        pdcch_decode_threshold: 0.5
+        power_on_stagger_delay: 0.02 # 50 UE/s
+        rx_to_tx_latency: 2
+      nof_ue: &nof_ue 1000
+  gnb:
+    config: [cu_cp.yml, du.yml, 1000ue.yml, prach_config.yml, tdd_default.yml]
+    parameters:
+      <<: &common_gnb_params
+        log_level: warning
+      <<: &tdd_gnb_params
+        min_k1_k2: 2
+      prach_config_index: 162
+      zero_correlation_zone: 3
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-TDD-16-2]
+  criteria:
+    <<: &common_criteria
+      du.dl_bitrate_gt: 1.0e+3
+      du.ul_bitrate_gt: 1.0e+3
+      du.nof_ko_dl_le: 5
+      du.nof_ko_ul_le: 100
+      du.nof_reestablishments_request_eq: 0
+      du.nof_handovers_eq: 0
+      du.max_late_dl_harqs_le: 0
+      du.max_late_ul_harqs_le: 0
+      du.nof_error_indications_le: 0
+      all.errors_le: 0
+      all.warnings_le: 1
+    core.nof_pdu_session_establishment_accept_eq: &nof_ue_attaches 5000 # nof_ue x nof_attach_dettach_cycles
+
+# DL-heavy 7D1S2U, k1=k2=2, Long PRACH, 100 MHz SISO
+# 1000 UEs at 166 UE/s attach rate
+tdd_dl_heavy:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, ue_state_transition.cfg]
+    parameters:
+      <<: *common_ue_params
+      nof_ue: *nof_ue
+  gnb:
+    config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml]
+    parameters:
+      <<: *common_gnb_params
+      <<: *tdd_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+  feature_ids: [MVP-FUNC-TDD-16-4]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
+
+# UL-heavy 2D1S7U, k1=k2=2, Long PRACH, 100 MHz SISO
+# 1000 UEs at 100 UE/s attach rate
+tdd_ul_heavy:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, ue_state_transition.cfg]
+    parameters:
+      <<: *common_ue_params
+      nof_ue: *nof_ue
+  gnb:
+    config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_27.yml, prach_config.yml]
+    parameters:
+      <<: *common_gnb_params
+      <<: *tdd_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+  feature_ids: [MVP-FUNC-TDD-16-1]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
+
+# FDD configuration k1=k2=4, Long PRACH, 20 MHz SISO
+# 128 UEs at 100 UE/s attach rate
+fdd:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, ue_state_transition.cfg]
+    parameters:
+      <<: *common_ue_params
+      nof_ue: 128
+      band: 66
+      dl_nr_arfcn: 430000
+      ssb_nr_arfcn: 428650
+      bandwidth: 20
+      common_scs: 15
+  gnb:
+    config: [cu_cp.yml, du.yml, prach_config.yml]
+    parameters:
+      <<: *common_gnb_params
+      band: 66
+      dl_nr_arfcn: 430000
+      bandwidth: 20
+      common_scs: 15
+      prach_config_index: 16
+  feature_ids: [MVP-FUNC-PHY-16-1]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: 640 # 128 UEs x 10 cycles
