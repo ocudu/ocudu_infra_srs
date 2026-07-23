@@ -10,7 +10,7 @@ baseline:
     parameters:
       dl_bitrate: 5.0e+6
       ul_bitrate: 0
-      test_duration: 20
+      traffic_duration: 20
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, drb_triggered_ul_grant_qos.yml]
   core:

@@ -10,7 +10,7 @@ prach_config_b4: &base_config
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 2
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
@@ -200,7 +200,7 @@ periodic_csi:
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 10
+      traffic_duration: 10
   feature_ids: [MVP-FUNC-MIMO-16-1]
   criteria:
     du.dl_bitrate_gt: 0
@@ -226,7 +226,7 @@ aperiodic_csi:
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 10
+      traffic_duration: 10
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, aperiodic_csi.yml, mac_pcap.yml]
   feature_ids: [MVP-FUNC-MIMO-16-1]

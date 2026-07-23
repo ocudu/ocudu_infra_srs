@@ -14,7 +14,7 @@ baseline: &base_config
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: &nof_ue 1
       num_cells: 2
   gnb:
@@ -39,7 +39,7 @@ baseline: &base_config
     du.nof_ko_ul_le: 550 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the duration
     du.nof_error_indications_le: 0
     du.errors_le: 0
     du.warnings_le: 0
@@ -52,7 +52,7 @@ fr2:
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
       band: 261
@@ -104,7 +104,7 @@ same_cu_up_fr1: &base_same_cu_up
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
   cu_cp:
@@ -141,7 +141,7 @@ same_cu_up_fr1: &base_same_cu_up
     du.nof_ko_ul_le: 550 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the duration
     du.nof_error_indications_le: 0
     du.errors_le: 0
     du.warnings_le: 0
@@ -155,7 +155,7 @@ same_cu_up_fr2:
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
       band: 261
@@ -213,7 +213,7 @@ fr1_fr2:
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
       # FR2 cell-2 parameters (must match gNB-2 below)
@@ -256,7 +256,7 @@ same_cu_up_fr1_fr2:
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
       # FR2 cell-2 parameters (must match DU-2 below)
@@ -325,7 +325,7 @@ xn_ho:
     du.nof_ko_ul_le: 100 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the duration
     cu_cp.nof_xn_handover_request_acknowledge_geq: 40 # double of handovers as each message is logged in both pcaps
     cu_cp.nof_sn_status_transfer_geq: 40 # double of handovers as each message is logged in both pcaps
     du.nof_error_indications_le: 0
@@ -359,7 +359,7 @@ xn_cho:
     du.nof_ko_ul_le: 100 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the duration
     cu_cp.nof_xn_handover_request_acknowledge_geq: 40 # double of handovers as each message is logged in both pcaps
     cu_cp.nof_sn_status_transfer_geq: 40 # double of handovers as each message is logged in both pcaps
     du.nof_error_indications_le: 0

@@ -14,7 +14,7 @@ band_n30: &base_config
       ssb_nr_arfcn: 470430
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 2
       nof_antennas_dl: 4
       nof_antennas_ul: 4
       common_scs: 15
@@ -56,7 +56,7 @@ band_fr2:
       common_scs: 120
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 2
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, prach_config.yml, mac_pcap.yml]
     parameters:
@@ -78,7 +78,7 @@ band_n41:
       ssb_nr_arfcn: 511950
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 2
       nof_antennas_dl: 2
       nof_antennas_ul: 2
       pdcch_decode_threshold: 0
@@ -104,7 +104,7 @@ band_n66:
       common_scs: 15
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 2
   gnb:
     config: [cu_cp.yml, du.yml, pucch_config.yml, srs_periodic_wband.yml, mac_pcap.yml]
     parameters:
@@ -133,7 +133,7 @@ band_na_4t4r_dl:
       common_scs: 15
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 2
       nof_antennas_dl: 4
       nof_antennas_ul: 4
       pdcch_decode_threshold: 0
@@ -161,7 +161,7 @@ band_na_2t2r_ul:
       common_scs: 15
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 2
       nof_antennas_dl: 2
       nof_antennas_ul: 2
       pdcch_decode_threshold: 0

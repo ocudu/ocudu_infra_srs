@@ -14,7 +14,7 @@ bw_tdd_10: &base_config
       ssb_nr_arfcn: 519870
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 2
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml, mac_pcap.yml]
@@ -48,7 +48,7 @@ bw_tdd_50:
       ssb_nr_arfcn: 516030
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 2
       pdcch_decode_threshold: 0
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]

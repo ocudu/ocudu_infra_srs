@@ -10,7 +10,7 @@ baseline_gnb: &base_config
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 6
+      traffic_duration: 6
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, sib12.yml, rlm_ssb_csi.yml, mac_pcap.yml]
   core:
@@ -42,7 +42,7 @@ baseline_cu_du:
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 6
+      traffic_duration: 6
   cu_cp:
     config: [cu_cp.yml]
   cu_up:

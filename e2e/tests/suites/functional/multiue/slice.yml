@@ -15,7 +15,7 @@ dedicated_prb: &base_config
       ul_bitrate_sst2: 3.0e+6
       ssb_nr_arfcn: 626304
       bandwidth: 20
-      test_duration: 15
+      traffic_duration: 15
   gnb:
     config: [du.yml, tdd_default.yml, slicing_dedicated.yml, dual_slice.yml]
     parameters:

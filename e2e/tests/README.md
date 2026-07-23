@@ -99,7 +99,7 @@ baseline: &base_config # Test Case
     config: [2cell_intrafreq_chsim.cfg, handover.cfg]  # Jinja2 .cfg files, merged in order
     parameters:
       nof_ue: 1
-      test_duration: 100
+      traffic_duration: 100
   gnb:
     config: [du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml]  # YAML overlays, merged in order
   core:

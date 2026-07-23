@@ -14,7 +14,7 @@ baseline:
       band: 3
       bandwidth: 10
       common_scs: 15
-      test_duration: 20
+      traffic_duration: 20
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, vonr_qos.yml]
     parameters:

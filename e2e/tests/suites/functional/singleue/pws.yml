@@ -14,7 +14,7 @@ etws:
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 4
       pws_events: true
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, etws.yml, mac_pcap.yml]
@@ -44,7 +44,7 @@ etws_cmas:
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 2
+      traffic_duration: 4
       pws_events: true
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, etws_cmas.yml, mac_pcap.yml]
@@ -80,7 +80,7 @@ etws_mme_triggered:
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 30
+      traffic_duration: 30
       pws_events: true
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, sib678.yml, mac_pcap.yml]
@@ -117,7 +117,7 @@ etws_mme_triggered_long:
     parameters:
       dl_bitrate: 10.0e+6
       ul_bitrate: 10.0e+6
-      test_duration: 30
+      traffic_duration: 30
       pws_events: true
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, sib678.yml, mac_pcap.yml]

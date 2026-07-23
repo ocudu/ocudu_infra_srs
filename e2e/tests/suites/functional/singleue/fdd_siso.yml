@@ -58,7 +58,7 @@ prach_config_0_fdd:
       band: 3
       bandwidth: 50
       common_scs: 15
-      test_duration: 3
+      traffic_duration: 3
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -94,7 +94,7 @@ prach_config_1_fdd:
       band: 3
       bandwidth: 50
       common_scs: 15
-      test_duration: 3
+      traffic_duration: 3
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0

@@ -10,7 +10,7 @@ baseline: &base_config
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: &nof_ue 1
       num_cells: 2
   gnb:
@@ -27,7 +27,7 @@ baseline: &base_config
     du.nof_ko_ul_le: 250 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the duration
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
@@ -43,7 +43,7 @@ fr2:
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       band: 261
       dl_nr_arfcn: 2074171
@@ -69,7 +69,7 @@ conditional_ho:
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
   gnb:
@@ -84,7 +84,7 @@ conditional_ho:
     du.nof_ko_ul_le: 250 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the duration
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
@@ -97,7 +97,7 @@ cfra_ho:
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
   gnb:
@@ -112,7 +112,7 @@ cfra_ho:
     du.nof_ko_ul_le: 250 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    ue.nof_handovers_ge: 20 # calculated based on the test_duration
+    ue.nof_handovers_ge: 20 # calculated based on the duration
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0

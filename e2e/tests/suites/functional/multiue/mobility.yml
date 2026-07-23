@@ -49,7 +49,7 @@ inter_du_ho:
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
   cu:
@@ -73,7 +73,7 @@ inter_du_ho:
     du.nof_ko_ul_le: .inf
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    du.nof_handovers_ge: 200 # calculated based on the test_duration
+    du.nof_handovers_ge: 200 # calculated based on the duration
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
@@ -91,7 +91,7 @@ inter_cu_ho:
     parameters:
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 100
+      traffic_duration: 100
       nof_ue: *nof_ue
       num_cells: 2
   gnb:
@@ -115,7 +115,7 @@ inter_cu_ho:
     du.nof_ko_ul_le: .inf
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
-    ue.nof_handovers_ge: 200 # calculated based on the test_duration
+    ue.nof_handovers_ge: 200 # calculated based on the duration
     du.nof_error_indications_le: 0
     du.errors_le: 0
     du.warnings_le: 0

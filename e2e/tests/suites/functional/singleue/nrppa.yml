@@ -11,7 +11,7 @@ position_power: &base_config
       num_cells: 2
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      test_duration: 10
+      traffic_duration: 10
   gnb:
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml, nrppa.yml]
     parameters:
