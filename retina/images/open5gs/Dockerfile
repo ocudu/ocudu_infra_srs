@@ -54,7 +54,7 @@ RUN cp /usr/bin/true /usr/sbin/telinit && \
     cmake \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG OPEN5GS_VERSION=v2.7.6
+ARG OPEN5GS_VERSION=v2.8.0
 
 # open5gs
 RUN git clone --depth 1 --branch $OPEN5GS_VERSION $REPO_URL open5gs \

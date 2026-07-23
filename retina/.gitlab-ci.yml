@@ -193,7 +193,7 @@ retina publish wheel:
     VERSION: ${RETINA_VERSION}
     AGENT_OS_VERSION: "noble-20260410"
     FLEXRIC_VERSION: "br-flexric" # NOTE: there is only version 1.0.0 but very old
-    OPEN5GS_VERSION: "2.7.6"
+    OPEN5GS_VERSION: "2.8.0"
     SRSUE_VERSION: "23.11"
   needs:
     - get retina version
