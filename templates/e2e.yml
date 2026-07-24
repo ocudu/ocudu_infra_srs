@@ -154,7 +154,12 @@ get retina version:
     - |
       cd ${CI_PROJECT_DIR}/e2e/retina_requests
       DPDK_VERSION=$(cat ${OCUDU_DIR}/.gitlab/ci/dpdk_version.txt)
-      python3 ${CI_PROJECT_DIR}/retina/_scripts/generate_env.py --ocudu-path ${CI_PROJECT_DIR}/ocudu --dpdk-version "${DPDK_VERSION}" --amari-path ${CI_PROJECT_DIR}/amarisoft.${AMARISOFT_VERSION}
+      AMARI_PATH=${CI_PROJECT_DIR}/amarisoft.${AMARISOFT_VERSION}
+      GENERATE_ENV_ARGS=""
+      if [ -d "${AMARI_PATH}" ]; then
+        GENERATE_ENV_ARGS="--amari-path ${AMARI_PATH}"
+      fi
+      python3 ${CI_PROJECT_DIR}/retina/_scripts/generate_env.py --ocudu-path ${CI_PROJECT_DIR}/ocudu --dpdk-version "${DPDK_VERSION}" ${GENERATE_ENV_ARGS}
       cd ${CI_PROJECT_DIR}
     # Modify request to shared the complete folder with ocudu containers
     - |
