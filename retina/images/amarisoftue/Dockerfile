@@ -10,7 +10,7 @@ FROM ${RETINA_REGISTRY_URI}/wheelhouse:${RETINA_VERSION} AS wheelhouse
 FROM ${RETINA_REGISTRY_URI}/agent:${AGENT_OS_VERSION} AS agent
 FROM agent AS amarisoftue
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
-    uhd-host libuhd-dev libzmq3-dev \
+    uhd-host libuhd-dev libzmq3-dev make build-essential libboost-program-options-dev \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 ENV PATH="${PATH}:/opt/amarisoft/ue"
 

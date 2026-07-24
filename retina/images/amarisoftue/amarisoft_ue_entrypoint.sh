@@ -24,12 +24,17 @@ wait_for_path() {
 amarisoft_dir=/builds/amarisoft/
 wait_for_path "$amarisoft_dir"/bin
 
-# Install amarisoft binaries and pre-compiled uhd driver
+# Install amarisoft in s72 mode
 amarisoft_tmp=$(mktemp -d)
 cp -r "$amarisoft_dir"/bin/. "$amarisoft_tmp"/
 "$amarisoft_tmp"/install.sh --default --no-srv --no-ht --no-all --ue --no-package --trx-no-upgrade --trx s72 /opt/amarisoft
-mkdir -p /opt/amarisoft/trx_uhd && tar xzf "$amarisoft_tmp"/trx_uhd-*.tar.gz --to-stdout --wildcards "*/trx_uhd.so.tar.gz" | tar xz -C /opt/amarisoft/trx_uhd
-ln -s /opt/amarisoft/trx_uhd/trx_uhd.so /opt/amarisoft/ue/trx_uhd.so
+
+# Compile UHD amarisoft driver for the UHD version of this image
+cp -r "$amarisoft_dir"/bin/trx_uhd*/ "$amarisoft_tmp"/
+trx_uhd_dirs=("$amarisoft_tmp"/trx_uhd*/)
+"${trx_uhd_dirs[0]}"install.sh /opt/amarisoft/ue ue > /opt/amarisoft/ue/uhd_install.log
+
+# Remove temporal folder
 rm -rf "$amarisoft_tmp"
 
 # Install ocudu zmq driver
