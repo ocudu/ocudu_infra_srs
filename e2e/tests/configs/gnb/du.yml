@@ -31,6 +31,7 @@ expert_phy:
   pusch_channel_estimator_cfo_compensation: false
   pusch_dec_max_iterations: 12
   pusch_channel_estimator_td_strategy: interpolate
+  pusch_channel_equalizer_algorithm: "zf"
 
 pcap:
   rlc_enable: true

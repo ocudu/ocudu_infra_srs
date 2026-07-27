@@ -14,7 +14,7 @@ mimo_2x2: &base_config
       nof_antennas_ul: 2
       pdcch_decode_threshold: 0
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, mimo_rx.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml]
     parameters:
       nof_antennas_dl: 2
       nof_antennas_ul: 2
@@ -42,7 +42,7 @@ mimo_2x2: &base_config
 mimo_2x2_aperiodic_csi:
   <<: *base_config
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, aperiodic_csi.yml, srs_periodic_wband.yml, mimo_rx.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, aperiodic_csi.yml, srs_periodic_wband.yml]
     parameters:
       nof_antennas_dl: 2
       nof_antennas_ul: 2
@@ -60,7 +60,7 @@ mimo_4x4:
       nof_antennas_ul: 4
       pdcch_decode_threshold: 0
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, mimo_rx.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 4

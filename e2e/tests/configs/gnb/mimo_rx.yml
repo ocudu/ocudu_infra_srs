@@ -1,6 +1,0 @@
-# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
-# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
-
-expert_phy:
-  pusch_channel_estimator_td_strategy: interpolate
-  pusch_channel_estimator_cfo_compensation: false
