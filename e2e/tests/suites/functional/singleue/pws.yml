@@ -34,7 +34,7 @@ etws:
     du.nof_sib6_ge: 1
     du.nof_sib7_ge: 1
 
-# Static ETWS and CMAS test
+# Static CMAS test
 etws_cmas:
   template: ue_simulator.test_gnb
   request: zmq_mme
@@ -135,3 +135,40 @@ etws_mme_triggered_long:
     du.nof_sib6_ge: 1
     du.nof_sib7_ge: 1
     ue.nof_etws_msg_received_ge: 1
+
+# CMAS test, triggered live from the core, instead of statically configuring
+# the warning content at the gNB. Mid-session, the AMF sends a Write-Replace
+# Warning Request over NGAP (pws_write sim_event on the pre-configured
+# pws_msgs entry in pws_trigger_cmas.cfg), as a real Cell Broadcast Centre
+# would; the gNB acks it over NGAP and is expected to broadcast SIB8 with
+# that content. Unlike ETWS, CMAS has no primary/secondary split, so only
+# SIB8 is expected (no SIB6/SIB7).
+cmas_mme_triggered:
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      traffic_duration: 30
+      pws_events: true
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, sib678.yml, mac_pcap.yml]
+  core:
+    config: [baseline.cfg, pws_trigger_cmas.cfg]
+  feature_ids: []
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_request_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    cu_cp.nof_write_replace_warning_request_ge: 1
+    cu_cp.nof_write_replace_warning_response_ge: 1
+    du.nof_sib8_ge: 1
+    ue.nof_cmas_msg_received_ge: 1
