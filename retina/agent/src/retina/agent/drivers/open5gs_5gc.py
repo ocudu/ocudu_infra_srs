@@ -116,7 +116,7 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
     def _error_regex(self) -> str:
         return (
             r"^.*\[1;33mERROR\x1B\[0m: (?!.*Child status change)(?!.*Invalid packet)(?!.*No IPv6 subnet)"
-            r"(?!.*Send Error Indication)(?!.*Cannot find PDU Session ID)(?!.*Cannot find AMF-UE Context)"
+            r"(?!.*Send Error Indication)(?!.*Cannot find PDU Session ID)(?!.*No RAN UE Context)"
             r"(?!.*No NF-Instance)(?!.*HTTP response error)"
             r".*$"
         )
