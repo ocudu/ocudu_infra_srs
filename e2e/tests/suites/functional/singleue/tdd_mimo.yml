@@ -25,7 +25,9 @@ mimo_2x2: &base_config
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
     du.dl_avg_ri_ge: 1.5
     du.ul_avg_ri_ge: 1.5
     du.nof_reestablishments_request_eq: 0
@@ -69,7 +71,9 @@ mimo_4x4:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
     du.dl_avg_ri_ge: 3.5
     du.ul_avg_ri_ge: 3.5
     du.nof_reestablishments_request_eq: 0

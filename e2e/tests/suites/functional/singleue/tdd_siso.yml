@@ -20,7 +20,9 @@ baseline_gnb: &base_config
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
@@ -56,7 +58,9 @@ baseline_cu_du:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
@@ -80,7 +84,9 @@ tdd_mixed:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
@@ -102,7 +108,9 @@ tdd_dl_heavy:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
@@ -121,7 +129,9 @@ rlm_ssb_only:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
@@ -140,7 +150,9 @@ rlm_csi_rs_only:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0

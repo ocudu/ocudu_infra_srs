@@ -36,7 +36,9 @@ baseline: &base_config
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 550 # allow some KOs during HO transitions
+    ue.nof_ko_dl_le: 550 # allow some KOs during HO transitions
     du.nof_ko_ul_le: 550 # allow some KOs during HO transitions
+    ue.nof_ko_ul_le: 550 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the duration
@@ -138,7 +140,9 @@ same_cu_up_fr1: &base_same_cu_up
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 550 # allow some KOs during HO transitions
+    ue.nof_ko_dl_le: 550 # allow some KOs during HO transitions
     du.nof_ko_ul_le: 550 # allow some KOs during HO transitions
+    ue.nof_ko_ul_le: 550 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the duration
@@ -322,7 +326,9 @@ xn_ho:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 100 # allow some KOs during HO transitions
+    ue.nof_ko_dl_le: 100 # allow some KOs during HO transitions
     du.nof_ko_ul_le: 100 # allow some KOs during HO transitions
+    ue.nof_ko_ul_le: 100 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the duration
@@ -356,7 +362,9 @@ xn_cho:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 100 # allow some KOs during HO transitions
+    ue.nof_ko_dl_le: 100 # allow some KOs during HO transitions
     du.nof_ko_ul_le: 100 # allow some KOs during HO transitions
+    ue.nof_ko_ul_le: 100 # allow some KOs during HO transitions
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the duration

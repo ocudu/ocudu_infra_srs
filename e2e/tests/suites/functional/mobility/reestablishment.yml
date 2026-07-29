@@ -21,7 +21,9 @@ intra_ru: &base_config
     du.ul_bitrate_gt: 0
     # A few KOs might happen during reestablishment in both DL and UL.
     du.nof_ko_dl_le: 10
+    ue.nof_ko_dl_le: 10
     du.nof_ko_ul_le: 10
+    ue.nof_ko_ul_le: 10
     du.nof_reestablishments_request_eq: *nof_reestablishments
     du.nof_reestablishments_complete_eq: *nof_reestablishments
     core.nof_pdu_session_establishment_accept_eq: 1

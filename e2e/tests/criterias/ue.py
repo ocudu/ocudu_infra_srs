@@ -13,6 +13,24 @@ from retina.launcher.criteria import UeCriteria
 # pylint: disable=invalid-name,missing-function-docstring,too-few-public-methods
 
 
+class nof_ko_dl_le(UeCriteria):
+    """UE DL KOs"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_ko_dl for s in self._stub_array)
+
+
+class nof_ko_ul_le(UeCriteria):
+    """UE UL KOs"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_ko_ul for s in self._stub_array)
+
+
 class nof_handovers_eq(UeCriteria):
     """Handovers"""
 

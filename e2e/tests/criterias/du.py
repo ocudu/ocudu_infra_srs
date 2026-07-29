@@ -35,7 +35,7 @@ class ul_bitrate_gt(DuCriteria):
 
 
 class nof_ko_dl_le(DuCriteria):
-    """DL KOs"""
+    """DU DL KOs"""
 
     operator_method = operator.le
 
@@ -44,7 +44,7 @@ class nof_ko_dl_le(DuCriteria):
 
 
 class nof_ko_ul_le(DuCriteria):
-    """UL KOs"""
+    """DU UL KOs"""
 
     operator_method = operator.le
 
