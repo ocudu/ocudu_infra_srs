@@ -76,13 +76,20 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
                     self._ue_time[ue_id] = (time_first, timestamp)
 
     def _process_stats(self, stats_dict: dict) -> None:
-        self._stats_ue_metrics = UeMetrics(
-            dl_bitrate=sum(cell["dl_bitrate"] for cell in stats_dict["cells"].values()),
-            ul_bitrate=sum(cell["ul_bitrate"] for cell in stats_dict["cells"].values()),
-            nof_ko_dl=sum(cell["dl_err_count"] + cell["dl_retx_count"] for cell in stats_dict["cells"].values()),
-            nof_ko_ul=sum(cell["ul_retx_count"] for cell in stats_dict["cells"].values()),
-            nof_handovers=stats_dict["counters"]["messages"].get("handover_success", 0),
-        )
+        if self._stats_ue_metrics is None:
+            self._stats_ue_metrics = UeMetrics()
+        cells = stats_dict["cells"].values()
+
+        # Rates are instantaneous (per sampling window): keep the latest sample.
+        self._stats_ue_metrics.dl_bitrate = sum(cell["dl_bitrate"] for cell in cells)
+        self._stats_ue_metrics.ul_bitrate = sum(cell["ul_bitrate"] for cell in cells)
+
+        # Reset-on-query counters: accumulate across the periodic "stats" calls.
+        self._stats_ue_metrics.nof_ko_dl += sum(cell["dl_err_count"] + cell["dl_retx_count"] for cell in cells)
+        self._stats_ue_metrics.nof_ko_ul += sum(cell["ul_retx_count"] for cell in cells)
+
+        # Message counters (counters.messages) are cumulative, not reset by "stats": latest wins.
+        self._stats_ue_metrics.nof_handovers = stats_dict["counters"]["messages"].get("handover_success", 0)
         self._nof_pdu_session_accept = stats_dict["counters"]["messages"].get(
             "5gs_nas_pdu_session_establishment_accept", 0
         )
