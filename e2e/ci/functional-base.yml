@@ -27,17 +27,20 @@ release with deb info:
     matrix:
       - OCUDU_TARGET: ocucp ocuup ocu odu
       - OCUDU_TARGET: gnb
-  cache:
-    - key: release with deb info $OCUDU_TARGET
-      paths: [ocudu/ccache]
-      policy: push
 
-release with deb info cached:
-  extends: release with deb info
+release cached:
+  extends: .build
+  retry: 2
   rules:
     - if: $TRIGGERED_ON_MR == "true"
+  variables: &release_with_deb_info_vars
+    OS: ubuntu-24.04
+    COMPILER: gcc
+    BUILD_ARGS: >
+      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Release -DMARCH=x86-64-v3 -DASSERT_LEVEL=PARANOID
+    TEST_MODE: none
   cache:
-    - key: release with deb info $OCUDU_TARGET
+    - key: release
       paths: [ocudu/ccache]
       policy: pull-push
 
@@ -55,6 +58,6 @@ release with deb info cached:
     - job: release with deb info
       artifacts: true
       optional: true
-    - job: release with deb info cached
+    - job: release cached
       artifacts: true
       optional: true
