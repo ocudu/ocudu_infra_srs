@@ -39,7 +39,7 @@ rm -rf "$amarisoft_tmp"
 
 # Install ocudu zmq driver
 if wait_for_path "$amarisoft_dir"/trx_ocudu.so 2; then
-    cp "$amarisoft_dir"/trx_ocudu.so /opt/amarisoft/ue/
+    cp --remove-destination "$amarisoft_dir"/trx_ocudu.so /opt/amarisoft/ue/
 else
     echo "trx_ocudu.so not found, skipping (expected for non-zmq testbeds)"
 fi
