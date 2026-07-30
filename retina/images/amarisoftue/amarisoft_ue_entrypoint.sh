@@ -27,11 +27,13 @@ wait_for_path "$amarisoft_dir"/bin
 # Install amarisoft in s72 mode
 amarisoft_tmp=$(mktemp -d)
 cp -r "$amarisoft_dir"/bin/. "$amarisoft_tmp"/
+chmod +x "$amarisoft_tmp"/install.sh
 "$amarisoft_tmp"/install.sh --default --no-srv --no-ht --no-all --ue --no-package --trx-no-upgrade --trx s72 /opt/amarisoft
 
 # Compile UHD amarisoft driver for the UHD version of this image
 cp -r "$amarisoft_dir"/bin/trx_uhd*/ "$amarisoft_tmp"/
 trx_uhd_dirs=("$amarisoft_tmp"/trx_uhd*/)
+chmod +x "${trx_uhd_dirs[0]}"install.sh
 "${trx_uhd_dirs[0]}"install.sh /opt/amarisoft/ue ue > /opt/amarisoft/ue/uhd_install.log
 
 # Remove temporal folder
