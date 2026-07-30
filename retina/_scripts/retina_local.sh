@@ -15,7 +15,7 @@ cd $RETINA_PATH/_scripts
 # - Docker will build the images from scratch only the first time. 
 # - Next attempts: reuse the image but using the python code from your host (sharing it with the container)
 # - To build the images from scratch again, remove them (docker rmi / prune) or use --build flag in docker compose
-RETINA_VERSION=0.0.1 python3 generate_env.py --ocudu-path ${OCUDU_PATH} --amari-path ${AMARISOFT_PATH}
+RETINA_VERSION=0.0.2 python3 generate_env.py --ocudu-path ${OCUDU_PATH} --amari-path ${AMARISOFT_PATH}
 
 # Create testbed (call it when you change the profile and first time)
 python3 generate_testbed.py --profile ${RETINA_PROFILE}

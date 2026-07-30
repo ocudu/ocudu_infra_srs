@@ -57,7 +57,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder /usr/local/lib /usr/local/lib
 COPY --from=builder /usr/local/etc/flexric/ /usr/local/etc/flexric/
 COPY --from=builder /lib/x86_64-linux-gnu/libsctp.so.1 /lib/x86_64-linux-gnu/libsctp.so.1
-COPY --from=builder /lib/x86_64-linux-gnu/libconfig.so.9 /lib/x86_64-linux-gnu/libconfig.so.9
+COPY --from=builder /lib/x86_64-linux-gnu/libconfig.so.11 /lib/x86_64-linux-gnu/libconfig.so.11
 COPY --from=builder /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6
 COPY --from=builder /flexric /flexric
 

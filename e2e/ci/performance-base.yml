@@ -9,10 +9,10 @@ dpdk rtsan avx512:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
   variables: &dpdk_rtsan_avx512_variables
-    OS: ubuntu-24.04-rtsan
+    OS: ubuntu-26.04
     OCUDU_TARGET: gnb_split_7_2 gnb
     COMPILER: clang
-    DPDK_VERSION: 24.11.2_avx512
+    DPDK_VERSION: 25.11_avx512
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=True -DMARCH=x86-64-v4
       -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True

@@ -19,11 +19,16 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Europe/Madrid \
 
 ARG REPO_URL=https://github.com/srsran/srsRAN_4G.git
 ARG REPO_BRANCH=release_23_11
-RUN git clone --depth 1 --branch $REPO_BRANCH $REPO_URL srsran\
-  && cd srsran \
+RUN git clone --depth 1 --branch $REPO_BRANCH $REPO_URL srsran
+
+# srsRAN_4G requests Boost COMPONENTS system, which Ubuntu 26.04 no longer
+# provides a CMake config for. See boost-system-shim/boost_system-config.cmake.
+COPY ./boost-system-shim /opt/boost-system-shim
+
+RUN cd srsran \
   && mkdir -p build \
   && cd build \
-  && cmake -DENABLE_WERROR=False -DENABLE_SRSUE=True -DENABLE_SRSENB=True -DENABLE_SRSEPC=False -DENABLE_GUI=False -DRF_FOUND=True -DAUTO_DETECT_ISA=False -DDISABLE_SIMD=True -DGCC_ARCH="x86-64-v3" -GNinja .. \
+  && cmake -DENABLE_WERROR=False -DENABLE_SRSUE=True -DENABLE_SRSENB=True -DENABLE_SRSEPC=False -DENABLE_GUI=False -DRF_FOUND=True -DAUTO_DETECT_ISA=False -DDISABLE_SIMD=True -DGCC_ARCH="x86-64-v3" -Dboost_system_DIR=/opt/boost-system-shim -GNinja .. \
   && ninja \
   && ninja install
 
@@ -38,7 +43,7 @@ COPY --from=builder /usr/local/lib /usr/local/lib
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN DEBIAN_FRONTEND=noninteractive TZ=Europe/Madrid \
   apt-get update && apt-get install -y --no-install-recommends \
-  libboost-program-options-dev libmbedcrypto7 libconfig++-dev libsctp-dev libfftw3-dev \
+  libboost-program-options-dev libmbedtls-dev libconfig++-dev libsctp-dev libfftw3-dev \
   uhd-host libuhd-dev libzmq3-dev libsoapysdr-dev \
   && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 

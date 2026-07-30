@@ -61,23 +61,23 @@ class _BuildDefinition:
 BUILD_DEFINITIONS: Dict[str, _BuildDefinition] = {
     "standard": _BuildDefinition(
         tags=["saas-linux-medium-amd64"],
-        os="ubuntu-24.04",
+        os="ubuntu-26.04",
         compiler="gcc",
         target="gnb_split_7_2",
         build_args="-DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=True -DENABLE_UHD=False -DENABLE_DPDK=True "
         '-DENABLE_ZEROMQ=False -DENABLE_FFTW=False -DENABLE_MKL=True -DMARCH="x86-64-v4"',
-        dpdk_version="24.11.2_avx512",
+        dpdk_version="25.11_avx512",
         uhd_version="",
     ),
     "rtsan": _BuildDefinition(
         tags=["saas-linux-medium-amd64"],
-        os="ubuntu-24.04-rtsan",
+        os="ubuntu-26.04",
         compiler="clang",
         target="gnb_split_7_2",
         build_args="-DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=True -DENABLE_UHD=False -DENABLE_DPDK=True "
         '-DENABLE_ZEROMQ=False -DENABLE_FFTW=False -DENABLE_MKL=True -DMARCH="x86-64-v4" '
         "-DENABLE_RTSAN=True -DENABLE_WERROR=False",
-        dpdk_version="24.11.2_avx512",
+        dpdk_version="25.11_avx512",
         uhd_version="",
     ),
 }

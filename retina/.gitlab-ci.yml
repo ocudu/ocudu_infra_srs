@@ -191,7 +191,7 @@ retina publish wheel:
     CACHE: "true"
     CACHE_MODE: max
     VERSION: ${RETINA_VERSION}
-    AGENT_OS_VERSION: "noble-20260410"
+    AGENT_OS_VERSION: "resolute-20260707"
     FLEXRIC_VERSION: "br-flexric" # NOTE: there is only version 1.0.0 but very old
     OPEN5GS_VERSION: "2.8.0"
     SRSUE_VERSION: "23.11"
@@ -235,51 +235,24 @@ retina containers [wheelhouse]:
     - retina containers [agent]
     - retina containers [wheelhouse]
 
-retina containers:
+retina containers [amarisoftue]:
   extends: .retina containers images
-  rules:
-    - *skip_retina_ci
-    - *skip_mr_fork
-    - *force_retina_ci
-    - <<: *retina_on_mr
-      when: delayed
-      start_in: 1 minute
   variables:
     CACHE: "false" # Just FROM agent + minimal apt
-  parallel:
-    matrix:
-      - NAME: amarisoftue
-      - NAME: amarisoftue-remote
-        CONTEXT: retina/images/amarisoftue_remote
-      - NAME: amarisoft5gc
-      - NAME: amarisoft5gc-remote
-        CONTEXT: retina/images/amarisoft5gc_remote
-      - NAME: ocudu-remote
-        CONTEXT: retina/images/ocudu_remote
-      - NAME: android
+    NAME: amarisoftue
 
-retina containers [flexric]:
+retina containers [amarisoft5gc]:
   extends: .retina containers images
-  rules:
-    - *skip_retina_ci
-    - *skip_mr_fork
-    - *force_retina_ci
-    - <<: *retina_on_mr
-      when: delayed
-      start_in: 1 minute
   variables:
-    NAME: flexric
-    FLEXRIC_REPO_URL: https://gitlab.eurecom.fr/mosaic5g/flexric.git
-    FLEXRIC_BRANCH: br-flexric
-    VERSION: ${FLEXRIC_VERSION}_${RETINA_VERSION}
-    BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};REPO_URL=${FLEXRIC_REPO_URL};REPO_BRANCH=${FLEXRIC_BRANCH}
+    CACHE: "false" # Just FROM agent + minimal apt
+    NAME: amarisoft5gc
 
 retina containers [ocudu]:
   extends: .retina containers images
   variables:
     NAME: ocudu
     CONTEXT: retina/images/ocudu
-    BUILDER_IMAGE_NAME: builder-ubuntu-24.04:${DOCKER_BUILDER_VERSION}
+    BUILDER_IMAGE_NAME: builder-ubuntu-26.04:${DOCKER_BUILDER_VERSION}
     BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};BUILDER_IMAGE=${OCUDU_REGISTRY_URI}/${BUILDER_IMAGE_NAME};RETINA_AGENT=${NAME}
     KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "100G"
     KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "100G"
@@ -298,6 +271,22 @@ retina containers [open5gs]:
     VERSION: ${OPEN5GS_VERSION}_${RETINA_VERSION}
     BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};OPEN5GS_VERSION=v${OPEN5GS_VERSION}
 
+retina containers [flexric]:
+  extends: .retina containers images
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - <<: *retina_on_mr
+      when: delayed
+      start_in: 1 minute
+  variables:
+    NAME: flexric
+    FLEXRIC_REPO_URL: https://gitlab.eurecom.fr/mosaic5g/flexric.git
+    FLEXRIC_BRANCH: br-flexric
+    VERSION: ${FLEXRIC_VERSION}_${RETINA_VERSION}
+    BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};REPO_URL=${FLEXRIC_REPO_URL};REPO_BRANCH=${FLEXRIC_BRANCH}
+
 retina containers [srsue]:
   extends: .retina containers images
   rules:
@@ -313,6 +302,27 @@ retina containers [srsue]:
     SRSRAN_REPO_URL: https://github.com/srsran/srsRAN_4G.git
     SRSRAN_BRANCH: release_23_11
     BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};REPO_URL=${SRSRAN_REPO_URL};REPO_BRANCH=${SRSRAN_BRANCH}
+
+retina containers:
+  extends: .retina containers images
+  rules:
+    - *skip_retina_ci
+    - *skip_mr_fork
+    - *force_retina_ci
+    - <<: *retina_on_mr
+      when: delayed
+      start_in: 1 minute
+  variables:
+    CACHE: "false" # Just FROM agent + minimal apt
+  parallel:
+    matrix:
+      - NAME: amarisoftue-remote
+        CONTEXT: retina/images/amarisoftue_remote
+      - NAME: amarisoft5gc-remote
+        CONTEXT: retina/images/amarisoft5gc_remote
+      - NAME: ocudu-remote
+        CONTEXT: retina/images/ocudu_remote
+      - NAME: android
 
 # Publish Containers
 publish latest:

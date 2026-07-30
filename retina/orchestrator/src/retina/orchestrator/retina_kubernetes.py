@@ -556,6 +556,7 @@ class Kubernetes(KubernetesManager):
         env_list = [
             {"name": "RETINA_IP", "valueFrom": {"fieldRef": {"fieldPath": "status.podIP"}}},
             {"name": "RETINA_NODE_IP", "valueFrom": {"fieldRef": {"fieldPath": "status.hostIP"}}},
+            {"name": "UHD_IMAGES_DIR", "value": "/usr/share/uhd/images"},
         ]
         for req in config.environment:
             for k, v in req.items():

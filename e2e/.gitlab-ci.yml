@@ -190,7 +190,7 @@ debug:
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
-    OS: ubuntu-24.04
+    OS: ubuntu-26.04
     OCUDU_TARGET: gnb
     COMPILER: gcc
     BUILD_ARGS: >
@@ -205,7 +205,7 @@ asan:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
   variables:
-    OS: ubuntu-24.04
+    OS: ubuntu-26.04
     OCUDU_TARGET: gnb
     COMPILER: clang
     BUILD_ARGS: >
@@ -219,7 +219,7 @@ tsan:
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
   variables:
-    OS: ubuntu-24.04
+    OS: ubuntu-26.04
     OCUDU_TARGET: gnb
     COMPILER: clang
     BUILD_ARGS: >

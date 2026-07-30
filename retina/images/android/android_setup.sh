@@ -6,7 +6,10 @@
 
 set -e
 
-DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
+DEBIAN_FRONTEND=noninteractive apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    ca-certificates wget
+DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     adb scrcpy
 
 mkdir -p /root/.android/ && readlink -f $(which adb) >/root/.android/adb.5037

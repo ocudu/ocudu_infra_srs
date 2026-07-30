@@ -17,7 +17,7 @@ release with deb info:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
   variables: &release_with_deb_info_vars
-    OS: ubuntu-24.04
+    OS: ubuntu-26.04
     COMPILER: gcc
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMARCH=x86-64-v3
