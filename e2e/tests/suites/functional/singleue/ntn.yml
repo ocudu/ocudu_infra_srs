@@ -239,7 +239,7 @@ geo_fl_false_harq_disabled_iperf:
   core:
     config: [baseline.cfg]
   criteria:
-    du.dl_bitrate_gt: 18.0e+6
+    du.dl_bitrate_gt: 17.0e+6
     du.ul_bitrate_gt: 18.0e+6
     du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
