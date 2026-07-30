@@ -107,17 +107,27 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
     def _warning_regex(self) -> str:
         return (
             r"^.*\[1;36mWARNING\x1B\[0m: "
-            r"(?!.*Please change the configuration files)(?!.*NF has already been added)(?!.*UnRef NF EndPoint)"
-            r"(?!.*Couldn't connect to server)(?!.*ogs_sbi_client_handler\(\) failed)"
+            r"(?!.*Please change the configuration files)"
+            r"(?!.*NF has already been added)"
+            r"(?!.*UnRef NF EndPoint)"
+            r"(?!.*Couldn't connect to server)"
+            r"(?!.*ogs_sbi_client_handler\(\) failed)"
             r".*$"
         )
 
     @property
     def _error_regex(self) -> str:
         return (
-            r"^.*\[1;33mERROR\x1B\[0m: (?!.*Child status change)(?!.*Invalid packet)(?!.*No IPv6 subnet)"
-            r"(?!.*Send Error Indication)(?!.*Cannot find PDU Session ID)(?!.*No RAN UE Context)"
-            r"(?!.*No NF-Instance)(?!.*HTTP response error)"
+            r"^.*\[1;33mERROR\x1B\[0m: "
+            r"(?!.*Child status change)"
+            r"(?!.*Invalid packet)"
+            r"(?!.*No IPv6 subnet)"
+            r"(?!.*Send Error Indication)"
+            r"(?!.*Cannot find PDU Session ID)"
+            r"(?!.*Failed to find RAN UE by NGAP UE IDs)"
+            r"(?!.*No RAN UE Context)"
+            r"(?!.*No NF-Instance)"
+            r"(?!.*HTTP response error)"
             r".*$"
         )
 
