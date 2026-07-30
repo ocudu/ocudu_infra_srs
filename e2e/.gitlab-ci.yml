@@ -113,6 +113,14 @@ dynamically generated pipeline validation:
   allow_failure: true
   variables:
     TRIGGERED_ON_MR: "true"
+    # Runner tag for the build jobs of the child pipeline (see e2e/ci/child-template.yml).
+    # Using ${OCUDU_RUNNER_TAG} directly there does not work: OCUDU_RUNNER_TAG is defined
+    # in ocudu's .gitlab/ci-shared/workflow.yml, which the child pipeline does not include,
+    # so the child only sees the copy forwarded from this pipeline (trigger:forward:
+    # yaml_variables). Forwarded variables rank above any group/project overwrite.
+    # Expanding it here instead, in the parent, allows a group/project overwrite correctly
+    # and forwards a flat string the child just uses.
+    OCUDU_AMD_RUNNER_TAG: ${OCUDU_RUNNER_TAG}-amd64
   needs:
     - get retina version
 

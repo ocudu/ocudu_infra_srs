@@ -129,8 +129,6 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
             try:
                 job: ProjectJob = project.jobs.get(job_id)
                 variable_dict.update(_extract_variables_from_job(project, job.id))
-                if "LAUNCHER_ARGS" not in variable_dict:
-                    variable_dict["BUILD_TAGS"] = job.tag_list
                 return variable_dict
             except gitlab.exceptions.GitlabGetError:
                 continue
@@ -149,9 +147,6 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
                         variable_dict.update(_extract_variables_from_job(project, job.id))
                         if not variable_dict:
                             continue  # If the variable dict is empty, keep searching
-                        if "LAUNCHER_ARGS" not in variable_dict:
-                            # Build job found
-                            variable_dict["BUILD_TAGS"] = job.tag_list
                         return variable_dict
                     if time.time() >= time_to_reach:
                         print(
@@ -193,6 +188,10 @@ def _extract_variables_from_job(project: Project, job_id: int) -> Dict[str, Any]
 
     if ocudu_targets:
         variable_dict["OCUDU_TARGET"] = ocudu_targets
+
+        if "LAUNCHER_ARGS" not in variable_dict:
+            # Build job found
+            variable_dict["BUILD_TAGS"] = job.tag_list
 
     return variable_dict
 
