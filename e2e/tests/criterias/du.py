@@ -235,6 +235,15 @@ class nof_paging_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_paging_messages for s in self._stub_array)
 
 
+class nof_paging_ge(DuCriteria):
+    """Paging Messages"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_paging_messages for s in self._stub_array)
+
+
 class nof_rrc_suspend_eq(DuCriteria):
     """RRC Suspend"""
 
