@@ -5,9 +5,12 @@
 
 set -e
 
+# Profile with the builders to run. Available: builders (default), builders-rt
+PROFILE=${1:-builders}
+
 cd $RETINA_PATH/_scripts
 python3 generate_env.py --ocudu-path ${OCUDU_PATH} --amari-path ${AMARISOFT_PATH}
-docker compose --profile builders up
+docker compose --profile ${PROFILE} up
 
 # Alternatively, you can run the build container with custom flags:
 # docker compose run --rm ocudu-builder \

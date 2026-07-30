@@ -42,6 +42,41 @@ services:
         "/builds/ocudu/ocudu",
       ]
 
+  ocudu-builder-rt:
+    container_name: ocudu-builder-rt
+    profiles:
+      - all
+      - builders-rt
+    image: ${BUILDER_IMAGE}
+    volumes:
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+    environment:
+      CLICOLOR_FORCE: 1
+    network_mode: "none"
+    user: "${UID}:${GID}"
+    command:
+      [
+        "builder.sh",
+        "-b",
+        "build_retina",
+        "-c",
+        "clang",
+        "-m",
+        "-j${BUILD_JOBS} gnb_split_7_2",
+        "-DENABLE_WERROR=False",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFORCE_DEBUG_INFO=True",
+        "-DMARCH=x86-64-v4",
+        "-DENABLE_RTSAN=True",
+        "-DENABLE_ZEROMQ=False",
+        "-DENABLE_UHD=False",
+        "-DENABLE_DPDK=True",
+        "-DASSERT_LEVEL=AUTO",
+        "-DEXIT_TIMEOUT=30",
+        "-DLINKER=lld",
+        "/builds/ocudu/ocudu",
+      ]
+
   amari-zmq-builder:
     container_name: amari-zmq-builder
     profiles:
@@ -65,7 +100,7 @@ services:
         "-c",
         "gcc",
         "-m",
-        "trx_ocudu_test",
+        "-j${BUILD_JOBS} trx_ocudu_test",
         "-DBUILD_TESTING=False",
         "-DENABLE_EXPORT=True",
         "-DENABLE_UHD=False",

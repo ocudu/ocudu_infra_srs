@@ -96,6 +96,9 @@ def main():
         builder_data = load_yaml(ocudu_path / ".gitlab/ci/builders/version.yml")
         docker_builder_version = builder_data["variables"]["DOCKER_BUILDER_VERSION"]
 
+    # Parallel jobs for the builders, equivalent to `nproc` (honours cpu affinity when available)
+    build_jobs = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 2) - 1
+
     # .env creating
     current_working_directory = Path.cwd()
 
@@ -113,6 +116,7 @@ def main():
         "DOCKER_BUILDER_VERSION": docker_builder_version,
         "BUILDER_IMAGE": builder_image,
         "DPDK_VERSION": dpdk_version,
+        "BUILD_JOBS": str(build_jobs),
         "UID": str(os.getuid()),
         "GID": str(os.getgid()),
     }
