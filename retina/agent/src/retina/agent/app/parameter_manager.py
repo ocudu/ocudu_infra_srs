@@ -20,7 +20,7 @@ from types import ModuleType
 from typing import Any, Dict, get_type_hints
 
 import yaml
-from typeguard import check_type
+from typeguard import check_type, CollectionCheckStrategy, TypeCheckError
 
 
 class ParameterNamespace(Enum):
@@ -110,7 +110,10 @@ def set_parameter(param_name: str, new_value: Any, auto_convert: bool = False) -
         else:
             logging.warning("param %s from %s namespace doesn't have a valid type hint", key, namespace_value)
             type_hint = type(old_value)
-        check_type(key, new_value, type_hint)
+        try:
+            check_type(new_value, type_hint, collection_check_strategy=CollectionCheckStrategy.ALL_ITEMS)
+        except TypeCheckError as error:
+            raise TypeError(f"param {param_name}: {error}") from error
         if old_value == new_value:
             return
 

@@ -24,7 +24,7 @@ dependencies = [
   "importlib-metadata < 7; python_version<'3.8'",
   "psutil < 6",
   "PyYAML < 7",
-  "typeguard < 3",
+  "typeguard >= 4, < 5",
   "jinja2 < 4",
   "pymongo < 5",
   "websocket-client < 2",
