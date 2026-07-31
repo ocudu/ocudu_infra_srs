@@ -54,6 +54,15 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
         transport: "ethernet",
         bind_interface: "{{s72_port.interface}}",
         remote_addr: "{{s72_port.du_mac_addr}}",
+        t1a_min_up_dl: -30,
+        t1a_max_up_dl: 0,
+        t1a_min_cp_dl: -30,
+        t1a_max_cp_dl: 0,
+        t1a_min_cp_ul: -30,
+        t1a_max_cp_ul: 0,
+        // This is used in the uesim TX (uplink) and adds some headroom for the UE to deliver the packets after OTA,
+        // so nothing gets dropped by the TRX driver itself:
+        ta3_min: 1000,
       },
     {% endfor %}
     ],
