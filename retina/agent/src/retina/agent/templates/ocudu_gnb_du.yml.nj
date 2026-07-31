@@ -13,7 +13,7 @@ gnb_du_id: {{gnb_du_id}}
 trace:
   filename: {{tracing_filename}}
   max_tracing_events_per_file: 1000000
-  nof_tracing_events_after_severe: 500
+  nof_tracing_events_before_severe: 500
 {% endif %}
 
 pcap:
