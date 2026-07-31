@@ -1,0 +1,81 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Mixed control/user plane traffic model, 2-cell testbed
+# This test can cover the three variants of TIFG E2E test v10.0: TC 8.4/8.5/8.6
+#
+# The purpose of this test is to exercise several control/user plane procedures at the same time
+# against a 2-cell gNB, combining UDP traffic, Attach/dettach loops, TAU request, Paging and
+# Handover into a single scenario. Five UE groups power on one after another, in this order:
+# static, paging, tau, cycling, handover. Within each group, UEs are staggered every
+# "power_on_stagger_delay" seconds; the next group only starts powering on once the whole
+# previous group has powered on:
+# - "static" UEs stay attached and keep running bidirectional UDP traffic for the whole test. This
+#   group anchors the test's overall duration ("traffic_duration"): every other group starts later
+#   (see above) and is sized to finish at or before the static group does.
+# - "paging" UEs go RRC_INACTIVE/idle and get paged by downlink data roughly every
+#   "paging_period" seconds (jittered per UE to approximate random paging times).
+# - "tau" UEs stay attached and send a Tracking Area Update request every "tau_period" seconds.
+# - "cycling" UEs run traffic, then deregister, power off, wait and power back on. The number of
+#   cycles isn't a direct input - it's derived from how much of "traffic_duration" is left once the
+#   cycling group starts, so it finishes at or before the static group.
+# - "handover" UEs bounce back and forth between the two cells while running traffic, triggering
+#   repeated handovers. Their own traffic duration is likewise derived, not "traffic_duration" itself.
+#
+
+tdd_dl_heavy: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_1000
+  ue:
+    config: [2cell_intrafreq_chsim.cfg, traffic_model.cfg]
+    parameters:
+      <<: &common_ue_params
+        dl_bitrate: 4.0e+5
+        ul_bitrate: 4.0e+4
+        traffic_duration: 100
+        cycle_traffic_duration: 3
+        cycle_off_duration: 5
+        tau_period: 10
+        paging_period: &paging_period 10
+        paging_idle_delay: 6 # margin over cu_cp.inactivity_timer (2s) before DL data actually arrives
+        log_level: "error"
+        power_on_stagger_delay: 0.02 # 50 UE/s per group
+        rx_to_tx_latency: 2
+        num_cells: 2
+      nof_ue_static: &nof_ue_static 500
+      nof_ue_cycling: &nof_ue_cycling 100
+      nof_ue_tau: &nof_ue_tau 100
+      nof_ue_paging: &nof_ue_paging 100
+      nof_ue_handover: &nof_ue_handover 100
+  gnb:
+    config: [cu_cp.yml, du.yml, vonr_qos.yml, 2cell_intrafreq.yml, mobility.yml, tdd_72.yml, prach_config.yml, 1000ue.yml, inactivity_timer.yml, cfra_ho.yml, mac_pcap.yml]
+    parameters:
+      <<: &common_gnb_params
+        log_level: warning
+        pusch_dec_max_iterations: 2
+        discard_timer: -1
+        pusch_max_ue_mcs: 20 # reduce the load in PUSCH decoding
+      prach_config_index: 7
+      zero_correlation_zone: 1
+      min_k1_k2: 2
+      num_cells: 2
+      time_multiplier: &time_multiplier 10
+  core:
+    config: [baseline.cfg]
+    parameters:
+      time_multiplier: *time_multiplier
+  feature_ids: [MVP-FUNC-TDD-16-2, MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-11, CU-GEN-7]
+  criteria:
+    <<: &common_criteria
+      du.nof_ko_dl_le: .inf
+      du.nof_ko_ul_le: .inf
+      du.nof_reestablishments_request_eq: 2 # accept some HO failures due to PRACH contention
+      du.nof_error_indications_le: 0
+      all.errors_le: 0
+      all.warnings_le: 10 # accept some HO failures due to PRACH contention
+    core.nof_pdu_session_establishment_accept_eq: &nof_ue_attaches 1700
+    ue.nof_handovers_ge: 2000
+    core.nof_ng_paging_ge: 800
+    du.nof_paging_ge: 1600
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0

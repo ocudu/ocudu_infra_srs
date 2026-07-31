@@ -122,6 +122,17 @@ slice:
     KEYWORDS: "functional.multiue.slice."
     TESTBED: dynamic
 
+traffic_model:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "functional.multiue.traffic_model."
+    TESTBED: dynamic
+
 ue_state_transition:
   stage: multiue
   extends: .functional_e2e
