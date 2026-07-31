@@ -149,12 +149,12 @@ retina demolition:
 ## Scheduled pipelines promotion
 .ocudu promotion:
   stage: .post
-  image: alpine:3.16.0
+  image:
+    name: alpine/git:v2.49.1
+    entrypoint: ["/bin/sh", "-c"]
   variables:
     GIT_STRATEGY: none
     BRANCH: ""
-  before_script:
-    - apk add --no-cache git
   script:
     - |
       if [ -n "${GITLAB_TOKEN}" ]; then
