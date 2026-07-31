@@ -6,6 +6,8 @@
 {%- set dl_nr_arfcn = dl_nr_arfcn | default(626668) %}
 {%- set sector_id = sector_id | default(0) %}
 {%- set dmrs_additional_pos = dmrs_additional_pos | default(2) %}
+{%- set pusch_max_ue_mcs = pusch_max_ue_mcs | default(26) %}
+{%- set pusch_dec_max_iterations = pusch_dec_max_iterations | default(12) %}
 
 gnb_id_bit_length: {{gnb_id_bit_length}}
 gnb_du_id: {{gnb_du_id}}
@@ -23,13 +25,15 @@ cell_cfg:
   pdsch:
     dmrs_additional_position: {{dmrs_additional_pos}}
     mcs_table: qam256
+    max_ue_mcs: 27
   pusch:
     dmrs_additional_position: {{dmrs_additional_pos}}
     mcs_table: qam256
+    max_ue_mcs: {{pusch_max_ue_mcs}}
 
 expert_phy:
   pusch_channel_estimator_cfo_compensation: false
-  pusch_dec_max_iterations: 12
+  pusch_dec_max_iterations: {{pusch_dec_max_iterations}}
   pusch_channel_estimator_td_strategy: interpolate
   pusch_channel_equalizer_algorithm: "zf"
 
@@ -45,3 +49,4 @@ metrics:
     enable_sched: true
     enable_mac: true
     enable_du_proc: true
+    enable_executor: true

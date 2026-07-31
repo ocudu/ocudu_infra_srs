@@ -21,13 +21,15 @@ cell_cfg:
   pdsch:
     max_pdschs_per_slot: 16
     max_alloc_attempts: 16
-    max_ue_mcs: 26
   pusch:
     max_puschs_per_slot: 16
-    max_ue_mcs: 25
   pdcch:
     common:
       ss0_index: 0
       ss1_n_candidates: [0, 0, 8, 0, 0]
       max_coreset0_duration: 2
       coreset0_index: 13
+
+expert_execution:
+  queues:
+    du_ue_data_executor_queue_size: 16384

@@ -29,3 +29,4 @@ metrics:
   layers:
     enable_rrc: true
     enable_ngap: true
+    skip_cu_up_executor: false

@@ -1,0 +1,150 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Control plane traffic load test
+# TIFG E2E test v10.0, TC 8.3
+# The purpose of this test is to stress the control plane with a steady stream of attach/detach
+# procedures while the u-plane is kept busy, combining simultaneous_udp and ue_state_transition.
+#
+# UEs are split in two groups that power on one after another (each UE staggered every
+# "power_on_stagger_delay" seconds within its own group; the cycling group only starts powering on
+# once the whole static group has powered on):
+# - "static" UEs stay attached and keep running bidirectional UDP traffic for the whole test,
+#   exactly like simultaneous_udp/udp_multiue.cfg.
+# - "cycling" UEs run traffic for "cycle_traffic_duration" seconds, then deregister and power off,
+#   wait "cycle_off_duration" seconds and power back on. This attach/detach cycle repeats as many
+#   times as fit in the remaining "traffic_duration" once the cycling group's last UE powers on
+#   (not a direct input), so the cycling group finishes at or before the static group.
+#
+# This job tests different TDD and FDD scenarios
+
+# Baseline TDD configuration DDDSU, k1=k2=2, Short PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+# 1000 UEs total (800 static + 200 cycling), 100 UE/s attach rate per group
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_1000
+  ue:
+    config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
+    parameters:
+      <<: &common_ue_params
+        dl_bitrate: 4.0e+5
+        ul_bitrate: 4.0e+4
+        traffic_duration: 100
+        cycle_traffic_duration: 4
+        cycle_off_duration: 6
+        log_level: "error"
+        pdcch_decode_threshold: 0.5
+        power_on_stagger_delay: 0.02 # 50 UE/s per group
+        rx_to_tx_latency: 2
+      nof_ue_static: &nof_ue_static 800
+      nof_ue_cycling: &nof_ue_cycling 200
+  gnb:
+    config: [cu_cp.yml, du.yml, vonr_qos.yml, 1000ue.yml, tdd_default.yml, prach_config.yml, inactivity_timer.yml]
+    parameters:
+      <<: &common_gnb_params
+        log_level: warning
+        discard_timer: -1 # disable discard timer
+        pusch_dec_max_iterations: 2
+        pusch_max_ue_mcs: 20 # reduce the load in PUSCH decoding
+      <<: &tdd_gnb_params
+        min_k1_k2: 2
+      prach_config_index: 162
+      zero_correlation_zone: 3
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-TDD-16-2]
+  criteria:
+    <<: &common_criteria
+      du.nof_ko_dl_le: 5
+      du.nof_ko_ul_le: 500
+      du.nof_reestablishments_request_eq: 0
+      du.nof_handovers_eq: 0
+      du.max_late_dl_harqs_le: 0
+      du.max_late_ul_harqs_le: 0
+      du.nof_error_indications_le: 0
+      all.errors_le: 0
+      all.warnings_le: 1
+    core.nof_pdu_session_establishment_accept_eq: &nof_ue_attaches 2400 # measured experimentally for traffic duration
+    du.dl_bitrate_gt: 100.0e+6
+    du.ul_bitrate_gt: 20.0e+6
+
+# TDD 7D1S2U, k1=k2=2, Long PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+tdd_dl_heavy:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
+    parameters:
+      <<: *common_ue_params
+      nof_ue_static: *nof_ue_static
+      nof_ue_cycling: *nof_ue_cycling
+  gnb:
+    config: [cu_cp.yml, vonr_qos.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, inactivity_timer.yml]
+    parameters:
+      <<: *common_gnb_params
+      <<: *tdd_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+  feature_ids: [MVP-FUNC-TDD-16-4]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
+    du.dl_bitrate_gt: 140.0e+6
+    du.ul_bitrate_gt: 20.0e+6
+
+# 2D1S7U UL-heavy TDD, k1=k2=2, Long PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+tdd_ul_heavy:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
+    parameters:
+      <<: *common_ue_params
+      dl_bitrate: 1.0e+5
+      ul_bitrate: 1.0e+5
+      nof_ue_static: *nof_ue_static
+      nof_ue_cycling: *nof_ue_cycling
+  gnb:
+    config: [cu_cp.yml, du.yml, vonr_qos.yml, 1000ue.yml, tdd_27.yml, prach_config.yml, inactivity_timer.yml]
+    parameters:
+      <<: *common_gnb_params
+      <<: *tdd_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+  feature_ids: [MVP-FUNC-TDD-16-1]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
+    du.dl_bitrate_gt: 70.0e+6
+    du.ul_bitrate_gt: 70.0e+6
+
+# FDD configuration k1=k2=4, Long PRACH, 20 MHz SISO
+# 128 UEs total (64 static + 64 cycling), 100 UE/s attach rate per group
+fdd:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
+    parameters:
+      <<: *common_ue_params
+      dl_bitrate: 4.0e+5
+      ul_bitrate: 4.0e+5
+      nof_ue_static: 64
+      nof_ue_cycling: 64
+      band: 66
+      dl_nr_arfcn: 430000
+      ssb_nr_arfcn: 428650
+      bandwidth: 20
+      common_scs: 15
+  gnb:
+    config: [cu_cp.yml, du.yml, vonr_qos.yml, prach_config.yml, inactivity_timer.yml]
+    parameters:
+      band: 66
+      dl_nr_arfcn: 430000
+      bandwidth: 20
+      common_scs: 15
+      prach_config_index: 16
+      <<: *common_gnb_params
+  feature_ids: [MVP-FUNC-PHY-16-1]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: 576
+    du.dl_bitrate_gt: 20.0e+6
+    du.ul_bitrate_gt: 20.0e+6

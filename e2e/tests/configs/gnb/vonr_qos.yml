@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+{%- set discard_timer = discard_timer | default(1500) %}
+
 qos:
   -
     # 5QI=1 e.g. Conversational Voice
@@ -101,7 +103,7 @@ qos:
     pdcp:
       tx:
         sn: 18
-        discard_timer: 1500
+        discard_timer: {{discard_timer}}
         status_report_required: false
       rx:
         sn: 18
