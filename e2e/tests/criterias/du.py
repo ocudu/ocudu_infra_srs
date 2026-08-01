@@ -133,6 +133,15 @@ class nof_reestablishments_request_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).aggregate.nof_reestablishments_request for s in self._stub_array)
 
 
+class nof_reestablishments_request_le(DuCriteria):
+    """Reestablishment requests"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_reestablishments_request for s in self._stub_array)
+
+
 class nof_reestablishments_complete_eq(DuCriteria):
     """Reestablishment completions"""
 
