@@ -6,7 +6,7 @@
 {%- set dl_nr_arfcn = dl_nr_arfcn | default(626668) %}
 {%- set sector_id = sector_id | default(0) %}
 {%- set dmrs_additional_pos = dmrs_additional_pos | default(2) %}
-{%- set pusch_max_ue_mcs = pusch_max_ue_mcs | default(26) %}
+{%- set pusch_max_ue_mcs = pusch_max_ue_mcs | default(27) %}
 {%- set pusch_dec_max_iterations = pusch_dec_max_iterations | default(12) %}
 
 gnb_id_bit_length: {{gnb_id_bit_length}}

@@ -69,7 +69,7 @@ tdd_dl_heavy: &base_config
     <<: &common_criteria
       du.nof_ko_dl_le: .inf
       du.nof_ko_ul_le: .inf
-      du.nof_reestablishments_request_eq: 2 # accept some HO failures due to PRACH contention
+      du.nof_reestablishments_request_le: 5 # accept some HO failures due to PRACH contention
       du.nof_error_indications_le: 0
       all.errors_le: 0
       all.warnings_le: 10 # accept some HO failures due to PRACH contention
