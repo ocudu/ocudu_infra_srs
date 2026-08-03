@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 cell_cfg:
+  pusch:
+    enable_phr_bw_adaptation: true
+    enable_cl_loop_pw_control: true
+    target_sinr: 25
   pucch:
     enable_cl_loop_pw_control: true
     target_sinr_f0: 10
