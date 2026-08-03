@@ -68,7 +68,7 @@ python3 run_e2e_pipeline.py --token YOUR_GITLAB_TOKEN
 
 📝 Fill the inputs. Press enter to keep the value between brackets. You can skip this confirmation adding --yes flag to the call.
  - ocudu_ref ["main"]:
- - os=ubuntu-24.04
+ - os=ubuntu-26.04
 ...
 ⏩ Creating pipeline with inputs:
   - ocudu_ref=main

@@ -34,7 +34,7 @@ release cached:
   rules:
     - if: $TRIGGERED_ON_MR == "true"
   variables: &release_with_deb_info_vars
-    OS: ubuntu-24.04
+    OS: ubuntu-26.04
     COMPILER: gcc
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Release -DMARCH=x86-64-v3 -DASSERT_LEVEL=PARANOID

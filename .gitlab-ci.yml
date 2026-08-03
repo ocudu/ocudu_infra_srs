@@ -18,7 +18,7 @@ spec:
       description: "Tags to use for the build job."
     os:
       type: string
-      default: ubuntu-24.04
+      default: ubuntu-26.04
       description: "Operating system."
     ocudu_target:
       type: array
