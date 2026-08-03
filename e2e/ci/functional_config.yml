@@ -9,8 +9,9 @@ inter_cu_ho:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.mobility.inter_cu_ho."
+    KEYWORDS: "mobility.inter_cu_ho."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 inter_du_ho:
   stage: mobility
@@ -20,8 +21,9 @@ inter_du_ho:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.mobility.inter_du_ho."
+    KEYWORDS: "mobility.inter_du_ho."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 inter_ru_ho:
   stage: mobility
@@ -31,8 +33,9 @@ inter_ru_ho:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.mobility.inter_ru_ho."
+    KEYWORDS: "mobility.inter_ru_ho."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 intra_ru_ho:
   stage: mobility
@@ -42,8 +45,9 @@ intra_ru_ho:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.mobility.intra_ru_ho."
+    KEYWORDS: "mobility.intra_ru_ho."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 paging:
   stage: mobility
@@ -53,8 +57,9 @@ paging:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.mobility.paging."
+    KEYWORDS: "mobility.paging."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 reestablishment:
   stage: mobility
@@ -64,8 +69,9 @@ reestablishment:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.mobility.reestablishment."
+    KEYWORDS: "mobility.reestablishment."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 cplane_traffic_load:
   stage: multiue
@@ -75,8 +81,9 @@ cplane_traffic_load:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.multiue.cplane_traffic_load."
+    KEYWORDS: "multiue.cplane_traffic_load."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 mobility:
   stage: multiue
@@ -86,8 +93,9 @@ mobility:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.multiue.mobility."
+    KEYWORDS: "multiue.mobility."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 qos:
   stage: multiue
@@ -97,8 +105,9 @@ qos:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.multiue.qos."
+    KEYWORDS: "multiue.qos."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 simultaneous_udp:
   stage: multiue
@@ -108,8 +117,9 @@ simultaneous_udp:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.multiue.simultaneous_udp."
+    KEYWORDS: "multiue.simultaneous_udp."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 slice:
   stage: multiue
@@ -119,8 +129,9 @@ slice:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.multiue.slice."
+    KEYWORDS: "multiue.slice."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 traffic_model:
   stage: multiue
@@ -130,8 +141,9 @@ traffic_model:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.multiue.traffic_model."
+    KEYWORDS: "multiue.traffic_model."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 ue_state_transition:
   stage: multiue
@@ -141,8 +153,9 @@ ue_state_transition:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.multiue.ue_state_transition."
+    KEYWORDS: "multiue.ue_state_transition."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 bands:
   stage: singleue
@@ -152,8 +165,9 @@ bands:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.bands."
+    KEYWORDS: "singleue.bands."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 bandwiths:
   stage: singleue
@@ -163,8 +177,9 @@ bandwiths:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.bandwiths."
+    KEYWORDS: "singleue.bandwiths."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 drb_triggered_ul_grant:
   stage: singleue
@@ -174,8 +189,9 @@ drb_triggered_ul_grant:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.drb_triggered_ul_grant."
+    KEYWORDS: "singleue.drb_triggered_ul_grant."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 emergency_call:
   stage: singleue
@@ -185,8 +201,9 @@ emergency_call:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.emergency_call."
+    KEYWORDS: "singleue.emergency_call."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 fdd_siso:
   stage: singleue
@@ -196,8 +213,9 @@ fdd_siso:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.fdd_siso."
+    KEYWORDS: "singleue.fdd_siso."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 gbr_vonr:
   stage: singleue
@@ -207,8 +225,9 @@ gbr_vonr:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.gbr_vonr."
+    KEYWORDS: "singleue.gbr_vonr."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 mocn:
   stage: singleue
@@ -218,8 +237,9 @@ mocn:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.mocn."
+    KEYWORDS: "singleue.mocn."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 nrppa:
   stage: singleue
@@ -229,8 +249,9 @@ nrppa:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.nrppa."
+    KEYWORDS: "singleue.nrppa."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 ntn:
   stage: singleue
@@ -240,8 +261,9 @@ ntn:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.ntn."
+    KEYWORDS: "singleue.ntn."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 phy_configs:
   stage: singleue
@@ -251,8 +273,9 @@ phy_configs:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.phy_configs."
+    KEYWORDS: "singleue.phy_configs."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 power_control:
   stage: singleue
@@ -262,8 +285,9 @@ power_control:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.power_control."
+    KEYWORDS: "singleue.power_control."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 pws:
   stage: singleue
@@ -273,8 +297,9 @@ pws:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.pws."
+    KEYWORDS: "singleue.pws."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 security:
   stage: singleue
@@ -284,8 +309,9 @@ security:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.security."
+    KEYWORDS: "singleue.security."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 slicing:
   stage: singleue
@@ -295,8 +321,9 @@ slicing:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.slicing."
+    KEYWORDS: "singleue.slicing."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 tdd_mimo:
   stage: singleue
@@ -306,8 +333,9 @@ tdd_mimo:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.tdd_mimo."
+    KEYWORDS: "singleue.tdd_mimo."
     TESTBED: dynamic
+    MARKERS: "zmq"
 
 tdd_siso:
   stage: singleue
@@ -317,5 +345,6 @@ tdd_siso:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "functional.singleue.tdd_siso."
+    KEYWORDS: "singleue.tdd_siso."
     TESTBED: dynamic
+    MARKERS: "zmq"

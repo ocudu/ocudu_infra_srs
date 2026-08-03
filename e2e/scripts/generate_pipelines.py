@@ -4,14 +4,42 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 """
-Generates dynamically the pipelines given by the project folder structure
+Generates dynamically the pipelines declared in PIPELINES, whose stages and jobs are given by
+the test suites folder structure
 """
 
 import argparse
+import json
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import Dict, List, Set
+
+import yaml
+
+# Pipelines to generate and the variables added to every one of their jobs. MARKERS is the
+# pytest marker expression selecting the test cases the pipeline runs, usually the testbed
+# group every test case of a testbed is marked with. A pipeline only gets a job for the test
+# suite files holding at least one test case it selects.
+PIPELINES: Dict[str, Dict[str, object]] = {
+    "functional": {"MARKERS": "zmq"},
+    "performance": {"MARKERS": "s72"},
+}
+
+# Retina request a test case with no explicit one falls back to, and the testbed groups the
+# requests are marked with. Both mirror the test loader, which is what actually marks the test
+# cases: see RetinaTestDefinition.from_dict and RETINA_REQUEST_GROUPS in
+# e2e/tests/steps/test_loader.py.
+DEFAULT_RETINA_REQUEST = "zmq_mme"
+RETINA_REQUEST_GROUPS = ("android", "rf", "s72", "test_mode", "viavi", "zmq")
+
+# Identifiers of a pytest marker expression, that is everything but its boolean operators.
+MARKER_EXPRESSION_IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_.\-]*")
+MARKER_EXPRESSION_OPERATORS = {"and", "not", "or"}
+
+# Extensions the test loader picks test suite files up by.
+SUITE_EXTENSIONS = (".yml", ".yaml")
 
 
 def generate_header():
@@ -55,13 +83,14 @@ class Job:
     name: str
     stage: str
     pipeline_name: str
+    variables: Dict[str, object]
 
     def format(self):
         """
         Formats the job into an string and returns it.
         """
 
-        return f"""{self.name}:
+        formatted = f"""{self.name}:
   stage: {self.stage}
   extends: .{self.pipeline_name}_e2e
   rules:
@@ -69,9 +98,15 @@ class Job:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "{self.pipeline_name}.{self.stage}.{self.name}."
+    KEYWORDS: "{self.stage}.{self.name}."
     TESTBED: dynamic
 """
+
+        # Pipeline variables, dumped as json so that any scalar type is valid yaml.
+        for key, value in self.variables.items():
+            formatted += f"    {key}: {json.dumps(value)}\n"
+
+        return formatted
 
 
 class Pipeline:
@@ -79,14 +114,26 @@ class Pipeline:
     Pipeline class definition.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, variables=None):
         """
-        Initializes the members of the Pipeline class.
+        Initializes the members of the Pipeline class. The pipeline name is used for its job
+        names, its generated file name, its schedule description and the `<name>_base.yml`
+        file providing the `.<name>_e2e` job its jobs extend.
         """
 
         self.name = name
+        self.variables = variables if variables is not None else {}
+        self.markers = get_expression_markers(self.variables.get("MARKERS"))
         self.stages = []
         self.jobs = []
+
+    def runs_suite(self, suite_markers):
+        """
+        Tells whether this pipeline selects any test case of a test suite tagged with the
+        given markers. A pipeline selecting no marker in particular runs every test suite.
+        """
+
+        return not self.markers or bool(self.markers & suite_markers)
 
     def append_stage(self, stage):
         """
@@ -108,6 +155,13 @@ class Pipeline:
         """
 
         return self.name
+
+    def get_variables(self):
+        """
+        Gets the pipeline variables, added to every one of its jobs.
+        """
+
+        return self.variables
 
     def get_stages(self):
         """
@@ -132,31 +186,97 @@ class Pipeline:
         return formatted
 
 
+def get_expression_markers(expression) -> Set[str]:
+    """
+    Gets the marker names used in the given pytest marker expression. Its boolean operators
+    are not interpreted, so for anything but a plain `a or b` expression the result is a
+    superset of the markers the expression selects.
+    """
+
+    return {
+        marker
+        for marker in MARKER_EXPRESSION_IDENTIFIER.findall(expression or "")
+        if marker not in MARKER_EXPRESSION_OPERATORS
+    }
+
+
+def get_request_group(retina_request: str) -> str:
+    """
+    Gets the testbed group of the given retina request, or the request itself if it is not
+    part of any of the known groups, as the test loader does.
+    """
+
+    for group in RETINA_REQUEST_GROUPS:
+        if retina_request == group or retina_request.startswith(f"{group}_"):
+            return group
+
+    return retina_request
+
+
+def get_suite_markers(path) -> Set[str]:
+    """
+    Gets the testbed markers the test cases of the given test suite file are tagged with by the
+    test loader: the retina request of every test case and its group. The feature ids it also
+    marks them with are of no use to tell the pipelines apart.
+    """
+
+    try:
+        with open(path, encoding="utf-8") as f:
+            suite = yaml.safe_load(f) or {}
+    except (IOError, yaml.YAMLError) as e:
+        print(f"⚠️ Error reading {path}: {e}")
+        return set()
+
+    markers: Set[str] = set()
+
+    for test_case in suite.values():
+        # Entries holding nothing but anchors to be reused are not test cases.
+        if not isinstance(test_case, dict) or "template" not in test_case:
+            continue
+        retina_request = test_case.get("request", DEFAULT_RETINA_REQUEST)
+        markers.update((retina_request, get_request_group(retina_request)))
+
+    return markers
+
+
 def iterate_ordered_hierarchy(path, pipelines, level=0):
     """
-    Iterates over the given path at the given level and fills the pipelines.
+    Iterates over the given path at the given level and fills the given pipelines, all of
+    them fed from the same hierarchy: the first level holds the stages and the second one
+    the test suite files, one job each.
     """
 
     path = Path(path)
 
-    # If we are on level one it means we are on the pipelines level.
-    if level == 1:
-        pipeline = Pipeline(path.name)
-        pipelines.append(pipeline)
-    # If we are on level two it means we are on the stages level.
-    elif level == 2:
-        if path.is_dir():
-            pipelines[-1].append_stage(path.name)
-    # If we are on level three it means we are on the jobs level.
-    elif level == 3:
+    # Stages are folders, so anything else at that level is not one.
+    if level == 1 and not path.is_dir():
+        return
+
+    # If we are on level two it means we are on the jobs level.
+    if level == 2:
+        if path.suffix not in SUITE_EXTENSIONS:
+            return
+
         name = path.stem  # Call stem to remove the file extension from the name
         stage = path.parents[0].name
-        pipeline_name = path.parents[1].name
-        job = Job(name, stage, pipeline_name)
 
-        pipelines[-1].append_job(job)
+        # A pipeline selecting none of the test cases of a suite gets no job for it: it would
+        # run pytest with a filter matching nothing, which pytest reports as an error.
+        suite_markers = get_suite_markers(path)
+        selected = [pipeline for pipeline in pipelines if pipeline.runs_suite(suite_markers)]
+
+        if not selected:
+            print(f"🟡 No pipeline runs {path}: none of them selects any of its markers")
+
+        for pipeline in selected:
+            if stage not in pipeline.get_stages():
+                pipeline.append_stage(stage)
+            pipeline.append_job(Job(name, stage, pipeline.get_name(), pipeline.get_variables()))
+
+        return
+
     # There are no more defined levels.
-    elif level > 0:
+    if level > 2:
         return
 
     # Iterate over the following level
@@ -211,39 +331,40 @@ def generate_stages_file(stages_output_path, dynamic_stages):
 
 def generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_includes):
     """
-    Generates e2e/ci/e2e-template.yml with spec inputs, per-pipeline base and
+    Generates e2e/ci/e2e_template.yml with spec inputs, per-pipeline base and
     conditional config includes, and MR child pipeline trigger jobs.
     """
 
     # Path prefix for e2e/ci relative to repo root (used in local: entries)
     ci_rel = os.path.relpath(pipelines_output_path, start=stages_output_path)
 
-    path = Path(pipelines_output_path) / "e2e-template.yml"
+    path = Path(pipelines_output_path) / "e2e_template.yml"
     try:
         with open(path, "w", encoding="utf-8") as f:
             f.write(generate_header())
             f.write(generate_spec())
             # Per-pipeline: unconditional base + conditional config
             f.write("include:\n")
-            for name, include_path in pipeline_includes:
-                f.write(f"  - local: {ci_rel}/{name}-base.yml\n")
+            for pipeline, include_path in pipeline_includes:
+                f.write(f"  - local: {ci_rel}/{pipeline.get_name()}_base.yml\n")
                 f.write(f"  - local: {include_path}\n")
                 f.write("    rules:\n")
-                f.write(f"      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{name}/\n")
+                f.write(f"      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{pipeline.get_name()}/\n")
             f.write("\n")
             # MR child pipeline trigger jobs + promotion jobs, one pair per discovered pipeline
-            for i, (name, include_path) in enumerate(pipeline_includes):
+            for i, (pipeline, include_path) in enumerate(pipeline_includes):
+                name = pipeline.get_name()
                 if i > 0:
                     f.write("\n")
                 f.write(f"{name}:\n")
                 f.write("  extends: .trigger e2e\n")
                 f.write("  trigger:\n")
                 f.write("    include:\n")
-                f.write(f"      - local: {ci_rel}/child-template.yml\n")
+                f.write(f"      - local: {ci_rel}/child_template.yml\n")
                 f.write("        inputs:\n")
                 f.write("          ocudu_path: $[[ inputs.ocudu_path ]]\n")
                 f.write("          ocudu_ref: $[[ inputs.ocudu_ref ]]\n")
-                f.write(f"      - local: {ci_rel}/{name}-base.yml\n")
+                f.write(f"      - local: {ci_rel}/{name}_base.yml\n")
                 f.write(f"      - local: {include_path}\n")
                 f.write("    strategy: mirror\n")
                 f.write("    forward:\n")
@@ -265,7 +386,8 @@ def generate_pipelines_dynamically(input_path, pipelines_output_path, stages_out
     Generates the needed pipelines dynamically.
     """
 
-    pipelines: List[Pipeline] = []
+    # Every pipeline runs the same hierarchy of test suite files.
+    pipelines: List[Pipeline] = [Pipeline(name, variables) for name, variables in PIPELINES.items()]
 
     iterate_ordered_hierarchy(input_path, pipelines)
 
@@ -276,14 +398,14 @@ def generate_pipelines_dynamically(input_path, pipelines_output_path, stages_out
     base.mkdir(parents=True, exist_ok=True)
 
     for pipeline in pipelines:
-        pipeline_path = base / f"{pipeline.get_name()}-config.yml"
+        pipeline_path = base / f"{pipeline.get_name()}_config.yml"
         create_pipeline_file(pipeline_path, pipeline)
 
         dynamic_stages.extend(pipeline.get_stages())
 
         # Include path relative to the generated file, for the conditional include block.
         include_path = os.path.relpath(pipeline_path, start=stages_output_path)
-        pipeline_includes.append((pipeline.get_name(), include_path))
+        pipeline_includes.append((pipeline, include_path))
 
     generate_stages_file(stages_output_path, dynamic_stages)
     generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_includes)

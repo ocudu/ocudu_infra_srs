@@ -9,5 +9,6 @@ paging:
     - when: manual
       allow_failure: true
   variables:
-    KEYWORDS: "performance.mobility.paging."
+    KEYWORDS: "mobility.paging."
     TESTBED: dynamic
+    MARKERS: "s72"

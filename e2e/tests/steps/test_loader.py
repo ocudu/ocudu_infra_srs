@@ -14,6 +14,25 @@ import yaml
 
 from .. import criterias as _
 
+# Testbed groups a retina request can belong to. Every test case is marked with the group of
+# its request on top of the request itself, so that every test case of a testbed can be
+# selected with a single marker (see PIPELINES in e2e/scripts/generate_pipelines.py). Every
+# group in use has to be declared in the markers list of e2e/pyproject.toml.
+RETINA_REQUEST_GROUPS = ("android", "rf", "s72", "test_mode", "viavi", "zmq")
+
+
+def get_request_group(retina_request: str) -> str:
+    """
+    Gets the testbed group of the given retina request, or the request itself if it is not
+    part of any of the known groups.
+    """
+
+    for group in RETINA_REQUEST_GROUPS:
+        if retina_request == group or retina_request.startswith(f"{group}_"):
+            return group
+
+    return retina_request
+
 
 @dataclass
 class RetinaItemConfig:
@@ -113,7 +132,13 @@ def load_tests(func: Callable):
                 tdef,
                 f"retina_requests/{tdef.retina_request}.yml",
                 id=tdef.name,
-                marks=[getattr(pytest.mark, item) for item in (tdef.retina_request, *tdef.feature_ids)],
+                # dict.fromkeys keeps the order and drops the group when it is the request itself
+                marks=[
+                    getattr(pytest.mark, item)
+                    for item in dict.fromkeys(
+                        (tdef.retina_request, get_request_group(tdef.retina_request), *tdef.feature_ids)
+                    )
+                ],
             )
             for tdef in _parse_test_definitions(func.__module__.split(".")[-1] + "." + func.__qualname__)
         ],

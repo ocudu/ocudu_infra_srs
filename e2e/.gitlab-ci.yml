@@ -19,7 +19,7 @@ include:
   - project: $[[ inputs.ocudu_path ]]
     ref: $[[ inputs.ocudu_ref ]]
     file: .gitlab/ci-shared/static.yml
-  - local: e2e/ci/e2e-template.yml
+  - local: e2e/ci/e2e_template.yml
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]
       ocudu_ref: $[[ inputs.ocudu_ref ]]
@@ -113,7 +113,7 @@ dynamically generated pipeline validation:
   allow_failure: true
   variables:
     TRIGGERED_ON_MR: "true"
-    # Runner tag for the build jobs of the child pipeline (see e2e/ci/child-template.yml).
+    # Runner tag for the build jobs of the child pipeline (see e2e/ci/child_template.yml).
     # Using ${OCUDU_RUNNER_TAG} directly there does not work: OCUDU_RUNNER_TAG is defined
     # in ocudu's .gitlab/ci-shared/workflow.yml, which the child pipeline does not include,
     # so the child only sees the copy forwarded from this pipeline (trigger:forward:
@@ -181,8 +181,8 @@ retina demolition:
   dependencies: []
 
 ## Build jobs for Scheduled Pipelines
-# In functional-base.yml - zmq driver, release with deb info
-# In performance-base.yml - dpdk rtsan avx512
+# In functional_base.yml - zmq driver, release with deb info
+# In performance_base.yml - dpdk rtsan avx512
 
 debug:
   extends: .build

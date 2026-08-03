@@ -18,7 +18,7 @@ We use [retina](../../retina/README.md) in all e2e tests to: reserve and orchest
 | Test Template | It defines a test skeleton that contains the steps the test will do. It's generic (use a generic ue, cu, etc). Multiple test cases (each one with a different setting and configuration) will use the same template. |
 | Test Step | Each one of the steps a test template can use. Those steps are reusable between test templates. |
 | Test Case | The final test case that runs by combining a test template (and a simulator test), ocudu configurations and testbed. |
-| Test Suite | A collection of test cases. In our structure: each file is a test suite and it's mapped to one CI job. Folder structure maps CI stages and pipelines. |
+| Test Suite | A collection of test cases. In our structure: each file is a test suite and it's mapped to one CI job. Folder structure maps CI stages, while the pipelines are declared in `generate_pipelines.py`. |
 
 ## General structure
 
@@ -50,21 +50,17 @@ ocudu_infra_srs/e2e/tests/
 │   ├── stub.py
 │   ├── test_loader.py
 │   └── ...
-├── suites/
-│   ├── functional/
-│   │   ├── singleue/
-│   │   │   ├── slicing.yml
-│   │   │   └── ...
-│   │   ├── multiue/
-│   │   │   ├── ping.yml
-│   │   │   └── ...
-│   │   ├── mobility/
-│   │   │   ├── inter_ru_ho.yml
-│   │   │   └── ...
-│   └── performance/
-│       └── mobility/
-│           ├── paging.yml
-│           └── ...
+├── suites/             # <stage>/<job>.yml: one CI job per file, in every pipeline running it
+│   ├── singleue/
+│   │   ├── slicing.yml
+│   │   └── ...
+│   ├── multiue/
+│   │   ├── ping.yml
+│   │   └── ...
+│   ├── mobility/
+│   │   ├── paging.yml
+│   │   ├── inter_ru_ho.yml
+│   │   └── ...
 ├── # Test Templates
 ├── ue_simulator.py
 ├── viavi_simulator.py
@@ -84,7 +80,7 @@ def test(*args, **kwargs): # Receives parameters from the tests
 
 Located at `infra_srs/e2e/tests/suites`:
 
-`pipeline_name/stage_name/job_name.yml`
+`stage_name/job_name.yml`
 
 ```yml
 baseline: &base_config # Test Case
@@ -125,11 +121,10 @@ conditional_ho:
 Each test case key in the YAML maps to a full pytest test ID of the form `tests/<template_file>::<function>[<suite_path>.<test_case_key>]`, where `<suite_path>` is the dot-separated path of the suite file relative to `suites/`, e.g.:
 
 ```text
-tests/ue_simulator.py::test_gnb[functional.singleue.fdd_siso.prach_config_1_fdd]
-│     │                │        │          │         │        └── test case key in the YAML
-│     │                │        │          │         └── suite file name (fdd_siso.yml)
-│     │                │        │          └── subfolder (singleue/)
-│     │                │        └── top-level suite folder (functional/)
+tests/ue_simulator.py::test_gnb[singleue.fdd_siso.prach_config_1_fdd]
+│     │                │        │        │         └── test case key in the YAML
+│     │                │        │        └── suite file name (fdd_siso.yml)
+│     │                │        └── suite folder, that is the CI stage (singleue/)
 │     │                └── function name in the test template
 │     └── test template file (see Test Templates above)
 └── e2e/tests/ root
@@ -201,4 +196,4 @@ criteria:
 
 Please run `ocudu_infra_srs/e2e/scripts/generate_pipelines.py` to update the CI files after any change in the `suites` folder. MR CI will enforce that everything is up-to-date.
 
-The generated files (`e2e/functional-config.yml` and `e2e/performance-config.yml`) define one GitLab CI job per test suite file and must not be edited manually.
+The generated files (`e2e/ci/<pipeline>_config.yml`) define one GitLab CI job per test suite file and must not be edited manually.

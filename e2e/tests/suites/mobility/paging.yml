@@ -1,8 +1,12 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+##########################
+#### Functional Tests ####
+##########################
+
 # Paging test, RRC IDLE MT
-baseline: &base_config
+baseline: &baseline
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
@@ -11,11 +15,11 @@ baseline: &base_config
       dl_bitrate: 10.0e+3
       nof_paging: 1
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, inactivity_timer.yml, mac_pcap.yml]
+    config: &baseline_gnb_config [cu_cp.yml, du.yml, tdd_default.yml, inactivity_timer.yml, mac_pcap.yml]
     parameters:
       time_multiplier: &time_multiplier 10
   core:
-    config: [baseline.cfg]
+    config: &core_config [baseline.cfg]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-11]
@@ -37,10 +41,10 @@ baseline: &base_config
     core.nof_nas_service_accept_eq: 1
 
 # DRX test
-drx:
-  <<: *base_config
+drx: &drx
+  <<: *baseline
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: &drx_gnb_config [cu_cp.yml, du.yml, tdd_default.yml, drx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-SVCS-16-6]
@@ -52,10 +56,10 @@ drx:
     core.nof_nas_service_accept_eq: 1
 
 # eDRX test
-edrx:
-  <<: *base_config
+edrx: &edrx
+  <<: *baseline
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
+    config: &edrx_gnb_config [cu_cp.yml, du.yml, tdd_default.yml, edrx.yml, mac_pcap.yml, inactivity_timer.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-11, DU-GEN-10]
@@ -66,9 +70,9 @@ edrx:
     core.nof_nas_service_accept_eq: 1
 
 # RRC IDLE - MT multi
-rrc_idle_mt_multi:
-  <<: *base_config
-  ue:
+rrc_idle_mt_multi: &rrc_idle_mt_multi
+  <<: *baseline
+  ue: &multi_paging_ue_config
     config: [1cell.cfg, paging.cfg]
     parameters:
       dl_bitrate: 10.0e+3
@@ -79,10 +83,11 @@ rrc_idle_mt_multi:
     du.nof_paging_eq: 6  # 1 suspend/resume x 2 PCCH Paging messages
     core.nof_nas_service_accept_eq: 3
 
+
 # RRC IDLE - MO reconnection
-rrc_idle_mo:
-  <<: *base_config
-  ue:
+rrc_idle_mo: &rrc_idle_mo
+  <<: *baseline
+  ue: &mo_initiate_ue_config
     config: [1cell.cfg, mo_initiate.cfg]
     parameters:
       ul_bitrate: 10.0e+3
@@ -94,15 +99,15 @@ rrc_idle_mo:
     core.nof_nas_service_accept_eq: 1
 
 # RRC Inactive - MT
-rrc_inactive_mt:
-  <<: *base_config
+rrc_inactive_mt: &rrc_inactive_mt
+  <<: *baseline
   ue:
     config: [1cell.cfg, paging.cfg]
     parameters:
       dl_bitrate: 10.0e+3
       nof_paging: 1
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    config: &rrc_inactive_gnb_config [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-10]
@@ -114,15 +119,11 @@ rrc_inactive_mt:
     du.nof_rrc_resume_complete_eq: 1
 
 # RRC Inactive - MT multiple suspend/resume cycles
-rrc_inactive_mt_multi:
-  <<: *base_config
-  ue:
-    config: [1cell.cfg, paging.cfg]
-    parameters:
-      dl_bitrate: 10.0e+3
-      nof_paging: 3
+rrc_inactive_mt_multi: &rrc_inactive_mt_multi
+  <<: *baseline
+  ue: *multi_paging_ue_config
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    config: *rrc_inactive_gnb_config
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-BAS-16-1, MVP-FUNC-MOB-10]
@@ -134,14 +135,11 @@ rrc_inactive_mt_multi:
     du.nof_rrc_resume_complete_eq: 3
 
 # RRC Inactive - MO-data-triggered resume (no paging)
-rrc_inactive_mo:
-  <<: *base_config
-  ue:
-    config: [1cell.cfg, mo_initiate.cfg]
-    parameters:
-      ul_bitrate: 10.0e+3
+rrc_inactive_mo: &rrc_inactive_mo
+  <<: *baseline
+  ue: *mo_initiate_ue_config
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, rrc_inactive.yml, mac_pcap.yml]
+    config: *rrc_inactive_gnb_config
     parameters:
       time_multiplier: *time_multiplier
   feature_ids: [MVP-FUNC-MOB-10]
@@ -151,3 +149,71 @@ rrc_inactive_mo:
     du.nof_rrc_suspend_eq: 1
     du.nof_paging_eq: 0
     du.nof_rrc_resume_complete_eq: 1
+
+###########################
+#### Performance Tests ####
+###########################
+
+baseline_rt:
+  <<: *baseline
+  request: s72
+  gnb:
+    config: *baseline_gnb_config
+  core:
+    config: *core_config
+
+drx_rt:
+  <<: *drx
+  request: s72
+  gnb:
+    config: *drx_gnb_config
+  core:
+    config: *core_config
+
+edrx_rt:
+  <<: *edrx
+  request: s72
+  gnb:
+    config: *edrx_gnb_config
+  core:
+    config: *core_config
+
+rrc_idle_mt_multi_rt:
+  <<: *rrc_idle_mt_multi
+  request: s72
+  gnb:
+    config: *baseline_gnb_config
+  core:
+    config: *core_config
+
+rrc_idle_mo_rt:
+  <<: *rrc_idle_mo
+  request: s72
+  gnb:
+    config: *baseline_gnb_config
+  core:
+    config: *core_config
+
+rrc_inactive_mt_rt:
+  <<: *rrc_inactive_mt
+  request: s72
+  gnb:
+    config: *rrc_inactive_gnb_config
+  core:
+    config: *core_config
+
+rrc_inactive_mt_multi_rt:
+  <<: *rrc_inactive_mt_multi
+  request: s72
+  gnb:
+    config: *rrc_inactive_gnb_config
+  core:
+    config: *core_config
+
+rrc_inactive_mo_rt:
+  <<: *rrc_inactive_mo
+  request: s72
+  gnb:
+    config: *rrc_inactive_gnb_config
+  core:
+    config: *core_config
