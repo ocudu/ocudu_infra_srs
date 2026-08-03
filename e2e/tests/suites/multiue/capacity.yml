@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Downlink aggregated cell throughput (cell capacity)
+# TIFG E2E test v10.0, TC 6.9
+
+# The purpose of the test is to validate the downlink aggregated cell throughput (downlink cell capacity) when the UEs are
+# distributed in a uniform way inside a cell.
+
+udp_dl: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell_chsim.cfg, capacity_udp.cfg]
+    parameters:
+      dl_bitrate: 300.0e+6
+      ul_bitrate: 1
+      traffic_duration: 20
+      pdcch_decode_threshold: 0
+      ul_power_attenuation: -10
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, olla.yml]
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-PERF-CAP-1a, MVP-PERF-CAP-1b]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    core.nof_pdu_session_establishment_accept_eq: 10
+    du.nof_reestablishments_request_eq: 0
+    du.nof_error_indications_le: 0
+    all.warnings_le: 0
+    all.errors_le: 0
+
+udp_ul:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, capacity_udp.cfg]
+    parameters:
+      dl_bitrate: 1
+      ul_bitrate: 100.0e+6
+      traffic_duration: 20
+      ul_power_attenuation: -10
+  feature_ids: [MVP-PERF-CAP-2a, MVP-PERF-CAP-2b]
