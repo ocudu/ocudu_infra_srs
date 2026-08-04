@@ -316,12 +316,8 @@ retina containers:
     CACHE: "false" # Just FROM agent + minimal apt
   parallel:
     matrix:
-      - NAME: amarisoftue-remote
-        CONTEXT: retina/images/amarisoftue_remote
       - NAME: amarisoft5gc-remote
         CONTEXT: retina/images/amarisoft5gc_remote
-      - NAME: ocudu-remote
-        CONTEXT: retina/images/ocudu_remote
       - NAME: android
 
 # Publish Containers
