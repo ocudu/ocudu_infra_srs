@@ -297,11 +297,20 @@ def _is_set_default_assign(node: Any) -> bool:
 
 
 def _extract_template_defaults(jinja_ast: Any) -> dict:
-    """Return {var_name: default_value} for top-level {% set var = var | default(const) %} nodes."""
+    """Return {var_name: default_value} for top-level {% set var = var | default(const) %} nodes.
+
+    Uses as_const() rather than a Const isinstance check: a negative literal such as
+    default(-10) parses as Neg(Const(10)), not Const(-10). Nodes that are genuine
+    expressions, e.g. default(other_var), raise Impossible and are skipped.
+    """
     defaults = {}
     for node in jinja_ast.body:
-        if _is_set_default_assign(node) and node.node.args and isinstance(node.node.args[0], jinja2.nodes.Const):
-            defaults[node.target.name] = node.node.args[0].value
+        if not (_is_set_default_assign(node) and node.node.args):
+            continue
+        try:
+            defaults[node.target.name] = node.node.args[0].as_const()
+        except jinja2.nodes.Impossible:
+            pass
     return defaults
 
 
