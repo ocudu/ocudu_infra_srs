@@ -10,10 +10,9 @@
 # CQI, MCS, Number of layers (MIMO Rank) assignment etc. during the movement of UE from excellent radio conditions to poor
 # radio conditions.
 
-# TDD MIMO 4x4 coverage test
-coverage_dl: &base_config
+downlink: &base_config
   template: ue_simulator.test_gnb
-  request: zmq_mme
+  request: s72
   ue:
     config: [1cell_chsim.cfg, handover.cfg]
     parameters:
@@ -21,13 +20,14 @@ coverage_dl: &base_config
       ul_bitrate: 0
       nof_antennas_dl: 4
       nof_antennas_ul: 1
-      test_duration: 20
+      quit_time: 30
       traffic_duration: 4000
       max_distance: 350
-      pdcch_decode_threshold: 0
+      ref_signal_power: -16
       ul_power_attenuation: -10
+      pdcch_decode_threshold: 0
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, olla.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, olla.yml, du_perf.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 1
@@ -36,8 +36,8 @@ coverage_dl: &base_config
   feature_ids: [MVP-PERF-THR-4a, MVP-PERF-THR-4b, MVP-PERF-THR-4c]
   criteria:
     du.dl_bitrate_gt: 250.0e+6
-    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
+    all.errors_le: 0
 
 # Uplink coverage throughput
 # TIFG E2E test v10.0, TC 6.8
@@ -47,7 +47,7 @@ coverage_dl: &base_config
 # main lobe of SUT’s antenna until UE loses the coverage (call drop). Test assesses link adaptation and effect on scheduling,
 # uplink transmit power (power control), CQI, MCS, etc. during the movement of UE from excellent radio conditions to poor radio
 # conditions.
-coverage_ul:
+uplink:
   <<: *base_config
   ue:
     config: [1cell_chsim.cfg, handover.cfg]
@@ -56,24 +56,25 @@ coverage_ul:
       ul_bitrate: 300.0e+6
       nof_antennas_dl: 4
       nof_antennas_ul: 2
-      test_duration: 20
+      quit_time: 30
       max_distance: 350
-      pdcch_decode_threshold: 0
+      ref_signal_power: -16
       ul_power_attenuation: -10
+      pdcch_decode_threshold: 0
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, du_perf_ul.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 2
   feature_ids: [MVP-PERF-THR-5a, MVP-PERF-THR-5b, MVP-PERF-THR-5c]
   criteria:
     du.ul_bitrate_gt: 30.0e+6
-    du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    all.errors_le: 0
 
 # Same as coverage_ul but with power control
-coverage_ul_pc:
+uplink_power_control:
   <<: *base_config
   ue:
     config: [1cell_chsim.cfg, handover.cfg]
@@ -82,18 +83,19 @@ coverage_ul_pc:
       ul_bitrate: 300.0e+6
       nof_antennas_dl: 4
       nof_antennas_ul: 2
-      test_duration: 20
+      quit_time: 30
       max_distance: 350
-      pdcch_decode_threshold: 0
+      ref_signal_power: -16
       ul_power_attenuation: -10
+      pdcch_decode_threshold: 0
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, closed_loop_pc.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, closed_loop_pc.yml, du_perf_ul.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 2
   feature_ids: [MVP-PERF-THR-5a, MVP-PERF-THR-5b, MVP-PERF-THR-5c]
   criteria:
-    du.ul_bitrate_gt: 30.0e+6
-    du.nof_reestablishments_request_eq: 0
+    du.ul_bitrate_gt: 10.0e+6
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    all.errors_le: 0

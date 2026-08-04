@@ -1,18 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-coverage:
-  stage: mobility
-  extends: .functional_e2e
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
-    - when: manual
-      allow_failure: true
-  variables:
-    KEYWORDS: "mobility.coverage."
-    TESTBED: dynamic
-    MARKERS: "zmq"
-
 inter_cu_ho:
   stage: mobility
   extends: .functional_e2e
