@@ -275,7 +275,10 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             )
 
             logfile = self.get_filepath_in_report_folder(self.AMARISOFT_STDOUT_NAME + ".log")
-            self._last_log_array = (logfile,)
+            self._last_log_array = (
+                logfile,
+                self.get_filepath_in_report_folder(self.AMARISOFT_LOG_FILENAME),
+            )
 
             timeout_handler = TimeoutHandler(
                 request.start_info.timeout if request.start_info.timeout else self.AMARISOFT_START_UP_TIMEOUT,
@@ -532,7 +535,9 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
     @property
     def _warning_regex(self) -> str:
-        return r"^.*Warning(?!.*unused property)(?!.*CPU hyperthreading is enabled)(?!.*s72 timestamp rollback on).*$"
+        return (
+            r"^.*Warning(?!.*unused property)(?!.*CPU hyperthreading is enabled).*$" r"|^.*s72 timestamp rollback on.*$"
+        )
 
     @property
     def _error_regex(self) -> str:

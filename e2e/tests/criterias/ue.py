@@ -8,6 +8,7 @@ UE pass/fail criteria definitions
 import operator
 
 from google.protobuf.empty_pb2 import Empty
+from google.protobuf.wrappers_pb2 import UInt32Value
 from retina.launcher.criteria import UeCriteria
 
 # pylint: disable=invalid-name,missing-function-docstring,too-few-public-methods
@@ -74,3 +75,12 @@ class nof_cmas_msg_received_ge(UeCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).aggregate.nof_cmas_msg_received for s in self._stub_array)
+
+
+class warnings_le(UeCriteria):
+    """Warnings"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.Stop.with_call(UInt32Value(value=15), timeout=15)[0].warning_count for s in self._stub_array)
