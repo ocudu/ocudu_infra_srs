@@ -30,8 +30,11 @@ services:
     command:
       [
         "builder.sh",
+        "-r",
         "-b",
         "build_retina",
+        "-x",
+        "ccache_retina",
         "-c",
         "gcc",
         "-DBUILD_TESTING=False",
@@ -57,8 +60,11 @@ services:
     command:
       [
         "builder.sh",
+        "-r",
         "-b",
         "build_retina",
+        "-x",
+        "ccache_rt_retina",
         "-c",
         "clang",
         "-m",
