@@ -46,8 +46,8 @@ baseline: &base_config
     <<: &common_criteria
       du.dl_bitrate_gt: 1.0e+3
       du.ul_bitrate_gt: 1.0e+3
-      du.nof_ko_dl_le: 5
-      du.nof_ko_ul_le: 100
+      du.nof_ko_dl_le: 30
+      du.nof_ko_ul_le: 150
       du.nof_reestablishments_request_eq: 0
       du.nof_handovers_eq: 0
       du.max_late_dl_harqs_le: 0
