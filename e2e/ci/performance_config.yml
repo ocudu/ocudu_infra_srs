@@ -25,6 +25,18 @@ paging:
     TESTBED: dynamic
     MARKERS: "s72"
 
+capacity:
+  stage: multiue
+  extends: .performance_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "multiue.capacity."
+    TESTBED: dynamic
+    MARKERS: "s72"
+
 udp_dl:
   stage: singleue
   extends: .performance_e2e

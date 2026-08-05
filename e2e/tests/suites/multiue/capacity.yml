@@ -9,7 +9,7 @@
 
 udp_dl: &base_config
   template: ue_simulator.test_gnb
-  request: zmq_mme
+  request: s72
   ue:
     config: [1cell_chsim.cfg, capacity_udp.cfg]
     parameters:
@@ -17,15 +17,21 @@ udp_dl: &base_config
       ul_bitrate: 1
       traffic_duration: 20
       pdcch_decode_threshold: 0
-      ul_power_attenuation: -10
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, olla.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, olla.yml, du_perf.yml]
+    parameters:
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-PERF-CAP-1a, MVP-PERF-CAP-1b]
-  criteria:
-    du.dl_bitrate_gt: 0
+  criteria: &criteria
+    du.dl_bitrate_gt: 1.0e+9
     du.ul_bitrate_gt: 0
+    du.dl_avg_ri_ge: 3.5
+    du.ul_avg_ri_ge: 1
     core.nof_pdu_session_establishment_accept_eq: 10
     du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
@@ -40,5 +46,18 @@ udp_ul:
       dl_bitrate: 1
       ul_bitrate: 100.0e+6
       traffic_duration: 20
-      ul_power_attenuation: -10
+      pdcch_decode_threshold: 0
+      nof_antennas_dl: 4
+      nof_antennas_ul: 2
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, du_perf_ul.yml]
+    parameters:
+      nof_antennas_dl: 4
+      nof_antennas_ul: 2
   feature_ids: [MVP-PERF-CAP-2a, MVP-PERF-CAP-2b]
+  criteria:
+    <<: *criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 150.0e+6
+    du.dl_avg_ri_ge: 1
+    du.ul_avg_ri_ge: 1.5
