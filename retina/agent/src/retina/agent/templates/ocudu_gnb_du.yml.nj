@@ -232,9 +232,6 @@ cell_cfg:
     ta_measurement_slot_period: {{ ta_meas_slot_period }}
     ta_cmd_offset_threshold: {{ ta_cmd_offset_threshold }}
   ntn:
-    epoch_time:
-      sfn: 0  # only placeholders, gnb overwrites it
-      subframe_number: 0  # only placeholders, gnb overwrites it
     ntn_ul_sync_validity_dur: {{ sib19.ntn_ul_sync_validity_dur }}
     cell_specific_koffset:  {{ sib19.cell_specific_koffset }}
     ta_info:

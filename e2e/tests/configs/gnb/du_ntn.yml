@@ -71,9 +71,6 @@ cell_cfg:
       mean_anomaly: {{mean_anomaly}}
       periapsis: {{periapsis}}
       semi_major_axis: {{semi_major_axis}}
-    epoch_time:
-      sfn: 0  # only placeholders, gnb overwrites it
-      subframe_number: 0  # only placeholders, gnb overwrites it
     epoch_timestamp: '{{utc_timestamp}}'
     ntn_ul_sync_validity_dur: {{ntn_ul_sync_validity_dur}}
     {% if feeder_link %}
