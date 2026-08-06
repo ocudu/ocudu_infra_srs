@@ -5,7 +5,7 @@ inter_cu_ho:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -17,7 +17,7 @@ inter_du_ho:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -29,7 +29,7 @@ inter_ru_ho:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -41,7 +41,7 @@ intra_ru_ho:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -53,7 +53,7 @@ paging:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -65,7 +65,7 @@ reestablishment:
   stage: mobility
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -77,7 +77,7 @@ cplane_traffic_load:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -89,7 +89,7 @@ mobility:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -101,7 +101,7 @@ qos:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -113,7 +113,7 @@ simultaneous_udp:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -125,7 +125,7 @@ slice:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -137,7 +137,7 @@ traffic_model:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -149,7 +149,7 @@ ue_state_transition:
   stage: multiue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -161,7 +161,7 @@ bands:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -173,7 +173,7 @@ bandwiths:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -185,7 +185,7 @@ drb_triggered_ul_grant:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -197,7 +197,7 @@ emergency_call:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -209,7 +209,7 @@ fdd_siso:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -221,7 +221,7 @@ gbr_vonr:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -233,7 +233,7 @@ mocn:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -245,7 +245,7 @@ nrppa:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -257,7 +257,7 @@ ntn:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -269,7 +269,7 @@ phy_configs:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -281,7 +281,7 @@ power_control:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -293,7 +293,7 @@ pws:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -305,7 +305,7 @@ security:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -317,7 +317,7 @@ slicing:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -329,7 +329,7 @@ tdd_mimo:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:
@@ -341,7 +341,7 @@ tdd_siso:
   stage: singleue
   extends: .functional_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - when: manual
       allow_failure: true
   variables:

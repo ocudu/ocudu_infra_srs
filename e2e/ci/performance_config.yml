@@ -5,7 +5,7 @@ coverage:
   stage: mobility
   extends: .performance_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
     - when: manual
       allow_failure: true
   variables:
@@ -17,7 +17,7 @@ paging:
   stage: mobility
   extends: .performance_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
     - when: manual
       allow_failure: true
   variables:
@@ -29,7 +29,7 @@ udp_dl:
   stage: singleue
   extends: .performance_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
     - when: manual
       allow_failure: true
   variables:

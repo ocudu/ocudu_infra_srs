@@ -94,7 +94,7 @@ class Job:
   stage: {self.stage}
   extends: .{self.pipeline_name}_e2e
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{self.pipeline_name}/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^{self.pipeline_name}/
     - when: manual
       allow_failure: true
   variables:
@@ -349,7 +349,7 @@ def generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_in
                 f.write(f"  - local: {ci_rel}/{pipeline.get_name()}_base.yml\n")
                 f.write(f"  - local: {include_path}\n")
                 f.write("    rules:\n")
-                f.write(f"      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{pipeline.get_name()}/\n")
+                f.write(f"      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^{pipeline.get_name()}/\n")
             f.write("\n")
             # MR child pipeline trigger jobs + promotion jobs, one pair per discovered pipeline
             for i, (pipeline, include_path) in enumerate(pipeline_includes):
@@ -373,7 +373,7 @@ def generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_in
                 f.write(f"{name} promotion:\n")
                 f.write("  extends: .ocudu promotion\n")
                 f.write("  rules:\n")
-                f.write(f"    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /{name}/\n")
+                f.write(f"    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^{name}/\n")
                 f.write("  variables:\n")
                 f.write(f"    BRANCH: srs_{name}\n")
             print(f"🟢 Successfully created {path}")

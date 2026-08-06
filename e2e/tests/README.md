@@ -197,3 +197,5 @@ criteria:
 Please run `ocudu_infra_srs/e2e/scripts/generate_pipelines.py` to update the CI files after any change in the `suites` folder. MR CI will enforce that everything is up-to-date.
 
 The generated files (`e2e/ci/<pipeline>_config.yml`) define one GitLab CI job per test suite file and must not be edited manually.
+
+Each pipeline (`functional`, `performance`, etc.) runs the suite files holding at least one test case its markers select, so a suite file can mix test cases of several testbeds. Its jobs extend the `.<pipeline>_e2e` job of the hand-written `e2e/ci/<pipeline>_base.yml`, and run when the schedule description starts with the pipeline name. Suite file names must be unique across stages within a pipeline: they are the job names.

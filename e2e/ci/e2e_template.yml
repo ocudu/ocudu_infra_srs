@@ -16,11 +16,11 @@ include:
   - local: e2e/ci/functional_base.yml
   - local: e2e/ci/functional_config.yml
     rules:
-      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
   - local: e2e/ci/performance_base.yml
   - local: e2e/ci/performance_config.yml
     rules:
-      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
+      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
 
 functional:
   extends: .trigger e2e
@@ -39,7 +39,7 @@ functional:
 functional promotion:
   extends: .ocudu promotion
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /functional/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
   variables:
     BRANCH: srs_functional
 
@@ -60,6 +60,6 @@ performance:
 performance promotion:
   extends: .ocudu promotion
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /performance/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
   variables:
     BRANCH: srs_performance
