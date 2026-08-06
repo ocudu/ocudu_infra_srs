@@ -177,7 +177,7 @@ geo_fl_false_harq_enabled_iperf:
       gp_longitude: -151.397854351
       gp_altitude: 1.0
   gnb:
-    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml, cu_cp_ntn_mobility.yml]
     parameters:
       <<: *base_radio_parameters
       <<: *base_gnb_parameters
@@ -224,7 +224,7 @@ geo_fl_false_harq_disabled_iperf:
       gp_longitude: -151.397854351
       gp_altitude: 1.0
   gnb:
-    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml]
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml, cu_cp_ntn_mobility.yml]
     parameters:
       <<: *base_radio_parameters
       <<: *base_gnb_parameters
