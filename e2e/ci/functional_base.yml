@@ -15,15 +15,14 @@ release with deb info:
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
-  variables: &release_with_deb_info_vars
+  variables:
     OS: ubuntu-26.04
     COMPILER: gcc
     BUILD_ARGS: >
       -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_WERROR=False -DENABLE_UHD=False
       -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3
     TEST_MODE: none
-  parallel: &release_with_deb_info_parallel # Splitting it in different jobs because binaries size in relwithdeb was greater than 1 gb
+  parallel: # Splitting it in different jobs because binaries size in relwithdeb was greater than 1 gb
     matrix:
       - OCUDU_TARGET: ocucp ocuup ocu odu
       - OCUDU_TARGET: gnb

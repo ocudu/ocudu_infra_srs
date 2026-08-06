@@ -14,6 +14,7 @@ from google.protobuf.empty_pb2 import Empty
 from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
+from retina.launcher.criteria import CriteriaTable
 from retina.launcher.utils import configure_artifacts, param
 from retina.protocol import (
     FiveGCClient,
@@ -24,10 +25,7 @@ from retina.protocol import (
 from retina.protocol.base_pb2 import Metrics, PLMN
 from retina.protocol.ue_pb2 import IPerfDir, IPerfProto
 
-from .steps.configuration import (
-    configure_test_parameters,
-    get_minimum_sample_rate_for_bandwidth,
-)
+from .steps.configuration import configure_test_parameters, set_config_files
 from .steps.iperf_helpers import (
     assess_iperf_bitrate,
     get_maximum_throughput,
@@ -46,6 +44,7 @@ from .steps.stub import (
     stop_rc_xapp,
     UE_STARTUP_TIMEOUT,
 )
+from .steps.test_loader import load_tests, RetinaTestDefinition
 from .steps.traffic import iperf_parallel
 
 
@@ -166,179 +165,202 @@ def test_ric(
     )
 
 
-@mark.parametrize(
-    "direction",
-    (
-        param(IPerfDir.DOWNLINK, id="downlink", marks=mark.downlink),
-        param(IPerfDir.UPLINK, id="uplink", marks=mark.uplink),
-        param(IPerfDir.BIDIRECTIONAL, id="bidirectional", marks=mark.bidirectional),
-    ),
-)
-@mark.parametrize(
-    "protocol",
-    (
-        param(IPerfProto.UDP, id="udp", marks=mark.udp),
-        param(IPerfProto.TCP, id="tcp", marks=mark.tcp),
-    ),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (
-        param(3, 15, 10, id="band:%s-scs:%s-bandwidth:%s"),
-        param(78, 30, 20, id="band:%s-scs:%s-bandwidth:%s"),
-    ),
-)
-@mark.android
+@load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_android(
+def test_rf_udp_downlink(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
     ue: UEClient,  # pylint: disable=invalid-name
-    fivegc: FiveGCClient,
     gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    protocol: "IPerfProto.ValueType",
-    direction: "IPerfDir.ValueType",
+    fivegc: FiveGCClient,
 ):
-    """
-    Android IPerfs
-    """
+    """Template test function for UDP downlink iperfs over the air"""
 
-    _iperf(
+    _rf_iperf(
         retina_manager=retina_manager,
         retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
         ue_array=(ue,),
         gnb=gnb,
         fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=get_minimum_sample_rate_for_bandwidth(bandwidth),
-        iperf_duration=SHORT_DURATION,
-        protocol=protocol,
-        bitrate=get_maximum_throughput(bandwidth=bandwidth, band=band, direction=direction, protocol=protocol),
-        direction=direction,
-        global_timing_advance=-1,
-        time_alignment_calibration="auto",
-        always_download_artifacts=True,
-        warning_as_errors=False,
+        protocol=IPerfProto.UDP,
+        direction=IPerfDir.DOWNLINK,
     )
 
 
-@mark.parametrize(
-    "direction",
-    (param(IPerfDir.BIDIRECTIONAL, id="bidirectional", marks=mark.bidirectional),),
-)
-@mark.parametrize(
-    "protocol",
-    (param(IPerfProto.UDP, id="udp", marks=mark.udp),),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (param(78, 30, 20, id="band:%s-scs:%s-bandwidth:%s"),),
-)
-@mark.android
+@load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_android_interleaving(
+def test_rf_udp_uplink(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
     ue: UEClient,  # pylint: disable=invalid-name
-    fivegc: FiveGCClient,
     gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    protocol: "IPerfProto.ValueType",
-    direction: "IPerfDir.ValueType",
+    fivegc: FiveGCClient,
 ):
-    """
-    Android IPerfs Interleaving
-    """
+    """Template test function for UDP uplink iperfs over the air"""
 
-    _iperf(
+    _rf_iperf(
         retina_manager=retina_manager,
         retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
         ue_array=(ue,),
         gnb=gnb,
         fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=get_minimum_sample_rate_for_bandwidth(bandwidth),
-        iperf_duration=SHORT_DURATION,
-        protocol=protocol,
-        bitrate=get_maximum_throughput(bandwidth=bandwidth, band=band, direction=direction, protocol=protocol),
-        direction=direction,
-        global_timing_advance=-1,
-        time_alignment_calibration="auto",
-        always_download_artifacts=True,
-        warning_as_errors=False,
-        pdsch_interleaving_bundle_size=2,
+        protocol=IPerfProto.UDP,
+        direction=IPerfDir.UPLINK,
     )
 
 
-@mark.parametrize(
-    "direction",
-    (
-        param(IPerfDir.DOWNLINK, id="downlink", marks=mark.downlink),
-        param(IPerfDir.UPLINK, id="uplink", marks=mark.uplink),
-        param(IPerfDir.BIDIRECTIONAL, id="bidirectional", marks=mark.bidirectional),
-    ),
-)
-@mark.parametrize(
-    "protocol",
-    (
-        param(IPerfProto.UDP, id="udp", marks=mark.udp),
-        param(IPerfProto.TCP, id="tcp", marks=mark.tcp),
-    ),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (
-        param(7, 15, 20, id="band:%s-scs:%s-bandwidth:%s"),
-        param(78, 30, 50, id="band:%s-scs:%s-bandwidth:%s"),
-    ),
-)
-@mark.android_hp
+@load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_android_hp(
+def test_rf_udp_bidirectional(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
     ue: UEClient,  # pylint: disable=invalid-name
-    fivegc: FiveGCClient,
     gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    protocol: "IPerfProto.ValueType",
-    direction: "IPerfDir.ValueType",
+    fivegc: FiveGCClient,
 ):
-    """
-    Android high performance IPerfs
-    """
+    """Template test function for UDP bidirectional iperfs over the air"""
 
-    _iperf(
+    _rf_iperf(
         retina_manager=retina_manager,
         retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
         ue_array=(ue,),
         gnb=gnb,
         fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=None,
-        iperf_duration=SHORT_DURATION,
-        protocol=protocol,
-        bitrate=get_maximum_throughput(bandwidth=bandwidth, band=band, direction=direction, protocol=protocol),
-        direction=direction,
-        global_timing_advance=-1,
-        time_alignment_calibration="auto",
-        always_download_artifacts=True,
-        warning_as_errors=False,
-        gnb_post_cmd=("ru_sdr expert_cfg --low_phy_dl_throttling=0.5",),
+        protocol=IPerfProto.UDP,
+        direction=IPerfDir.BIDIRECTIONAL,
     )
+
+
+@load_tests
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def test_rf_tcp_downlink(
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
+    ue: UEClient,  # pylint: disable=invalid-name
+    gnb: GNBClient,
+    fivegc: FiveGCClient,
+):
+    """Template test function for TCP downlink iperfs over the air"""
+
+    _rf_iperf(
+        retina_manager=retina_manager,
+        retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
+        ue_array=(ue,),
+        gnb=gnb,
+        fivegc=fivegc,
+        protocol=IPerfProto.TCP,
+        direction=IPerfDir.DOWNLINK,
+    )
+
+
+@load_tests
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def test_rf_tcp_uplink(
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
+    ue: UEClient,  # pylint: disable=invalid-name
+    gnb: GNBClient,
+    fivegc: FiveGCClient,
+):
+    """Template test function for TCP uplink iperfs over the air"""
+
+    _rf_iperf(
+        retina_manager=retina_manager,
+        retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
+        ue_array=(ue,),
+        gnb=gnb,
+        fivegc=fivegc,
+        protocol=IPerfProto.TCP,
+        direction=IPerfDir.UPLINK,
+    )
+
+
+@load_tests
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def test_rf_tcp_bidirectional(
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
+    ue: UEClient,  # pylint: disable=invalid-name
+    gnb: GNBClient,
+    fivegc: FiveGCClient,
+):
+    """Template test function for TCP bidirectional iperfs over the air"""
+
+    _rf_iperf(
+        retina_manager=retina_manager,
+        retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
+        ue_array=(ue,),
+        gnb=gnb,
+        fivegc=fivegc,
+        protocol=IPerfProto.TCP,
+        direction=IPerfDir.BIDIRECTIONAL,
+    )
+
+
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def _rf_iperf(
+    *,  # This enforces keyword-only arguments
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
+    ue_array: Sequence[UEClient],
+    gnb: GNBClient,
+    fivegc: FiveGCClient,
+    protocol: "IPerfProto.ValueType",
+    direction: "IPerfDir.ValueType",
+):
+    gnb_parameters = test_definition.gnb.parameters
+
+    set_config_files(retina_manager=retina_manager, retina_data=retina_data, test_definition=test_definition)
+    configure_artifacts(retina_data=retina_data, always_download_artifacts=True)
+
+    for criteria_id, criteria_expected_value in test_definition.criteria.items():
+        criteria.add_criteria(criteria_id, criteria_expected_value)
+
+    try:
+        _run_iperf(
+            retina_data=retina_data,
+            ue_array=ue_array,
+            fivegc=fivegc,
+            gnb=gnb,
+            iperf_duration=SHORT_DURATION,
+            bitrate=get_maximum_throughput(
+                bandwidth=gnb_parameters["bandwidth"],
+                band=gnb_parameters["band"],
+                direction=direction,
+                protocol=protocol,
+            ),
+            protocol=protocol,
+            direction=direction,
+            warning_as_errors=False,
+        )
+    finally:
+        criteria.validate()
 
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments, too-many-locals
@@ -384,8 +406,6 @@ def _iperf(
     pdsch_interleaving_bundle_size: int = 0,
     parallel_iperfs: int = 8,
 ):
-    wait_before_power_off = 5
-
     logging.info("Iperf Test")
 
     configure_test_parameters(
@@ -412,6 +432,68 @@ def _iperf(
         retina_data=retina_data,
         always_download_artifacts=always_download_artifacts,
     )
+
+    metrics = _run_iperf(
+        retina_data=retina_data,
+        ue_array=ue_array,
+        fivegc=fivegc,
+        gnb=gnb,
+        iperf_duration=iperf_duration,
+        bitrate=bitrate,
+        protocol=protocol,
+        direction=direction,
+        warning_as_errors=warning_as_errors,
+        bitrate_threshold=bitrate_threshold,
+        ue_startup_timeout=ue_startup_timeout,
+        gnb_post_cmd=gnb_post_cmd,
+        plmn=plmn,
+        ue_stop_timeout=ue_stop_timeout,
+        inter_ue_start_period=inter_ue_start_period,
+        ric=ric,
+        stop_gnb_first=stop_gnb_first,
+        packet_length=packet_length,
+        parallel_iperfs=parallel_iperfs,
+    )
+
+    if assess_bitrate and protocol == IPerfProto.UDP:
+
+        assess_iperf_bitrate(
+            bw=bandwidth,
+            band=band,
+            nof_antennas_dl=nof_antennas_dl,
+            pdsch_mcs_table=pdsch_mcs_table,
+            pusch_mcs_table=pusch_mcs_table,
+            iperf_duration=iperf_duration,
+            metrics=metrics,
+            dl_brate_threshold=min_dl_bitrate,
+            ul_brate_threshold=min_ul_bitrate,
+        )
+
+
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def _run_iperf(
+    *,  # This enforces keyword-only arguments
+    retina_data: RetinaTestData,
+    ue_array: Sequence[UEClient],
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
+    iperf_duration: int,
+    bitrate: int,
+    protocol: "IPerfProto.ValueType",
+    direction: "IPerfDir.ValueType",
+    warning_as_errors: bool = True,
+    bitrate_threshold: float = 0,  # bitrate != 0
+    ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
+    gnb_post_cmd: Tuple[str, ...] = tuple(),
+    plmn: Optional[PLMN] = None,
+    ue_stop_timeout: int = 0,
+    inter_ue_start_period=INTER_UE_START_PERIOD,
+    ric: Optional[NearRtRicClient] = None,
+    stop_gnb_first: bool = False,
+    packet_length: int = 0,
+    parallel_iperfs: int = 8,
+) -> Metrics:
+    wait_before_power_off = 5
 
     ue_attach_info_dict = start_and_attach(
         ue_array=ue_array,
@@ -464,16 +546,4 @@ def _iperf(
     if metrics.aggregate.dl_bitrate + metrics.aggregate.ul_bitrate <= 0:
         pytest.fail("No traffic detected in GNB metrics")
 
-    if assess_bitrate and protocol == IPerfProto.UDP:
-
-        assess_iperf_bitrate(
-            bw=bandwidth,
-            band=band,
-            nof_antennas_dl=nof_antennas_dl,
-            pdsch_mcs_table=pdsch_mcs_table,
-            pusch_mcs_table=pusch_mcs_table,
-            iperf_duration=iperf_duration,
-            metrics=metrics,
-            dl_brate_threshold=min_dl_bitrate,
-            ul_brate_threshold=min_ul_bitrate,
-        )
+    return metrics

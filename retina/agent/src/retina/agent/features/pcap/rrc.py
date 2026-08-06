@@ -263,21 +263,21 @@ class DrxLongCycleAnalyzer(PcapAnalyzer):
     """
 
     def __init__(self) -> None:
-        self._value: int = -1
+        self._value: Optional[int] = None
 
     @property
     def display_filter(self) -> str:
         return "nr-rrc.drx_LongCycleStartOffset"
 
     def process(self, packet) -> None:
-        if self._value < 0:
+        if self._value is None:
             try:
                 self._value = int(_rrc_layer(packet).nr_rrc_drx_longcyclestartoffset)
             except (AttributeError, KeyError, ValueError):
                 pass
 
     def report(self) -> Metrics:
-        return Metrics(du=DuMetrics(drx_long_cycle_start_offset=self._value))
+        return Metrics(du=DuMetrics(drx_long_cycle_start_offset=self._value or 0))
 
 
 class PagingAnalyzer(PcapAnalyzer):

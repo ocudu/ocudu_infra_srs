@@ -6,270 +6,139 @@ Test ping
 """
 
 import logging
-from contextlib import suppress
 from typing import Callable, List, Optional, Sequence, Tuple, Union
 
-import grpc
 from _pytest.outcomes import Failed
 from google.protobuf.wrappers_pb2 import UInt32Value
 from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.utils import configure_artifacts, param
+from retina.launcher.criteria import CriteriaTable
+from retina.launcher.utils import configure_artifacts
 from retina.protocol import FiveGCClient, GNBClient, UEClient
 from retina.protocol.base_pb2 import PLMN
 
-from .steps.configuration import (
-    configure_test_parameters,
-    get_minimum_sample_rate_for_bandwidth,
-)
+from .steps.configuration import configure_test_parameters, set_config_files
 from .steps.stub import (
     GNB_STARTUP_TIMEOUT,
-    RF_MAX_TIMEOUT,
     start_network,
     stop,
     ue_start_and_attach,
     ue_stop,
     validate_ue_registered_via_ims,
 )
+from .steps.test_loader import load_tests, RetinaTestDefinition
 from .steps.traffic import ping
 
 
-@mark.parametrize(
-    "reattach_count",
-    (
-        param(0, id="reattach:%s"),
-        param(2, id="reattach:%s", marks=mark.reattach),
-    ),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (
-        param(3, 15, 10, id="band:%s-scs:%s-bandwidth:%s"),
-        param(78, 30, 20, id="band:%s-scs:%s-bandwidth:%s"),
-    ),
-)
-@mark.android
+@load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_android(
+def test_rf_reattach(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
     ue: UEClient,  # pylint: disable=invalid-name
-    fivegc: FiveGCClient,
     gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    reattach_count: int,
+    fivegc: FiveGCClient,
 ):
-    """
-    Android Pings
-    """
+    """Template test function for pings over the air, stopping and attaching the UE in between"""
 
-    _ping(
+    _rf_ping(
         retina_manager=retina_manager,
         retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
         ue_array=(ue,),
         gnb=gnb,
         fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=get_minimum_sample_rate_for_bandwidth(bandwidth),
-        global_timing_advance=-1,
-        time_alignment_calibration="auto",
-        warning_as_errors=False,
-        always_download_artifacts=True,
-        reattach_count=reattach_count,
+        reattach_count=2,
     )
 
 
-@mark.parametrize(
-    "ims_mode",
-    (
-        param("", id="ims:disabled"),
-        param("enabled", id="ims:%s"),
-        param("not_registering", id="ims:%s"),
-    ),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (param(78, 30, 20, id="band:%s-scs:%s-bandwidth:%s"),),
-)
-@mark.android
+@load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_android_ims(
+def test_rf_drx(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
     ue: UEClient,  # pylint: disable=invalid-name
-    fivegc: FiveGCClient,
     gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    ims_mode: str,
+    fivegc: FiveGCClient,
 ):
-    """
-    Android IMS Pings
-    """
+    """Template test function for pings over the air with a short interval, to exercise DRX"""
 
-    _ping(
+    _rf_ping(
         retina_manager=retina_manager,
         retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
         ue_array=(ue,),
         gnb=gnb,
         fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=get_minimum_sample_rate_for_bandwidth(bandwidth),
-        global_timing_advance=-1,
-        time_alignment_calibration="auto",
-        warning_as_errors=False,
-        always_download_artifacts=True,
-        ims_mode=ims_mode,
-    )
-
-
-@mark.parametrize(
-    "reattach_count",
-    (
-        param(0, id="reattach:%s"),
-        param(2, id="reattach:%s", marks=mark.reattach),
-    ),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (
-        param(7, 15, 20, id="band:%s-scs:%s-bandwidth:%s"),
-        param(78, 30, 50, id="band:%s-scs:%s-bandwidth:%s"),
-        param(78, 30, 90, id="band:%s-scs:%s-bandwidth:%s"),
-    ),
-)
-@mark.android_hp
-# pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_android_hp(
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    ue: UEClient,  # pylint: disable=invalid-name
-    fivegc: FiveGCClient,
-    gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    reattach_count: int,
-):
-    """
-    Android high performance Pings
-    """
-
-    _ping(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        ue_array=(ue,),
-        gnb=gnb,
-        fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=None,
-        global_timing_advance=-1,
-        time_alignment_calibration="auto",
-        warning_as_errors=False,
-        always_download_artifacts=True,
-        reattach_count=reattach_count,
-        post_command=("ru_sdr expert_cfg --low_phy_dl_throttling=0.5",),
-    )
-
-
-@mark.parametrize(
-    "reattach_count",
-    (param(0, id="reattach:%s"),),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (param(3, 15, 10, id="band:%s-scs:%s-bandwidth:%s"),),
-)
-@mark.android_drx
-# pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_android_drx(
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    ue: UEClient,  # pylint: disable=invalid-name
-    fivegc: FiveGCClient,
-    gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    reattach_count: int,
-):
-    """
-    Android high performance Pings
-    """
-
-    _ping(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        ue_array=(ue,),
-        gnb=gnb,
-        fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=None,
-        global_timing_advance=-1,
-        time_alignment_calibration="auto",
-        warning_as_errors=False,
-        always_download_artifacts=True,
-        reattach_count=reattach_count,
-        enable_drx=True,
         ping_interval=0.1,
     )
 
 
-@mark.parametrize(
-    "reattach_count",
-    (param(0, id="reattach:%s"),),
-)
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (param(3, 15, 10, id="band:%s-scs:%s-bandwidth:%s"),),
-)
-@mark.android_drx
+@load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_android_no_drx(
+def test_rf_ims(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
     ue: UEClient,  # pylint: disable=invalid-name
-    fivegc: FiveGCClient,
     gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-    reattach_count: int,
+    fivegc: FiveGCClient,
 ):
-    """
-    Android high performance Pings
-    """
+    """Template test function for IMS pings over the air, using the IMS mode of the core config"""
 
-    _ping(
+    _rf_ping(
         retina_manager=retina_manager,
         retina_data=retina_data,
+        criteria=criteria,
+        test_definition=test_definition,
         ue_array=(ue,),
         gnb=gnb,
         fivegc=fivegc,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=None,
-        global_timing_advance=-1,
-        time_alignment_calibration="auto",
-        warning_as_errors=False,
-        always_download_artifacts=True,
-        reattach_count=reattach_count,
-        enable_drx=False,
-        ping_interval=0.1,
+        ims_mode=test_definition.core.parameters["ims_mode"],
     )
+
+
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def _rf_ping(
+    *,  # This enforces keyword-only arguments
+    retina_manager: RetinaTestManager,
+    retina_data: RetinaTestData,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
+    ue_array: Sequence[UEClient],
+    gnb: GNBClient,
+    fivegc: FiveGCClient,
+    reattach_count: int = 0,
+    ping_interval: float = 1.0,
+    ims_mode: str = "",
+):
+    set_config_files(retina_manager=retina_manager, retina_data=retina_data, test_definition=test_definition)
+    configure_artifacts(retina_data=retina_data, always_download_artifacts=True)
+
+    for criteria_id, criteria_expected_value in test_definition.criteria.items():
+        criteria.add_criteria(criteria_id, criteria_expected_value)
+
+    try:
+        _run_ping(
+            retina_data=retina_data,
+            ue_array=ue_array,
+            gnb=gnb,
+            fivegc=fivegc,
+            warning_as_errors=False,
+            reattach_count=reattach_count,
+            ping_interval=ping_interval,
+            ims_mode=ims_mode,
+        )
+    finally:
+        criteria.validate()
 
 
 @mark.example
@@ -331,48 +200,6 @@ def test_example_srsue(
         pusch_mcs_table="qam64",
         ue_stop_timeout=3,
     )
-
-
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (param(3, 15, 10, id="band:%s-scs:%s-bandwidth:%s"),),
-)
-@mark.rf_not_crash
-# pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_rf_does_not_crash(
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    ue_multiple: Callable[[int], Tuple[UEClient, ...]],
-    fivegc: FiveGCClient,
-    gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
-):
-    """
-    RF Ping test that:
-    - Ignore if the ping fails or ue can't attach
-    - Fails only if ue/gnb/5gc crashes
-    """
-    ue_4 = ue_multiple(4)
-    with suppress(grpc.RpcError, AssertionError, Failed):
-        _ping(
-            retina_manager=retina_manager,
-            retina_data=retina_data,
-            ue_array=ue_4,
-            gnb=gnb,
-            fivegc=fivegc,
-            band=band,
-            common_scs=common_scs,
-            bandwidth=bandwidth,
-            sample_rate=None,  # default from testbed
-            global_timing_advance=-1,
-            time_alignment_calibration="264",
-            log_search=False,
-            always_download_artifacts=True,
-            gnb_startup_timeout=RF_MAX_TIMEOUT,
-        )
-    stop(ue_array=ue_4, gnb_array=[gnb], fivegc_array=[fivegc], retina_data=retina_data, log_search=False)
 
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments, too-many-locals
@@ -443,6 +270,46 @@ def _ping(
         always_download_artifacts=always_download_artifacts,
     )
 
+    _run_ping(
+        retina_data=retina_data,
+        ue_array=ue_array,
+        fivegc=fivegc,
+        gnb=gnb,
+        log_search=log_search,
+        warning_as_errors=warning_as_errors,
+        ping_count=ping_count,
+        reattach_count=reattach_count,
+        pre_command=pre_command,
+        post_command=post_command,
+        gnb_stop_timeout=gnb_stop_timeout,
+        ue_stop_timeout=ue_stop_timeout,
+        plmn=plmn,
+        ims_mode=ims_mode,
+        ping_interval=ping_interval,
+        gnb_startup_timeout=gnb_startup_timeout,
+    )
+
+
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def _run_ping(
+    *,  # This enforces keyword-only arguments
+    retina_data: RetinaTestData,
+    ue_array: Sequence[UEClient],
+    fivegc: FiveGCClient,
+    gnb: GNBClient,
+    log_search: bool = True,
+    warning_as_errors: bool = True,
+    ping_count: int = 10,
+    reattach_count: int = 0,
+    pre_command: Tuple[str, ...] = tuple(),
+    post_command: Tuple[str, ...] = tuple(),
+    gnb_stop_timeout: int = 0,
+    ue_stop_timeout: int = 0,
+    plmn: Optional[PLMN] = None,
+    ims_mode: str = "",
+    ping_interval: float = 1.0,
+    gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
+):
     start_network(
         ue_array=ue_array,
         gnb_array=[gnb],

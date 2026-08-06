@@ -25,6 +25,7 @@ import yaml
 PIPELINES: Dict[str, Dict[str, object]] = {
     "functional": {"MARKERS": "zmq"},
     "performance": {"MARKERS": "s72"},
+    "rf": {"MARKERS": "rf or android"},
 }
 
 # Retina request a test case with no explicit one falls back to, and the testbed groups the
@@ -316,8 +317,6 @@ def generate_stages_file(stages_output_path, dynamic_stages):
                 "test mode",
                 "srsue",
                 "viavi",
-                "amarisoft sdr",
-                "android",
             ]
             stages.extend(dynamic_stages)
             stages = list(dict.fromkeys(stages))

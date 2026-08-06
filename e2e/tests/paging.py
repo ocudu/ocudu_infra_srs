@@ -7,66 +7,61 @@ Paging Tests
 
 import logging
 from time import sleep
+from typing import Callable, Tuple
 
 from google.protobuf.wrappers_pb2 import UInt32Value
-from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.utils import param
+from retina.launcher.criteria import CriteriaTable
+from retina.launcher.utils import configure_artifacts
 from retina.protocol import FiveGCClient, GNBClient, UEClient
 
-from .steps.configuration import configure_test_parameters, get_minimum_sample_rate_for_bandwidth
+from .steps.configuration import set_config_files
 from .steps.stub import start_network, stop, ue_start_and_attach
+from .steps.test_loader import load_tests, RetinaTestDefinition
 from .steps.traffic import ping, ping_from_5gc
 
 
-@mark.parametrize(
-    "band, common_scs, bandwidth",
-    (
-        param(3, 15, 10, id="band:%s-scs:%s-bandwidth:%s"),
-        param(78, 30, 20, id="band:%s-scs:%s-bandwidth:%s"),
-    ),
-)
-@mark.android
+@load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_cots_paging(
+def test_rf(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    ue: UEClient,
-    fivegc: FiveGCClient,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
+    ue_multiple: Callable[[int], Tuple[UEClient, ...]],
     gnb: GNBClient,
-    band: int,
-    common_scs: int,
-    bandwidth: int,
+    fivegc: FiveGCClient,
 ):
-    """
-    COTS Paging test
-    """
+    """Template test function for paging over the air"""
 
-    configure_test_parameters(
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        band=band,
-        common_scs=common_scs,
-        bandwidth=bandwidth,
-        sample_rate=get_minimum_sample_rate_for_bandwidth(bandwidth),
-        global_timing_advance=-1,
-        time_alignment_calibration="auto",
-        cu_cp_inactivity_timer=1,
-    )
+    ue_array = ue_multiple(1)
+    ping_count = 10
+    idle_duration = 15
 
-    logging.info("Paging Test")
-    start_network(ue_array=[ue], gnb_array=[gnb], fivegc_array=[fivegc])
-    ue_attach_info_dict = ue_start_and_attach(
-        ue_array=[ue], du_definition=[gnb.GetDefinition(UInt32Value(value=0)).du_definition], fivegc_array=[fivegc]
-    )
-    ping(ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=10)
-    sleep(5)
-    ping_from_5gc(ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=10)
-    stop(
-        ue_array=[ue],
-        gnb_array=[gnb],
-        fivegc_array=[fivegc],
-        retina_data=retina_data,
-        warning_as_errors=False,
-    )
+    set_config_files(retina_manager=retina_manager, retina_data=retina_data, test_definition=test_definition)
+    configure_artifacts(retina_data=retina_data, always_download_artifacts=True)
+
+    for criteria_id, criteria_expected_value in test_definition.criteria.items():
+        criteria.add_criteria(criteria_id, criteria_expected_value)
+
+    try:
+        logging.info("Paging Test")
+        start_network(ue_array=ue_array, gnb_array=[gnb], fivegc_array=[fivegc])
+        ue_attach_info_dict = ue_start_and_attach(
+            ue_array=ue_array,
+            du_definition=[gnb.GetDefinition(UInt32Value(value=0)).du_definition],
+            fivegc_array=[fivegc],
+        )
+        ping(ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=ping_count)
+        sleep(idle_duration)
+        ping_from_5gc(ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=ping_count)
+        stop(
+            ue_array=ue_array,
+            gnb_array=[gnb],
+            fivegc_array=[fivegc],
+            retina_data=retina_data,
+            warning_as_errors=False,
+        )
+    finally:
+        criteria.validate()

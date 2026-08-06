@@ -1,0 +1,74 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+paging:
+  stage: mobility
+  extends: .rf_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^rf/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "mobility.paging."
+    TESTBED: dynamic
+    MARKERS: "rf or android"
+
+bands:
+  stage: singleue
+  extends: .rf_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^rf/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.bands."
+    TESTBED: dynamic
+    MARKERS: "rf or android"
+
+bandwiths:
+  stage: singleue
+  extends: .rf_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^rf/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.bandwiths."
+    TESTBED: dynamic
+    MARKERS: "rf or android"
+
+gbr_vonr:
+  stage: singleue
+  extends: .rf_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^rf/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.gbr_vonr."
+    TESTBED: dynamic
+    MARKERS: "rf or android"
+
+phy_configs:
+  stage: singleue
+  extends: .rf_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^rf/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.phy_configs."
+    TESTBED: dynamic
+    MARKERS: "rf or android"
+
+ping:
+  stage: singleue
+  extends: .rf_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^rf/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.ping."
+    TESTBED: dynamic
+    MARKERS: "rf or android"

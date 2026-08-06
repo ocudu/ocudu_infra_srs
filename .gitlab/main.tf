@@ -170,6 +170,12 @@ module "settings" {
       allowed_to_merge             = [{ access_level = "no one" }]
       allowed_to_push              = [{ access_level = "maintainer" }]
     }
+    srs_rf = {
+      allow_force_push             = false
+      code_owner_approval_required = false
+      allowed_to_merge             = [{ access_level = "no one" }]
+      allowed_to_push              = [{ access_level = "maintainer" }]
+    }
   }
 
   # =============================================================================
@@ -210,7 +216,7 @@ module "settings" {
       variables   = {}
     }
     rf_nightly = {
-      description = "RF Nightly"
+      description = "rf"
       cron        = "00 22 * * 0-5"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"

@@ -379,3 +379,39 @@ precoding:
     all.errors_le: 0
     all.warnings_le: 0
     du.transform_precoder_eq: 1 # Enabled
+
+####################
+#### COTS Tests ####
+####################
+
+# Interleaved PDSCH VRB-to-PRB mapping against a COTS UE over the air, band 78 at 20 MHz
+cots_pdsch_vrb:
+  template: iperf.test_rf_udp_bidirectional
+  request: android_b200
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, pdsch_vrb.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 78
+      dl_nr_arfcn: 632628
+      bandwidth: 20
+      common_scs: 30
+      sample_rate: 23040000
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+  feature_ids: [DU-PHY-8]
+  criteria:
+    du.dl_bitrate_gt: 8.0e+6
+    du.ul_bitrate_gt: 8.0e+6
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    du.nof_error_indications_le: 0
+    du.nof_reestablishments_request_eq: 0
+    all.errors_le: 0

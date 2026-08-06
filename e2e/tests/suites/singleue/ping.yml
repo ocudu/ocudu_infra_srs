@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Ping flows against a COTS UE over the air. The cells themselves are covered by the iperf cases of
+# bands.yml and bandwiths.yml, so only what the ping flow adds is tested here
+
+####################
+#### COTS Tests ####
+####################
+
+# Re-attaches
+band_3_reattach: &band_3_config
+  template: ping.test_rf_reattach
+  request: android_b200
+  gnb:
+    config: [cu_cp.yml, du.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 3
+      dl_nr_arfcn: 368500
+      bandwidth: 10
+      common_scs: 15
+      sample_rate: 11520000
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+  criteria: &cots_criteria
+    du.dl_bitrate_gt: 0 # The ping itself is validated by the test template
+    du.ul_bitrate_gt: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    du.nof_error_indications_le: 0
+    du.nof_reestablishments_request_eq: 0
+    all.errors_le: 0
+
+band_7_reattach:
+  template: ping.test_rf_reattach
+  request: android_x300
+  gnb:
+    config: [cu_cp.yml, du.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      time_multiplier: 0.5 # Throttles the DL, so that the SDR does not overflow
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 7
+      dl_nr_arfcn: 536020
+      bandwidth: 20
+      common_scs: 15
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+  criteria: *cots_criteria
+
+# DRX
+drx: &drx_config
+  <<: *band_3_config
+  template: ping.test_rf_drx
+  gnb:
+    config: [cu_cp.yml, du.yml, drx.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 3
+      dl_nr_arfcn: 368500
+      bandwidth: 10
+      common_scs: 15
+  criteria:
+    <<: *cots_criteria
+    du.drx_long_cycle_eq: 7 # this is the coded value that corresponds to 80 ms
+
+no_drx:
+  <<: *drx_config
+  gnb:
+    config: [cu_cp.yml, du.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 3
+      dl_nr_arfcn: 368500
+      bandwidth: 10
+      common_scs: 15
+  criteria:
+    <<: *cots_criteria
+    du.drx_long_cycle_eq: 0

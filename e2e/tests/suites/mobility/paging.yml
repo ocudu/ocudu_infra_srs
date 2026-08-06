@@ -217,3 +217,54 @@ rrc_inactive_mo_rt:
     config: *rrc_inactive_gnb_config
   core:
     config: *core_config
+
+####################
+#### COTS Tests ####
+####################
+
+# Paging test against a COTS UE over the air, RRC IDLE MT
+cots_band_3: &cots_baseline
+  template: paging.test_rf
+  request: android_b200
+  gnb:
+    config: [cu_cp.yml, du.yml, inactivity_timer.yml, mac_pcap.yml]
+    parameters:
+      band: 3
+      dl_nr_arfcn: 368500
+      bandwidth: 10
+      common_scs: 15
+      sample_rate: 11520000
+      gnb_id_bit_length: 22
+      slice_sd: ""
+      cu_cp_report_period: 5000
+      log_level: warning
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+  criteria:
+    du.nof_paging_eq: 2
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    du.nof_error_indications_le: 0
+    du.nof_reestablishments_request_eq: 0
+    all.errors_le: 0
+
+cots_band_78:
+  <<: *cots_baseline
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, inactivity_timer.yml, mac_pcap.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 78
+      dl_nr_arfcn: 632628
+      bandwidth: 20
+      common_scs: 30
+      sample_rate: 23040000

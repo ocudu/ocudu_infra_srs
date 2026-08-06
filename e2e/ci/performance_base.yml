@@ -8,7 +8,7 @@ dpdk rtsan avx512:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
-  variables: &dpdk_rtsan_avx512_variables
+  variables:
     OS: ubuntu-26.04
     OCUDU_TARGET: gnb_split_7_2 gnb
     COMPILER: clang

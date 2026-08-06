@@ -21,6 +21,10 @@ include:
   - local: e2e/ci/performance_config.yml
     rules:
       - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
+  - local: e2e/ci/rf_base.yml
+  - local: e2e/ci/rf_config.yml
+    rules:
+      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^rf/
 
 functional:
   extends: .trigger e2e
@@ -63,3 +67,24 @@ performance promotion:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
   variables:
     BRANCH: srs_performance
+
+rf:
+  extends: .trigger e2e
+  trigger:
+    include:
+      - local: e2e/ci/child_template.yml
+        inputs:
+          ocudu_path: $[[ inputs.ocudu_path ]]
+          ocudu_ref: $[[ inputs.ocudu_ref ]]
+      - local: e2e/ci/rf_base.yml
+      - local: e2e/ci/rf_config.yml
+    strategy: mirror
+    forward:
+      pipeline_variables: true
+
+rf promotion:
+  extends: .ocudu promotion
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^rf/
+  variables:
+    BRANCH: srs_rf

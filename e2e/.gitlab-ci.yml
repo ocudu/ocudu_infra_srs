@@ -183,6 +183,7 @@ retina demolition:
 ## Build jobs for Scheduled Pipelines
 # In functional_base.yml - zmq driver, release with deb info
 # In performance_base.yml - dpdk rtsan avx512
+# In rf_base.yml - rf release, rf asan
 
 debug:
   extends: .build
@@ -203,7 +204,6 @@ asan:
   retry: 2
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
   variables:
     OS: ubuntu-26.04
     OCUDU_TARGET: gnb
@@ -382,70 +382,6 @@ ric:
   extends: .viavi
   variables:
     KEYWORDS: "32UE and tdd"
-
-## RF Nightly
-### SDR
-.amarisoft sdr:
-  extends: .e2e_amarisoft
-  stage: amarisoft sdr
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
-  variables:
-    GROUP: rf
-    TESTBED: rf_b200
-    RETINA_ARGS: >
-      ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
-  needs:
-    - get retina version
-    - release with deb info
-
-b200 asan:
-  extends: .amarisoft sdr
-  variables:
-    MARKERS: rf_not_crash
-  needs:
-    - get retina version
-    - asan
-
-### Android
-.android:
-  extends: .e2e
-  stage: android
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /RF Nightly/
-  variables:
-    GROUP: rf
-    MARKERS: android
-    RETINA_ARGS: >
-      ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
-  needs:
-    - get retina version
-    - release with deb info
-
-android b200:
-  extends: .android
-  variables:
-    TESTBED: android_b200
-    KEYWORDS: "not ims"
-
-android b200 drx:
-  extends: .android
-  variables:
-    TESTBED: android_b200
-    MARKERS: android_drx
-
-android x300:
-  extends: .android
-  variables:
-    TESTBED: android_x300
-    MARKERS: android_hp
-
-android x300 ims:
-  extends: .android
-  variables:
-    TESTBED: android_callbox
-    MARKERS: android
-    KEYWORDS: ims
 
 ## Emulated Weekly
 ### Viavi

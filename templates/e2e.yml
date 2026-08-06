@@ -27,7 +27,6 @@ spec:
         - android_b200
         - android_callbox
         - android_x300
-        - rf_b200
         - test_mode_ru
         - test_mode_ue
         - viavi

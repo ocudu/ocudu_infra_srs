@@ -60,3 +60,66 @@ ims:
     cu_cp.nof_5qi_5_drb_configured_ge: 1
     all.errors_le: 0
     all.warnings_le: 0
+
+####################
+#### COTS Tests ####
+####################
+
+# IMS pings against a COTS UE over the air
+ims_disabled: &ims_config
+  template: ping.test_rf_ims
+  request: android_callbox
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 78
+      dl_nr_arfcn: 632628
+      bandwidth: 20
+      common_scs: 30
+      sample_rate: 23040000
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+      ims_mode: ""
+  feature_ids: [MVP-FUNC-SVCS-16-8]
+  criteria: &cots_ims_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    du.nof_error_indications_le: 0
+    du.nof_reestablishments_request_eq: 0
+    all.errors_le: 0
+    core.nof_ims_nas_registered_ue_eq: 0
+
+ims_enabled:
+  <<: *ims_config
+  template: ping.test_rf_ims
+  core:
+    parameters:
+      log_level: warning
+      ims_mode: enabled
+  criteria:
+    <<: *cots_ims_criteria
+    core.nof_ims_nas_registered_ue_eq: 1
+
+ims_not_registering:
+  <<: *ims_config
+  template: ping.test_rf_ims
+  core:
+    parameters:
+      log_level: warning
+      ims_mode: not_registering
+  # The traffic is expected to fail when the UE does not register in IMS
+  criteria:
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    all.errors_le: 0
+    core.nof_ims_nas_registered_ue_eq: 0

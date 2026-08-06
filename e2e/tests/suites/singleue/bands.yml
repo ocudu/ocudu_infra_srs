@@ -32,7 +32,6 @@ band_n30: &base_config
       zero_correlation_zone: 0
   core:
     config: [baseline.cfg]
-  feature_ids: [SRS]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -177,3 +176,213 @@ band_na_2t2r_ul:
       nof_antennas_dl: 2
       nof_antennas_ul: 2
   feature_ids: [MVP-FUNC-PHY-16-11]
+
+####################
+#### COTS Tests ####
+####################
+
+cots_band_3_udp_downlink: &cots_band_3_config
+  template: iperf.test_rf_udp_downlink
+  request: android_b200
+  gnb:
+    config: [cu_cp.yml, du.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 3
+      dl_nr_arfcn: 368500
+      bandwidth: 10
+      common_scs: 15
+      sample_rate: 11520000
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+  feature_ids: [MVP-FUNC-PHY-16-1]
+  criteria:
+    <<: &cots_criteria
+      du.max_late_dl_harqs_le: 0
+      du.max_late_ul_harqs_le: 0
+      du.nof_error_indications_le: 0
+      du.nof_reestablishments_request_eq: 0
+      all.errors_le: 0
+    du.dl_bitrate_gt: 17.5e+6
+    du.ul_bitrate_gt: 0
+
+cots_band_3_udp_uplink:
+  <<: *cots_band_3_config
+  template: iperf.test_rf_udp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 16.0e+6
+
+cots_band_3_udp_bidirectional:
+  <<: *cots_band_3_config
+  template: iperf.test_rf_udp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 16.0e+6
+    du.ul_bitrate_gt: 16.0e+6
+
+cots_band_3_tcp_downlink:
+  <<: *cots_band_3_config
+  template: iperf.test_rf_tcp_downlink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 17.5e+6
+    du.ul_bitrate_gt: 0
+
+cots_band_3_tcp_uplink:
+  <<: *cots_band_3_config
+  template: iperf.test_rf_tcp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 15.0e+6
+
+cots_band_3_tcp_bidirectional:
+  <<: *cots_band_3_config
+  template: iperf.test_rf_tcp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 15.0e+6
+    du.ul_bitrate_gt: 15.0e+6
+
+cots_band_78_udp_downlink: &cots_band_78_config
+  template: iperf.test_rf_udp_downlink
+  request: android_b200
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 78
+      dl_nr_arfcn: 632628
+      bandwidth: 20
+      common_scs: 30
+      sample_rate: 23040000
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+  feature_ids: [MVP-FUNC-PHY-16-1]
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 22.5e+6
+    du.ul_bitrate_gt: 0
+
+cots_band_78_udp_uplink:
+  <<: *cots_band_78_config
+  template: iperf.test_rf_udp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 8.0e+6
+
+cots_band_78_udp_bidirectional:
+  <<: *cots_band_78_config
+  template: iperf.test_rf_udp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 8.0e+6
+    du.ul_bitrate_gt: 8.0e+6
+
+cots_band_78_tcp_downlink:
+  <<: *cots_band_78_config
+  template: iperf.test_rf_tcp_downlink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 21.5e+6
+    du.ul_bitrate_gt: 0
+
+cots_band_78_tcp_uplink:
+  <<: *cots_band_78_config
+  template: iperf.test_rf_tcp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 8.0e+6
+
+cots_band_78_tcp_bidirectional:
+  <<: *cots_band_78_config
+  template: iperf.test_rf_tcp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 8.0e+6
+    du.ul_bitrate_gt: 8.0e+6
+
+cots_band_7_udp_downlink: &cots_band_7_config
+  template: iperf.test_rf_udp_downlink
+  request: android_x300
+  gnb:
+    config: [cu_cp.yml, du.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      time_multiplier: 0.5 # Throttles the DL, so that the SDR does not overflow
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 7
+      dl_nr_arfcn: 536020
+      bandwidth: 20
+      common_scs: 15
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+  feature_ids: [MVP-FUNC-PHY-16-1]
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 48.5e+6
+    du.ul_bitrate_gt: 0
+
+cots_band_7_udp_uplink:
+  <<: *cots_band_7_config
+  template: iperf.test_rf_udp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 35.5e+6
+
+cots_band_7_udp_bidirectional:
+  <<: *cots_band_7_config
+  template: iperf.test_rf_udp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 35.5e+6
+    du.ul_bitrate_gt: 35.5e+6
+
+cots_band_7_tcp_downlink:
+  <<: *cots_band_7_config
+  template: iperf.test_rf_tcp_downlink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 48.0e+6
+    du.ul_bitrate_gt: 0
+
+cots_band_7_tcp_uplink:
+  <<: *cots_band_7_config
+  template: iperf.test_rf_tcp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 34.5e+6
+
+cots_band_7_tcp_bidirectional:
+  <<: *cots_band_7_config
+  template: iperf.test_rf_tcp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 34.5e+6
+    du.ul_bitrate_gt: 34.5e+6

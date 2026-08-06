@@ -59,3 +59,144 @@ bw_tdd_50:
       dl_nr_arfcn: 520002
       bandwidth: 50
   feature_ids: []
+
+####################
+#### COTS Tests ####
+####################
+
+cots_bw_50_udp_downlink: &cots_bw_50_config
+  template: iperf.test_rf_udp_downlink
+  request: android_x300
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      time_multiplier: 0.5 # Throttles the DL, so that the SDR does not overflow
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 78
+      dl_nr_arfcn: 632628
+      bandwidth: 50
+      common_scs: 30
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+  criteria:
+    <<: &cots_criteria
+      du.max_late_dl_harqs_le: 0
+      du.max_late_ul_harqs_le: 0
+      du.nof_error_indications_le: 0
+      du.nof_reestablishments_request_eq: 0
+      all.errors_le: 0
+    du.dl_bitrate_gt: 78.0e+6
+    du.ul_bitrate_gt: 0
+
+cots_bw_50_udp_uplink:
+  <<: *cots_bw_50_config
+  template: iperf.test_rf_udp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 16.5e+6
+
+cots_bw_50_udp_bidirectional:
+  <<: *cots_bw_50_config
+  template: iperf.test_rf_udp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 16.5e+6
+    du.ul_bitrate_gt: 10.0e+6
+
+cots_bw_50_tcp_downlink:
+  <<: *cots_bw_50_config
+  template: iperf.test_rf_tcp_downlink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 76.5e+6
+    du.ul_bitrate_gt: 0
+
+cots_bw_50_tcp_uplink:
+  <<: *cots_bw_50_config
+  template: iperf.test_rf_tcp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 14.5e+6
+
+cots_bw_50_tcp_bidirectional:
+  <<: *cots_bw_50_config
+  template: iperf.test_rf_tcp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 14.5e+6
+    du.ul_bitrate_gt: 8.0e+6
+
+cots_bw_90_udp_downlink: &cots_bw_90_config
+  template: iperf.test_rf_udp_downlink
+  request: android_x300
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      time_multiplier: 0.5 # Throttles the DL, so that the SDR does not overflow
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: warning
+      band: 78
+      dl_nr_arfcn: 632628
+      bandwidth: 90
+      common_scs: 30
+  ue:
+    parameters:
+      log_level: warning
+  core:
+    parameters:
+      log_level: warning
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 123.5e+6
+    du.ul_bitrate_gt: 0
+
+cots_bw_90_udp_uplink:
+  <<: *cots_bw_90_config
+  template: iperf.test_rf_udp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 29.0e+6
+
+cots_bw_90_udp_bidirectional:
+  <<: *cots_bw_90_config
+  template: iperf.test_rf_udp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 29.0e+6
+    du.ul_bitrate_gt: 29.0e+6
+
+cots_bw_90_tcp_downlink:
+  <<: *cots_bw_90_config
+  template: iperf.test_rf_tcp_downlink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 62.0e+6
+    du.ul_bitrate_gt: 0
+
+cots_bw_90_tcp_uplink:
+  <<: *cots_bw_90_config
+  template: iperf.test_rf_tcp_uplink
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 28.0e+6
+
+cots_bw_90_tcp_bidirectional:
+  <<: *cots_bw_90_config
+  template: iperf.test_rf_tcp_bidirectional
+  criteria:
+    <<: *cots_criteria
+    du.dl_bitrate_gt: 28.0e+6
+    du.ul_bitrate_gt: 28.0e+6

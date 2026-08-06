@@ -9,8 +9,6 @@ stages:
   - test mode
   - srsue
   - viavi
-  - amarisoft sdr
-  - android
   - mobility
   - multiue
   - singleue

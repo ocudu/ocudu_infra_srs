@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+release rf:
+  extends: .build
+  retry: 2
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^rf/
+  variables:
+    OS: ubuntu-26.04
+    OCUDU_TARGET: gnb
+    COMPILER: gcc
+    BUILD_ARGS: >
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_WERROR=False -DENABLE_ZEROMQ=False
+      -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3
+    TEST_MODE: none
+  cache:
+    - key: rf release
+      paths: [ocudu/ccache]
+      policy: pull-push
+
+release rf cached:
+  extends: release rf
+  rules:
+    - if: $TRIGGERED_ON_MR == "true"
+  cache:
+    - key: rf release
+      paths: [ocudu/ccache]
+      policy: pull-push
+
+.rf_e2e:
+  extends: .e2e_amarisoft
+  timeout: 6h
+  variables:
+    GROUP: rf
+  needs:
+    - job: get retina version
+      artifacts: true
+      optional: true
+    - job: release rf
+      artifacts: true
+      optional: true
+    - job: release rf cached
+      artifacts: true
+      optional: true
