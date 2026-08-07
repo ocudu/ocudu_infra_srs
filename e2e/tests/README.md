@@ -90,6 +90,9 @@ baseline: &base_config # Test Case
   request: zmq_mme
   # Feature IDs covered in this test
   feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14]
+  # Template parameters (in case it has them)
+  parameters:
+    ping_count: 10
   # Configs and parameters for each item
   ue:
     config: [2cell_intrafreq_chsim.cfg, handover.cfg]  # Jinja2 .cfg files, merged in order

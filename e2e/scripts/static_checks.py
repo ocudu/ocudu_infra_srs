@@ -226,6 +226,7 @@ _TEST_DEFINITION_SCHEMA: dict = {
     "properties": {
         "template": {"type": "string"},
         "request": {"type": "string"},
+        "parameters": {"type": "object"},
         "feature_ids": {"type": "array", "items": {"type": "string"}},
         "criteria": {"type": "object", "additionalProperties": {}},
         "ue": {"$ref": "#/$defs/node_type_definition"},

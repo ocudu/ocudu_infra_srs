@@ -386,7 +386,11 @@ precoding:
 
 # Interleaved PDSCH VRB-to-PRB mapping against a COTS UE over the air, band 78 at 20 MHz
 cots_pdsch_vrb:
-  template: iperf.test_rf_udp_bidirectional
+  template: iperf.test_gnb
+  parameters:
+    protocol: udp
+    direction: bidirectional
+    ul_bitrate: 16.0e+6
   request: android_b200
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, pdsch_vrb.yml]

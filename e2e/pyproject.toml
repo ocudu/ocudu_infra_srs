@@ -63,8 +63,6 @@ markers = [
   "test_mode_many_ues",
   "viavi",
   "viavi_manual",
-  "example",
-  "example_srsue",
   "s72",
   "s72_ntn",
   "s72_1000",

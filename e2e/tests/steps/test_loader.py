@@ -80,6 +80,7 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
     retina_request: str
     feature_ids: list[str]
     criteria: Dict[str, float]
+    parameters: Dict[str, Any] = field(default_factory=dict)
     # Configs
     ue: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
     cu: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
@@ -97,6 +98,7 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
             retina_request=data.get("request", "zmq_mme"),
             feature_ids=data.get("feature_ids", []),
             criteria=data.get("criteria", {}),
+            parameters=data.get("parameters", {}),
             ue=RetinaNodeTypeDefinition.from_dict(data.get("ue", {})),
             cu=RetinaNodeTypeDefinition.from_dict(data.get("cu", {})),
             cu_cp=RetinaNodeTypeDefinition.from_dict(data.get("cu_cp", {})),

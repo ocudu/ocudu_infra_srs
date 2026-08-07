@@ -186,13 +186,13 @@ docker exec -it launcher sh
 And execute inside the container:
 
 ```bash
-retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml --reruns=0 -x -m example
+retina-launcher --retina-testbed=/workdir/retina/_scripts/testbed.yml --reruns=0 -x -k singleue.bandwiths.bw_tdd_50
 ```
 
 This will:
 
 - use our local testbed declared in the yml file -\> Retina will know which UEs/GNBs/COREs are available and their IPs
-- Run tests that have `example` mark (tag/label) -\> That selects a 4UE ping
+- Select the test cases by their id -\> That selects one bandwidth test case of `singleue/bandwiths.yml`
 - Download all the artifacts even if the test passes
 
 The console output should be similar to:
@@ -208,7 +208,7 @@ configfile: pyproject.toml
 plugins: typeguard-2.13.3, rerunfailures-14.0, retina_launcher-0.0, json-0.4.0, xdist-3.6.1, html-3.2.0, random-order-1.1.1, metadata-3.1.1
 collected 203 items / 202 deselected / 1 selected
 
-tests/ping.py::test_example
+tests/ue_simulator.py::test_gnb[singleue.bandwiths.bw_tdd_50]
 ------------------------------------------------------------------------------ live log setup -------------------------------------------------------------------------------
 2024-12-04 14:25:26 [INFO] Testbed: ~/workspace/retina/scripts/testbed.yml
 2024-12-04 14:25:26 [INFO] Register parameters: ()

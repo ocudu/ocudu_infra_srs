@@ -24,7 +24,7 @@ from .steps.traffic import ping, ping_from_5gc
 
 @load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_rf(
+def test_gnb(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
@@ -33,11 +33,14 @@ def test_rf(
     gnb: GNBClient,
     fivegc: FiveGCClient,
 ):
-    """Template test function for paging over the air"""
+    """Template test function for paging: the UE is left idle and the core pages it with a ping"""
 
+    parameters = test_definition.parameters
     ue_array = ue_multiple(1)
-    ping_count = 10
-    idle_duration = 15
+    ping_count = parameters.get("ping_count", 10)
+    # Several times the inactivity timer, so that the background traffic of the phone does not keep
+    # the UE connected until the end of the wait
+    idle_duration = parameters.get("idle_duration", 15)
 
     set_config_files(retina_manager=retina_manager, retina_data=retina_data, test_definition=test_definition)
     configure_artifacts(retina_data=retina_data, always_download_artifacts=True)

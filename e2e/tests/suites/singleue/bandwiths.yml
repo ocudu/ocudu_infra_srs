@@ -65,7 +65,11 @@ bw_tdd_50:
 ####################
 
 cots_bw_50_udp_downlink: &cots_bw_50_config
-  template: iperf.test_rf_udp_downlink
+  template: iperf.test_gnb
+  parameters:
+    protocol: udp
+    direction: downlink
+    dl_bitrate: 156.0e+6
   request: android_x300
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]
@@ -97,7 +101,11 @@ cots_bw_50_udp_downlink: &cots_bw_50_config
 
 cots_bw_50_udp_uplink:
   <<: *cots_bw_50_config
-  template: iperf.test_rf_udp_uplink
+  template: iperf.test_gnb
+  parameters:
+    protocol: udp
+    direction: uplink
+    ul_bitrate: 33.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 0
@@ -105,15 +113,23 @@ cots_bw_50_udp_uplink:
 
 cots_bw_50_udp_bidirectional:
   <<: *cots_bw_50_config
-  template: iperf.test_rf_udp_bidirectional
+  template: iperf.test_gnb
+  parameters:
+    protocol: udp
+    direction: bidirectional
+    ul_bitrate: 33.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 16.5e+6
-    du.ul_bitrate_gt: 10.0e+6
+    du.ul_bitrate_gt: 8.0e+6
 
 cots_bw_50_tcp_downlink:
   <<: *cots_bw_50_config
-  template: iperf.test_rf_tcp_downlink
+  template: iperf.test_gnb
+  parameters:
+    protocol: tcp
+    direction: downlink
+    dl_bitrate: 153.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 76.5e+6
@@ -121,7 +137,11 @@ cots_bw_50_tcp_downlink:
 
 cots_bw_50_tcp_uplink:
   <<: *cots_bw_50_config
-  template: iperf.test_rf_tcp_uplink
+  template: iperf.test_gnb
+  parameters:
+    protocol: tcp
+    direction: uplink
+    ul_bitrate: 29.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 0
@@ -129,14 +149,22 @@ cots_bw_50_tcp_uplink:
 
 cots_bw_50_tcp_bidirectional:
   <<: *cots_bw_50_config
-  template: iperf.test_rf_tcp_bidirectional
+  template: iperf.test_gnb
+  parameters:
+    protocol: tcp
+    direction: bidirectional
+    ul_bitrate: 29.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 14.5e+6
     du.ul_bitrate_gt: 8.0e+6
 
 cots_bw_90_udp_downlink: &cots_bw_90_config
-  template: iperf.test_rf_udp_downlink
+  template: iperf.test_gnb
+  parameters:
+    protocol: udp
+    direction: downlink
+    dl_bitrate: 247.0e+6
   request: android_x300
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]
@@ -163,7 +191,11 @@ cots_bw_90_udp_downlink: &cots_bw_90_config
 
 cots_bw_90_udp_uplink:
   <<: *cots_bw_90_config
-  template: iperf.test_rf_udp_uplink
+  template: iperf.test_gnb
+  parameters:
+    protocol: udp
+    direction: uplink
+    ul_bitrate: 58.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 0
@@ -171,7 +203,11 @@ cots_bw_90_udp_uplink:
 
 cots_bw_90_udp_bidirectional:
   <<: *cots_bw_90_config
-  template: iperf.test_rf_udp_bidirectional
+  template: iperf.test_gnb
+  parameters:
+    protocol: udp
+    direction: bidirectional
+    ul_bitrate: 58.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 29.0e+6
@@ -179,7 +215,11 @@ cots_bw_90_udp_bidirectional:
 
 cots_bw_90_tcp_downlink:
   <<: *cots_bw_90_config
-  template: iperf.test_rf_tcp_downlink
+  template: iperf.test_gnb
+  parameters:
+    protocol: tcp
+    direction: downlink
+    dl_bitrate: 124.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 62.0e+6
@@ -187,7 +227,11 @@ cots_bw_90_tcp_downlink:
 
 cots_bw_90_tcp_uplink:
   <<: *cots_bw_90_config
-  template: iperf.test_rf_tcp_uplink
+  template: iperf.test_gnb
+  parameters:
+    protocol: tcp
+    direction: uplink
+    ul_bitrate: 56.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 0
@@ -195,7 +239,11 @@ cots_bw_90_tcp_uplink:
 
 cots_bw_90_tcp_bidirectional:
   <<: *cots_bw_90_config
-  template: iperf.test_rf_tcp_bidirectional
+  template: iperf.test_gnb
+  parameters:
+    protocol: tcp
+    direction: bidirectional
+    ul_bitrate: 56.0e+6
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 28.0e+6

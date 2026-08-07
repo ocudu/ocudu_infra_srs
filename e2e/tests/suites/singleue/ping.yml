@@ -10,7 +10,9 @@
 
 # Re-attaches
 band_3_reattach: &band_3_config
-  template: ping.test_rf_reattach
+  template: ping.test_gnb
+  parameters:
+    reattach_count: 2
   request: android_b200
   gnb:
     config: [cu_cp.yml, du.yml]
@@ -40,7 +42,9 @@ band_3_reattach: &band_3_config
     all.errors_le: 0
 
 band_7_reattach:
-  template: ping.test_rf_reattach
+  template: ping.test_gnb
+  parameters:
+    reattach_count: 2
   request: android_x300
   gnb:
     config: [cu_cp.yml, du.yml]
@@ -65,7 +69,9 @@ band_7_reattach:
 # DRX
 drx: &drx_config
   <<: *band_3_config
-  template: ping.test_rf_drx
+  template: ping.test_gnb
+  parameters:
+    ping_interval: 0.1
   gnb:
     config: [cu_cp.yml, du.yml, drx.yml]
     parameters:

@@ -67,7 +67,7 @@ ims:
 
 # IMS pings against a COTS UE over the air
 ims_disabled: &ims_config
-  template: ping.test_rf_ims
+  template: ping.test_gnb
   request: android_callbox
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]
@@ -101,7 +101,7 @@ ims_disabled: &ims_config
 
 ims_enabled:
   <<: *ims_config
-  template: ping.test_rf_ims
+  template: ping.test_gnb
   core:
     parameters:
       log_level: warning
@@ -112,7 +112,7 @@ ims_enabled:
 
 ims_not_registering:
   <<: *ims_config
-  template: ping.test_rf_ims
+  template: ping.test_gnb
   core:
     parameters:
       log_level: warning
