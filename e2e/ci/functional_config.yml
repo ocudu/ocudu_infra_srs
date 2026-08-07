@@ -11,7 +11,7 @@ inter_cu_ho:
   variables:
     KEYWORDS: "mobility.inter_cu_ho."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 inter_du_ho:
   stage: mobility
@@ -23,7 +23,7 @@ inter_du_ho:
   variables:
     KEYWORDS: "mobility.inter_du_ho."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 inter_ru_ho:
   stage: mobility
@@ -35,7 +35,7 @@ inter_ru_ho:
   variables:
     KEYWORDS: "mobility.inter_ru_ho."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 intra_ru_ho:
   stage: mobility
@@ -47,7 +47,7 @@ intra_ru_ho:
   variables:
     KEYWORDS: "mobility.intra_ru_ho."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 paging:
   stage: mobility
@@ -59,7 +59,7 @@ paging:
   variables:
     KEYWORDS: "mobility.paging."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 reestablishment:
   stage: mobility
@@ -71,7 +71,7 @@ reestablishment:
   variables:
     KEYWORDS: "mobility.reestablishment."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 cplane_traffic_load:
   stage: multiue
@@ -83,7 +83,7 @@ cplane_traffic_load:
   variables:
     KEYWORDS: "multiue.cplane_traffic_load."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 mobility:
   stage: multiue
@@ -95,7 +95,7 @@ mobility:
   variables:
     KEYWORDS: "multiue.mobility."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 qos:
   stage: multiue
@@ -107,7 +107,7 @@ qos:
   variables:
     KEYWORDS: "multiue.qos."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 simultaneous_udp:
   stage: multiue
@@ -119,7 +119,7 @@ simultaneous_udp:
   variables:
     KEYWORDS: "multiue.simultaneous_udp."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 slice:
   stage: multiue
@@ -131,7 +131,19 @@ slice:
   variables:
     KEYWORDS: "multiue.slice."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
+
+test_mode:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "multiue.test_mode."
+    TESTBED: dynamic
+    MARKERS: "zmq or test_mode_ue"
 
 traffic_model:
   stage: multiue
@@ -143,7 +155,7 @@ traffic_model:
   variables:
     KEYWORDS: "multiue.traffic_model."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 ue_state_transition:
   stage: multiue
@@ -155,7 +167,7 @@ ue_state_transition:
   variables:
     KEYWORDS: "multiue.ue_state_transition."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 bands:
   stage: singleue
@@ -167,7 +179,7 @@ bands:
   variables:
     KEYWORDS: "singleue.bands."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 bandwiths:
   stage: singleue
@@ -179,7 +191,7 @@ bandwiths:
   variables:
     KEYWORDS: "singleue.bandwiths."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 drb_triggered_ul_grant:
   stage: singleue
@@ -191,7 +203,7 @@ drb_triggered_ul_grant:
   variables:
     KEYWORDS: "singleue.drb_triggered_ul_grant."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 emergency_call:
   stage: singleue
@@ -203,7 +215,7 @@ emergency_call:
   variables:
     KEYWORDS: "singleue.emergency_call."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 fdd_siso:
   stage: singleue
@@ -215,7 +227,7 @@ fdd_siso:
   variables:
     KEYWORDS: "singleue.fdd_siso."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 gbr_vonr:
   stage: singleue
@@ -227,7 +239,7 @@ gbr_vonr:
   variables:
     KEYWORDS: "singleue.gbr_vonr."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 mocn:
   stage: singleue
@@ -239,7 +251,7 @@ mocn:
   variables:
     KEYWORDS: "singleue.mocn."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 nrppa:
   stage: singleue
@@ -251,7 +263,7 @@ nrppa:
   variables:
     KEYWORDS: "singleue.nrppa."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 ntn:
   stage: singleue
@@ -263,7 +275,7 @@ ntn:
   variables:
     KEYWORDS: "singleue.ntn."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 phy_configs:
   stage: singleue
@@ -275,7 +287,7 @@ phy_configs:
   variables:
     KEYWORDS: "singleue.phy_configs."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 power_control:
   stage: singleue
@@ -287,7 +299,7 @@ power_control:
   variables:
     KEYWORDS: "singleue.power_control."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 pws:
   stage: singleue
@@ -299,7 +311,7 @@ pws:
   variables:
     KEYWORDS: "singleue.pws."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 security:
   stage: singleue
@@ -311,7 +323,7 @@ security:
   variables:
     KEYWORDS: "singleue.security."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 slicing:
   stage: singleue
@@ -323,7 +335,7 @@ slicing:
   variables:
     KEYWORDS: "singleue.slicing."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 tdd_mimo:
   stage: singleue
@@ -335,7 +347,7 @@ tdd_mimo:
   variables:
     KEYWORDS: "singleue.tdd_mimo."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 tdd_siso:
   stage: singleue
@@ -347,4 +359,4 @@ tdd_siso:
   variables:
     KEYWORDS: "singleue.tdd_siso."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"

@@ -23,7 +23,7 @@ import yaml
 # group every test case of a testbed is marked with. A pipeline only gets a job for the test
 # suite files holding at least one test case it selects.
 PIPELINES: Dict[str, Dict[str, object]] = {
-    "functional": {"MARKERS": "zmq"},
+    "functional": {"MARKERS": "zmq or test_mode_ue"},
     "performance": {"MARKERS": "s72"},
     "rf": {"MARKERS": "rf or android"},
 }

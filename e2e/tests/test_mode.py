@@ -14,127 +14,70 @@ from typing import List, Optional
 import pytest
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from pytest import mark, param
+from pytest import mark
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
+from retina.launcher.criteria import CriteriaTable
 from retina.launcher.utils import configure_artifacts
 from retina.protocol import FiveGCClient, GNBClient
 from retina.protocol.base_pb2 import FiveGCDefinition, GNBDefinition, Metrics, PLMN, StartInfo, UEDefinition
-from retina.protocol.fivegc_pb2 import FiveGCStartInfo
 from retina.protocol.gnb_pb2 import GNBStartInfo
 
-from .steps.stub import FIVEGC_STARTUP_TIMEOUT, GNB_STARTUP_TIMEOUT, handle_start_error, stop
+from .steps.configuration import set_config_files
+from .steps.stub import fivegc_start, gnb_start, GNB_STARTUP_TIMEOUT, handle_start_error, stop
+from .steps.test_loader import load_tests, RetinaTestDefinition
 
 
-@mark.parametrize(
-    "extra_config, nof_ant",
-    (
-        param("test_mode test_ue --ri 1", 1, id="Test UE 1x1 Rank 1"),
-        param("test_mode test_ue --ri 1", 2, id="Test UE 2x2 Rank 1"),
-        param("test_mode test_ue --ri 2", 2, id="Test UE 2x2 Rank 2"),
-        param("test_mode test_ue --ri 1", 4, id="Test UE 4x4 Rank 1"),
-        param("test_mode test_ue --ri 2", 4, id="Test UE 4x4 Rank 2"),
-        param("test_mode test_ue --ri 3", 4, id="Test UE 4x4 Rank 3"),
-        param("test_mode test_ue --ri 4", 4, id="Test UE 4x4 Rank 4"),
-    ),
-)
-@mark.test_mode
+@load_tests
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def test_ue(
-    # Retina
+def test_gnb(
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
-    # Clients
-    fivegc: FiveGCClient,
+    criteria: CriteriaTable,
+    test_definition: RetinaTestDefinition,
     gnb: GNBClient,
-    # Test
-    extra_config: str,
-    nof_ant: int,
-    duration: int = 5 * 60,
-    # Test extra params
-    always_download_artifacts: bool = True,
-    gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
-    fivegc_startup_timeout: int = FIVEGC_STARTUP_TIMEOUT,
-    gnb_stop_timeout: int = 0,
-    log_search: bool = True,
-    warning_as_errors: bool = True,
-    fail_if_kos: bool = True,
-):  # pylint: disable=too-many-locals
+    fivegc: FiveGCClient,
+):
     """
-    Run gnb in test mode.
+    Template test function for the gNB test mode, where the gNB creates the test UEs itself: it
+    runs for the duration given by the parameters of the test with no UE simulator attached.
     """
+    plmn = PLMN(mcc="001", mnc="01")
+    duration = test_definition.parameters.get("duration", 5 * 60)
 
-    # Configuration
-    with tempfile.NamedTemporaryFile(mode="w+") as tmp_file:
-        tmp_file.write(" ")  # Make it not empty to overwrite default one
-        tmp_file.flush()
+    set_config_files(retina_manager=retina_manager, retina_data=retina_data, test_definition=test_definition)
+    configure_artifacts(retina_data=retina_data, always_download_artifacts=True)
 
-        retina_data.test_config = {
-            "gnb": {
-                "parameters": {
-                    "gnb_id": 1,
-                    "log_level": "warning",
-                    "pcap": False,
-                    "nof_antennas_dl": nof_ant,
-                    "nof_antennas_ul": nof_ant,
-                },
-                "templates": {
-                    "cu": str(Path(__file__).joinpath("../test_mode/config_ue.yml").resolve()),
-                    "du": tmp_file.name,
-                },
-            },
-        }
-        retina_manager.parse_configuration(retina_data.test_config)
-        retina_manager.push_all_config()
+    for criteria_id, criteria_expected_value in test_definition.criteria.items():
+        criteria.add_criteria(criteria_id, criteria_expected_value)
 
-    configure_artifacts(
-        retina_data=retina_data,
-        always_download_artifacts=always_download_artifacts,
-    )
+    try:
+        fivegc_definition = fivegc_start(fivegc, plmn=plmn)
 
-    # 5GC and GNB Start
-    with handle_start_error(name=f"5GC [{id(fivegc)}]"):
-        fivegc_def: FiveGCDefinition = fivegc.GetDefinition(Empty())
-        fivegc.Start(
-            FiveGCStartInfo(
-                plmn=PLMN(mcc="001", mnc="01"),
-                start_info=StartInfo(timeout=fivegc_startup_timeout),
-            )
+        # There is no UE agent, so the gNB gets its own zmq endpoints as the UE definition
+        gnb_definition: GNBDefinition = gnb.GetDefinition(UInt32Value(value=0))
+        gnb_start(
+            gnb,
+            plmn=plmn,
+            ue_definition=UEDefinition(
+                zmq_ip=gnb_definition.du_definition.zmq_ip,
+                zmq_port_array=gnb_definition.du_definition.zmq_port_array,
+            ),
+            fivegc_definition_array=[fivegc_definition],
         )
 
-    with handle_start_error(name=f"GNB [{id(gnb)}]"):
-        gnb_def: GNBDefinition = gnb.GetDefinition(UInt32Value(value=0))
-        gnb.Start(
-            GNBStartInfo(
-                plmn=PLMN(mcc="001", mnc="01"),
-                ue_definition=UEDefinition(
-                    zmq_ip=gnb_def.du_definition.zmq_ip, zmq_port_array=gnb_def.du_definition.zmq_port_array
-                ),
-                fivegc_definition=[fivegc_def],
-                start_info=StartInfo(
-                    timeout=gnb_startup_timeout,
-                    post_commands=(
-                        "",
-                        extra_config,
-                    ),
-                ),
-            )
+        logging.info("Running Test Mode for %s seconds", duration)
+        sleep(duration)
+
+        stop(
+            ue_array=tuple(),
+            gnb_array=[gnb],
+            fivegc_array=[fivegc],
+            retina_data=retina_data,
+            warning_as_errors=False,
         )
-
-    logging.info("Running Test Mode for %s seconds", duration)
-    sleep(duration)
-
-    # Stop
-    stop(
-        ue_array=tuple(),
-        gnb_array=[gnb],
-        fivegc_array=[fivegc],
-        retina_data=retina_data,
-        gnb_stop_timeout=gnb_stop_timeout,
-        log_search=log_search,
-        warning_as_errors=warning_as_errors,
-        fail_if_kos=fail_if_kos,
-    )
+    finally:
+        criteria.validate()
 
 
 @mark.test_mode_acc100

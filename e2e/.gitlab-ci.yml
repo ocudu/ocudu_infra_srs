@@ -199,20 +199,6 @@ debug:
       -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
     TEST_MODE: none
 
-asan:
-  extends: .build
-  retry: 2
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  variables:
-    OS: ubuntu-26.04
-    OCUDU_TARGET: gnb
-    COMPILER: clang
-    BUILD_ARGS: >
-      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
-      -DENABLE_ASAN=True -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
-    TEST_MODE: none
-
 tsan:
   extends: .build
   retry: 2
@@ -229,30 +215,6 @@ tsan:
 
 ## Emulated Nightly
 ### Test mode
-.test mode ue:
-  extends: .e2e
-  stage: test mode
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  variables:
-    GROUP: zmq
-    TESTBED: test_mode_ue
-    MARKERS: test_mode
-    KEYWORDS: test_ue
-    RETINA_ARGS: ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
-
-test ue:
-  extends: .test mode ue
-  needs:
-    - get retina version
-    - release with deb info
-
-test ue asan:
-  extends: .test mode ue
-  needs:
-    - get retina version
-    - asan
-
 .test mode ru:
   extends: .e2e
   stage: test mode
