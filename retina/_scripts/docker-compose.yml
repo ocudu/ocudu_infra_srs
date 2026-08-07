@@ -220,9 +220,10 @@ services:
       - ${OCUDU_PATH}:/builds/ocudu/ocudu
       - ${AMARISOFT_PATH}:/builds/amarisoft/bin:ro
       - ${OCUDU_PATH}/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so:/builds/amarisoft/trx_ocudu.so
-      # Following lines overwrite the retina code inside the container with your current code
-      - ../protocol/src/retina/protocol:/usr/local/lib/python3.12/dist-packages/retina/protocol
-      - ../agent/src/retina/agent:/usr/local/lib/python3.12/dist-packages/retina/agent
+      # Following lines overwrite the retina code inside the container with your current code.
+      # Python version must match the one in the agent image, or the mounts land outside the import path.
+      - ../protocol/src/retina/protocol:/usr/local/lib/python3.14/dist-packages/retina/protocol
+      - ../agent/src/retina/agent:/usr/local/lib/python3.14/dist-packages/retina/agent
     tmpfs: &agent_tmpfs
       - /var/log/retina
     networks:
