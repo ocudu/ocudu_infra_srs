@@ -5,7 +5,7 @@ baseline:
   template: ue_simulator.test_gnb
   request: zmq_mme
   ue:
-    config: [1cell_chsim.cfg, ping.cfg]
+    config: [1cell.cfg, ping.cfg]
     parameters:
       traffic_duration: 10
       log_com_level: "debug"
