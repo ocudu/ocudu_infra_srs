@@ -42,6 +42,8 @@ from retina.agent.features.pcap.ngap import (
 )
 from retina.agent.features.pcap.xnap import (
     HandoverRequestAcknowledgeAnalyzer,
+    RetrieveUEContextRequestAnalyzer,
+    RetrieveUEContextResponseAnalyzer,
     SNStatusTransferAnalyzer,
 )
 from retina.agent.features.sut_handler import BaseDriverSutHandler
@@ -60,6 +62,8 @@ _NGAP_PCAP_ANALYZER_ARRAY = (
 _XNAP_PCAP_ANALYZER_ARRAY = (
     HandoverRequestAcknowledgeAnalyzer,
     SNStatusTransferAnalyzer,
+    RetrieveUEContextRequestAnalyzer,
+    RetrieveUEContextResponseAnalyzer,
 )
 
 _E1AP_PCAP_ANALYZER_ARRAY = (
