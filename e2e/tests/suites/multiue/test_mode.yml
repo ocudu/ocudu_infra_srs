@@ -116,3 +116,85 @@ mimo_4x4_ri4:
     <<: *base_criteria
     du.dl_bitrate_gt: 200.0e+6
     du.dl_avg_ri_ge: 3.5
+
+###########################
+#### Performance Tests ####
+###########################
+
+# The dummy RU replaces the radio and the core is not started, so the gNB runs on its own
+
+# Peak rate of a single cell, with the RU slowed down 10 times
+ru_dummy: &ru_config
+  template: test_mode.test_gnb_no_core
+  request: test_mode_ru
+  parameters:
+    duration: 300
+  gnb:
+    config: [ru_dummy.yml, test_mode.yml, max_mcs.yml, du.yml]
+    parameters:
+      band: 39
+      bandwidth: 100
+      common_scs: 30
+      dl_nr_arfcn: 381500
+      log_level: warning
+      nof_antennas_dl: 4
+      nof_antennas_ul: 4
+      time_scaling: 10
+      nof_test_ues: 16
+      test_ue_ri: 4
+      pusch_dec_max_iterations: 2
+  criteria: &ru_criteria
+    du.dl_bitrate_gt: 1.0e+9
+    du.ul_bitrate_gt: 100.0e+6
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_conres_issues_eq: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    all.warnings_le: 0
+    all.errors_le: 0
+
+# Scheduler load of many cells and UEs, with the RU slowed down 10 times
+ru_dummy_10cell_50ue:
+  <<: *ru_config
+  parameters:
+    duration: 600
+  gnb:
+    config: [ru_dummy.yml, test_mode.yml, 10cell.yml, du.yml]
+    parameters:
+      band: 256
+      bandwidth: 5
+      common_scs: 15
+      dl_nr_arfcn: 437000
+      log_level: warning
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+      time_scaling: 10
+      nof_test_ues: 50
+      test_ue_ri: 1
+      pusch_dec_max_iterations: 6
+  criteria:
+    <<: *ru_criteria
+    du.dl_bitrate_gt: 180.0e+6
+    du.ul_bitrate_gt: 180.0e+6
+    all.warnings_le: .inf
+
+# Full cell population in real time
+many_ues:
+  <<: *ru_config
+  gnb:
+    config: &many_ues_config [ru_dummy.yml, test_mode.yml, du_perf.yml, 800ue.yml, du.yml]
+    parameters: &many_ues_parameters
+      band: 78
+      bandwidth: 100
+      common_scs: 30
+      dl_nr_arfcn: 625000
+      log_level: warning
+      nof_antennas_dl: 4
+      nof_antennas_ul: 4
+      nof_test_ues: 800
+      test_ue_ri: 4
+      pusch_dec_max_iterations: 2
+  criteria:
+    <<: *ru_criteria
+    all.warnings_le: .inf

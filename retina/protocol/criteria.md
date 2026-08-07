@@ -5,25 +5,26 @@
 | 1 | [base.proto](./src/retina/protocol/base.proto) | Add field to `Metrics` |
 | 2a | [json metric analyzer](../agent/src/retina/agent/features/json_metrics/__init__.py) | Improve/create a `JsonMetricsAnalyzer` and register it in the driver |
 | 2b | [pcap analyzer](../agent/src/retina/agent/features/pcap/__init__.py) | Improve/create a `PcapAnalyzer` and register it in the driver |
-| 3 | [launcher code](../launcher/src/retina/launcher/public.py#_register_du_criteria) | Add `register_available_criteria` call |
+| 3 | [criteria definitions](../../e2e/tests/criterias/__init__.py) | Add a `Criteria` subclass to `criterias/<component>.py` |
 | 4 | test_file.yml | Add it to the `criteria` section |
 
 ## 1. Add the field to `Metrics` in `base.proto`
 
-Add the new field to the `Metrics` message in [base.proto](./src/retina/protocol/base.proto) with the next available field number:
+`Metrics` holds one message per component, so add the new field to the one of the component reporting it in
+[base.proto](./src/retina/protocol/base.proto), with the next available field number of that message:
 
 ```protobuf
-message Metrics {
+message DuMetrics {
   ...
-  uint32 nof_new_metric = 18;  // next free number after ue_array = 17
+  uint32 nof_new_metric = 31;  // next free number of DuMetrics
 };
 ```
 
 **Rules:**
 
-- Never reuse a field number, even for removed fields.
+- Never reuse a field number, even for removed fields. They are per message, so every message has its own count.
 - Use the smallest numeric type that fits: `uint32` for counters (0 = none found), `int32` for config values (-1 = not found/not captured), `double` for rates.
-- If the metric is per-UE rather than aggregate, add it to `UeMetrics` instead.
+- `UeMetrics` is used both per UE (`ue_array`) and for the whole testbed (`aggregate`).
 
 Then regenerate the Python bindings:
 
@@ -143,27 +144,40 @@ from retina.agent.features.pcap.rrc import ..., MyNewAnalyzer
 _MAC_PCAP_ANALYZER_ARRAY = (..., MyNewAnalyzer)
 ```
 
-## 3. Register the criteria in the launcher
+## 3. Add the criteria class
 
-File: `retina/launcher/src/retina/launcher/public.py`, function `_register_du_criteria()`.
+File: `e2e/tests/criterias/<component>.py`, one file per component (`du.py`, `core.py`, `cu_cp.py`, `cu_up.py`, `gnb.py`, `all.py`).
 
-Add a `register_available_criteria` call in the [launcher code](../launcher/src/retina/launcher/public.py#_register_du_criteria) with:
-
-- **`criteria_id`**: snake_case key used in tests to activate this criterion. Use same name as the metric field (plus the operator suffix) to make the mapping easier.
-- **`name`**: human-readable label shown in the pass/fail table.
-- **`callback`**: lambda that calls `GetMetrics` and returns the scalar value to compare.
-- **`operator_method`**: comparison direction (`operator.le` for "must be ≤", `operator.gt` for "must be >", `operator.eq` / `operator.ge` for exact/minimum counts).
+Subclass the base class of the component (`DuCriteria`, `FiveGcCriteria`, ...). No registration call is needed:
+`__init_subclass__` collects every subclass, and the launcher instantiates them all against the stubs of the
+testbed.
 
 ```python
-criteria.register_available_criteria(
-    "nof_new_metric_le",
-    "New metric",
-    lambda: sum(s.GetMetrics(Empty()).nof_new_metric for s in du_or_gnb_array),
-    operator.le,
-)
+# criterias/du.py
+class nof_new_metric_le(DuCriteria):
+    """New metric"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_new_metric for s in self._stub_array)
 ```
 
-**Timing:** criteria lambdas are evaluated during `criteria.validate()`, which the test calls **after** `Stop()`. By then `Stop()` has been called on the agent, finalising all pcap files and populating `self._metrics` via `extract_metrics()`.
+- **class name**: the key used in tests, `<metric_name>_<operator>`. Together with the file name it forms the
+  criteria id: `criterias/du.py` + `nof_new_metric_le` → `du.nof_new_metric_le`. Use the same name as the metric
+  field plus the operator suffix to make the mapping easier.
+- **docstring**: human-readable label shown in the pass/fail table.
+- **`operator_method`**: comparison direction (`operator.le` for "must be ≤", `operator.gt` for "must be >",
+  `operator.eq` / `operator.ge` for exact/minimum counts).
+- **`callback()`**: reads the metric from `self._stub_array` and returns the value to compare. The value
+  declared in the yml is in `self._input`, for the criteria interpreting a list or an object instead of a
+  scalar (see `dl_ue_avg_bitrate`).
+
+Every criteria class has to be used by at least one test: `scripts/static_checks.py` fails on unused ones.
+
+**Timing:** `callback()` is called during `criteria.validate()`, which the test calls **after** `Stop()`. By
+then `Stop()` has been called on the agent, finalising all pcap files and populating `self._metrics` via
+`extract_metrics()`.
 
 ## 4. Use the criteria in a test
 

@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Forcing the minimum MCS to the maximum one keeps the cell at its peak rate for the whole test
+cell_cfg:
+  pdsch:
+    min_ue_mcs: 27
+  pusch:
+    min_ue_mcs: 27
+    rv_sequence: 0
+  srs:
+    type_enabled: "periodic"
+    period_ms: 40
+
+expert_phy:
+  max_request_headroom_slots: 3
+  max_proc_delay: 4

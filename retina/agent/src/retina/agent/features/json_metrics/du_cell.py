@@ -25,6 +25,7 @@ class DuCellAnalyzer(JsonMetricsAnalyzer):
     def __init__(self) -> None:
         self._first_cell_report = True
         self._nof_error_indications: int = 0
+        self._nof_conres_issues: int = 0
         self._max_late_dl_harqs: int = 0
         self._max_late_ul_harqs: int = 0
         self._pdsch_prbs_mov_av: List[MovingAverage] = []
@@ -39,6 +40,9 @@ class DuCellAnalyzer(JsonMetricsAnalyzer):
                 self._first_cell_report = False
                 continue
             self._nof_error_indications += cm["error_indication_count"]
+            # A contention resolution that expires before the CE is sent or that is never acked
+            # leaves the UE unscheduled, so both count as the same failure
+            self._nof_conres_issues += cm.get("nof_conres_timer_expired", 0) + cm.get("nof_conres_ce_never_acked", 0)
             self._max_late_dl_harqs = max(self._max_late_dl_harqs, cm["late_dl_harqs"])
             self._max_late_ul_harqs = max(self._max_late_ul_harqs, cm["late_ul_harqs"])
             if "pdsch_prbs_used_per_tdd_slot_idx" in cm:
@@ -58,6 +62,7 @@ class DuCellAnalyzer(JsonMetricsAnalyzer):
         return Metrics(
             du=DuMetrics(
                 nof_error_indications=self._nof_error_indications,
+                nof_conres_issues=self._nof_conres_issues,
                 max_late_dl_harqs=self._max_late_dl_harqs,
                 max_late_ul_harqs=self._max_late_ul_harqs,
                 pdsch_prbs_used_per_tdd_slot_idx=[round(ma.get_average()) for ma in self._pdsch_prbs_mov_av],

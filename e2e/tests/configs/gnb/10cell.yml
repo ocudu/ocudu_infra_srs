@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  pucch:
+    sr_period_ms: 80
+    resource_set_size: 8
+    nof_cell_sr_res: 2
+    f0_intraslot_freq_hop: false
+    f1_enable_occ: true
+    f1_nof_cyclic_shifts: 12
+  ul_common:
+    max_pucchs_per_slot: 31
+    max_ul_grants_per_slot: 32
+  ssb:
+    ssb_period: 20
+  pusch:
+    enable_transform_precoding: true
+
+cells:
+  - pci: 1
+    sector_id: 0
+  - pci: 2
+    sector_id: 1
+  - pci: 3
+    sector_id: 2
+  - pci: 4
+    sector_id: 3
+  - pci: 5
+    sector_id: 4
+  - pci: 6
+    sector_id: 5
+  - pci: 7
+    sector_id: 6
+  - pci: 8
+    sector_id: 7
+  - pci: 9
+    sector_id: 8
+  - pci: 10
+    sector_id: 9
+
+expert_phy:
+  max_proc_delay: 6

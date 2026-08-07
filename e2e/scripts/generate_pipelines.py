@@ -24,7 +24,7 @@ import yaml
 # suite files holding at least one test case it selects.
 PIPELINES: Dict[str, Dict[str, object]] = {
     "functional": {"MARKERS": "zmq or test_mode_ue"},
-    "performance": {"MARKERS": "s72"},
+    "performance": {"MARKERS": "s72 or test_mode_ru"},
     "rf": {"MARKERS": "rf or android"},
 }
 
@@ -314,7 +314,6 @@ def generate_stages_file(stages_output_path, dynamic_stages):
                 "static",
                 "build",
                 "e2e",
-                "test mode",
                 "srsue",
                 "viavi",
             ]

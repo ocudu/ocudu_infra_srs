@@ -26,5 +26,5 @@
       is_executable: true
   resources:
     - type: ru
-      model: viavi
+      model: s72-ocudu
       dummy: true

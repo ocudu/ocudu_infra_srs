@@ -79,6 +79,15 @@ class nof_error_indications_le(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_error_indications for s in self._stub_array)
 
 
+class nof_conres_issues_eq(DuCriteria):
+    """Contention Resolution Issues"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_conres_issues for s in self._stub_array)
+
+
 class nof_pucch_f0f1_invalid_harqs_le(DuCriteria):
     """PUCCH f0/f1 invalid HARQs"""
 

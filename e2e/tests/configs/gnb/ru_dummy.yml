@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+{%- set time_scaling = time_scaling | default(1) %}
+
+# A time scaling greater than one slows the RU down, so that a cell too heavy for the machine
+# still runs without late slots
+ru_dummy:
+  time_scaling: {{time_scaling}}
+
+buffer_pool:
+  nof_segments: 1048576

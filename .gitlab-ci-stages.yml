@@ -6,7 +6,6 @@ stages:
   - static
   - build
   - e2e
-  - test mode
   - srsue
   - viavi
   - mobility

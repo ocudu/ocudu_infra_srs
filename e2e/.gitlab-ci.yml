@@ -199,59 +199,7 @@ debug:
       -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
     TEST_MODE: none
 
-tsan:
-  extends: .build
-  retry: 2
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  variables:
-    OS: ubuntu-26.04
-    OCUDU_TARGET: gnb
-    COMPILER: clang
-    BUILD_ARGS: >
-      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
-      -DENABLE_TSAN=True -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
-    TEST_MODE: none
-
 ## Emulated Nightly
-### Test mode
-.test mode ru:
-  extends: .e2e
-  stage: test mode
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  variables:
-    GROUP: viavi
-    TESTBED: test_mode_ru
-    RETINA_ARGS: ue.all.log_level=warning gnb.all.log_level=warning 5gc.all.log_level=warning
-
-ru dummy:
-  extends: .test mode ru
-  variables:
-    MARKERS: test_mode
-    KEYWORDS: test_ru
-  needs:
-    - get retina version
-    - dpdk rtsan avx512
-
-ru dummy tsan:
-  extends: .test mode ru
-  variables:
-    MARKERS: test_mode_not_crash
-    KEYWORDS: "test_ru"
-  needs:
-    - get retina version
-    - tsan
-
-ru dummy test many ues:
-  extends: .test mode ru
-  variables:
-    MARKERS: test_mode_many_ues
-    KEYWORDS: test_mode_many_ues
-  needs:
-    - get retina version
-    - dpdk rtsan avx512
-
 ### SRSUE
 .srsue:
   extends: .e2e

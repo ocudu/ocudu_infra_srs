@@ -11,7 +11,7 @@ coverage:
   variables:
     KEYWORDS: "mobility.coverage."
     TESTBED: dynamic
-    MARKERS: "s72"
+    MARKERS: "s72 or test_mode_ru"
 
 paging:
   stage: mobility
@@ -23,7 +23,7 @@ paging:
   variables:
     KEYWORDS: "mobility.paging."
     TESTBED: dynamic
-    MARKERS: "s72"
+    MARKERS: "s72 or test_mode_ru"
 
 capacity:
   stage: multiue
@@ -35,7 +35,19 @@ capacity:
   variables:
     KEYWORDS: "multiue.capacity."
     TESTBED: dynamic
-    MARKERS: "s72"
+    MARKERS: "s72 or test_mode_ru"
+
+test_mode:
+  stage: multiue
+  extends: .performance_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "multiue.test_mode."
+    TESTBED: dynamic
+    MARKERS: "s72 or test_mode_ru"
 
 udp_dl:
   stage: singleue
@@ -47,4 +59,4 @@ udp_dl:
   variables:
     KEYWORDS: "singleue.udp_dl."
     TESTBED: dynamic
-    MARKERS: "s72"
+    MARKERS: "s72 or test_mode_ru"
