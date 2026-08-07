@@ -289,10 +289,28 @@ class nof_rrc_suspend_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_suspend for s in self._stub_array)
 
 
+class nof_rrc_suspend_ge(DuCriteria):
+    """RRC Suspend"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_suspend for s in self._stub_array)
+
+
 class nof_rrc_resume_complete_eq(DuCriteria):
     """RRC Resume Complete"""
 
     operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_resume_complete for s in self._stub_array)
+
+
+class nof_rrc_resume_complete_ge(DuCriteria):
+    """RRC Resume Complete"""
+
+    operator_method = operator.ge
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).aggregate.nof_rrc_resume_complete for s in self._stub_array)

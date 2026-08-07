@@ -73,6 +73,18 @@ reestablishment:
     TESTBED: dynamic
     MARKERS: "zmq or test_mode_ue"
 
+xn_ue_context_retrieval:
+  stage: mobility
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "mobility.xn_ue_context_retrieval."
+    TESTBED: dynamic
+    MARKERS: "zmq or test_mode_ue"
+
 cplane_traffic_load:
   stage: multiue
   extends: .functional_e2e

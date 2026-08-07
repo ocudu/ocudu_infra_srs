@@ -1,0 +1,63 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# XnAP UE context retrieval on RRC Resume: the UE is suspended to RRC_INACTIVE by gNB-1,
+# reselects the cell of gNB-2 while suspended and resumes there with MO data. gNB-2 has to
+# retrieve the UE context from gNB-1 (the anchor encoded in the I-RNTI) over Xn.
+rrc_resume:
+  template: ue_simulator.test_2gnb
+  request: zmq_2gnb
+  core:
+    config: [baseline.cfg]
+    parameters:
+      log_level: "debug"
+  ue:
+    config: [2cell_chsim.cfg, rrc_inactive_mobility.cfg]
+    parameters:
+      num_cells: 2
+  # inter_cu_mobility_*.yml gives every CU-CP the neighbor cell definition of the other gNB,
+  # which is what maps the cell the UE shows up on to its Xn peer. Handovers are disabled: the
+  # UE has to change gNB through the procedure under test, not through a measurement report.
+  gnb:
+    items:
+      - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml, rrc_inactive.yml, mac_pcap.yml]
+        parameters: &gnb_parameters
+          gnb_id: 411
+          ran_node_name: "ocudu01"
+          pci: 1
+          cell_offset: 0
+          trigger_handover_from_measurements: false
+          # The channel simulator measures RSRPs between -75 and -105 dBm, so the default
+          # q_rx_lev_min would leave cell 2 below the S criterion and the UE would never
+          # reselect it, no matter how much stronger than cell 1 it gets.
+          sib2_q_rx_lev_min: -120
+          warning_allowlist:
+            - Failed to connect to XN-C peer
+      - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml, rrc_inactive.yml, mac_pcap.yml]
+        parameters:
+          <<: *gnb_parameters
+          gnb_id: 412
+          ran_node_name: "ocudu02"
+          pci: 2
+          cell_offset: 1
+  feature_ids: [MVP-FUNC-MOB-10]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 50 # allow some KOs while the UE moves away from the anchor cell
+    ue.nof_ko_dl_le: 50
+    du.nof_ko_ul_le: 50
+    ue.nof_ko_ul_le: 50
+    du.nof_reestablishments_request_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up and the UE resumes on its own
+    ue.nof_handovers_eq: 0 # the UE changes gNB through the procedure under test, not a HO
+    # The RAN notification area only holds the cell of gNB-1, so reselecting the cell of gNB-2
+    # already triggers an RNA update there, on top of the MO data resume.
+    du.nof_rrc_suspend_ge: 1
+    du.nof_rrc_resume_complete_ge: 1
+    cu_cp.nof_xn_retrieve_ue_context_request_ge: 2 # 1 retrieval, each message logged in both pcaps
+    cu_cp.nof_xn_retrieve_ue_context_response_ge: 2
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0

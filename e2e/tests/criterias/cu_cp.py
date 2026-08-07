@@ -95,6 +95,24 @@ class nof_sn_status_transfer_geq(CuCpCriteria):
         return sum(s.GetMetrics(Empty()).cu_cp.nof_sn_status_transfer for s in self._stub_array)
 
 
+class nof_xn_retrieve_ue_context_request_ge(CuCpCriteria):
+    """XN Retrieve UE Context Request"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_xn_retrieve_ue_context_request for s in self._stub_array)
+
+
+class nof_xn_retrieve_ue_context_response_ge(CuCpCriteria):
+    """XN Retrieve UE Context Response"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_xn_retrieve_ue_context_response for s in self._stub_array)
+
+
 class nof_rohc_profile_1_configured_eq(CuCpCriteria):
     """RoHC Profile 1 DRBs"""
 
