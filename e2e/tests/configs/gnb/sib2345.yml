@@ -1,6 +1,11 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+{#- Minimum required RX level for intra frequency cell reselection, in dBm. Tests relying on
+    reselection have to lower it: the channel simulator setups measure RSRPs well below the
+    default, so no neighbor cell ever meets the S criterion of TS 38.304. #}
+{%- set sib2_q_rx_lev_min = sib2_q_rx_lev_min | default(-70) %}
+
 cell_cfg:
   sib:
     t300: 1000
@@ -24,7 +29,7 @@ cell_cfg:
       q_hyst: 3
       thresh_serving_low_p: 0
       cell_reselection_priority: 6
-      q_rx_lev_min: -70
+      q_rx_lev_min: {{sib2_q_rx_lev_min}}
       s_intra_search_p: 62
       t_reselection_nr: 1
     sib3:

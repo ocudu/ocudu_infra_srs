@@ -4,12 +4,14 @@
 {%- set neighbor_ssb_arfcn = neighbor_ssb_arfcn | default(624000) %}
 {%- set neighbor_band = neighbor_band | default(78) %}
 {%- set neighbor_ssb_scs = neighbor_ssb_scs | default(30) %}
+{#- Set to false to keep the neighbor cell definitions without ever handing the UE over #}
+{%- set trigger_handover_from_measurements = trigger_handover_from_measurements | default(true) %}
 
 gnb_id_bit_length: {{gnb_id_bit_length}}
 
 cu_cp:
   mobility:
-    trigger_handover_from_measurements: true
+    trigger_handover_from_measurements: {{trigger_handover_from_measurements}}
     cells:
       - nr_cell_id: 0x19B0
         periodic_report_cfg_id: 1
