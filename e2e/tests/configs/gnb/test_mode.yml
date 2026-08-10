@@ -3,6 +3,8 @@
 
 {%- set nof_test_ues = nof_test_ues | default(2) %}
 {%- set test_ue_ri = test_ue_ri | default(1) %}
+{%- set attach_detach_duration_ms = attach_detach_duration_ms | default(0) %}
+{%- set attach_detach_guard_duration_ms = attach_detach_guard_duration_ms | default(1000) %}
 
 # The gNB creates the test UEs itself, so no UE (or simulator) is attached
 test_mode:
@@ -13,6 +15,10 @@ test_mode:
     pdsch_active: true
     pusch_active: true
     nof_ues: {{nof_test_ues}}
+    {%- if attach_detach_duration_ms %}
+    attach_detach_duration_ms: {{attach_detach_duration_ms}}
+    attach_detach_guard_duration_ms: {{attach_detach_guard_duration_ms}}
+    {%- endif %}
 
 cu_up:
   warn_on_drop: False

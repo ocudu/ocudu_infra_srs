@@ -198,3 +198,18 @@ many_ues:
   criteria:
     <<: *ru_criteria
     all.warnings_le: .inf
+
+# UE creation rate: the UEs cycle through attach, traffic and detach for the whole test
+many_ues_attach_detach:
+  <<: *ru_config
+  gnb:
+    config: *many_ues_config
+    parameters:
+      <<: *many_ues_parameters
+      attach_detach_duration_ms: 5000
+      attach_detach_guard_duration_ms: 3000
+  criteria:
+    <<: *ru_criteria
+    du.dl_bitrate_gt: 900.0e+6
+    du.ul_bitrate_gt: 90.0e+6
+    all.warnings_le: .inf
