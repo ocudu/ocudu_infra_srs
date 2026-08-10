@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+flexric:
+  stage: interop
+  extends: .interop_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^interop/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "interop.flexric."
+    TESTBED: dynamic
+    MARKERS: "interop"
+
+srsue:
+  stage: interop
+  extends: .interop_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^interop/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "interop.srsue."
+    TESTBED: dynamic
+    MARKERS: "interop"

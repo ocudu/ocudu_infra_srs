@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Connects the DU to the RIC reserved for the testbed, whose address the agent injects
+e2:
+  enable_du_e2: true
+  addrs: {{ric_ip}}
+  port: {{ric_port}}
+  bind_addrs: {{ip}}
+  e2sm_kpm_enabled: true
+  e2sm_rc_enabled: true
+
+pcap:
+  e2ap_enable: true

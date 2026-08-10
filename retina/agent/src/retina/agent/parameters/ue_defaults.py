@@ -39,6 +39,7 @@ freq_offset: int = 0
 time_adv_nsamples: int = 0
 
 # Cell
+band: int = 78
 nof_antennas_dl: int = 1
 nof_antennas_ul: int = 1
 rx_to_tx_latency: int = -1

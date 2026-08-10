@@ -24,8 +24,18 @@ import yaml
 # suite files holding at least one test case it selects.
 PIPELINES: Dict[str, Dict[str, object]] = {
     "functional": {"MARKERS": "zmq or test_mode_ue"},
+    "interop": {"MARKERS": "interop"},
     "performance": {"MARKERS": "s72 or test_mode_ru"},
     "rf": {"MARKERS": "rf or android"},
+}
+
+# Base file holding the builds and the `.<pipeline>_e2e` job of a pipeline, for the pipelines not
+# using their own `<name>_base.yml`. Pipelines sharing a testbed also share their builds, so they
+# share the file declaring them.
+PIPELINE_BASES: Dict[str, str] = {
+    "functional": "zmq",
+    "interop": "zmq",
+    "performance": "rt",
 }
 
 # Retina request a test case with no explicit one falls back to, and the testbed groups the
@@ -33,7 +43,7 @@ PIPELINES: Dict[str, Dict[str, object]] = {
 # cases: see RetinaTestDefinition.from_dict and RETINA_REQUEST_GROUPS in
 # e2e/tests/steps/test_loader.py.
 DEFAULT_RETINA_REQUEST = "zmq_mme"
-RETINA_REQUEST_GROUPS = ("android", "rf", "s72", "test_mode", "viavi", "zmq")
+RETINA_REQUEST_GROUPS = ("android", "interop", "rf", "s72", "test_mode", "viavi", "zmq")
 
 # Identifiers of a pytest marker expression, that is everything but its boolean operators.
 MARKER_EXPRESSION_IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_.\-]*")
@@ -123,6 +133,7 @@ class Pipeline:
         """
 
         self.name = name
+        self.base = PIPELINE_BASES.get(name, name)
         self.variables = variables if variables is not None else {}
         self.markers = get_expression_markers(self.variables.get("MARKERS"))
         self.stages = []
@@ -156,6 +167,13 @@ class Pipeline:
         """
 
         return self.name
+
+    def get_base(self):
+        """
+        Gets the name of the base file the pipeline takes its builds and `_e2e` job from.
+        """
+
+        return self.base
 
     def get_variables(self):
         """
@@ -314,7 +332,6 @@ def generate_stages_file(stages_output_path, dynamic_stages):
                 "static",
                 "build",
                 "e2e",
-                "srsue",
                 "viavi",
             ]
             stages.extend(dynamic_stages)
@@ -343,8 +360,12 @@ def generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_in
             f.write(generate_spec())
             # Per-pipeline: unconditional base + conditional config
             f.write("include:\n")
+            written_bases = set()
             for pipeline, include_path in pipeline_includes:
-                f.write(f"  - local: {ci_rel}/{pipeline.get_name()}_base.yml\n")
+                # Pipelines sharing a base file must not include it twice
+                if pipeline.get_base() not in written_bases:
+                    written_bases.add(pipeline.get_base())
+                    f.write(f"  - local: {ci_rel}/{pipeline.get_base()}_base.yml\n")
                 f.write(f"  - local: {include_path}\n")
                 f.write("    rules:\n")
                 f.write(f"      - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^{pipeline.get_name()}/\n")
@@ -362,7 +383,7 @@ def generate_e2e_template(stages_output_path, pipelines_output_path, pipeline_in
                 f.write("        inputs:\n")
                 f.write("          ocudu_path: $[[ inputs.ocudu_path ]]\n")
                 f.write("          ocudu_ref: $[[ inputs.ocudu_ref ]]\n")
-                f.write(f"      - local: {ci_rel}/{name}_base.yml\n")
+                f.write(f"      - local: {ci_rel}/{pipeline.get_base()}_base.yml\n")
                 f.write(f"      - local: {include_path}\n")
                 f.write("    strategy: mirror\n")
                 f.write("    forward:\n")

@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Schedules the UE on the common search space with DCI formats 0_0/1_0 only, for UEs that do not
+# support a dedicated search space
+cell_cfg:
+  pdcch:
+    dedicated:
+      dci_format_0_1_and_1_1: false
+      ss2_type: common
+    common:
+      ss0_index: 0
+      coreset0_index: 6

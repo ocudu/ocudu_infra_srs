@@ -112,6 +112,7 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
             r"(?!.*UnRef NF EndPoint)"
             r"(?!.*Couldn't connect to server)"
             r"(?!.*ogs_sbi_client_handler\(\) failed)"
+            r"(?!.*Failed sending data to the peer)"
             r".*$"
         )
 

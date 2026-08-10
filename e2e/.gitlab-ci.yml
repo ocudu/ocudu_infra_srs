@@ -181,51 +181,11 @@ retina demolition:
   dependencies: []
 
 ## Build jobs for Scheduled Pipelines
-# In functional_base.yml - zmq driver, release with deb info
-# In performance_base.yml - dpdk rtsan avx512
-# In rf_base.yml - rf release, rf asan
+# In zmq_base.yml - zmq driver, release with deb info
+# In rt_base.yml - dpdk rtsan avx512
+# In rf_base.yml - release rf
 
-debug:
-  extends: .build
-  retry: 2
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  variables:
-    OS: ubuntu-26.04
-    OCUDU_TARGET: gnb
-    COMPILER: gcc
-    BUILD_ARGS: >
-      -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Debug -DMARCH=x86-64-v3
-      -DASSERT_LEVEL=PARANOID -DEXIT_TIMEOUT=120
-    TEST_MODE: none
-
-## Emulated Nightly
-### SRSUE
-.srsue:
-  extends: .e2e
-  stage: srsue
-  rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
-  variables:
-    GROUP: zmq
-    RETINA_ARGS: ue.all.log_level=info gnb.all.log_level=info 5gc.all.log_level=info
-  needs:
-    - get retina version
-    - release with deb info
-
-srsue basic:
-  extends: .srsue
-  variables:
-    TESTBED: zmq_srsue
-    MARKERS: zmq_srsue
-
-ric:
-  extends: .srsue
-  variables:
-    TESTBED: zmq_ric
-    MARKERS: zmq_ric
-
-### Viavi
+## Viavi
 .viavi:
   extends: .e2e
   stage: viavi
@@ -293,8 +253,6 @@ ric:
   variables:
     KEYWORDS: "32UE and tdd"
 
-## Emulated Weekly
-### Viavi
 .viavi_weekly:
   extends: .viavi
   rules:

@@ -18,7 +18,7 @@ from .. import criterias as _
 # its request on top of the request itself, so that every test case of a testbed can be
 # selected with a single marker (see PIPELINES in e2e/scripts/generate_pipelines.py). Every
 # group in use has to be declared in the markers list of e2e/pyproject.toml.
-RETINA_REQUEST_GROUPS = ("android", "rf", "s72", "test_mode", "viavi", "zmq")
+RETINA_REQUEST_GROUPS = ("android", "interop", "rf", "s72", "test_mode", "viavi", "zmq")
 
 
 def get_request_group(retina_request: str) -> str:

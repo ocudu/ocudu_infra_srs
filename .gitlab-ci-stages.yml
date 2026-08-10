@@ -6,8 +6,8 @@ stages:
   - static
   - build
   - e2e
-  - srsue
   - viavi
   - mobility
   - multiue
   - singleue
+  - interop

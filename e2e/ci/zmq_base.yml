@@ -7,14 +7,13 @@ zmq driver:
   rules:
     - if: $TRIGGERED_ON_MR == "true"
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
 
 release with deb info:
   extends: .build
   retry: 2
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^interop/
   variables:
     OS: ubuntu-26.04
     COMPILER: gcc
@@ -55,6 +54,21 @@ release cached:
     - job: zmq driver
       artifacts: true
       optional: false
+    - job: release with deb info
+      artifacts: true
+      optional: true
+    - job: release cached
+      artifacts: true
+      optional: true
+
+.interop_e2e:
+  extends: .e2e
+  variables:
+    GROUP: zmq
+  needs:
+    - job: get retina version
+      artifacts: true
+      optional: true
     - job: release with deb info
       artifacts: true
       optional: true

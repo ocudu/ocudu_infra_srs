@@ -62,6 +62,8 @@ spec:
         - android_b200
         - android_callbox
         - android_x300
+        - interop_flexric
+        - interop_srsue
         - test_mode_ru
         - test_mode_ue
         - viavi
@@ -70,8 +72,6 @@ spec:
         - zmq_2gnb
         - zmq_mme
         - zmq_ntn
-        - zmq_ric
-        - zmq_srsue
         - zmq
         - dynamic
         - none

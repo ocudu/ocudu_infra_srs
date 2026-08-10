@@ -108,7 +108,7 @@ class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instanc
                 "tx_gain": testbed_defaults.tx_gain if ue_defaults.tx_gain < 0 else ue_defaults.tx_gain,
                 "rx_gain": testbed_defaults.rx_gain if ue_defaults.rx_gain < 0 else ue_defaults.rx_gain,
                 # Cell
-                "band": ue_defaults.cells[0]["band"],
+                "band": ue_defaults.band,
                 "sample_rate": testbed_defaults.sample_rate if ue_defaults.sample_rate < 0 else ue_defaults.sample_rate,
                 "net_mask": str(ipaddress.IPv4Network(f"0.0.0.0/{self._epc_mask}", strict=False).netmask),
                 # UE List
@@ -219,7 +219,7 @@ class SrsUe(UEDriver, BaseDriverSutHandler):  # pylint: disable=too-many-instanc
                             aggregate=UeMetrics(
                                 nof_ko_dl=int(float(ue_info["dl_bler"])),
                                 dl_bitrate=float(ue_info["dl_brate"]),
-                                nof_ko_ul=int(ue_info["ul_bler"]),
+                                nof_ko_ul=int(float(ue_info["ul_bler"])),
                                 ul_bitrate=float(ue_info["ul_brate"]),
                             )
                         )

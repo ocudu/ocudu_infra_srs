@@ -164,6 +164,12 @@ module "settings" {
       allowed_to_merge             = [{ access_level = "no one" }]
       allowed_to_push              = [{ access_level = "maintainer" }]
     }
+    srs_interop = {
+      allow_force_push             = false
+      code_owner_approval_required = false
+      allowed_to_merge             = [{ access_level = "no one" }]
+      allowed_to_push              = [{ access_level = "maintainer" }]
+    }
     srs_performance = {
       allow_force_push             = false
       code_owner_approval_required = false
@@ -199,14 +205,6 @@ module "settings" {
       active      = true
       variables   = {}
     }
-    nightly = {
-      description = "Emulated Nightly"
-      cron        = "00 21 * * 0-5"
-      timezone    = "Europe/Madrid"
-      ref         = "refs/heads/main"
-      active      = true
-      variables   = {}
-    }
     functional = {
       description = "functional"
       cron        = "30 21 * * 0-5"
@@ -215,17 +213,33 @@ module "settings" {
       active      = true
       variables   = {}
     }
-    rf_nightly = {
-      description = "rf"
+    performance = {
+      description = "performance"
       cron        = "00 22 * * 0-5"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
       active      = true
       variables   = {}
     }
-    performance = {
-      description = "performance"
+    rf_nightly = {
+      description = "rf"
       cron        = "15 22 * * 0-5"
+      timezone    = "Europe/Madrid"
+      ref         = "refs/heads/main"
+      active      = true
+      variables   = {}
+    }
+    interop = {
+      description = "interop"
+      cron        = "30 22 * * 0-5"
+      timezone    = "Europe/Madrid"
+      ref         = "refs/heads/main"
+      active      = true
+      variables   = {}
+    }
+    nightly = {
+      description = "Emulated Nightly"
+      cron        = "00 21 * * 0-5"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
       active      = true

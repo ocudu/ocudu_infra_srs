@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Interoperability with FlexRIC over E2. The stack underneath is the srsUE one, so this suite only
+# adds what the RIC brings: the RC and KPM xApps subscribe for the whole iperf and the E2 interface
+# is validated once it is over
+
+udp_bidirectional:
+  template: iperf.test_gnb_ric
+  request: interop_flexric
+  parameters:
+    protocol: udp
+    direction: bidirectional
+    ul_bitrate: 1.0e+6
+  gnb:
+    config: [cu_cp.yml, du.yml, e2.yml, common_search_space.yml, prach_config.yml]
+    parameters:
+      gnb_id_bit_length: 22
+      cu_cp_report_period: 5000
+      slice_sd: ""
+      log_level: info
+      band: 3
+      dl_nr_arfcn: 368500
+      bandwidth: 10
+      common_scs: 15
+      sample_rate: 11520000
+      prach_config_index: 1
+      mcs_table: qam64
+  ue:
+    parameters:
+      band: 3
+      sample_rate: 11520000
+      log_level: info
+  core:
+    parameters:
+      log_level: info
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_error_indications_le: 0
+    du.nof_reestablishments_request_eq: 0
+    all.warnings_le: 0
+    all.errors_le: 0

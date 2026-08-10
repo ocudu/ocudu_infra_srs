@@ -8,6 +8,7 @@
 {%- set dmrs_additional_pos = dmrs_additional_pos | default(2) %}
 {%- set pusch_max_ue_mcs = pusch_max_ue_mcs | default(27) %}
 {%- set pusch_dec_max_iterations = pusch_dec_max_iterations | default(12) %}
+{%- set mcs_table = mcs_table | default("qam256") %}
 
 gnb_id_bit_length: {{gnb_id_bit_length}}
 gnb_du_id: {{gnb_du_id}}
@@ -24,11 +25,11 @@ cell_cfg:
   plmn: 00101
   pdsch:
     dmrs_additional_position: {{dmrs_additional_pos}}
-    mcs_table: qam256
+    mcs_table: {{mcs_table}}
     max_ue_mcs: 27
   pusch:
     dmrs_additional_position: {{dmrs_additional_pos}}
-    mcs_table: qam256
+    mcs_table: {{mcs_table}}
     max_ue_mcs: {{pusch_max_ue_mcs}}
 
 expert_phy:
