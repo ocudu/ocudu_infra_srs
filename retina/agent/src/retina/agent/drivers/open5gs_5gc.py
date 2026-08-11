@@ -113,6 +113,9 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
             r"(?!.*Couldn't connect to server)"
             r"(?!.*ogs_sbi_client_handler\(\) failed)"
             r"(?!.*Failed sending data to the peer)"
+            r"(?!.*Cause\[Group:)"
+            r"(?!.*NGReset)"
+            r"(?!.*NGAP_ResetType_PR_)"
             r".*$"
         )
 

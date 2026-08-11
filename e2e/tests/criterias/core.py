@@ -8,6 +8,7 @@
 import operator
 
 from google.protobuf.empty_pb2 import Empty
+from google.protobuf.wrappers_pb2 import UInt32Value
 from retina.launcher.criteria import FiveGcCriteria
 
 # pylint: disable=invalid-name,missing-function-docstring,too-few-public-methods
@@ -83,3 +84,21 @@ class nof_ims_nas_registered_ue_eq(FiveGcCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).core.nof_ims_nas_registered_ue for s in self._stub_array)
+
+
+class errors_le(FiveGcCriteria):
+    """Errors"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.Stop.with_call(UInt32Value(value=15), timeout=15)[0].error_count for s in self._stub_array)
+
+
+class warnings_le(FiveGcCriteria):
+    """Warnings"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.Stop.with_call(UInt32Value(value=15), timeout=15)[0].warning_count for s in self._stub_array)
