@@ -126,22 +126,17 @@ dynamically generated pipeline validation:
 
 ## Scheduled pipeline setup
 retina demolition:
-  stage: e2e
+  stage: .pre
   tags:
     - retina
-    - ${GROUP}
+    - ${RETINA_DEMOLITION_TAG}
   image:
     name: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
     entrypoint: ["/bin/sh", "-c"]
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Prepare Nightly/
+    - if: $RETINA_DEMOLITION_TAG
   script:
     - retina-garbage-collector --in-cluster --mode demolition
-  parallel:
-    matrix:
-      - GROUP: rf
-      - GROUP: viavi
-      - GROUP: zmq
   retry: 2
   needs:
     - get retina version

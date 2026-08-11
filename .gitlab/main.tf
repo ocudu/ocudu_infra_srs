@@ -197,14 +197,6 @@ module "settings" {
   # Pipeline Schedules Configuration
   # =============================================================================
   schedules = {
-    nightly_setup = {
-      description = "Prepare Nightly"
-      cron        = "45 20 * * 0-5"
-      timezone    = "Europe/Madrid"
-      ref         = "refs/heads/main"
-      active      = true
-      variables   = {}
-    }
     functional = {
       description = "functional"
       cron        = "30 21 * * 0-5"
@@ -227,7 +219,7 @@ module "settings" {
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
       active      = true
-      variables   = {}
+      variables   = { RETINA_DEMOLITION_TAG = "rf" }
     }
     interop = {
       description = "interop"
@@ -238,15 +230,15 @@ module "settings" {
       variables   = {}
     }
     nightly = {
-      description = "Emulated Nightly"
+      description = "viavi nightly"
       cron        = "00 21 * * 0-5"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
       active      = true
-      variables   = {}
+      variables   = { RETINA_DEMOLITION_TAG = "zmq" }
     }
     weekly = {
-      description = "Emulated Weekly"
+      description = "viavi weekly"
       cron        = "00 10 * * 6"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
