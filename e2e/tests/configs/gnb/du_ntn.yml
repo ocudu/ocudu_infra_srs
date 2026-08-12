@@ -11,6 +11,8 @@
 {%- set gw_longitude = gw_longitude | default(0) %}
 {%- set ntn_ul_sync_validity_dur = ntn_ul_sync_validity_dur | default(5) %}
 {%- set feeder_link = feeder_link | default(false) %}
+{%- set cell_ref_latitude = cell_ref_latitude | default(none) %}
+{%- set cell_ref_longitude = cell_ref_longitude | default(none) %}
 
 cell_cfg:
   prach:
@@ -73,6 +75,14 @@ cell_cfg:
       semi_major_axis: {{semi_major_axis}}
     epoch_timestamp: '{{utc_timestamp}}'
     ntn_ul_sync_validity_dur: {{ntn_ul_sync_validity_dur}}
+    {% if cell_ref_latitude is not none and cell_ref_longitude is not none %}
+    # Reference location of the serving cell. Without it the DU cannot estimate the
+    # service link round trip, so it has no uplink timing advance for the cell and
+    # warns when it places a measurement gap. 2-D only: the DU rejects an altitude.
+    reference_location:
+      latitude: {{cell_ref_latitude}}
+      longitude: {{cell_ref_longitude}}
+    {% endif %}
     {% if feeder_link %}
     feeder_link:
       dl_freq: {{dl_freq}}

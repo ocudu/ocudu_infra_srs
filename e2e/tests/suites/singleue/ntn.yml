@@ -189,6 +189,8 @@ geo_fl_false_harq_enabled_iperf:
       ul_harq_disabled: false
       cell_specific_koffset: 240
       ta_meas_slot_prohibit_period: 250
+      cell_ref_latitude: -2.32724563
+      cell_ref_longitude: -151.397854351
       eccentricity: 0.0002596053925158607
       inclination: 0.1319312264847397
       longitude: 0.18827186416253533
@@ -234,6 +236,8 @@ geo_fl_false_harq_disabled_iperf:
       dl_harq_disabled: true
       cell_specific_koffset: 240
       ta_meas_slot_prohibit_period: 250
+      cell_ref_latitude: -2.32724563
+      cell_ref_longitude: -151.397854351
       eccentricity: 0.0002596053925158607
       inclination: 0.1319312264847397
       longitude: 0.18827186416253533
@@ -285,6 +289,8 @@ leo_band_256_bw_10_scs_30_fl_false_iperf:
       ul_harq_disabled: false
       cell_specific_koffset: 8
       ta_meas_slot_prohibit_period: 18
+      cell_ref_latitude: 7.853110757
+      cell_ref_longitude: -96.817254023
       eccentricity: 0.00119596362232265
       inclination: 0.9295784053909042
       longitude: 4.50199405531991
@@ -342,6 +348,8 @@ leo_band_256_bw_10_scs_30_fl_true_iperf:
       gw_altitude: 1.0
       gw_latitude: 7.853127063969279
       gw_longitude: -41.916586438365854
+      cell_ref_latitude: 7.853127064
+      cell_ref_longitude: -41.916586438
       eccentricity: 0.0011959639962285152
       inclination: 0.9295784053900794
       longitude: 5.460191249899703
