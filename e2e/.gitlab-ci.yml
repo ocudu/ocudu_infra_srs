@@ -185,7 +185,7 @@ retina demolition:
   extends: .e2e
   stage: viavi
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Nightly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^viavi nightly/
   timeout: 8h
   variables:
     GROUP: viavi
@@ -251,7 +251,7 @@ retina demolition:
 .viavi_weekly:
   extends: .viavi
   rules:
-    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /Emulated Weekly/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^viavi weekly/
 
 32UE um:
   extends: .viavi_weekly
