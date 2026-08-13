@@ -49,11 +49,17 @@ udp_ul:
       pdcch_decode_threshold: 0
       nof_antennas_dl: 4
       nof_antennas_ul: 2
+      log_level: warning
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, du_perf_ul.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 2
+      log_level: warning
+  core:
+    config: [baseline.cfg]
+    parameters:
+      log_level: warning
   feature_ids: [MVP-PERF-CAP-2a, MVP-PERF-CAP-2b]
   criteria:
     <<: *criteria

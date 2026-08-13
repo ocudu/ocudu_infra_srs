@@ -23,7 +23,7 @@ baseline: &base_config
     parameters:
       <<: &common_ue_params
         traffic_duration: 10
-        log_level: error
+        log_level: warning
         pdcch_decode_threshold: 0.5
         rx_to_tx_latency: 2
       nof_ue: &nof_ue 1000

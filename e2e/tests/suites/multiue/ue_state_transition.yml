@@ -25,7 +25,7 @@ baseline: &base_config
         ul_bitrate: 1.0e+3
         nof_attach_dettach_cycles: 5
         attach_dettach_delay: 10
-        log_level: error
+        log_level: warning
         pdcch_decode_threshold: 0.5
         power_on_stagger_delay: 0.02 # 50 UE/s
         rx_to_tx_latency: 2

@@ -32,7 +32,7 @@ baseline: &base_config
         traffic_duration: 100
         cycle_traffic_duration: 4
         cycle_off_duration: 6
-        log_level: error
+        log_level: warning
         pdcch_decode_threshold: 0.5
         power_on_stagger_delay: 0.02 # 50 UE/s per group
         rx_to_tx_latency: 2

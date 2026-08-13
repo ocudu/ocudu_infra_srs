@@ -65,7 +65,7 @@ class AmarisoftBaseDriver(BaseDriverSutHandler, metaclass=ABCMeta):
         # Log level conversion
         # Amarisoft doesn't have "info" mode and "warning" is called "warn"
         log_level = log_level.lower().strip()
-        log_level = {"info": "debug", "warning": "error"}.get(log_level, log_level)
+        log_level = {"info": "debug", "warning": "warn"}.get(log_level, log_level)
         return {
             "log_level": log_level,
             "log_filename": self.get_filepath_in_report_folder(log_filename),

@@ -13,7 +13,7 @@ baseline: &base_config
       nof_antennas_dl: 4
       nof_antennas_ul: 1
       pdcch_decode_threshold: 0.0
-      log_level: "error"
+      log_level: warning
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, du_perf.yml]
     parameters:
@@ -22,6 +22,8 @@ baseline: &base_config
       log_level: warning
   core:
     config: [baseline.cfg]
+    parameters:
+      log_level: warning
   feature_ids: [MVP-PERF-THR-1a]
   criteria:
     du.dl_bitrate_gt: 1200.0e+6
