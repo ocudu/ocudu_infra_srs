@@ -471,45 +471,6 @@ def validate_ue_registered_via_ims(
         pytest.fail("IMS Registered Subscriber array mismatch!")
 
 
-def ric_validate_e2_interface(
-    *,
-    ric: NearRtRicStub,
-    kpm_expected: bool = False,
-    rc_expected: bool = False,  # The "*" enforces keyword-only arguments
-) -> None:
-    """
-    Fails if E2 was not operating correctly
-    """
-    ric_summary = ric.GetNearRtRicSummary(Empty())
-    logging.info("RIC summary: %s", MessageToString(ric_summary, indent=2))
-
-    if not ric_summary.nof_connected_agents:
-        pytest.fail("No E2 agent connected to RIC.")
-
-    if kpm_expected:
-        if not ric_summary.nof_connected_xapps:
-            pytest.fail("No xApp connected, but expected.")
-
-        if not ric_summary.nof_subscription_reqs or not ric_summary.nof_subscription_reps:
-            pytest.fail("No valid RIC subscription received, but expected.")
-
-        if ric_summary.nof_subscription_reqs != ric_summary.nof_subscription_reps:
-            pytest.fail("Different number of Subscription Request and Replies.")
-
-        if not ric_summary.nof_ric_indication:
-            pytest.fail("No RIC Indiation messages after a successful subscription.")
-
-    if rc_expected:
-        if not ric_summary.nof_connected_xapps:
-            pytest.fail("No xApp connected, but expected.")
-
-        if not ric_summary.nof_control_reqs or not ric_summary.nof_control_reps:
-            pytest.fail("No RIC Control Request received, but expected.")
-
-        if ric_summary.nof_control_reqs != ric_summary.nof_control_reps:
-            pytest.fail("Different number of RIC Control Request and Replies.")
-
-
 # pylint: disable=too-many-branches
 def stop(
     *,  # This enforces keyword-only arguments

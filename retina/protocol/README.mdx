@@ -131,6 +131,7 @@ import TOCInline from '@theme/TOCInline';
 | `cu_cp` | `CuCpMetrics` |||
 | `du` | `DuMetrics` |||
 | `core` | `CoreMetrics` |||
+| `ric` | `RicMetrics` |||
 
 #### NearRtRicDefinition
 
@@ -180,6 +181,18 @@ import TOCInline from '@theme/TOCInline';
 |---|---|---|---|
 | `agent_version` | `string` |||
 | `sut_version` | `string` |||
+
+#### RicMetrics
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `nof_connected_agents` | `uint32` |||
+| `nof_connected_xapps` | `uint32` |||
+| `nof_subscription_reqs` | `uint32` |||
+| `nof_subscription_reps` | `uint32` |||
+| `nof_ric_indication` | `uint32` |||
+| `nof_control_reqs` | `uint32` |||
+| `nof_control_reps` | `uint32` |||
 
 #### StartInfo
 
@@ -535,18 +548,6 @@ FiveGC service manages the 5G Core network components
 |---|---|---|---|
 | `start_info` | `StartInfo` |||
 
-#### NearRtRicSummary
-
-| Field | Type | Label | Description |
-|---|---|---|---|
-| `nof_connected_agents` | `uint32` |||
-| `nof_connected_xapps` | `uint32` |||
-| `nof_subscription_reqs` | `uint32` |||
-| `nof_subscription_reps` | `uint32` |||
-| `nof_ric_indication` | `uint32` |||
-| `nof_control_reqs` | `uint32` |||
-| `nof_control_reps` | `uint32` |||
-
 #### RcXappRequest
 
 | Field | Type | Label | Description |
@@ -576,6 +577,5 @@ NearRtRic service manages the Near-Real-Time RAN Intelligent Controller
 | `StopKpmMonXapp` | `.google.protobuf.Empty` | `.google.protobuf.Empty` |No|Stop a KPM xApp|
 | `StartRcXapp` | `.RcXappRequest` | `.google.protobuf.Empty` |No|Start a RC xApp|
 | `StopRcXapp` | `.google.protobuf.Empty` | `.google.protobuf.Empty` |No|Stop a RC xApp|
-| `GetNearRtRicSummary` | `.google.protobuf.Empty` | `.NearRtRicSummary` |No|Get KPM xApp Summary|
 
 ---

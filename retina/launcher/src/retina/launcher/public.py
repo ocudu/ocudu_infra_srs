@@ -27,6 +27,7 @@ from retina.launcher.criteria import (
     DuCriteria,
     FiveGcCriteria,
     GnbCriteria,
+    RicCriteria,
     UeCriteria,
     ViaviCriteria,
 )
@@ -346,6 +347,8 @@ def ric_multiple(
     def _factory(count: int) -> Tuple[NearRtRicClient, ...]:
         stub_array = tuple(retina_manager.get_ric(index) for index in range(count))
         created.append(stub_array)
+        for cls in RicCriteria.subclasses:
+            cls(criteria, stub_array)
         return stub_array
 
     yield _factory

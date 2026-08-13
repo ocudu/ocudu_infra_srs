@@ -119,36 +119,3 @@ class RcXappRequest(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["action_id", b"action_id", "control_service_style", b"control_service_style", "parameters", b"parameters"]) -> None: ...
 
 Global___RcXappRequest: typing_extensions.TypeAlias = RcXappRequest
-
-@typing.final
-class NearRtRicSummary(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    NOF_CONNECTED_AGENTS_FIELD_NUMBER: builtins.int
-    NOF_CONNECTED_XAPPS_FIELD_NUMBER: builtins.int
-    NOF_SUBSCRIPTION_REQS_FIELD_NUMBER: builtins.int
-    NOF_SUBSCRIPTION_REPS_FIELD_NUMBER: builtins.int
-    NOF_RIC_INDICATION_FIELD_NUMBER: builtins.int
-    NOF_CONTROL_REQS_FIELD_NUMBER: builtins.int
-    NOF_CONTROL_REPS_FIELD_NUMBER: builtins.int
-    nof_connected_agents: builtins.int
-    nof_connected_xapps: builtins.int
-    nof_subscription_reqs: builtins.int
-    nof_subscription_reps: builtins.int
-    nof_ric_indication: builtins.int
-    nof_control_reqs: builtins.int
-    nof_control_reps: builtins.int
-    def __init__(
-        self,
-        *,
-        nof_connected_agents: builtins.int = ...,
-        nof_connected_xapps: builtins.int = ...,
-        nof_subscription_reqs: builtins.int = ...,
-        nof_subscription_reps: builtins.int = ...,
-        nof_ric_indication: builtins.int = ...,
-        nof_control_reqs: builtins.int = ...,
-        nof_control_reps: builtins.int = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_connected_agents", b"nof_connected_agents", "nof_connected_xapps", b"nof_connected_xapps", "nof_control_reps", b"nof_control_reps", "nof_control_reqs", b"nof_control_reqs", "nof_ric_indication", b"nof_ric_indication", "nof_subscription_reps", b"nof_subscription_reps", "nof_subscription_reqs", b"nof_subscription_reqs"]) -> None: ...
-
-Global___NearRtRicSummary: typing_extensions.TypeAlias = NearRtRicSummary

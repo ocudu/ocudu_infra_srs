@@ -720,6 +720,39 @@ class CuCpMetrics(google.protobuf.message.Message):
 Global___CuCpMetrics: typing_extensions.TypeAlias = CuCpMetrics
 
 @typing.final
+class RicMetrics(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    NOF_CONNECTED_AGENTS_FIELD_NUMBER: builtins.int
+    NOF_CONNECTED_XAPPS_FIELD_NUMBER: builtins.int
+    NOF_SUBSCRIPTION_REQS_FIELD_NUMBER: builtins.int
+    NOF_SUBSCRIPTION_REPS_FIELD_NUMBER: builtins.int
+    NOF_RIC_INDICATION_FIELD_NUMBER: builtins.int
+    NOF_CONTROL_REQS_FIELD_NUMBER: builtins.int
+    NOF_CONTROL_REPS_FIELD_NUMBER: builtins.int
+    nof_connected_agents: builtins.int
+    nof_connected_xapps: builtins.int
+    nof_subscription_reqs: builtins.int
+    nof_subscription_reps: builtins.int
+    nof_ric_indication: builtins.int
+    nof_control_reqs: builtins.int
+    nof_control_reps: builtins.int
+    def __init__(
+        self,
+        *,
+        nof_connected_agents: builtins.int = ...,
+        nof_connected_xapps: builtins.int = ...,
+        nof_subscription_reqs: builtins.int = ...,
+        nof_subscription_reps: builtins.int = ...,
+        nof_ric_indication: builtins.int = ...,
+        nof_control_reqs: builtins.int = ...,
+        nof_control_reps: builtins.int = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_connected_agents", b"nof_connected_agents", "nof_connected_xapps", b"nof_connected_xapps", "nof_control_reps", b"nof_control_reps", "nof_control_reqs", b"nof_control_reqs", "nof_ric_indication", b"nof_ric_indication", "nof_subscription_reps", b"nof_subscription_reps", "nof_subscription_reqs", b"nof_subscription_reqs"]) -> None: ...
+
+Global___RicMetrics: typing_extensions.TypeAlias = RicMetrics
+
+@typing.final
 class Metrics(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -728,6 +761,7 @@ class Metrics(google.protobuf.message.Message):
     CU_CP_FIELD_NUMBER: builtins.int
     DU_FIELD_NUMBER: builtins.int
     CORE_FIELD_NUMBER: builtins.int
+    RIC_FIELD_NUMBER: builtins.int
     @property
     def aggregate(self) -> Global___UeMetrics: ...
     @property
@@ -738,6 +772,8 @@ class Metrics(google.protobuf.message.Message):
     def du(self) -> Global___DuMetrics: ...
     @property
     def core(self) -> Global___CoreMetrics: ...
+    @property
+    def ric(self) -> Global___RicMetrics: ...
     def __init__(
         self,
         *,
@@ -746,8 +782,9 @@ class Metrics(google.protobuf.message.Message):
         cu_cp: Global___CuCpMetrics | None = ...,
         du: Global___DuMetrics | None = ...,
         core: Global___CoreMetrics | None = ...,
+        ric: Global___RicMetrics | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu_cp", b"cu_cp", "du", b"du"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu_cp", b"cu_cp", "du", b"du", "ue_array", b"ue_array"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu_cp", b"cu_cp", "du", b"du", "ric", b"ric"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu_cp", b"cu_cp", "du", b"du", "ric", b"ric", "ue_array", b"ue_array"]) -> None: ...
 
 Global___Metrics: typing_extensions.TypeAlias = Metrics

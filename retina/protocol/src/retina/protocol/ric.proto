@@ -21,8 +21,6 @@ service NearRtRic {
   rpc StartRcXapp(RcXappRequest) returns (google.protobuf.Empty) {};
   // Stop a RC xApp
   rpc StopRcXapp(google.protobuf.Empty) returns (google.protobuf.Empty) {};
-  // Get KPM xApp Summary
-  rpc GetNearRtRicSummary(google.protobuf.Empty) returns (NearRtRicSummary) {};
 }
 
 message NearRtRicStartInfo {
@@ -46,12 +44,3 @@ message RcXappRequest {
   map<uint32, ControlParameter> parameters            = 3;
 };
 
-message NearRtRicSummary {
-  uint32 nof_connected_agents  = 1;
-  uint32 nof_connected_xapps   = 2;
-  uint32 nof_subscription_reqs = 3;
-  uint32 nof_subscription_reps = 4;
-  uint32 nof_ric_indication    = 5;
-  uint32 nof_control_reqs      = 6;
-  uint32 nof_control_reps      = 7;
-};

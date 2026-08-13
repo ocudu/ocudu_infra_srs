@@ -13,7 +13,8 @@ from typing import Dict, Optional, Tuple
 import grpc
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.ric_pb2 import KpmMonXappRequest, NearRtRicStartInfo, NearRtRicSummary, RcXappRequest
+from retina.protocol.base_pb2 import Metrics, RicMetrics
+from retina.protocol.ric_pb2 import KpmMonXappRequest, NearRtRicStartInfo, RcXappRequest
 
 from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.ric import NearRtRicDriver
@@ -38,7 +39,7 @@ class FlexricRic(NearRtRicDriver, BaseDriverSutHandler):
         self._xapp_process_dict: Dict[str, SutProcessLike] = {}
         self._xapp_log_dict: Dict[str, str] = {}
         self.ric_logfile: Optional[str] = None
-        self.ric_summary_report = NearRtRicSummary()
+        self._ric_metrics = RicMetrics()
         super().__init__(*args, **kwargs)
 
     def _get_sut_version(self) -> str:
@@ -48,7 +49,7 @@ class FlexricRic(NearRtRicDriver, BaseDriverSutHandler):
         self.Stop(UInt32Value(value=request.start_info.timeout), context)
 
         # reset RIC stats
-        self.ric_summary_report = NearRtRicSummary()
+        self._ric_metrics = RicMetrics()
 
         config_file = self._render(
             filename=self.FLEXRIC_CONF_FILE_BASE_NAME,
@@ -148,9 +149,9 @@ class FlexricRic(NearRtRicDriver, BaseDriverSutHandler):
 
                 logging.info("KPM Monitor xApp received: %i indication msgs", int(nof_indications))
                 # collect stats for the final report
-                self.ric_summary_report.nof_ric_indication += int(nof_indications)
-                self.ric_summary_report.nof_subscription_reqs += int(nof_sub_reqs)
-                self.ric_summary_report.nof_subscription_reps += int(nof_sub_reps)
+                self._ric_metrics.nof_ric_indication += int(nof_indications)
+                self._ric_metrics.nof_subscription_reqs += int(nof_sub_reqs)
+                self._ric_metrics.nof_subscription_reps += int(nof_sub_reps)
 
         return Empty()
 
@@ -204,12 +205,12 @@ class FlexricRic(NearRtRicDriver, BaseDriverSutHandler):
 
                 logging.info("RC Slice xApp received: %i Control Acks", int(nof_control_reps))
                 # collect stats for the final report
-                self.ric_summary_report.nof_control_reqs += int(nof_control_reqs)
-                self.ric_summary_report.nof_control_reps += int(nof_control_reps)
+                self._ric_metrics.nof_control_reqs += int(nof_control_reqs)
+                self._ric_metrics.nof_control_reps += int(nof_control_reps)
 
         return Empty()
 
-    def GetNearRtRicSummary(self, request: Empty, context: grpc.ServicerContext) -> NearRtRicSummary:
+    def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
         if self.ric_logfile:
             text = ""
             with open(self.ric_logfile, "r", encoding="UTF-8") as file:
@@ -220,10 +221,10 @@ class FlexricRic(NearRtRicDriver, BaseDriverSutHandler):
             nof_xapps = len(re.findall(r" E42 SETUP-RESPONSE tx", text, flags=re.MULTILINE))
             logging.info("RIC: nof connected E2 agents: %i, nof connected xApps: %i", int(nof_agents), int(nof_xapps))
 
-            self.ric_summary_report.nof_connected_agents += int(nof_agents)
-            self.ric_summary_report.nof_connected_xapps += int(nof_xapps)
+            self._ric_metrics.nof_connected_agents = int(nof_agents)
+            self._ric_metrics.nof_connected_xapps = int(nof_xapps)
 
-        return self.ric_summary_report
+        return Metrics(ric=self._ric_metrics)
 
     @property
     def _expected_exit_code_array(self) -> Tuple[int, ...]:

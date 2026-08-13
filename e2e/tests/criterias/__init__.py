@@ -5,4 +5,4 @@
 Registers all criteria subclasses by importing their definition modules.
 """
 
-from . import all as all_criteria, core, cu, cu_cp, cu_up, du, gnb, viavi
+from . import all as all_criteria, core, cu, cu_cp, cu_up, du, gnb, ric, viavi

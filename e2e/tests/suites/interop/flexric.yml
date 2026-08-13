@@ -41,5 +41,12 @@ udp_bidirectional:
     du.nof_ko_ul_le: 0
     du.nof_error_indications_le: 0
     du.nof_reestablishments_request_eq: 0
+    ric.nof_connected_xapps_ge: 2
+    ric.nof_connected_agents_ge: 1
+    ric.nof_subscription_reqs_ge: 1
+    ric.nof_unanswered_subscriptions_eq: 0
+    ric.nof_ric_indication_ge: 1
+    ric.nof_control_reqs_ge: 1
+    ric.nof_unanswered_controls_eq: 0
     all.warnings_le: 0
     all.errors_le: 0

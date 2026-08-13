@@ -26,7 +26,6 @@ from retina.protocol.ue_pb2 import IPerfDir, IPerfProto
 from .steps.configuration import set_config_files
 from .steps.stub import (
     INTER_UE_START_PERIOD,
-    ric_validate_e2_interface,
     start_and_attach,
     start_kpm_mon_xapp,
     start_rc_xapp,
@@ -102,7 +101,7 @@ def test_gnb_ric(
 ):
     """
     Same as test_gnb, with a Near-RT RIC attached over E2. The RC and KPM xApps run for the whole
-    iperf and the E2 interface is validated once it is over
+    iperf, and the ric criteria of the test assert the E2 interface worked
     """
 
     parameters = test_definition.parameters
@@ -220,9 +219,6 @@ def _run_iperf(
         stop_kpm_mon_xapp(ric)
 
     sleep(wait_before_power_off)
-    if ric:
-        ric_validate_e2_interface(ric=ric, kpm_expected=True, rc_expected=True)
-
     stop(
         ue_array=ue_array,
         gnb_array=[gnb],

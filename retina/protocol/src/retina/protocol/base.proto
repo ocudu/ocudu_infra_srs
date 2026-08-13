@@ -261,10 +261,21 @@ message CuCpMetrics {
   uint32 nof_write_replace_warning_response = 14;
 };
 
+message RicMetrics {
+  uint32 nof_connected_agents  = 1;
+  uint32 nof_connected_xapps   = 2;
+  uint32 nof_subscription_reqs = 3;
+  uint32 nof_subscription_reps = 4;
+  uint32 nof_ric_indication    = 5;
+  uint32 nof_control_reqs      = 6;
+  uint32 nof_control_reps      = 7;
+};
+
 message Metrics {
   UeMetrics          aggregate = 1;
   repeated UeMetrics ue_array  = 2;
   CuCpMetrics        cu_cp     = 3;
   DuMetrics          du        = 4;
   CoreMetrics        core      = 5;
+  RicMetrics         ric       = 6;
 };

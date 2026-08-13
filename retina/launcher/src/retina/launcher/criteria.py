@@ -15,7 +15,7 @@ import pytest
 from rich.console import Console
 from rich.table import Table
 
-from retina.protocol import CUCPClient, CUUPClient, DUClient, FiveGCClient, UEClient
+from retina.protocol import CUCPClient, CUUPClient, DUClient, FiveGCClient, NearRtRicClient, UEClient
 from retina.viavi.client import Viavi
 
 _UNSET = object()
@@ -252,6 +252,17 @@ class FiveGcCriteria(Criteria):  # pylint: disable=too-few-public-methods
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         FiveGcCriteria.subclasses.append(cls)
+
+
+class RicCriteria(Criteria):  # pylint: disable=too-few-public-methods
+    """Base class for Near-RT RIC pass/fail criteria definitions."""
+
+    subclasses: ClassVar[List[type]] = []
+    _stub_array: Sequence[NearRtRicClient]
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        RicCriteria.subclasses.append(cls)
 
 
 class ViaviCriteria(Criteria):  # pylint: disable=too-few-public-methods

@@ -498,6 +498,7 @@ services:
     networks:
       retina:
         ipv4_address: *flexric_ip
+    volumes: *agent_volumes
     tmpfs: *agent_tmpfs
     x-testbed:
       type: ric
