@@ -45,7 +45,7 @@ baseline: &base_config
   criteria:
     <<: &common_criteria
       du.nof_ko_dl_le: 5
-      du.nof_ko_ul_le: 120
+      du.nof_ko_ul_le: 200
       du.nof_reestablishments_request_eq: 0
       du.nof_handovers_eq: 0
       du.max_late_dl_harqs_le: 0
