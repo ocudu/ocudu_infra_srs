@@ -404,9 +404,6 @@ cots_pdsch_vrb:
       bandwidth: 20
       common_scs: 30
       sample_rate: 23040000
-  ue:
-    parameters:
-      log_level: warning
   core:
     parameters:
       log_level: warning

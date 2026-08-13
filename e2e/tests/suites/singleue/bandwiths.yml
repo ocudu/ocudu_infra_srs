@@ -83,9 +83,6 @@ cots_bw_50_udp_downlink: &cots_bw_50_config
       dl_nr_arfcn: 632628
       bandwidth: 50
       common_scs: 30
-  ue:
-    parameters:
-      log_level: warning
   core:
     parameters:
       log_level: warning
@@ -178,9 +175,6 @@ cots_bw_90_udp_downlink: &cots_bw_90_config
       dl_nr_arfcn: 632628
       bandwidth: 90
       common_scs: 30
-  ue:
-    parameters:
-      log_level: warning
   core:
     parameters:
       log_level: warning

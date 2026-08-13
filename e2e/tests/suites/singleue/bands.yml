@@ -200,9 +200,6 @@ cots_band_3_udp_downlink: &cots_band_3_config
       bandwidth: 10
       common_scs: 15
       sample_rate: 11520000
-  ue:
-    parameters:
-      log_level: warning
   core:
     parameters:
       log_level: warning
@@ -296,9 +293,6 @@ cots_band_78_udp_downlink: &cots_band_78_config
       bandwidth: 20
       common_scs: 30
       sample_rate: 23040000
-  ue:
-    parameters:
-      log_level: warning
   core:
     parameters:
       log_level: warning
@@ -387,9 +381,6 @@ cots_band_7_udp_downlink: &cots_band_7_config
       dl_nr_arfcn: 536020
       bandwidth: 20
       common_scs: 15
-  ue:
-    parameters:
-      log_level: warning
   core:
     parameters:
       log_level: warning

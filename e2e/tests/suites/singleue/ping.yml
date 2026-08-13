@@ -26,9 +26,6 @@ band_3_reattach: &band_3_config
       bandwidth: 10
       common_scs: 15
       sample_rate: 11520000
-  ue:
-    parameters:
-      log_level: warning
   core:
     parameters:
       log_level: warning
@@ -58,9 +55,6 @@ band_7_reattach:
       dl_nr_arfcn: 536020
       bandwidth: 20
       common_scs: 15
-  ue:
-    parameters:
-      log_level: warning
   core:
     parameters:
       log_level: warning

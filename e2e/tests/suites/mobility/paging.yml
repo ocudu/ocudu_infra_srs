@@ -238,9 +238,6 @@ cots_band_3: &cots_baseline
       slice_sd: ""
       cu_cp_report_period: 5000
       log_level: warning
-  ue:
-    parameters:
-      log_level: warning
   core:
     parameters:
       log_level: warning
