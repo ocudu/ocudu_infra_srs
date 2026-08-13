@@ -274,7 +274,7 @@ pucch_02:
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, pucch_config.yml, mac_pcap.yml]
     parameters:
-      pucch_format: "f0_and_f2"
+      pucch_format: f0_and_f2
   feature_ids: [DU-PHY-1]
 
 # PUCCH Format 1/3 test
@@ -283,7 +283,7 @@ pucch_13:
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, pucch_config.yml, mac_pcap.yml]
     parameters:
-      pucch_format: "f1_and_f3"
+      pucch_format: f1_and_f3
   feature_ids: [DU-PHY-1]
 
 # PUCCH Format 1/4 test
@@ -292,7 +292,7 @@ pucch_14:
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, pucch_config.yml, mac_pcap.yml]
     parameters:
-      pucch_format: "f1_and_f4"
+      pucch_format: f1_and_f4
   feature_ids: [DU-PHY-1]
 
 # PUCCH Format 1/2 with intraslot FH

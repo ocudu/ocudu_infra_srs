@@ -38,7 +38,7 @@ tdd_dl_heavy: &base_config
         tau_period: 10
         paging_period: &paging_period 10
         paging_idle_delay: 6 # margin over cu_cp.inactivity_timer (2s) before DL data actually arrives
-        log_level: "error"
+        log_level: error
         power_on_stagger_delay: 0.02 # 50 UE/s per group
         rx_to_tx_latency: 2
         num_cells: 2

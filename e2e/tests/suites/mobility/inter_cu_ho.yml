@@ -8,7 +8,7 @@ baseline: &base_config
   core:
     config: [baseline.cfg]
     parameters:
-      log_level: "debug"
+      log_level: debug
   ue:
     config: [2cell_chsim.cfg, handover.cfg]
     parameters:
@@ -22,13 +22,13 @@ baseline: &base_config
       - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name: "ocudu01"
+          ran_node_name: ocudu01
           pci: 1
           cell_offset: 0
       - config: [cu_cp.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
-          ran_node_name: "ocudu02"
+          ran_node_name: ocudu02
           pci: 2
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-1-e, MVP-FUNC-MOB-4]
@@ -67,7 +67,7 @@ fr2:
         parameters:
           zero_correlation_zone: 0
           gnb_id: 411
-          ran_node_name: "ocudu01"
+          ran_node_name: ocudu01
           neighbor_ssb_arfcn: 2073691
           neighbor_band: 261
           neighbor_ssb_scs: 120
@@ -81,7 +81,7 @@ fr2:
         parameters:
           zero_correlation_zone: 0
           gnb_id: 412
-          ran_node_name: "ocudu02"
+          ran_node_name: ocudu02
           neighbor_ssb_arfcn: 2073691
           neighbor_band: 261
           neighbor_ssb_scs: 120
@@ -100,7 +100,7 @@ same_cu_up_fr1: &base_same_cu_up
   core:
     config: [baseline.cfg]
     parameters:
-      log_level: "debug"
+      log_level: debug
   ue:
     config: [2cell_chsim.cfg, handover.cfg]
     parameters:
@@ -114,13 +114,13 @@ same_cu_up_fr1: &base_same_cu_up
       - config: [cu_cp.yml, inter_cu_mobility_1.yml]
         parameters:
           gnb_id: 411
-          ran_node_name: "ocudu01"
-          log_level: "debug"
+          ran_node_name: ocudu01
+          log_level: debug
       - config: [cu_cp.yml, inter_cu_mobility_2.yml]
         parameters:
           gnb_id: 412
-          ran_node_name: "ocudu02"
-          log_level: "debug"
+          ran_node_name: ocudu02
+          log_level: debug
   cu_up:
     config: [cu_up.yml]
   du:
@@ -171,14 +171,14 @@ same_cu_up_fr2:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml]
         parameters:
           gnb_id: 411
-          ran_node_name: "ocudu01"
+          ran_node_name: ocudu01
           neighbor_ssb_arfcn: 2073691
           neighbor_band: 261
           neighbor_ssb_scs: 120
       - config: [cu_cp.yml, inter_cu_mobility_2.yml]
         parameters:
           gnb_id: 412
-          ran_node_name: "ocudu02"
+          ran_node_name: ocudu02
           neighbor_ssb_arfcn: 2073691
           neighbor_band: 261
           neighbor_ssb_scs: 120
@@ -231,7 +231,7 @@ fr1_fr2:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name: "ocudu01"
+          ran_node_name: ocudu01
           neighbor_ssb_arfcn: 2073691
           neighbor_band: 261
           neighbor_ssb_scs: 120
@@ -241,7 +241,7 @@ fr1_fr2:
         parameters:
           zero_correlation_zone: 0
           gnb_id: 412
-          ran_node_name: "ocudu02"
+          ran_node_name: ocudu02
           pci: 2
           dl_nr_arfcn: 2074171
           band: 261
@@ -274,14 +274,14 @@ same_cu_up_fr1_fr2:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml]
         parameters:
           gnb_id: 411
-          ran_node_name: "ocudu01"
+          ran_node_name: ocudu01
           neighbor_ssb_arfcn: 2073691
           neighbor_band: 261
           neighbor_ssb_scs: 120
       - config: [cu_cp.yml, inter_cu_mobility_2.yml]
         parameters:
           gnb_id: 412
-          ran_node_name: "ocudu02"
+          ran_node_name: ocudu02
   du:
     items:
       - config: [du.yml, tdd_default.yml, sib2345.yml]
@@ -310,7 +310,7 @@ xn_ho:
       - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name: "ocudu01"
+          ran_node_name: ocudu01
           pci: 1
           cell_offset: 0
           warning_allowlist:
@@ -318,7 +318,7 @@ xn_ho:
       - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
-          ran_node_name: "ocudu02"
+          ran_node_name: ocudu02
           pci: 2
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-3]
@@ -346,7 +346,7 @@ xn_cho:
       - config: [cu_cp.yml, xnap.yml, xn_cho_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name: "ocudu01"
+          ran_node_name: ocudu01
           pci: 1
           cell_offset: 0
           warning_allowlist:
@@ -354,7 +354,7 @@ xn_cho:
       - config: [cu_cp.yml, xnap.yml, xn_cho_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
-          ran_node_name: "ocudu02"
+          ran_node_name: ocudu02
           pci: 2
           cell_offset: 1
   feature_ids: [MVP-FUNC-MOB-3]

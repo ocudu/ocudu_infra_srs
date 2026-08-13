@@ -114,7 +114,7 @@ band_n66:
       bandwidth: 20
       common_scs: 15
       prach_config_index: 16
-      pucch_format: "f1_and_f3"
+      pucch_format: f1_and_f3
       nof_cell_sr_res: 1
       nof_cell_csi_res: 1
       resource_set_size: 2

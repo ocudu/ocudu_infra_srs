@@ -85,7 +85,7 @@ inter_cu_ho:
   core:
     config: [baseline.cfg]
     parameters:
-      log_level: "debug"
+      log_level: debug
   ue:
     config: [2cell_chsim.cfg, handover.cfg]
     parameters:
@@ -99,13 +99,13 @@ inter_cu_ho:
       - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 411
-          ran_node_name: "ocudu01"
+          ran_node_name: ocudu01
           pci: 1
           cell_offset: 0
       - config: [cu_cp.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
-          ran_node_name: "ocudu02"
+          ran_node_name: ocudu02
           pci: 2
           cell_offset: 1
   criteria:

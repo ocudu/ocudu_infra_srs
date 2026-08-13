@@ -14,7 +14,7 @@ closed_loop_pc: &base_config
     config: [cu_cp.yml, du.yml, tdd_default.yml, closed_loop_pc.yml, pucch_config.yml]
     parameters:
       prach_config_index: 159
-      pucch_format: "f0_and_f2"
+      pucch_format: f0_and_f2
   core:
     config: [baseline.cfg]
   feature_ids: [MVP-FUNC-BAS-16-3]
@@ -39,7 +39,7 @@ closed_loop_pc_f1f3:
     config: [cu_cp.yml, du.yml, tdd_default.yml, closed_loop_pc.yml, pucch_config.yml]
     parameters:
       prach_config_index: 159
-      pucch_format: "f1_and_f3"
+      pucch_format: f1_and_f3
 
 # Closed loop PC under FDD (band 3, 50 MHz)
 closed_loop_pc_fdd:
@@ -61,4 +61,4 @@ closed_loop_pc_fdd:
       bandwidth: 50
       band: 3
       common_scs: 15
-      pucch_format: "f0_and_f2"
+      pucch_format: f0_and_f2
