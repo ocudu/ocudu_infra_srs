@@ -234,6 +234,9 @@ message DuMetrics {
 
   uint32 total_prach_preambles    = 32;
   uint32 two_step_prachs_detected = 33; // subset of total_prach_preambles
+  uint32 nof_cg_type1 = 34; // Configured grant Type 1 setups (rrc-ConfiguredUplinkGrant present)
+  uint32 nof_cg_type2 = 35; // Configured grant Type 2 setups (rrc-ConfiguredUplinkGrant absent)
+  uint32 nof_cs_rnti  = 36; // cs-RNTI setups in PhysicalCellGroupConfig with a valid RNTI value
 };
 
 message CoreMetrics {

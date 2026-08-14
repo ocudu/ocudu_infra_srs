@@ -35,6 +35,8 @@ from retina.agent.features.json_metrics.du_cell import DuCellAnalyzer
 from retina.agent.features.json_metrics.du_metrics import DuMetricsAnalyzer
 from retina.agent.features.pcap.analyzer import run_analyzers
 from retina.agent.features.pcap.rrc import (
+    ConfiguredGrantAnalyzer,
+    CsRntiAnalyzer,
     DrxLongCycleAnalyzer,
     HandoverAnalyzer,
     PagingAnalyzer,
@@ -67,6 +69,8 @@ _MAC_PCAP_ANALYZER_ARRAY = (
     SuspendConfigAnalyzer,
     TransformPrecoderAnalyzer,
     RlmConfigAnalyzer,
+    ConfiguredGrantAnalyzer,
+    CsRntiAnalyzer,
 )
 _RLC_PCAP_ANALYZER_ARRAY = (
     HandoverAnalyzer,

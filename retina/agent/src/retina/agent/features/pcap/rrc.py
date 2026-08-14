@@ -406,6 +406,94 @@ class ReestablishmentAnalyzer(PcapAnalyzer):
         )
 
 
+class ConfiguredGrantAnalyzer(PcapAnalyzer):
+    """
+    Detects configuredGrantConfig setup in BWP-UplinkDedicated and classifies the CG type.
+
+    configuredGrantConfig is a SetupRelease CHOICE: release(0), setup(1). When set up,
+    presence of rrc-ConfiguredUplinkGrant means Type 1 (grant fully provided by RRC);
+    its absence means Type 2 (grant activated by DCI addressed to the CS-RNTI).
+    Packets without a configuredGrantConfig setup never reach process(), so both
+    counters stay at 0 when no configured grant is configured.
+
+    Note: the configuredGrantConfig field cannot be scoped to initialUplinkBWP by display
+    filter; in single-BWP configurations (the OCUDU default) it can only belong to it.
+    tshark display filter: nr-rrc.configuredGrantConfig == 1
+    """
+
+    def __init__(self) -> None:
+        self._type1_count = 0
+        self._type2_count = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "nr-rrc.configuredGrantConfig == 1"
+
+    def process(self, packet) -> None:
+        try:
+            layer = _rrc_layer(packet)
+        except KeyError:
+            return
+        try:
+            getattr(layer, "nr_rrc_rrc_configureduplinkgrant_element")
+            self._type1_count += 1
+        except AttributeError:
+            self._type2_count += 1
+
+    def report(self) -> Metrics:
+        return Metrics(du=DuMetrics(nof_cg_type1=self._type1_count, nof_cg_type2=self._type2_count))
+
+
+class CsRntiAnalyzer(PcapAnalyzer):
+    """
+    Counts cs-RNTI setups in PhysicalCellGroupConfig carrying a valid RNTI value.
+
+    cs-RNTI is a SetupRelease CHOICE: release(0), setup(1). When set up, the nested
+    RNTI-Value is dissected into the generic nr-rrc.setup field, an abbreviation shared
+    by every anonymous SetupRelease branch in the packet. The cs-RNTI value is therefore
+    identified by byte position: the nr-rrc.setup field closest after the cs_RNTI choice
+    field. The counter is only incremented when the value lies in the range usable for
+    CS-RNTI assignment, [0x1, 0xFFEF] (TS 38.211 table 7.1-1).
+    tshark display filter: nr-rrc.cs_RNTI == 1
+    """
+
+    _MIN_CS_RNTI = 0x1
+    _MAX_CS_RNTI = 0xFFEF
+
+    def __init__(self) -> None:
+        self._count = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "nr-rrc.cs_RNTI == 1"
+
+    def process(self, packet) -> None:
+        try:
+            layer = _rrc_layer(packet)
+        except KeyError:
+            return
+        try:
+            cs_rnti_fields = layer.nr_rrc_cs_rnti.all_fields
+            setup_fields = layer.nr_rrc_setup.all_fields
+        except AttributeError:
+            return
+        for cs_rnti in cs_rnti_fields:
+            try:
+                if int(cs_rnti.show) != 1:  # 1 = setup
+                    continue
+                candidates = [f for f in setup_fields if int(f.pos) >= int(cs_rnti.pos)]
+                if not candidates:
+                    continue
+                value = int(min(candidates, key=lambda f: int(f.pos)).show)
+            except (AttributeError, TypeError, ValueError):
+                continue
+            if self._MIN_CS_RNTI <= value <= self._MAX_CS_RNTI:
+                self._count += 1
+
+    def report(self) -> Metrics:
+        return Metrics(du=DuMetrics(nof_cs_rnti=self._count))
+
+
 class RlmConfigAnalyzer(PcapAnalyzer):
     """
     Counts SSB and CSI-RS resources in radioLinkMonitoringConfig.failureDetectionResourcesToAddModList.
