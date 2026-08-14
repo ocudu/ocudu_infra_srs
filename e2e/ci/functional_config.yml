@@ -193,6 +193,18 @@ bandwiths:
     TESTBED: dynamic
     MARKERS: "zmq or test_mode_ue"
 
+configured_grant:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.configured_grant."
+    TESTBED: dynamic
+    MARKERS: "zmq or test_mode_ue"
+
 drb_triggered_ul_grant:
   stage: singleue
   extends: .functional_e2e

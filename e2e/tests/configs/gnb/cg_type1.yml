@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  cg:
+    periodicity_slots: 20
+    mcs: 20
+    requested_bitrate: 50
+    max_nof_cg_rbs: 30
+
+log:
+  mac_level: debug
+  phy_level: debug

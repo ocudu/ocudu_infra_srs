@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+
+baseline: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      band: 41
+      bandwidth: 50
+      dl_nr_arfcn: 520002
+      ssb_nr_arfcn: 516030
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      traffic_duration: 2
+      pdcch_decode_threshold: 0
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_72.yml, cg_type1.yml, mac_pcap.yml]
+    parameters:
+      band: 41
+      dl_nr_arfcn: 520002
+      bandwidth: 50
+  core:
+    config: [baseline.cfg]
+  feature_ids: []
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    # TODO: reduce KOs once UE in CI supports more than 1 HARQ-ACK UCI bits on CG.
+    du.nof_ko_dl_le: 1500
+    ue.nof_ko_dl_le: 1500
+    du.nof_ko_ul_le: 1500
+    ue.nof_ko_ul_le: 1500
+    du.nof_reestablishments_request_eq: 0
+    du.nof_cg_type1_eq: 1
+    du.nof_cg_type2_eq: 0
+    du.nof_cs_rnti_eq: 1
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+    du.warnings_le: 0
