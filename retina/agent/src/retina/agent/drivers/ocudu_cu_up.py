@@ -17,10 +17,9 @@ from retina.protocol.gnb_pb2 import CUUPStartInfo
 from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.gnb import CUUPDriver
 from retina.agent.drivers.ocudu_du import (
-    OCUDU_ERROR_HEADER,
+    OCUDU_ERROR_REGEX,
     OCUDU_WARNING_HEADER,
     OCUDU_WERROR_FOOTER,
-    RTSAN_ERROR,
 )
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.sut_handler import BaseDriverSutHandler
@@ -139,7 +138,7 @@ class OcuduCuUp(CUUPDriver, BaseDriverSutHandler):
 
     @property
     def _error_regex(self) -> str:
-        return r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
+        return OCUDU_ERROR_REGEX
 
 
 OCUDU_CU_UP_WARNING_BODY: str = (

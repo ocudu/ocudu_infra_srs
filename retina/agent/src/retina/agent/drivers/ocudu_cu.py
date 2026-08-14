@@ -18,10 +18,9 @@ from retina.agent.drivers.gnb import CUDriver
 from retina.agent.drivers.ocudu_cu_cp import OcuduCuCp
 from retina.agent.drivers.ocudu_cu_up import OcuduCuUp
 from retina.agent.drivers.ocudu_du import (
-    OCUDU_ERROR_HEADER,
+    OCUDU_ERROR_REGEX,
     OCUDU_WARNING_HEADER,
     OCUDU_WERROR_FOOTER,
-    RTSAN_ERROR,
 )
 from retina.agent.features.executor import LocalExecutor
 from retina.agent.features.sut_handler import BaseDriverSutHandler
@@ -170,7 +169,7 @@ class OcuduCu(CUDriver, BaseDriverSutHandler):
 
     @property
     def _error_regex(self) -> str:
-        return r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
+        return OCUDU_ERROR_REGEX
 
 
 OCUDU_CU_WARNING_BODY: str = (

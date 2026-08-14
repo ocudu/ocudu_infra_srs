@@ -403,7 +403,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         return metrics
 
 
-RTSAN_ERROR = r".*==ERROR.*$"
+OCUDU_COMMON_ERRORS: str = r"(?:.*==ERROR.*$)|(?:.*ocuduLog error.*$)"
 OCUDU_ERROR_HEADER: str = r"^.*\[.*\[E\]"
 OCUDU_WARNING_HEADER: str = r"^.*\[.*\[W\]"
 OCUDU_DU_WARNING_BODY: str = (
@@ -420,7 +420,7 @@ OCUDU_DU_WARNING_BODY: str = (
     # PRACH U-Plane messages are missed if the UE disconnects before the GNB
 )
 OCUDU_WERROR_FOOTER: str = r".*$"
-OCUDU_ERROR_REGEX: str = r"(?:" + RTSAN_ERROR + ")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
+OCUDU_ERROR_REGEX: str = r"(?:" + OCUDU_COMMON_ERRORS + r")|(?:" + OCUDU_ERROR_HEADER + OCUDU_WERROR_FOOTER + r")"
 
 
 def _warning_allowlist_suffix() -> str:
