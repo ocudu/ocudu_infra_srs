@@ -94,6 +94,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         self._peer_ue_ids: Dict[str, Set[Tuple[int, int]]] = {}  # peer -> set of (rnti, pci)
         # message_id -> count, snapshotted at Stop() (like the "stats" aggregate is)
         self._pws_msg_counts_snapshot: Dict[int, int] = {}
+        self._metrics_file_closed: bool = True
 
     def _get_binary_name(self) -> str:
         return "lteue"
@@ -322,6 +323,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
             self._ue_analyzer = AmarisoftUeMetricsAnalyzer()
             self._peer_ue_ids.clear()
+            self._metrics_file_closed = False
 
             if testbed_defaults.type == "ru":
                 if self._process is not None and self._process.stdin is not None:
@@ -336,7 +338,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     break
                 sleep(self.AMARISOFT_POWER_ON_SLEEP)
 
-        if self._websocket is None:
+        if self._websocket is None or not self._websocket.connected:
             raise ChildProcessError("Process has died")
 
         if self._process is not None and self._process.stdin is not None:
@@ -412,7 +414,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                 return StopResponse()
 
             try:
-                if self._websocket is None:
+                if self._websocket is None or not self._websocket.connected:
                     raise ChildProcessError("Process has died")
                 try:
                     time_spend_after_traffic = (datetime.now() - self._last_traffic_timestamp).total_seconds()
@@ -481,18 +483,22 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
         # No pending virtual UEs to stop or sut already stopped
         if self._process is not None and self._websocket is not None:
-            sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
-            self._get_stats()
-            self._pws_msg_counts_snapshot = self._pws_msg_counts_by_id(subscriber_id=None)
-            self._websocket.quit()
+            # Only the first Stop still reaches the websocket
+            if self._websocket.connected:
+                sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
+                self._get_stats()
+                self._pws_msg_counts_snapshot = self._pws_msg_counts_by_id(subscriber_id=None)
+                self._websocket.quit()
             # Close metrics file
-            with open(
-                self.get_filepath_in_report_folder(ue_defaults.metrics_filename_json),
-                "a+",
-                encoding=self._METRICS_ENCODING,
-            ) as fd:
-                if fd.tell() > 0:
-                    fd.write("]")
+            if not self._metrics_file_closed:
+                self._metrics_file_closed = True
+                with open(
+                    self.get_filepath_in_report_folder(ue_defaults.metrics_filename_json),
+                    "a+",
+                    encoding=self._METRICS_ENCODING,
+                ) as fd:
+                    if fd.tell() > 0:
+                        fd.write("]")
         return None
 
     def _validate_state(
@@ -506,7 +512,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     ):  # pylint: disable=too-many-arguments
         subscriber_id = self._subscriber_client_dict[context_peer].subscriber_id
 
-        if self._websocket is None:
+        if self._websocket is None or not self._websocket.connected:
             raise ChildProcessError("Process has died")
 
         # Run command
@@ -577,20 +583,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
             with self._metrics_lock:
                 # Save metrics into file
-                with open(
-                    self.get_filepath_in_report_folder(ue_defaults.metrics_filename_json),
-                    "a+",
-                    encoding=self._METRICS_ENCODING,
-                ) as fd:
-                    # Save to file
-                    if fd.tell() == 0:
-                        # First line
-                        fd.write("[")
-                        fd.flush()
-                    else:
-                        fd.write("," + os.linesep)
-                    fd.write(json.dumps(response))
-
+                self._save_metrics_unlock(response)
                 # Save metrics from ue_get
                 self._parse_metrics(context_peer, response)
 
@@ -609,6 +602,25 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
             timeout_handler.not_reached()
 
+    def _save_metrics_unlock(self, metric_info: Dict) -> None:
+        """
+        Append a ue_get or stats response to the metrics file. Caller holds _metrics_lock.
+        """
+        if not metric_info:
+            return
+        with open(
+            self.get_filepath_in_report_folder(ue_defaults.metrics_filename_json),
+            "a+",
+            encoding=self._METRICS_ENCODING,
+        ) as fd:
+            if fd.tell() == 0:
+                # First line
+                fd.write("[")
+                fd.flush()
+            else:
+                fd.write("," + os.linesep)
+            fd.write(json.dumps(metric_info))
+
     def _parse_metrics(self, context_peer: str, metric_info: Dict):
         subscriber_id = self._subscriber_client_dict[context_peer].subscriber_id
         self._ue_analyzer.process(metric_info)
@@ -623,7 +635,9 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         if self._websocket is None:
             raise ChildProcessError("Process has died")
         stats = self._websocket.send_command_and_wait_response(message="stats", samples=False, rf=False)
-        self._ue_analyzer.process(stats)
+        with self._metrics_lock:
+            self._save_metrics_unlock(stats)
+            self._ue_analyzer.process(stats)
         return stats
 
     def _pws_msg_counts_by_id(self, subscriber_id: Optional[int]) -> Dict[int, int]:

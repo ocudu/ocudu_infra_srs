@@ -264,6 +264,14 @@ class AmarisoftWebSocket:
         logging.warning("WS already closed")
         return {}
 
+    @property
+    def connected(self) -> bool:
+        """
+        True while the socket can still carry commands. Closing it (quit/close) doesn't
+        clear the driver's reference, so checking for `not None` alone isn't enough.
+        """
+        return bool(self._ws.connected)
+
     def quit(self) -> None:
         """
         Send quit command and close the websocket. Returns the stats response dict.

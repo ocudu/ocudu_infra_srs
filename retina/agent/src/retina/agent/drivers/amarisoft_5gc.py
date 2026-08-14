@@ -126,11 +126,11 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
         return Empty()
 
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
-        if self._websocket is not None:
+        if self._websocket is not None and self._websocket.connected:
             stats = self._websocket.send_command_and_wait_response(message="stats", samples=False, rf=False)
             self._websocket.quit()
-            # Save metrics into file
             if stats:
+                # Save metrics into file
                 with open(
                     self.get_filepath_in_report_folder(fivegc_defaults.metrics_filename_json),
                     "a+",
@@ -140,19 +140,23 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
                     fd.write(json.dumps(stats))
                     fd.write("]")
                     fd.flush()
-            # Generate gRPC metrics
-            counters = stats.get("counters", {}).get("messages", {})
-            self._metrics = Metrics(
-                core=CoreMetrics(
-                    nof_pdu_session_establishment_accept=counters.get("5gs_nas_pdu_session_establishment_accept", 0),
-                    nof_pdu_session_modification_complete=counters.get("5gs_nas_pdu_session_modification_complete", 0),
-                    nof_pdu_session_modification_command_reject=counters.get(
-                        "5gs_nas_pdu_session_modification_command_reject", 0
-                    ),
-                    nof_nas_service_accept=counters.get("5gs_nas_service_accept", 0),
-                    nof_ng_paging=counters.get("ng_paging", 0),
+                # Generate gRPC metrics
+                counters = stats.get("counters", {}).get("messages", {})
+                self._metrics = Metrics(
+                    core=CoreMetrics(
+                        nof_pdu_session_establishment_accept=counters.get(
+                            "5gs_nas_pdu_session_establishment_accept", 0
+                        ),
+                        nof_pdu_session_modification_complete=counters.get(
+                            "5gs_nas_pdu_session_modification_complete", 0
+                        ),
+                        nof_pdu_session_modification_command_reject=counters.get(
+                            "5gs_nas_pdu_session_modification_command_reject", 0
+                        ),
+                        nof_nas_service_accept=counters.get("5gs_nas_service_accept", 0),
+                        nof_ng_paging=counters.get("ng_paging", 0),
+                    )
                 )
-            )
         return super().Stop(request, context)
 
     def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
@@ -258,17 +262,17 @@ class _AmarisoftIms(FiveGCDriver, AmarisoftBaseDriver):
         return Empty()
 
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
-        if self._websocket is not None:
+        if self._websocket is not None and self._websocket.connected:
             impi_subscriber_set = {
                 f"{subscriber.imsi}@ims.mnc0{self._plmn.mnc}.mcc{self._plmn.mcc}.3gppnetwork.org"
                 for subscriber in self._subscriber_array
             }
-            nof_nas_registered = sum(
-                1
-                for user in self._websocket.send_command_and_wait_response(message="users_get").get("users", ())
-                if user.get("impi") in impi_subscriber_set
-            )
-            self._metrics = Metrics(core=CoreMetrics(nof_ims_nas_registered_ue=nof_nas_registered))
+            response = self._websocket.send_command_and_wait_response(message="users_get")
+            if response:
+                nof_nas_registered = sum(
+                    1 for user in response.get("users", ()) if user.get("impi") in impi_subscriber_set
+                )
+                self._metrics = Metrics(core=CoreMetrics(nof_ims_nas_registered_ue=nof_nas_registered))
             self._websocket.quit()
         return super().Stop(request, context)
 
@@ -284,7 +288,7 @@ class _AmarisoftIms(FiveGCDriver, AmarisoftBaseDriver):
         }
 
         result = super().GetImsRegisteredUESubscriberArray(request, context)
-        if self._websocket is not None:
+        if self._websocket is not None and self._websocket.connected:
             response = self._websocket.send_command_and_wait_response(message="users_get", registered_only=True)
             for user in response.get("users", tuple()):
                 if user["impi"] in impi_subscriber_dict:
