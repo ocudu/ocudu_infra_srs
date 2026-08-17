@@ -483,11 +483,11 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
         # No pending virtual UEs to stop or sut already stopped
         if self._process is not None and self._websocket is not None:
+            self._pws_msg_counts_snapshot = self._pws_msg_counts_by_id(subscriber_id=None)
             # Only the first Stop still reaches the websocket
             if self._websocket.connected:
                 sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
                 self._get_stats()
-                self._pws_msg_counts_snapshot = self._pws_msg_counts_by_id(subscriber_id=None)
                 self._websocket.quit()
             # Close metrics file
             if not self._metrics_file_closed:
