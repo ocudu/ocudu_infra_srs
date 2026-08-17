@@ -166,6 +166,7 @@ markers = [
   "MVP-PERF-MOB-1",
   "MVP-PERF-RET-1",
   "MVP-PERF-THR-1a",
+  "MVP-PERF-THR-1b",
   "MVP-PERF-THR-2a",
   "MVP-PERF-THR-3a",
   "MVP-PERF-THR-4a",
