@@ -14,7 +14,7 @@ from retina.agent.features.json_metrics.analyzer import JsonMetricsAnalyzer, Mov
 _NOF_AVERAGE_SAMPLES = 50
 
 
-class DuCellAnalyzer(JsonMetricsAnalyzer):
+class DuCellAnalyzer(JsonMetricsAnalyzer):  # pylint: disable=too-many-instance-attributes
     """
     Tracks cell-level DU metrics from the cell_metrics block of each JSON record.
 
@@ -26,6 +26,8 @@ class DuCellAnalyzer(JsonMetricsAnalyzer):
         self._first_cell_report = True
         self._nof_error_indications: int = 0
         self._nof_conres_issues: int = 0
+        self._total_prach_preambles: int = 0
+        self._two_step_prachs_detected: int = 0
         self._max_late_dl_harqs: int = 0
         self._max_late_ul_harqs: int = 0
         self._pdsch_prbs_mov_av: List[MovingAverage] = []
@@ -36,6 +38,9 @@ class DuCellAnalyzer(JsonMetricsAnalyzer):
             cm = cell_info.get("cell_metrics")
             if not cm:
                 continue
+            # Counted from the first report onwards, a RA may happen before the startup report is discarded.
+            self._total_prach_preambles += cm.get("total_prach_preambles", 0)
+            self._two_step_prachs_detected += cm.get("two_step_prachs_detected", 0)
             if self._first_cell_report:
                 self._first_cell_report = False
                 continue
@@ -63,6 +68,8 @@ class DuCellAnalyzer(JsonMetricsAnalyzer):
             du=DuMetrics(
                 nof_error_indications=self._nof_error_indications,
                 nof_conres_issues=self._nof_conres_issues,
+                total_prach_preambles=self._total_prach_preambles,
+                two_step_prachs_detected=self._two_step_prachs_detected,
                 max_late_dl_harqs=self._max_late_dl_harqs,
                 max_late_ul_harqs=self._max_late_ul_harqs,
                 pdsch_prbs_used_per_tdd_slot_idx=[round(ma.get_average()) for ma in self._pdsch_prbs_mov_av],

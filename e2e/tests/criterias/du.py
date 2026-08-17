@@ -205,6 +205,24 @@ class prach_configuration_index_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.prach_configuration_index for s in self._stub_array)
 
 
+class total_prach_preambles_eq(DuCriteria):
+    """PRACH Preambles"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.total_prach_preambles for s in self._stub_array)
+
+
+class two_step_prachs_detected_eq(DuCriteria):
+    """2-step PRACH Preambles"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.two_step_prachs_detected for s in self._stub_array)
+
+
 class transform_precoder_eq(DuCriteria):
     """Transform Precoder"""
 

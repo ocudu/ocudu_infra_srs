@@ -228,6 +228,9 @@ message DuMetrics {
   uint32 nof_sib7_transmissions = 30; // ETWS secondary notification
 
   uint32 nof_conres_issues = 31;
+
+  uint32 total_prach_preambles    = 32;
+  uint32 two_step_prachs_detected = 33; // subset of total_prach_preambles
 };
 
 message CoreMetrics {
