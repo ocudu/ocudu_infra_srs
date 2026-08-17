@@ -55,6 +55,8 @@ baseline: &base_config
   feature_ids: [MVP-FUNC-TDD-16-2]
   criteria:
     <<: &common_criteria
+      du.dl_bitrate_gt: 0
+      du.ul_bitrate_gt: 0
       du.nof_ko_dl_le: 5
       du.nof_ko_ul_le: 500
       du.nof_reestablishments_request_eq: 0
@@ -62,6 +64,7 @@ baseline: &base_config
       du.max_late_dl_harqs_le: 0
       du.max_late_ul_harqs_le: 0
       du.nof_error_indications_le: 0
+      core.nof_pdu_session_establishment_accept_eq: 0
       all.errors_le: 0
       all.warnings_le: 1
     core.nof_pdu_session_establishment_accept_eq: &nof_ue_attaches 2400 # measured experimentally for traffic duration
@@ -148,3 +151,49 @@ fdd:
     core.nof_pdu_session_establishment_accept_eq: 576
     du.dl_bitrate_gt: 20.0e+6
     du.ul_bitrate_gt: 20.0e+6
+
+###########################
+#### Performance Tests ####
+###########################
+
+# TDD 7D1S2U, k1=k2=4, Long PRACH, 100 MHz 4T1R
+# 1000 UEs total (800 static + 200 cycling), 50 UE/s attach rate per group
+tdd_dl_heavy_rt:
+  <<: *base_config
+  request: s72_1000
+  ue:
+    config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
+    parameters:
+      nof_ue_static: *nof_ue_static
+      nof_ue_cycling: *nof_ue_cycling
+      dl_bitrate: 4.0e+5
+      ul_bitrate: 4.0e+4
+      traffic_duration: 100
+      cycle_traffic_duration: 4
+      cycle_off_duration: 6
+      power_on_stagger_delay: 0.02 # 50 UE/s per group
+      pdcch_decode_threshold: 0
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      log_level: warning
+  gnb:
+    config: [cu_cp.yml, vonr_qos.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, inactivity_timer.yml, du_perf.yml]
+    parameters:
+      <<: *common_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      log_level: warning
+  core:
+    config: [baseline.cfg]
+    parameters:
+      log_level: warning
+  feature_ids: [MVP-PERF-ACC-2, MVP-PERF-RET-1]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
+    du.nof_ko_dl_le: 400
+    all.warnings_le: 200
+    du.dl_bitrate_gt: 250.0e+6
+    du.ul_bitrate_gt: 25.0e+6
