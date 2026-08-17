@@ -323,7 +323,7 @@ rach:
   variables:
     KEYWORDS: "singleue.rach."
     TESTBED: dynamic
-    MARKERS: "zmq"
+    MARKERS: "zmq or test_mode_ue"
 
 security:
   stage: singleue
