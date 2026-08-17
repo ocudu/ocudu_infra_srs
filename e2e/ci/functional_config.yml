@@ -313,6 +313,18 @@ pws:
     TESTBED: dynamic
     MARKERS: "zmq or test_mode_ue"
 
+rach:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.rach."
+    TESTBED: dynamic
+    MARKERS: "zmq"
+
 security:
   stage: singleue
   extends: .functional_e2e
