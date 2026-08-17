@@ -126,3 +126,46 @@ fdd:
   criteria:
     <<: *common_criteria
     core.nof_pdu_session_establishment_accept_eq: 640 # 128 UEs x 10 cycles
+
+###########################
+#### Performance Tests ####
+###########################
+
+# DL-heavy 7D1S2U, k1=k2=4, Long PRACH, 100 MHz 4T1R
+# 1000 UEs at 50 UE/s attach rate
+tdd_dl_heavy_rt:
+  <<: *base_config
+  request: s72_1000
+  ue:
+    config: [1cell_chsim.cfg, ue_state_transition.cfg]
+    parameters:
+      nof_ue: *nof_ue
+      dl_bitrate: 1.0e+3
+      ul_bitrate: 1.0e+3
+      nof_attach_dettach_cycles: 5
+      attach_dettach_delay: 10
+      power_on_stagger_delay: 0.02 # 50 UE/s
+      pdcch_decode_threshold: 0
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      log_level: warning
+  gnb:
+    config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, du_perf.yml]
+    parameters:
+      <<: *common_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      log_level: warning
+  core:
+    config: [baseline.cfg]
+    parameters:
+      log_level: warning
+  feature_ids: [MVP-PERF-ACC-2, MVP-PERF-LAT-3, MVP-PERF-LAT-4]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
+    du.nof_ko_dl_le: 100
+    du.dl_bitrate_gt: 3.0e+6
+    du.ul_bitrate_gt: 2.0e+6

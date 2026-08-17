@@ -61,6 +61,18 @@ test_mode:
     TESTBED: dynamic
     MARKERS: "s72 or test_mode_ru"
 
+ue_state_transition:
+  stage: multiue
+  extends: .performance_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "multiue.ue_state_transition."
+    TESTBED: dynamic
+    MARKERS: "s72 or test_mode_ru"
+
 udp_dl:
   stage: singleue
   extends: .performance_e2e
