@@ -13,7 +13,11 @@
 #
 # This job tests different TDD and FDD scenarios
 
-# Baseline TDD configuration DDDSU, k1=k2=2, Short PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+##########################
+#### Functional Tests ####
+##########################
+
+# Baseline TDD configuration DDDSU, k1=k2=2, Short PRACH, 100 MHz SISO
 # 1000 UEs at 142 UE/s attach rate
 baseline: &base_config
   template: ue_simulator.test_gnb
@@ -44,6 +48,8 @@ baseline: &base_config
   feature_ids: [MVP-FUNC-TDD-16-2]
   criteria:
     <<: &common_criteria
+      du.dl_bitrate_gt: 0
+      du.ul_bitrate_gt: 0
       du.nof_ko_dl_le: 5
       du.nof_ko_ul_le: 200
       du.nof_reestablishments_request_eq: 0
@@ -51,13 +57,14 @@ baseline: &base_config
       du.max_late_dl_harqs_le: 0
       du.max_late_ul_harqs_le: 0
       du.nof_error_indications_le: 0
+      core.nof_pdu_session_establishment_accept_eq: 0
       all.errors_le: 0
       all.warnings_le: 1
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.dl_bitrate_gt: 80.0e+6
     du.ul_bitrate_gt: 30.0e+6
 
-# TDD 7D1S2U, k1=k2=2, Long PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+# TDD 7D1S2U, k1=k2=2, Long PRACH, 100 MHz SISO
 # 1000 UEs at 166 UE/s attach rate
 tdd_dl_heavy:
   <<: *base_config
@@ -83,7 +90,7 @@ tdd_dl_heavy:
     du.dl_bitrate_gt: 80.0e+6
     du.ul_bitrate_gt: 30.0e+6
 
-# 2D1S7U UL-heavy TDD, k1=k2=2, Long PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
+# 2D1S7U UL-heavy TDD, k1=k2=2, Long PRACH, 100 MHz SISO
 # 1000 UEs at 100 UE/s attach rate
 tdd_ul_heavy:
   <<: *base_config
@@ -165,3 +172,46 @@ srs:
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.dl_bitrate_gt: 70.0e+6
     du.ul_bitrate_gt: 30.0e+6
+
+###########################
+#### Performance Tests ####
+###########################
+
+# TDD 7D1S2U, k1=k2=4, Long PRACH, 100 MHz 4T1R
+# 1000 UEs at 100 UE/s attach rate
+tdd_dl_heavy_rt:
+  <<: *base_config
+  request: s72_1000
+  ue:
+    config: [1cell_chsim.cfg, udp_multiue.cfg]
+    parameters:
+      nof_ue: *nof_ue
+      power_on_stagger_delay: 0.01 # 100 UE/s
+      dl_bitrate: 4.0e+5
+      ul_bitrate: 2.0e+5
+      pdcch_decode_threshold: 0
+      traffic_duration: 30
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      log_level: warning
+  gnb:
+    config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, inactivity_timer.yml, du_perf.yml]
+    parameters:
+      <<: *common_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      log_level: warning
+  core:
+    config: [baseline.cfg]
+    parameters:
+      log_level: warning
+  feature_ids: [MVP-PERF-CAP-3]
+  criteria:
+    <<: *common_criteria
+    du.nof_ko_dl_le: 100
+    all.warnings_le: 30 # Expected contention resolution warnings (1 ContentionResolutionTimer + 1 RRC Setup Procedure timed out)
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    du.dl_bitrate_gt: 300.0e+6
+    du.ul_bitrate_gt: 60.0e+6

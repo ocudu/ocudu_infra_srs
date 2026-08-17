@@ -185,6 +185,7 @@ markers = [
   "MVP-PERF-CAP-1b",
   "MVP-PERF-CAP-2a",
   "MVP-PERF-CAP-2b",
+  "MVP-PERF-CAP-3",
   "SRS",
 ]
 minversion = "6.0"
