@@ -8,7 +8,7 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
   {% if log_level == "debug" %}
   log_options: "all.level={{log_level}},all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'info'}},phy.dci_size=1,phy.csi=1,phy.cell_meas=1,phy.cch=1,rrc.max_size=16,nas.key=1,rrc.key=1{{',pdcp.crypto=1' if log_ip_level == 'debug' else ''}}",
-  {% elif log_level == "error" %}
+  {% elif log_level in ("error", "warn") %}
   log_options: "all.level={{log_level}},all.max_size=0,ip.level={{log_ip_level if log_ip_level else 'error'}}",
   {% endif %}
   log_filename: "{{log_filename}}",
