@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+{%- set mac_type = mac_type | default("udp") %}
+
 pcap:
   mac_enable: true
   mac_filename: {{mac_filename}}
+  mac_type: {{mac_type}} # dlt is required above 1 antenna, the UDP wrapper truncates the PDU

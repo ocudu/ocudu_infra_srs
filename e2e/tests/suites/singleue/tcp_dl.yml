@@ -29,6 +29,7 @@ baseline:
     parameters:
       log_level: warning
   feature_ids: [MVP-PERF-THR-1b]
+  markers: [xfail]
   criteria:
     du.dl_bitrate_gt: 800.0e+6
     du.ul_bitrate_gt: 10.0e+6

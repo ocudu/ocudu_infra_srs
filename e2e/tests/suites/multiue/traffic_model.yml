@@ -74,8 +74,65 @@ tdd_dl_heavy: &base_config
       all.errors_le: 0
       all.warnings_le: 10 # accept some HO failures due to PRACH contention
     core.nof_pdu_session_establishment_accept_eq: &nof_ue_attaches 1700
-    ue.nof_handovers_ge: 2000
-    core.nof_ng_paging_ge: 800
-    du.nof_paging_ge: 1600
+    ue.nof_handovers_ge: &nof_handovers 2000
+    core.nof_ng_paging_ge: &nof_ng_paging 800
+    du.nof_paging_ge: &nof_du_paging 1600
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+
+###########################
+#### Performance Tests ####
+###########################
+
+# TDD 7D1S2U, k1=k2=4, Long PRACH, 100 MHz 4T1R, 2 cells
+tdd_dl_heavy_rt:
+  <<: *base_config
+  request: s72_1000
+  ue:
+    config: [2cell_intrafreq_chsim.cfg, traffic_model.cfg]
+    parameters:
+      nof_ue_static: *nof_ue_static
+      nof_ue_cycling: *nof_ue_cycling
+      nof_ue_tau: *nof_ue_tau
+      nof_ue_paging: *nof_ue_paging
+      nof_ue_handover: *nof_ue_handover
+      dl_bitrate: 4.0e+5
+      ul_bitrate: 4.0e+4
+      traffic_duration: 100
+      cycle_traffic_duration: 3
+      cycle_off_duration: 5
+      tau_period: 10
+      paging_period: *paging_period
+      paging_idle_delay: 6
+      power_on_stagger_delay: 0.02 # 50 UE/s per group
+      pdcch_decode_threshold: 0
+      num_cells: 2
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      rx_to_tx_latency: 2
+      log_level: warning
+  gnb:
+    config: [cu_cp.yml, du.yml, vonr_qos.yml, 2cell_intrafreq.yml, mobility.yml, tdd_72.yml, prach_config.yml, 1000ue.yml, inactivity_timer.yml, cfra_ho.yml, mac_pcap.yml, du_perf.yml]
+    parameters:
+      <<: *common_gnb_params
+      prach_config_index: 7
+      zero_correlation_zone: 1
+      num_cells: 2
+      nof_antennas_dl: 4
+      nof_antennas_ul: 1
+      min_k1_k2: 2
+      mac_type: dlt # 4 DL antennas overflow the UDP pcap wrapper
+      log_level: warning
+  core:
+    config: [baseline.cfg]
+    parameters:
+      log_level: warning
+  feature_ids: [MVP-PERF-MOB-1]
+  criteria:
+    <<: *common_criteria
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
+    ue.nof_handovers_ge: *nof_handovers
+    core.nof_ng_paging_ge: *nof_ng_paging
+    du.nof_paging_ge: *nof_du_paging
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
