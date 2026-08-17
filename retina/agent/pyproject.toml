@@ -84,6 +84,7 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = [
+  "bson.int64",
   "grpc_health.*",
   "jinja2",
   "pymongo",

@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from typing import Any, Dict, Generator, Tuple
 
 import grpc
+from bson.int64 import Int64
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
 from pymongo import MongoClient
@@ -39,6 +40,12 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
 
     _UE_IP_OFFSET_START: int = 2
     _UE_IP_OFFSET_INTERVAL: int = 256
+
+    # Open5gs uses the SQN stored in the database for the current authentication vector and only increments it
+    # afterwards. Leaving it unset makes the first Authentication Request carry SQN=0, which a USIM whose SQN_MS is
+    # also 0 must reject with a synch failure (3GPP TS 33.102 Annex C.2). Seeding it with the open5gs SQN step avoids
+    # the resynchronization round trip and the warnings it logs. Open5gs only reads the field if it is a BSON int64.
+    _SUBSCRIBER_SQN: Int64 = Int64(32)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -202,8 +209,11 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
 
         subscriber = Open5gsDB.get_subscriber(request.imsi)
         if subscriber is None:
+            sub_data["security"]["sqn"] = self._SUBSCRIBER_SQN
             result = Open5gsDB.add_subscriber(sub_data) is not None
         else:
+            # The whole security subdocument is overwritten, so carry over the SQN already reached by the subscriber
+            sub_data["security"]["sqn"] = Int64(subscriber.get("security", {}).get("sqn", self._SUBSCRIBER_SQN))
             result = Open5gsDB.update_subscriber(request.imsi, sub_data) is not None
 
         if not result:
