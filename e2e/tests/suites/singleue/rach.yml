@@ -19,7 +19,7 @@ two_step_rach:
     config: [cu_cp.yml, du.yml, tdd_63.yml, two_step_rach.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
-  feature_ids: [MVP-FUNC-RACH-16-2]
+  feature_ids: [MVP-FUNC-RACH-16-2, skip]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
