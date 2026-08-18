@@ -5,7 +5,7 @@ cell_cfg:
   cg:
     periodicity_slots: 20
     mcs: 20
-    requested_bitrate: 50
+    nof_rbs: 10
     max_nof_cg_rbs: 30
 
 log:

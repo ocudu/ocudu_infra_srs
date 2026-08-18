@@ -493,19 +493,11 @@ class ue_bsr_max_le(DuCriteria):
         du = self._stub_array[0]
         return [ue.bsr_max for ue in du.GetMetrics(Empty()).ue_array]
 
+
 class nof_cg_type1_eq(DuCriteria):
     """Configured Grant Type 1 setups"""
 
     operator_method = operator.eq
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).du.nof_cg_type1 for s in self._stub_array)
-
-
-class nof_cg_type1_ge(DuCriteria):
-    """Configured Grant Type 1 setups"""
-
-    operator_method = operator.ge
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).du.nof_cg_type1 for s in self._stub_array)
@@ -520,28 +512,10 @@ class nof_cg_type2_eq(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_cg_type2 for s in self._stub_array)
 
 
-class nof_cg_type2_ge(DuCriteria):
-    """Configured Grant Type 2 setups"""
-
-    operator_method = operator.ge
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).du.nof_cg_type2 for s in self._stub_array)
-
-
 class nof_cs_rnti_eq(DuCriteria):
     """CS-RNTI setups"""
 
     operator_method = operator.eq
-
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).du.nof_cs_rnti for s in self._stub_array)
-
-
-class nof_cs_rnti_ge(DuCriteria):
-    """CS-RNTI setups"""
-
-    operator_method = operator.ge
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).du.nof_cs_rnti for s in self._stub_array)
