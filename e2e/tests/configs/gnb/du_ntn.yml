@@ -10,6 +10,7 @@
 {%- set gw_latitude = gw_latitude | default(0) %}
 {%- set gw_longitude = gw_longitude | default(0) %}
 {%- set ntn_ul_sync_validity_dur = ntn_ul_sync_validity_dur | default(5) %}
+{%- set k_mac = k_mac | default(0) %}
 {%- set feeder_link = feeder_link | default(false) %}
 {%- set cell_ref_latitude = cell_ref_latitude | default(none) %}
 {%- set cell_ref_longitude = cell_ref_longitude | default(none) %}
@@ -71,6 +72,9 @@ cell_cfg:
   ntn:
     cell_specific_koffset: {{cell_specific_koffset}}
     propagator_type: {{propagator_type}}
+    {% if k_mac %}
+    k_mac: {{k_mac}}
+    {% endif %}
     ephemeris_orbital:
       eccentricity: {{eccentricity}}
       inclination: {{inclination}}
