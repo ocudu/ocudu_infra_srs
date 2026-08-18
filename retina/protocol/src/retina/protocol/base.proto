@@ -186,6 +186,9 @@ message UeMetrics {
   // Async PWS (ETWS secondary / CMAS) receptions, from the UE's own pws_msg event
   uint32 nof_etws_msg_received = 31;
   uint32 nof_cmas_msg_received = 32;
+
+  // PRACH preambles transmitted by the UE
+  uint32 nof_prach_sent = 33;
 };
 
 message DuMetrics {

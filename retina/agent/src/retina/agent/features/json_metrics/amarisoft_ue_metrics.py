@@ -29,6 +29,7 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
         self._ue_time: Dict[Tuple[int, int], Tuple[datetime, datetime]] = {}
         self._stats_ue_metrics: Optional[UeMetrics] = None
         self._nof_pdu_session_accept: int = 0
+        self._nof_prach_sent: int = 0
 
     def process(self, metric_info: dict) -> None:
         if not metric_info:
@@ -93,6 +94,7 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
         self._nof_pdu_session_accept = stats_dict["counters"]["messages"].get(
             "5gs_nas_pdu_session_establishment_accept", 0
         )
+        self._nof_prach_sent = stats_dict["counters"]["messages"].get("prach", 0)
 
     def latest_ue_id(self, ue_ids: Set[Tuple[int, int]]) -> Optional[Tuple[int, int]]:
         """Return the (rnti, pci) most recently updated among ue_ids, or None."""
@@ -110,6 +112,8 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
         """
         metrics = Metrics()
         metrics.core.nof_pdu_session_establishment_accept = self._nof_pdu_session_accept
+        # Instance-wide counter, so it is reported regardless of the UE selection.
+        metrics.aggregate.nof_prach_sent = self._nof_prach_sent
 
         selected = (
             [self._ue_metrics[uid] for uid in ue_ids if uid in self._ue_metrics]

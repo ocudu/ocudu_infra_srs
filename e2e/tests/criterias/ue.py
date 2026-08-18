@@ -59,6 +59,15 @@ class nof_pdu_session_establishment_accept_eq(UeCriteria):
         return sum(s.GetMetrics(Empty()).core.nof_pdu_session_establishment_accept for s in self._stub_array)
 
 
+class nof_prach_sent_eq(UeCriteria):
+    """UE PRACH Transmissions"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_prach_sent for s in self._stub_array)
+
+
 class nof_etws_msg_received_ge(UeCriteria):
     """ETWS Secondary Message Received"""
 
