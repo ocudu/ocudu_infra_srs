@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from time import sleep
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union
+from typing import Callable, Dict, List, Optional, Sequence, Union
 
 from retina.orchestrator import const
 from retina.orchestrator.const import (
@@ -1071,7 +1071,7 @@ class RequestReservation:
         Get labels
         """
         node_name = self.get_node_name(k_server=k_server)
-        node_requirements: Dict[str, Any] = {}
+        node_requirements: Dict[str, Union[str, int]] = {}
 
         for req in self.requirement_manager.req_list:
             for attr_name, value in {"requests": req.requests, "limits": req.limits}.items():
@@ -1083,14 +1083,8 @@ class RequestReservation:
                                 "Cannot convert percentage requirements to values if the node is not known"
                             )
 
-                    match = re.match(r"^([\d.]+)([a-zA-Z]*)$", str(node_requirements.get(req.name, 0)))
-                    if match:
-                        total_value = float(match.group(1))
-                        suffix = match.group(2)
-                    else:
-                        total_value = 0
-                        suffix = ""
-                    setattr(req, attr_name, str(total_value * float(str(value).strip("%")) * 0.01) + suffix)
+                    percentage = float(str(value).strip("%"))
+                    setattr(req, attr_name, scale_quantity(str(node_requirements.get(req.name, 0)), percentage))
 
         return self.requirement_manager.req_list
 
@@ -1285,15 +1279,42 @@ def get_resource_from_cluster_info(cluster_info, node_dict: Dict[str, Node]) -> 
 
 def get_compute_resources_for_node_from_cluster_info(
     k_server: Kubernetes, node_name: str
-) -> Dict[str, RequirementDefinition]:
+) -> Dict[str, Union[str, int]]:
     """
     Get compute-resources for node
     """
     for node in k_server.get_cluster_configuration()["nodes"]:
         if node["name"] == node_name and "compute-resources" in node:
-            compute_resources: Dict[str, RequirementDefinition] = node["compute-resources"]
+            compute_resources: Dict[str, Union[str, int]] = node["compute-resources"]
             return compute_resources
     return {}
+
+
+# Decimal suffixes are read as their binary equivalent, so 20G means 20Gi. Anything else is kept as is
+BINARY_SUFFIX = {"k": "Ki", "K": "Ki", "M": "Mi", "G": "Gi", "T": "Ti"}
+
+
+def to_binary_quantity(quantity: str) -> str:
+    """
+    Normalize a K8s quantity to binary units
+    """
+    match = re.match(r"^([\d.]+)([a-zA-Z]*)$", quantity)
+    if not match:
+        return quantity
+    return match.group(1) + BINARY_SUFFIX.get(match.group(2), match.group(2))
+
+
+def scale_quantity(quantity: str, percentage: float) -> str:
+    """
+    Scale a K8s quantity by a percentage, in binary units
+    """
+    match = re.match(r"^([\d.]+)([a-zA-Z]*)$", quantity)
+    if not match:
+        return "0"
+    value = float(match.group(1)) * percentage * 0.01
+    suffix = BINARY_SUFFIX.get(match.group(2), match.group(2))
+    # Fixed notation and no float artifacts: K8s rejects things like 5.27e+07Ki
+    return f"{value:.6f}".rstrip("0").rstrip(".") + suffix
 
 
 def get_nodelist_status(node_list: List[Node]) -> str:

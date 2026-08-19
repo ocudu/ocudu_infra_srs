@@ -6,6 +6,7 @@ Entrypoint to show cluster resources.
 """
 
 import contextlib
+import re
 from typing import Dict, List
 
 from rich.console import Console
@@ -23,25 +24,29 @@ from retina.orchestrator.reservation.resources import ClusterResource, NodeResou
 from retina.orchestrator.reservation.utils import check_cluster_resource_user_reservation, check_space_user_reservation
 from retina.orchestrator.retina_kubernetes import DEFAULT_NAMESPACE, Kubernetes, PodStatus
 
+# K8s quantity suffix to bytes multiplier, binary and decimal
+SUFFIX_MULTIPLIER = {
+    "": 1,
+    "ki": 1024,
+    "mi": 1024**2,
+    "gi": 1024**3,
+    "ti": 1024**4,
+    "k": 10**3,
+    "m": 10**6,
+    "g": 10**9,
+    "t": 10**12,
+}
 
-def convert_to_gb(size_str):
+
+def convert_to_gi(size_str):
     """
-    Convert size to GB
+    Convert a Kubernetes quantity to Gi
     """
     with contextlib.suppress(Exception):
-        size_str = size_str.lower()
-        nof_dec = 2
-        if "ki" in size_str:
-            number = float(size_str.replace("ki", ""))
-            return round(number * 1024 / 10**9, nof_dec)
-        if "mi" in size_str:
-            number = float(size_str.replace("mi", ""))
-            return round(number * 1024**2 / 10**9, nof_dec)
-        if "gi" in size_str:
-            number = float(size_str.replace("gi", ""))
-            return round(number * 1024**3 / 10**9, nof_dec)
-        number = float(size_str)
-        return round(number / 10**9, nof_dec)
+        match = re.fullmatch(r"\s*([\d.]+)\s*([a-zA-Z]*)\s*", size_str)
+        if match is not None:
+            return round(float(match.group(1)) * SUFFIX_MULTIPLIER[match.group(2).lower()] / 1024**3, 2)
+    return None
 
 
 def print_info(cluster_info, verbose):
@@ -141,14 +146,14 @@ def print_nodes(k_server: Kubernetes, retina_node_dict: Dict[str, Node], verbose
 
     if verbose:
         table.add_column("CPU", style="magenta")
-        table.add_column("Memory (GB)", style="magenta")
-        table.add_column("Storage (GB)", style="magenta")
+        table.add_column("Memory (Gi)", style="magenta")
+        table.add_column("Storage (Gi)", style="magenta")
         table.add_column("Label List", style="magenta")
         table.add_column("Taint List", style="magenta")
 
     for name, retina_node in retina_node_dict.items():
-        memory = str(convert_to_gb(retina_node.allocatable_memory))
-        storage = str(convert_to_gb(retina_node.allocatable_storage))
+        memory = str(convert_to_gi(retina_node.allocatable_memory))
+        storage = str(convert_to_gi(retina_node.allocatable_storage))
         retina_label_list_str = ", ".join(f"{element.name}={element.value}" for element in retina_node.label_list)
         taint_list = retina_node.taint_list
 

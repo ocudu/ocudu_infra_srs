@@ -64,8 +64,8 @@ nodes:
     type: linux-x86
     compute-resources:
       cpu: 32
-      memory: 64G
-      ephemeral-storage: 100G
+      memory: 64Gi
+      ephemeral-storage: 100Gi
     resources:
       - type: zmq
         model: slot
@@ -78,8 +78,8 @@ nodes:
     type: linux-x86
     compute-resources:
       cpu: 24
-      memory: 64G
-      ephemeral-storage: 100G
+      memory: 64Gi
+      ephemeral-storage: 100Gi
     cpu_isolation:
       low_priority_cpus: ""
       l1_dl_cpus: ""
@@ -115,8 +115,8 @@ nodes:
     type: linux-x86
     compute-resources:
       cpu: 8
-      memory: 16G
-      ephemeral-storage: 50G
+      memory: 16Gi
+      ephemeral-storage: 50Gi
     resources:
       - type: android
         model: xxxx

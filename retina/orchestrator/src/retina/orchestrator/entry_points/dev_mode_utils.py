@@ -26,6 +26,10 @@ from retina.orchestrator.entry_points.utils import (
     set_default_colored_logger,
 )
 from retina.orchestrator.orchestration_network import OrchestratorManager
+from retina.orchestrator.reservation.resources import (
+    get_compute_resources_for_node_from_cluster_info,
+    to_binary_quantity,
+)
 from retina.orchestrator.retina_kubernetes import DEFAULT_NAMESPACE, Kubernetes, PodStatus
 from retina.orchestrator.utils import get_retina_user
 
@@ -62,16 +66,14 @@ def create_request(k_server: Kubernetes, node_name: str, docker_image: str, verb
         print(f"Node {node_name} not found.")
         sys.exit(1)
 
-    node_compute_resources = None
-    for cluster_node in k_server.get_cluster_configuration()["nodes"]:
-        if cluster_node["name"] == node_name:
-            node_compute_resources = cluster_node["compute-resources"]
-            break
-    else:
+    node_compute_resources = get_compute_resources_for_node_from_cluster_info(k_server, node_name)
+    if not node_compute_resources:
         print(f"Node {node_name} has no compute resources. Ask the administrator to add them.")
         sys.exit(1)
 
     node_huge_pages_1gi = node_compute_resources.get("hugepages-1Gi", None)
+    if node_huge_pages_1gi:
+        node_huge_pages_1gi = to_binary_quantity(str(node_huge_pages_1gi))
 
     request_json: List[Dict] = [
         {

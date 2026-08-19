@@ -117,8 +117,8 @@ nodes:
     type: linux-x86                      # Node type/architecture
     compute-resources:                   # Required: Available compute capacity
       cpu: 12                            # CPU cores available for Retina
-      memory: 22G                        # RAM available for Retina (using K8s notation)
-      ephemeral-storage: 40G             # Temporary storage available for Retina
+      memory: 22Gi                       # RAM available for Retina (K8s binary units)
+      ephemeral-storage: 40Gi            # Temporary storage available for Retina
       hugepages-1Gi: 2Gi                 # Hugepages (optional)
     cpu_isolation:                       # Optional: CPU isolation for DPDK
       lcores_eal_args: "(0-1)@(1-7,9-15)"
