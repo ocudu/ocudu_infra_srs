@@ -8,7 +8,7 @@ zmq driver:
     - if: $TRIGGERED_ON_MR == "true"
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
 
-release with deb info:
+release zmq:
   extends: .build
   retry: 2
   rules:
@@ -16,30 +16,19 @@ release with deb info:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^interop/
   variables:
     OS: ubuntu-26.04
+    OCUDU_TARGET: ocucp ocuup ocu odu gnb
     COMPILER: gcc
     BUILD_ARGS: >
-      -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_WERROR=False -DENABLE_UHD=False
+      -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-ggdb1 -DENABLE_WERROR=False -DENABLE_UHD=False
       -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3
     TEST_MODE: none
-  parallel: # Splitting it in different jobs because binaries size in relwithdeb was greater than 1 gb
-    matrix:
-      - OCUDU_TARGET: ocucp ocuup ocu odu
-      - OCUDU_TARGET: gnb
 
-release cached:
-  extends: .build
-  retry: 2
+release zmq cached:
+  extends: release zmq
   rules:
     - if: $TRIGGERED_ON_MR == "true"
-  variables:
-    OS: ubuntu-26.04
-    COMPILER: gcc
-    BUILD_ARGS: >
-      -DCMAKE_BUILD_TYPE=Release -DENABLE_WERROR=False -DENABLE_UHD=False
-      -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3
-    TEST_MODE: none
   cache:
-    - key: release
+    - key: zmq release
       paths: [ocudu/ccache]
       policy: pull-push
 
@@ -54,10 +43,10 @@ release cached:
     - job: zmq driver
       artifacts: true
       optional: false
-    - job: release with deb info
+    - job: release zmq
       artifacts: true
       optional: true
-    - job: release cached
+    - job: release zmq cached
       artifacts: true
       optional: true
 
@@ -69,9 +58,9 @@ release cached:
     - job: get retina version
       artifacts: true
       optional: true
-    - job: release with deb info
+    - job: release zmq
       artifacts: true
       optional: true
-    - job: release cached
+    - job: release zmq cached
       artifacts: true
       optional: true

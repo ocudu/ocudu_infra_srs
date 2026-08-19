@@ -72,7 +72,7 @@ docker compose --profile builders up
 By default, ocudu will be built with the following command:
 
 ```bash
-builder.sh -b build_retina -c gcc -DBUILD_TESTING=False -DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=False -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3 /builds/ocudu/ocudu
+builder.sh -b build_retina -c gcc -DBUILD_TESTING=False -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-ggdb1 -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3 /builds/ocudu/ocudu
 ```
 
 where the default build folder is `build_retina` inside the ocudu repo.

@@ -94,7 +94,7 @@ python3 run_e2e_pipeline.py --token YOUR_GITLAB_TOKEN --replicate "smoke zmq" --
 
 ⏳ Looking for the job...
 🟢 Job "smoke zmq" found (id: 12093074966)
-🟢 Job "release with deb info" found (id: 12093074943)
+🟢 Job "release zmq" found (id: 12093074943)
 ⏩ Creating pipeline with inputs:
   - ocudu_ref=main
   - compiler=gcc

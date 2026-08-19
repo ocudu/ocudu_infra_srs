@@ -16,7 +16,7 @@ spec:
 ---
 include:
   - local: .gitlab-ci-stages.yml
-  # `build` base, extended by `release with deb info`.
+  # `build` base, extended by `release zmq`.
   - local: templates/build.yml
     inputs:
       ocudu_path: $[[ inputs.ocudu_path ]]

@@ -176,7 +176,7 @@ retina demolition:
   dependencies: []
 
 ## Build jobs for Scheduled Pipelines
-# In zmq_base.yml - zmq driver, release with deb info
+# In zmq_base.yml - zmq driver, release zmq
 # In rt_base.yml - dpdk rtsan avx512
 # In rf_base.yml - release rf
 
