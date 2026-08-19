@@ -106,8 +106,8 @@ mimo_8x8_4_layers_1_cw:
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
-    du.dl_avg_ri_ge: 1.5
-    du.ul_avg_ri_ge: 1.5
+    du.dl_avg_ri_ge: 3.5
+    du.ul_avg_ri_ge: 3.5
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
