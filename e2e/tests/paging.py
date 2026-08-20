@@ -40,7 +40,7 @@ def test_gnb(
     ping_count = parameters.get("ping_count", 10)
     # Several times the inactivity timer, so that the background traffic of the phone does not keep
     # the UE connected until the end of the wait
-    idle_duration = parameters.get("idle_duration", 15)
+    idle_duration = parameters.get("idle_duration", 30)
 
     set_config_files(retina_manager=retina_manager, retina_data=retina_data, test_definition=test_definition)
     configure_artifacts(retina_data=retina_data, always_download_artifacts=True)
