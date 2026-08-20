@@ -11,7 +11,9 @@ position_power: &base_config
       num_cells: 2
       dl_bitrate: 1.0e+6
       ul_bitrate: 1.0e+6
-      traffic_duration: 10
+      # Keeps the UE connected long enough for the nr_location_req sim event of
+      # nrppa_trigger_meas.cfg to land inside the connected window.
+      traffic_duration: 25
   gnb:
     config: [cu_cp.yml, du.yml, 2cell_intrafreq.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml, nrppa.yml]
     parameters:
