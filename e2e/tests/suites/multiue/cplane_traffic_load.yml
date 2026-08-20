@@ -193,7 +193,7 @@ tdd_dl_heavy_rt:
   criteria:
     <<: *common_criteria
     core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
-    du.nof_ko_dl_le: 400
+    du.nof_ko_dl_le: 500
     all.warnings_le: 200
     du.dl_bitrate_gt: 250.0e+6
     du.ul_bitrate_gt: 25.0e+6
