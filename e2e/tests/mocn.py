@@ -57,67 +57,68 @@ def test(
     for criteria_id, criteria_expected_value in test_definition.criteria.items():
         criteria.add_criteria(criteria_id, criteria_expected_value)
 
-    # Start the cores and gnb
-    core1_def = fivegc_start(core1)
-    core2_def = fivegc_start(core2)
-
-    gnb_def = gnb_start(
-        gnb,
-        ue_definition=ue.GetDefinition(Empty()),
-        fivegc_definition_array=(core1_def, core2_def),
-    )
-
-    # Register UE in both core
-    ue_subscriber: Subscriber = ue.GetDefinition(Empty()).subscriber
-    for idx, core in enumerate([core1, core2]):
-        if len(test_definition.core.items) > idx and "slices" in test_definition.core.items[idx].parameters:
-            ue_subscriber.sd = str(test_definition.core.items[idx].parameters["slices"][0])
-        core.AddUESubscriber(ue_subscriber)
-
-    # Start UE and waits until attach
-    ue_start(
-        ue_array=(ue,),
-        du_definition=(gnb_def.du_definition,),
-        fivegc_array=(core1, core2),
-    )
-    ue.WaitUntilAttached(UInt32Value(value=10))
-
-    # Generate some traffic
-    ping_tasks = []
-    ping_tasks.extend(
-        ping_start(
-            ue_attach_info_dict={
-                ue: UEAttachedInfo(
-                    ipv4_gateway=core1_def.tun_ip,
-                    ipv4=str(ipaddress.ip_address(core1_def.tun_ip) + 1),
-                )
-            },
-            fivegc=core1,
-            ping_count=10,
-        )
-    )
-    ping_tasks.extend(
-        ping_start(
-            ue_attach_info_dict={
-                ue: UEAttachedInfo(
-                    ipv4_gateway=core2_def.tun_ip,
-                    ipv4=str(ipaddress.ip_address(core2_def.tun_ip) + 1),
-                )
-            },
-            fivegc=core2,
-            ping_count=10,
-        )
-    )
-    ping_wait_until_finish(ping_tasks)
-
-    # Stop and validate criteria
     try:
-        stop(
-            ue_array=(ue,),
-            gnb_array=(gnb,),
-            fivegc_array=(core1, core2),
-            retina_data=retina_data,
-            warning_as_errors=False,
+        # Start the cores and gnb
+        core1_def = fivegc_start(core1)
+        core2_def = fivegc_start(core2)
+
+        gnb_def = gnb_start(
+            gnb,
+            ue_definition=ue.GetDefinition(Empty()),
+            fivegc_definition_array=(core1_def, core2_def),
         )
+
+        # Register UE in both core
+        ue_subscriber: Subscriber = ue.GetDefinition(Empty()).subscriber
+        for idx, core in enumerate([core1, core2]):
+            if len(test_definition.core.items) > idx and "slices" in test_definition.core.items[idx].parameters:
+                ue_subscriber.sd = str(test_definition.core.items[idx].parameters["slices"][0])
+            core.AddUESubscriber(ue_subscriber)
+
+        # Start UE and waits until attach
+        ue_start(
+            ue_array=(ue,),
+            du_definition=(gnb_def.du_definition,),
+            fivegc_array=(core1, core2),
+        )
+        ue.WaitUntilAttached(UInt32Value(value=10))
+
+        # Generate some traffic
+        ping_tasks = []
+        ping_tasks.extend(
+            ping_start(
+                ue_attach_info_dict={
+                    ue: UEAttachedInfo(
+                        ipv4_gateway=core1_def.tun_ip,
+                        ipv4=str(ipaddress.ip_address(core1_def.tun_ip) + 1),
+                    )
+                },
+                fivegc=core1,
+                ping_count=10,
+            )
+        )
+        ping_tasks.extend(
+            ping_start(
+                ue_attach_info_dict={
+                    ue: UEAttachedInfo(
+                        ipv4_gateway=core2_def.tun_ip,
+                        ipv4=str(ipaddress.ip_address(core2_def.tun_ip) + 1),
+                    )
+                },
+                fivegc=core2,
+                ping_count=10,
+            )
+        )
+        ping_wait_until_finish(ping_tasks)
     finally:
-        criteria.validate()
+        # Stop and validate criteria
+        try:
+            stop(
+                ue_array=(ue,),
+                gnb_array=(gnb,),
+                fivegc_array=(core1, core2),
+                retina_data=retina_data,
+                warning_as_errors=False,
+            )
+        finally:
+            criteria.validate()
