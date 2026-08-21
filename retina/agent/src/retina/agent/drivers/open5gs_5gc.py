@@ -91,6 +91,7 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
         self._ue_ip_offset = self._UE_IP_OFFSET_START
         self.start_sut(
             *(item for pre_command in request.start_info.pre_commands for item in pre_command.split(" ")),
+            *("stdbuf", "-oL", "-eL"),  # line buffering to avoid different apps stdout / stderr get merged
             self.OPEN5G_BINARY_NAME,
             "-c",
             config_file,
