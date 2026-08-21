@@ -181,45 +181,48 @@ def _ue_simulator(
     for criteria_id, criteria_expected_value in test_definition.criteria.items():
         criteria.add_criteria(criteria_id, criteria_expected_value)
 
-    start_network(
-        ue_array=(ue,),
-        cu=cu,
-        cu_cp_array=cu_cp_array,
-        cu_up_array=cu_up_array,
-        gnb_array=gnb_array,
-        du_array=du_array,
-        fivegc_array=fivegc_array,
-    )
-
-    if gnb_array:
-        du_definition = [gnb.GetDefinition(UInt32Value(value=idx)).du_definition for idx, gnb in enumerate(gnb_array)]
-    elif du_array:
-        du_definition = [du.GetDefinition(UInt32Value(value=idx)) for idx, du in enumerate(du_array)]
-    else:
-        raise ValueError("GNB or DU is required")
-
-    ue_start(
-        ue_array=(ue,),
-        du_definition=du_definition,
-        fivegc_array=fivegc_array,
-    )
-
-    # Wait until UE stops
-    with suppress(grpc.RpcError):
-        while ue.IsRunning(Empty()).value:
-            sleep(5)
-
     try:
-        stop(
+        start_network(
             ue_array=(ue,),
             cu=cu,
             cu_cp_array=cu_cp_array,
             cu_up_array=cu_up_array,
-            du_array=du_array,
             gnb_array=gnb_array,
+            du_array=du_array,
             fivegc_array=fivegc_array,
-            retina_data=retina_data,
-            warning_as_errors=False,
         )
+
+        if gnb_array:
+            du_definition = [
+                gnb.GetDefinition(UInt32Value(value=idx)).du_definition for idx, gnb in enumerate(gnb_array)
+            ]
+        elif du_array:
+            du_definition = [du.GetDefinition(UInt32Value(value=idx)) for idx, du in enumerate(du_array)]
+        else:
+            raise ValueError("GNB or DU is required")
+
+        ue_start(
+            ue_array=(ue,),
+            du_definition=du_definition,
+            fivegc_array=fivegc_array,
+        )
+
+        # Wait until UE stops
+        with suppress(grpc.RpcError):
+            while ue.IsRunning(Empty()).value:
+                sleep(5)
     finally:
-        criteria.validate()
+        try:
+            stop(
+                ue_array=(ue,),
+                cu=cu,
+                cu_cp_array=cu_cp_array,
+                cu_up_array=cu_up_array,
+                du_array=du_array,
+                gnb_array=gnb_array,
+                fivegc_array=fivegc_array,
+                retina_data=retina_data,
+                warning_as_errors=False,
+            )
+        finally:
+            criteria.validate()
