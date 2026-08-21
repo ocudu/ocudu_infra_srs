@@ -61,16 +61,17 @@ def test_gnb(
 
         logging.info("Running Test Mode for %s seconds", duration)
         sleep(duration)
-
-        stop(
-            ue_array=tuple(),
-            gnb_array=[gnb],
-            fivegc_array=[fivegc],
-            retina_data=retina_data,
-            warning_as_errors=False,
-        )
     finally:
-        criteria.validate()
+        try:
+            stop(
+                ue_array=tuple(),
+                gnb_array=[gnb],
+                fivegc_array=[fivegc],
+                retina_data=retina_data,
+                warning_as_errors=False,
+            )
+        finally:
+            criteria.validate()
 
 
 @load_tests
@@ -115,13 +116,14 @@ def test_gnb_no_core(
 
         logging.info("Running Test Mode for %s seconds", duration)
         sleep(duration)
-
-        stop(
-            ue_array=tuple(),
-            gnb_array=[gnb],
-            fivegc_array=None,
-            retina_data=retina_data,
-            warning_as_errors=False,
-        )
     finally:
-        criteria.validate()
+        try:
+            stop(
+                ue_array=tuple(),
+                gnb_array=[gnb],
+                fivegc_array=None,
+                retina_data=retina_data,
+                warning_as_errors=False,
+            )
+        finally:
+            criteria.validate()
