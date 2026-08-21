@@ -342,17 +342,20 @@ def _test_viavi(
             logging.info("Folder with Viavi report: %s", report_folder)
             logging.info("Downloading Viavi report")
             viavi.download_directory(report_folder, str(Path(test_log_folder).joinpath("viavi")))
-            _stop_stub(
-                stub=gnb,
-                name="GNB",
-                retina_data=retina_data,
-                timeout=gnb_stop_timeout,
-                log_search=log_search,
-                warning_as_errors=False,
-            )
-            criteria.validate()
         except HTTPError:
             logging.error("Viavi Reports could not be downloaded")
+        finally:
+            try:
+                _stop_stub(
+                    stub=gnb,
+                    name="GNB",
+                    retina_data=retina_data,
+                    timeout=gnb_stop_timeout,
+                    log_search=log_search,
+                    warning_as_errors=False,
+                )
+            finally:
+                criteria.validate()
 
 
 ################################################################################
