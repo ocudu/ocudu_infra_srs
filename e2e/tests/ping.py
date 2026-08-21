@@ -79,13 +79,14 @@ def test_gnb(
 
         if ims_mode:
             validate_ue_registered_via_ims(ue_stub_array=ue_array if ims_mode == "enabled" else tuple(), core=fivegc)
-
-        stop(
-            ue_array=ue_array,
-            gnb_array=[gnb],
-            fivegc_array=[fivegc],
-            retina_data=retina_data,
-            warning_as_errors=False,
-        )
     finally:
-        criteria.validate()
+        try:
+            stop(
+                ue_array=ue_array,
+                gnb_array=[gnb],
+                fivegc_array=[fivegc],
+                retina_data=retina_data,
+                warning_as_errors=False,
+            )
+        finally:
+            criteria.validate()
