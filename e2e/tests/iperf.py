@@ -147,7 +147,6 @@ def _gnb_iperf(
 
     try:
         _run_iperf(
-            retina_data=retina_data,
             ue_array=ue_array,
             fivegc=fivegc,
             gnb=gnb,
@@ -155,17 +154,29 @@ def _gnb_iperf(
             bitrate=bitrate,
             protocol=protocol,
             direction=direction,
-            warning_as_errors=False,
             ric=ric,
         )
     finally:
-        criteria.validate()
+        try:
+            stop(
+                ue_array=ue_array,
+                gnb_array=[gnb],
+                fivegc_array=[fivegc],
+                retina_data=retina_data,
+                warning_as_errors=False,
+                ric=ric,
+            )
+        finally:
+            criteria.validate()
+
+    metrics: Metrics = gnb.GetMetrics(Empty())
+    if metrics.aggregate.dl_bitrate + metrics.aggregate.ul_bitrate <= 0:
+        pytest.fail("No traffic detected in GNB metrics")
 
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
 def _run_iperf(
     *,  # This enforces keyword-only arguments
-    retina_data: RetinaTestData,
     ue_array: Sequence[UEClient],
     fivegc: FiveGCClient,
     gnb: GNBClient,
@@ -173,18 +184,15 @@ def _run_iperf(
     bitrate: int,
     protocol: "IPerfProto.ValueType",
     direction: "IPerfDir.ValueType",
-    warning_as_errors: bool = True,
     bitrate_threshold: float = 0,  # bitrate != 0
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     gnb_post_cmd: Tuple[str, ...] = tuple(),
     plmn: Optional[PLMN] = None,
-    ue_stop_timeout: int = 0,
     inter_ue_start_period=INTER_UE_START_PERIOD,
     ric: Optional[NearRtRicClient] = None,
-    stop_gnb_first: bool = False,
     packet_length: int = 0,
     parallel_iperfs: int = 8,
-) -> Metrics:
+) -> None:
     wait_before_power_off = 5
 
     ue_attach_info_dict = start_and_attach(
@@ -219,20 +227,3 @@ def _run_iperf(
         stop_kpm_mon_xapp(ric)
 
     sleep(wait_before_power_off)
-    stop(
-        ue_array=ue_array,
-        gnb_array=[gnb],
-        fivegc_array=[fivegc],
-        retina_data=retina_data,
-        ue_stop_timeout=ue_stop_timeout,
-        warning_as_errors=warning_as_errors,
-        ric=ric,
-        stop_gnb_first=stop_gnb_first,
-    )
-
-    metrics: Metrics = gnb.GetMetrics(Empty())
-
-    if metrics.aggregate.dl_bitrate + metrics.aggregate.ul_bitrate <= 0:
-        pytest.fail("No traffic detected in GNB metrics")
-
-    return metrics
