@@ -59,12 +59,14 @@ def test_gnb(
         ping(ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=ping_count)
         sleep(idle_duration)
         ping_from_5gc(ue_attach_info_dict=ue_attach_info_dict, fivegc=fivegc, ping_count=ping_count)
-        stop(
-            ue_array=ue_array,
-            gnb_array=[gnb],
-            fivegc_array=[fivegc],
-            retina_data=retina_data,
-            warning_as_errors=False,
-        )
     finally:
-        criteria.validate()
+        try:
+            stop(
+                ue_array=ue_array,
+                gnb_array=[gnb],
+                fivegc_array=[fivegc],
+                retina_data=retina_data,
+                warning_as_errors=False,
+            )
+        finally:
+            criteria.validate()
