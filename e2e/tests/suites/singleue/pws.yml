@@ -22,7 +22,7 @@ etws:
     config: [cu_cp.yml, du.yml, tdd_default.yml, etws.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg]
-  feature_ids: []
+  feature_ids: [MVP-FUNC-SVCS-16-5]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -94,7 +94,7 @@ etws_mme_triggered:
     config: [cu_cp.yml, du.yml, tdd_default.yml, pws.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg, pws_trigger.cfg]
-  feature_ids: []
+  feature_ids: [MVP-FUNC-SVCS-16-5]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -134,7 +134,7 @@ etws_mme_triggered_long:
     config: [cu_cp.yml, du.yml, tdd_default.yml, pws.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg, pws_trigger_long.cfg]
-  feature_ids: []
+  feature_ids: [MVP-FUNC-SVCS-16-5]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -176,10 +176,86 @@ cmas_mme_triggered:
     config: [cu_cp.yml, du.yml, tdd_default.yml, pws.yml, mac_pcap.yml]
   core:
     config: [baseline.cfg, pws_trigger_cmas.cfg]
-  feature_ids: []
+  feature_ids: [MVP-FUNC-SVCS-16-5]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
+    du.nof_reestablishments_request_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    cu_cp.nof_write_replace_warning_request_ge: 1
+    cu_cp.nof_write_replace_warning_response_ge: 1
+    du.nof_sib8_ge: 1
+    du.nof_sib6_le: 0
+    du.nof_sib7_le: 0
+    ue.nof_cmas_msg_received_ge: 1
+
+# ETWS test, triggered live from the core, same mechanism as
+# etws_mme_triggered but with the UE in RRC_IDLE (instead of RRC_CONNECTED)
+# when the warning is triggered. No continuous DL/UL traffic is generated
+# (dl_bitrate/ul_bitrate: 0), so the short cu_cp inactivity timer
+# (inactivity_timer.yml) releases the UE to RRC_IDLE well before the AMF
+# sends the Write-Replace Warning Request at t=13s (pws_trigger.cfg); the
+# gNB must then page the UE so it wakes up and re-acquires SIB6/SIB7 to
+# receive the warning.
+etws_mme_triggered_rrc_idle:
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      dl_bitrate: 0
+      ul_bitrate: 0
+      traffic_duration: 30
+      pws_events: true
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, pws.yml, inactivity_timer.yml, mac_pcap.yml]
+  core:
+    config: [baseline.cfg, pws_trigger.cfg]
+  feature_ids: [MVP-FUNC-SVCS-16-5]
+  criteria:
+    du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
+    du.nof_reestablishments_request_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    cu_cp.nof_write_replace_warning_request_ge: 1
+    cu_cp.nof_write_replace_warning_response_ge: 1
+    du.nof_sib6_ge: 1
+    du.nof_sib7_ge: 1
+    du.nof_sib8_le: 0
+    ue.nof_etws_msg_received_ge: 1
+
+# CMAS test, triggered live from the core, same mechanism as
+# cmas_mme_triggered but with the UE in RRC_IDLE when the warning is
+# triggered. See etws_mme_triggered_rrc_idle above for how the UE is kept
+# idle (no traffic + short inactivity_timer).
+cmas_mme_triggered_rrc_idle:
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      dl_bitrate: 0
+      ul_bitrate: 0
+      traffic_duration: 30
+      pws_events: true
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, pws.yml, inactivity_timer.yml, mac_pcap.yml]
+  core:
+    config: [baseline.cfg, pws_trigger_cmas.cfg]
+  feature_ids: [MVP-FUNC-SVCS-16-5]
+  criteria:
     du.nof_ko_dl_le: 0
     ue.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
