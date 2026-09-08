@@ -177,7 +177,7 @@ tdd_dl_heavy_rt:
       nof_antennas_ul: 1
       log_level: warning
   gnb:
-    config: [cu_cp.yml, vonr_qos.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, inactivity_timer.yml, du_perf.yml]
+    config: [cu_cp.yml, vonr_qos.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, inactivity_timer.yml, du_perf.yml, schedtrace.yml]
     parameters:
       <<: *common_gnb_params
       prach_config_index: 7
