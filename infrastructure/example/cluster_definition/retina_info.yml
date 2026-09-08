@@ -36,8 +36,8 @@ cluster_resource_list:
       - interface.A
       - interface.B
     du_mac_addr:
-      - 00:11:22:33:44:55
-      - 00:22:33:44:55:66
+      - "00:11:22:33:44:55"
+      - "00:22:33:44:55:66"
   - type: api
     model: uesim
     address: 10.11.12.14
@@ -91,16 +91,15 @@ nodes:
       - type: ru
         model: s72-ocudu
         space: 3
-        address: ""
         network_interface:
           - "0000:11:01.0"
           - "0000:11:02.0"
         du_mac_addr:
-          - 00:11:22:33:44:55
-          - 00:22:33:44:55:66
+          - "00:11:22:33:44:55"
+          - "00:22:33:44:55:66"
         ru_mac_addr:
-          - 00:33:44:55:66:77
-          - 00:44:55:66:77:88
+          - "00:33:44:55:66:77"
+          - "00:44:55:66:77:88"
         vlan_tag_cp:
           - "16"
           - "17"
@@ -123,7 +122,7 @@ nodes:
         connection: usb
         space: 1
         serial_id: abcdefgh
-        imsi: 000000000000001
+        imsi: "000000000000001"
         k: 0123456789ABCDEF0123456789ABCDEF
         amf: "8000"
         opc: 0123456789ABCDEF0123456789ABCDEF
