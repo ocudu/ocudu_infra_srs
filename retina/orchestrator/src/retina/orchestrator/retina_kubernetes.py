@@ -74,6 +74,7 @@ class ConnectionMode(Enum):
 DEFAULT_NAMESPACE = "retina"
 
 
+# pylint: disable=too-many-public-methods
 class Kubernetes(KubernetesManager):
     """
     Kubernetes manager
@@ -103,22 +104,47 @@ class Kubernetes(KubernetesManager):
         }
         return self._create_service(manifest, namespace)
 
-    def get_load_balancer_service(self, namespace: str = DEFAULT_NAMESPACE) -> V1Service:
+    def _get_retina_service(self, service_name: str, namespace: str = DEFAULT_NAMESPACE) -> Optional[V1Service]:
         """
-        Get load balancer service
+        Gets a Retina Service with the provided service name as a 'V1Service' object.
+        Returns None if it does not exist in the given namespace.
         """
+
         for service in self._get_service_dict(namespace).values():
-            if service.metadata.name == PORT_SERVICE_NAME and service.spec.type == SERVICE_LOADBALANCER:
+            if service.metadata.name == service_name:
                 return service
         return None
 
-    def get_node_port_service(self, namespace: str = DEFAULT_NAMESPACE) -> V1Service:
+    def get_port_service(self, namespace: str = DEFAULT_NAMESPACE) -> Optional[V1Service]:
+        """
+        Gets the LoadBalancer or NodePort service as a 'V1Service' object.
+        Returns None if it does not exist in the given namespace.
+        """
+
+        return self._get_retina_service(PORT_SERVICE_NAME, namespace)
+
+    def delete_port_service(self, namespace: str = DEFAULT_NAMESPACE) -> ErrorCode:
+        """
+        Deletes the LoadBalancer or NodePort retina-service at the specified namespace.
+        """
+        return self._delete_service(const.PORT_SERVICE_NAME, namespace)
+
+    def get_load_balancer_service(self, namespace: str = DEFAULT_NAMESPACE) -> Optional[V1Service]:
+        """
+        Get load balancer service
+        """
+        port_service = self.get_port_service(namespace)
+        if port_service and port_service.spec.type == SERVICE_LOADBALANCER:
+            return port_service
+        return None
+
+    def get_node_port_service(self, namespace: str = DEFAULT_NAMESPACE) -> Optional[V1Service]:
         """
         Get node port service
         """
-        for service in self._get_service_dict(namespace).values():
-            if service.metadata.name == PORT_SERVICE_NAME and service.spec.type == SERVICE_NODEPORT:
-                return service
+        port_service = self.get_port_service(namespace)
+        if port_service and port_service.spec.type == SERVICE_NODEPORT:
+            return port_service
         return None
 
     def get_load_balancer_ip(self) -> str:

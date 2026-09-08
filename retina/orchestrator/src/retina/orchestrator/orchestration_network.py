@@ -162,6 +162,31 @@ class OrchestratorManager:
             user_name=None, namespace=self.namespace, dryrun=dryrun, enable_regex=False
         )
 
+    def create_port_infrastructure(self):
+        """
+        Ensures LoadBalancer or NodePort service exists based on cluster configuration.
+        Creates the service if it doesn't exist.
+        Deletes the old service if networking mode changed.
+        """
+
+        networking_mode = self.k_server.get_cluster_configuration()["networking-mode"]
+
+        if networking_mode.lower() == const.SERVICE_LOADBALANCER.lower():
+            if self.k_server.get_load_balancer_service() is None:
+                if self.k_server.get_node_port_service() is not None:
+                    self.delete_port_service()
+                self.create_loadbalancer_service()
+        elif networking_mode.lower() == const.SERVICE_NODEPORT.lower():
+            if self.k_server.get_node_port_service() is None:
+                if self.k_server.get_load_balancer_service() is not None:
+                    self.delete_port_service()
+                self.create_nodeport_service()
+        else:
+            raise ValueError(
+                f"Invalid value for networking_mode: '{networking_mode}'. "
+                f"Must be one of ['{const.SERVICE_LOADBALANCER}', '{const.SERVICE_NODEPORT}']"
+            )
+
     ############################################################################
     # Infrastructure
     ############################################################################
@@ -204,6 +229,8 @@ class OrchestratorManager:
             # Reserve node resources
             logging.debug("Looking for node resources...")
             pool_request.reserve_node_resources(self.k_server, timeout_handler)
+
+            self.create_port_infrastructure()
 
             # Create orchestration network in parallel
             executor = ThreadPoolExecutor()
@@ -287,6 +314,31 @@ class OrchestratorManager:
             logging.info("NodePort service created.")
         else:
             raise RuntimeError(f"Error creating NodePort service: {response}")
+
+    def delete_port_service(self, wait_for_deletion=True, timeout_seconds=30) -> None:
+        """
+        Deletes existing port service (LoadBalancer or NodePort).
+        """
+        response = self.k_server.delete_port_service()
+        if response == ErrorCode.OK:
+            logging.info("Deleting service: %s", const.PORT_SERVICE_NAME)
+        else:
+            raise RuntimeError(f"Error deleting {const.PORT_SERVICE_NAME} service: {response}")
+
+        if wait_for_deletion:
+            start_time = time.monotonic()
+            poll_interval = 1
+
+            while time.monotonic() - start_time < timeout_seconds:
+                if not self.k_server.get_port_service():
+                    logging.info("%s service successfully deleted.", const.PORT_SERVICE_NAME)
+                    return
+                time.sleep(poll_interval)
+
+            raise TimeoutError(
+                f"Timed out after {timeout_seconds} seconds waiting for "
+                f"{const.PORT_SERVICE_NAME} service to be deleted."
+            )
 
     ############################################################################
     # ConfigMap
@@ -377,16 +429,6 @@ class OrchestratorManager:
         dns_policy = self.k_server.get_cluster_configuration()["dnsPolicy"]
 
         ########################################################################
-        # Create service if it doesn't exist
-        ########################################################################
-        if networking_mode == const.SERVICE_LOADBALANCER:
-            if self.k_server.get_load_balancer_service() is None:
-                self.create_loadbalancer_service()
-        else:
-            if self.k_server.get_node_port_service() is None:
-                self.create_nodeport_service()
-
-        ########################################################################
         # Create configmap RS
         ########################################################################
         node_resource = Node(
@@ -471,7 +513,7 @@ class OrchestratorManager:
         if self.k_server.is_incluster():
             load_balancer_ip = pod_ip
         else:
-            if networking_mode == const.SERVICE_LOADBALANCER:
+            if networking_mode.lower() == const.SERVICE_LOADBALANCER.lower():
                 load_balancer_ip = self.k_server.get_load_balancer_ip()
             else:
                 load_balancer_ip = self.k_server.get_node_ip_dict(node_name)["InternalIP"]
