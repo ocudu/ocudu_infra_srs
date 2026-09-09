@@ -314,7 +314,7 @@ xn_ho:
           pci: 1
           cell_offset: 0
           warning_allowlist:
-            - Failed to connect to XN-C peer
+            - Failed to connect to Xn-C peer
       - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412
@@ -350,7 +350,7 @@ xn_cho:
           pci: 1
           cell_offset: 0
           warning_allowlist:
-            - Failed to connect to XN-C peer
+            - Failed to connect to Xn-C peer
       - config: [cu_cp.yml, xnap.yml, xn_cho_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml]
         parameters:
           gnb_id: 412

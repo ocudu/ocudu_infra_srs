@@ -32,7 +32,7 @@ rrc_resume:
           # reselect it, no matter how much stronger than cell 1 it gets.
           sib2_q_rx_lev_min: -120
           warning_allowlist:
-            - Failed to connect to XN-C peer
+            - Failed to connect to Xn-C peer
       - config: [cu_cp.yml, xnap.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml, rrc_inactive.yml, mac_pcap.yml]
         parameters:
           <<: *gnb_parameters
