@@ -364,6 +364,15 @@ class nof_sib6_ge(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_sib6_transmissions for s in self._stub_array)
 
 
+class nof_sib6_le(DuCriteria):
+    """SIB6 (ETWS primary notification) Transmissions"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_sib6_transmissions for s in self._stub_array)
+
+
 class nof_sib7_ge(DuCriteria):
     """SIB7 (ETWS secondary notification) Transmissions"""
 
@@ -373,10 +382,28 @@ class nof_sib7_ge(DuCriteria):
         return sum(s.GetMetrics(Empty()).du.nof_sib7_transmissions for s in self._stub_array)
 
 
+class nof_sib7_le(DuCriteria):
+    """SIB7 (ETWS secondary notification) Transmissions"""
+
+    operator_method = operator.le
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_sib7_transmissions for s in self._stub_array)
+
+
 class nof_sib8_ge(DuCriteria):
     """SIB8 (CMAS) Transmissions"""
 
     operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_sib8_transmissions for s in self._stub_array)
+
+
+class nof_sib8_le(DuCriteria):
+    """SIB8 (CMAS) Transmissions"""
+
+    operator_method = operator.le
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).du.nof_sib8_transmissions for s in self._stub_array)

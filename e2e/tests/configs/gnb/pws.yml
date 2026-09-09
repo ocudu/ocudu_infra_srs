@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Provisions the cell for ETWS and CMAS without any test content, so SIB6/7/8
+# stay off air until a Write-Replace Warning arrives.
+cell_cfg:
+  sib:
+    si_window_length: 40
+    etws:
+      si_period: 64
+    cmas:
+      si_period: 64
