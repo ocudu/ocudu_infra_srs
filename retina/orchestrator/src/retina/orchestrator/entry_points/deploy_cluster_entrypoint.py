@@ -30,7 +30,7 @@ def _build_data(config_path: Path) -> Dict:
     resource_list = base64.b64encode(json.dumps(conf["nodes"]).encode("ascii")).decode("ascii")
     cluster_resource_list = base64.b64encode(json.dumps(conf["cluster_resource_list"]).encode("ascii")).decode("ascii")
 
-    return {
+    cluster_info: dict = {
         "update-time": current_date,
         "version": conf["global"]["version"],
         "networking-mode": conf["global"]["networking-mode"],
@@ -38,6 +38,11 @@ def _build_data(config_path: Path) -> Dict:
         "resource": resource_list,
         "cluster_resource_list": cluster_resource_list,
     }
+
+    # Optional Fields
+    cluster_info["nodeport-address"] = conf["global"].get("nodeport-address", "InternalIP")
+
+    return cluster_info
 
 
 def _deploy_config_map(k_server: Kubernetes, config_map_data: Dict):

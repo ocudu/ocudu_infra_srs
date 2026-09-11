@@ -12,6 +12,9 @@
           "type": "string",
           "pattern": "(?i)^(loadbalancer|nodeport)$"
         },
+        "nodeport-address": {
+          "type": "string"
+        },
         "version": {
           "type": "string"
         },

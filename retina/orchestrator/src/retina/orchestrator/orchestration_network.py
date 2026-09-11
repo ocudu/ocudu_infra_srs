@@ -516,7 +516,7 @@ class OrchestratorManager:
             if networking_mode.lower() == const.SERVICE_LOADBALANCER.lower():
                 load_balancer_ip = self.k_server.get_load_balancer_ip()
             else:
-                load_balancer_ip = self.k_server.get_node_ip_dict(node_name)["InternalIP"]
+                load_balancer_ip = self.k_server.get_node_port_address_for_node(node_name)
 
         # Copy binary
         self.copy_binaries(request_reservation.get_binaries(), pod_name)

@@ -14,7 +14,7 @@ import logging
 import re
 import time
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, cast, Dict, List, Optional, Union
 
 from kubernetes import watch
 from kubernetes.client import V1ConfigMap, V1Deployment, V1Pod, V1PodSpec, V1PodStatus, V1Service
@@ -165,6 +165,38 @@ class Kubernetes(KubernetesManager):
                     return ip_add
                 except:  # pylint: disable=bare-except
                     return ip_add
+
+    def _get_node_port_address(self, namespace: str = DEFAULT_NAMESPACE) -> Optional[str]:
+        """
+        Returns "nodeport-address" from cluster information, if defined. Returns None if not defined.
+        """
+        config_map = self.get_config_map(CLUSTER_CONFIGURATION_CONFIGMAP_NAME, namespace)
+        val = config_map.data.get("nodeport-address") if config_map and config_map.data else None
+        return cast(Optional[str], val)
+
+    def get_node_port_address_for_node(self, node_name: str, namespace: str = DEFAULT_NAMESPACE) -> str:
+        """
+        Resolve the NodePort IP or address for a specific cluster node.
+
+        Retrieves the `nodeport-address` setting for the given namespace and evaluates it:
+        - If set to 'InternalIP' or 'ExternalIP', looks up and returns the corresponding IP
+        from the node's IP dictionary.
+        - If set to an explicit IP or custom address string, returns that value directly.
+        - If unset (`None`), defaults to resolving the node's 'InternalIP'.
+
+        Args:
+            node_name: The name of the target cluster node.
+            namespace: The namespace to check configuration for. Defaults to `DEFAULT_NAMESPACE`.
+
+        Returns:
+            The resolved IP address or hostname string for NodePort traffic.
+        """
+        node_port_addr = self._get_node_port_address(namespace) or "InternalIP"
+
+        if node_port_addr in ("InternalIP", "ExternalIP"):
+            return self.get_node_ip_dict(node_name)[node_port_addr]
+
+        return node_port_addr
 
     ############################################################################
     # Config Maps

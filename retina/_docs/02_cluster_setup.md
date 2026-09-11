@@ -59,6 +59,7 @@ global:
   networking-mode: nodePort     # Required: Kubernetes networking mode (nodePort, loadBalancer, etc.)
   version: 1.0.0                # Required: file version
   dnsPolicy: Default            # Optional: DNS policy (Default, ClusterFirst, ClusterFirstWithHostNet, None)
+  nodeport-address: 10.13.10.1  # Optional: Reachable address or IP for NodePort serivices. This can be an FQDN, IP address, or one of "InternalIP" or "ExternalIP" to let Retina dynamically resolve the IP from the Kubernetes API. If not specified, Retina will default to "InternalIP".
 ```
 
 #### Cluster Resources
