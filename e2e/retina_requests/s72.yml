@@ -7,8 +7,8 @@
   nof_ports: 16
   requirements:
     cpu:
-      requests: 80%
-      limits: 80%
+      requests: 14
+      limits: 14
     memory:
       requests: 80%
       limits: 80%
@@ -58,8 +58,8 @@
   ip_back_source: backhaul
   requirements:
     cpu:
-      requests: 20%
-      limits: 20%
+      requests: 2
+      limits: 2
     memory:
       requests: 20%
       limits: 20%
