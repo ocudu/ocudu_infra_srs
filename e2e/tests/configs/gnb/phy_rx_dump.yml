@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+{%- set phy_rx_symbols_pusch_on_ko = phy_rx_symbols_pusch_on_ko | default("true") %}
+{%- set phy_rx_symbols_pusch_threshold_sinr_db = phy_rx_symbols_pusch_threshold_sinr_db | default("-inf") %}
+{%- set phy_rx_symbols_pusch_threshold_iter = phy_rx_symbols_pusch_threshold_iter | default("inf") %}
+{%- set phy_rx_symbols_prach_threshold_rssi_db = phy_rx_symbols_prach_threshold_rssi_db | default("inf") %}
+
+log:
+  config_level: debug
+  phy_level: debug
+  du_level: info
+  broadcast_enabled: true
+  phy_rx_symbols_filename: {{report_folder}}/samples.iq
+  phy_rx_symbols_port: all
+  phy_rx_symbols_pusch_on_ko: {{phy_rx_symbols_pusch_on_ko}}
+  phy_rx_symbols_pusch_threshold_sinr_dB: {{phy_rx_symbols_pusch_threshold_sinr_db}}
+  phy_rx_symbols_pusch_threshold_iter: {{phy_rx_symbols_pusch_threshold_iter}}
+  phy_rx_symbols_prach_threshold_rssi_dB: {{phy_rx_symbols_prach_threshold_rssi_db}}

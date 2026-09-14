@@ -82,7 +82,7 @@ prach_config_1:
     du.prach_configuration_index_eq: 33
 
 # PRACH format A3 configuration test
-prach_config_a3:
+prach_config_a3: &a3_base
   <<: *base_config
   gnb:
     config: [cu_cp.yml, du.yml, tdd_63.yml, prach_config.yml, mac_pcap.yml]
@@ -103,6 +103,23 @@ prach_config_a3:
     all.errors_le: 0
     all.warnings_le: 0
     du.prach_configuration_index_eq: 110
+
+# PRACH format A3 configuration test: a replica of the previous test with PHY debugging features enabled
+prach_config_a3_full_log:
+  <<: *a3_base
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_63.yml, prach_config.yml, mac_pcap.yml, phy_rx_dump.yml]
+    parameters:
+      # Extra logs may slow the FAPI processor down.
+      warning_allowlist:
+        - Real-time failure in FAPI
+      prach_config_index: 110
+      zero_correlation_zone: 0
+      phy_rx_symbols_pusch_threshold_sinr_db: 55
+      phy_rx_symbols_pusch_on_ko: false
+      phy_rx_symbols_pusch_threshold_iter: 7.2
+      phy_rx_symbols_prach_threshold_rssi_db: -14
+  markers: [xfail]
 
 # PRACH format C0 configuration test
 prach_config_c0:
