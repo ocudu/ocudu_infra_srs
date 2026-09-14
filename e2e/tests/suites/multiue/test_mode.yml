@@ -183,7 +183,7 @@ ru_dummy_10cell_50ue:
 many_ues:
   <<: *ru_config
   gnb:
-    config: &many_ues_config [ru_dummy.yml, test_mode.yml, du_perf.yml, 800ue.yml, du.yml]
+    config: &many_ues_config [ru_dummy.yml, test_mode.yml, du_perf.yml, 800ue.yml, du.yml, schedtrace.yml]
     parameters: &many_ues_parameters
       band: 78
       bandwidth: 100
