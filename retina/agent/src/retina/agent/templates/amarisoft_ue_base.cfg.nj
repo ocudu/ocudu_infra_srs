@@ -54,6 +54,7 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
         transport: "ethernet",
         bind_interface: "{{s72_port.interface}}",
         remote_addr: "{{s72_port.du_mac_addr}}",
+        ta3_max: 500,
         // t1a_* must not be set on the UE side (trx_s72 doc; Amarisoft's reference UE config omits
         // them): any t1a_min_* switches the driver from best effort to timed async TX.
       },
