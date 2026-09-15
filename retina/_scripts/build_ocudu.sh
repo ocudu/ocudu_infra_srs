@@ -8,9 +8,19 @@ set -e
 # Profile with the builders to run. Available: builders (default), builders-rt
 PROFILE=${1:-builders}
 
+AMARI_ARGS=()
+PROFILE_ARGS=(--profile "${PROFILE}")
+# amari-zmq driver is added automatically when AMARISOFT_PATH is set
+if [[ -n "$AMARISOFT_PATH" ]]; then
+    AMARI_ARGS=(--amari-path "$AMARISOFT_PATH")
+    if [[ "$PROFILE" == "builders" ]]; then
+        PROFILE_ARGS+=(--profile builders-amari)
+    fi
+fi
+
 cd $RETINA_PATH/_scripts
-python3 generate_env.py --ocudu-path ${OCUDU_PATH} --amari-path ${AMARISOFT_PATH}
-docker compose --profile ${PROFILE} up
+python3 generate_env.py --ocudu-path ${OCUDU_PATH} "${AMARI_ARGS[@]}"
+docker compose "${PROFILE_ARGS[@]}" up
 
 # Alternatively, you can run the build container with custom flags:
 # docker compose run --rm ocudu-builder \

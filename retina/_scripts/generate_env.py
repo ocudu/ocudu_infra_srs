@@ -112,7 +112,7 @@ def main():
         "FLEXRIC_VERSION": flexric_version,
         "CONTAINER_PATH": CONTAINER_PATH,
         "OCUDU_PATH": str(ocudu_path),
-        "AMARISOFT_PATH": str(amari_path),
+        "AMARISOFT_PATH": "" if amari_path is None else str(amari_path),
         "DOCKER_BUILDER_VERSION": docker_builder_version,
         "BUILDER_IMAGE": builder_image,
         "DPDK_VERSION": dpdk_version,

@@ -5,28 +5,33 @@
 
 set -e
 
+AMARI_ARGS=()
+if [[ -n "$AMARISOFT_PATH" ]]; then
+    AMARI_ARGS=(--amari-path "$AMARISOFT_PATH")
+fi
+
 # Generate env for launching tests in cluster (call it when you change retina repo and first time)
 cd $RETINA_PATH/../e2e/retina_requests
-python3 $RETINA_PATH/_scripts/generate_env.py --ocudu-path $OCUDU_PATH --amari-path $AMARISOFT_PATH
+python3 $RETINA_PATH/_scripts/generate_env.py --ocudu-path $OCUDU_PATH "${AMARI_ARGS[@]}"
 
 # Generate variables from retina code (call it when you change retina repo and first time)
 cd $RETINA_PATH/_scripts
 # Using a fake retina version for local development
-# - Docker will build the images from scratch only the first time. 
+# - Docker will build the images from scratch only the first time.
 # - Next attempts: reuse the image but using the python code from your host (sharing it with the container)
 # - To build the images from scratch again, remove them (docker rmi / prune) or use --build flag in docker compose
-RETINA_VERSION=0.0.2 python3 generate_env.py --ocudu-path ${OCUDU_PATH} --amari-path ${AMARISOFT_PATH}
+RETINA_VERSION=0.0.2 python3 generate_env.py --ocudu-path ${OCUDU_PATH} "${AMARI_ARGS[@]}"
 
 # Create testbed (call it when you change the profile and first time)
 python3 generate_testbed.py --profile ${RETINA_PROFILE}
 
 # Kill previous run if still there
-docker compose --profile all down --volumes --remove-orphans >/dev/null 2>&1
+docker compose --profile ${RETINA_PROFILE} down --volumes --remove-orphans
 
 # Set Trap for teardown
 cleanup() {
-    docker compose --profile all stop
-    docker compose --profile all down --volumes --remove-orphans
+    docker compose --profile ${RETINA_PROFILE} stop
+    docker compose --profile ${RETINA_PROFILE} down --volumes --remove-orphans
     exit 0
 }
 trap cleanup INT TERM

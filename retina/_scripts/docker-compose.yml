@@ -9,7 +9,8 @@
 # ```
 
 # Available profiles:
-# - builders: Build gnb binary and amari-zmq driver
+# - builders: Build gnb binary
+# - builders-amari: Build amari-zmq driver (requires AMARISOFT_PATH)
 # - zmq_amariue_mme: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Amarisoft 5GC
 # - zmq_amariue_open5gs: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs
 # - zmq_srsue: srsUE + OCUDU gNB + Open5gs + Flexric
@@ -88,11 +89,11 @@ services:
     container_name: amari-zmq-builder
     profiles:
       - all
-      - builders
+      - builders-amari
     image: ${BUILDER_IMAGE}
     volumes:
       - ${OCUDU_PATH}:/builds/ocudu/ocudu
-      - ${AMARISOFT_PATH}:/builds/amarisoft/bin:ro
+      - ${AMARISOFT_PATH:-/tmp}:/builds/amarisoft/bin:ro
     environment:
       CLICOLOR_FORCE: 1
     network_mode: "none"
@@ -217,9 +218,9 @@ services:
       - CAP_SYS_PTRACE
     sysctls:
       - net.ipv6.conf.default.disable_ipv6=0
-    volumes: &agent_volumes
+    volumes:
       - ${OCUDU_PATH}:/builds/ocudu/ocudu
-      - ${AMARISOFT_PATH}:/builds/amarisoft/bin:ro
+      - ${AMARISOFT_PATH:-/tmp}:/builds/amarisoft/bin:ro
       - ${OCUDU_PATH}/build_trx_retina/utils/trx_ocudu/libtrx_ocudu.so:/builds/amarisoft/trx_ocudu.so
       # Following lines overwrite the retina code inside the container with your current code.
       # Python version must match the one in the agent image, or the mounts land outside the import path.
@@ -260,7 +261,12 @@ services:
     networks:
       retina:
         ipv4_address: *srsue_ip
-    volumes: *agent_volumes
+    volumes: &agent_volumes
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+      # Following lines overwrite the retina code inside the container with your current code.
+      # Python version must match the one in the agent image, or the mounts land outside the import path.
+      - ../protocol/src/retina/protocol:/usr/local/lib/python3.14/dist-packages/retina/protocol
+      - ../agent/src/retina/agent:/usr/local/lib/python3.14/dist-packages/retina/agent
     tmpfs: *agent_tmpfs
     devices:
       - /dev/net/tun:/dev/net/tun
@@ -463,7 +469,13 @@ services:
     networks:
       retina:
         ipv4_address: *amari5gc1_ip
-    volumes: *agent_volumes
+    volumes:
+      - ${OCUDU_PATH}:/builds/ocudu/ocudu
+      - ${AMARISOFT_PATH:-/tmp}:/builds/amarisoft/bin:ro
+      # Following lines overwrite the retina code inside the container with your current code.
+      # Python version must match the one in the agent image, or the mounts land outside the import path.
+      - ../protocol/src/retina/protocol:/usr/local/lib/python3.14/dist-packages/retina/protocol
+      - ../agent/src/retina/agent:/usr/local/lib/python3.14/dist-packages/retina/agent
     tmpfs: *agent_tmpfs
     devices:
       - /dev/net/tun:/dev/net/tun

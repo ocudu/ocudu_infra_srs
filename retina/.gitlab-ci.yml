@@ -204,7 +204,7 @@ retina containers [launcher]:
     NAME: launcher
     DOCKERFILE: retina/launcher
     CONTEXT: ${CI_PROJECT_DIR}/retina
-    PYTHON_VERSION: "3.12"
+    PYTHON_VERSION: "3.14"
     OS: alpine
     BUILD_ARGS: RETINA_VERSION=${RETINA_VERSION};OS=${OS};PYTHON_VERSION=${PYTHON_VERSION}
 
