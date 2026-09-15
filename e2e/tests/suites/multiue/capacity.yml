@@ -20,7 +20,7 @@ udp_dl: &base_config
       nof_antennas_dl: 4
       nof_antennas_ul: 1
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, olla.yml, du_perf.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, olla.yml, du_perf.yml, schedtrace.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 1
@@ -51,7 +51,7 @@ udp_ul:
       nof_antennas_ul: 2
       log_level: warning
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, du_perf_ul.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, du_perf_ul.yml, schedtrace.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 2

@@ -15,7 +15,7 @@ baseline: &base_config
       pdcch_decode_threshold: 0.0
       log_level: warning
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, du_perf.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, du_perf.yml, schedtrace.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 1

@@ -27,7 +27,7 @@ downlink: &base_config
       ul_power_attenuation: -10
       pdcch_decode_threshold: 0
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, olla.yml, du_perf.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, olla.yml, du_perf.yml, schedtrace.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 1
@@ -62,7 +62,7 @@ uplink:
       ul_power_attenuation: -10
       pdcch_decode_threshold: 0
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, du_perf_ul.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, du_perf_ul.yml, schedtrace.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 2
@@ -89,7 +89,7 @@ uplink_power_control:
       ul_power_attenuation: -10
       pdcch_decode_threshold: 0
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, closed_loop_pc.yml, du_perf_ul.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, closed_loop_pc.yml, du_perf_ul.yml, schedtrace.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 2
