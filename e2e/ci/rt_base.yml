@@ -12,7 +12,7 @@ dpdk rtsan avx512:
     OS: ubuntu-26.04
     OCUDU_TARGET: gnb_split_7_2 gnb
     COMPILER: clang
-    DPDK_VERSION: 25.11_avx512
+    DPDK_VERSION: 25.11.3_avx512
     BUILD_ARGS: >
       -DENABLE_WERROR=False -DCMAKE_BUILD_TYPE=Release -DFORCE_DEBUG_INFO=True -DMARCH=x86-64-v4
       -DENABLE_RTSAN=True -DENABLE_ZEROMQ=False -DENABLE_UHD=False -DENABLE_DPDK=True
