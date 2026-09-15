@@ -191,7 +191,7 @@ retina publish wheel:
     CACHE: "true"
     CACHE_MODE: max
     VERSION: ${RETINA_VERSION}
-    AGENT_OS_VERSION: "resolute-20260707"
+    AGENT_OS_VERSION: "resolute-20260901"
     FLEXRIC_VERSION: "br-flexric" # NOTE: there is only version 1.0.0 but very old
     OPEN5GS_VERSION: "2.8.0"
     SRSUE_VERSION: "23.11"
