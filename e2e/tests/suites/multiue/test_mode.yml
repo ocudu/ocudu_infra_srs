@@ -183,7 +183,7 @@ ru_dummy_10cell_50ue:
 many_ues:
   <<: *ru_config
   gnb:
-    config: &many_ues_config [ru_dummy.yml, test_mode.yml, du_perf.yml, 800ue.yml, du.yml, schedtrace.yml]
+    config: &many_ues_config [ru_dummy.yml, test_mode.yml, du_perf.yml, 1000ue.yml, tdd_63.yml, du.yml, schedtrace.yml]
     parameters: &many_ues_parameters
       band: 78
       bandwidth: 100
@@ -210,6 +210,6 @@ many_ues_attach_detach:
       attach_detach_guard_duration_ms: 3000
   criteria:
     <<: *ru_criteria
-    du.dl_bitrate_gt: 900.0e+6
+    du.dl_bitrate_gt: 700.0e+6
     du.ul_bitrate_gt: 90.0e+6
     all.warnings_le: .inf
