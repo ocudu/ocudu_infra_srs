@@ -22,6 +22,9 @@ baseline: &base_config
       band: 41
       dl_nr_arfcn: 520002
       bandwidth: 50
+      warning_allowlist:
+        # Amarisoft UE does not support multiple HACK-ACK bit in the Configured Grant UCI yet
+        - RLF detected with cause \"MAC max consecutive CRC KOs reached\"
   core:
     config: [baseline.cfg]
   feature_ids: []
