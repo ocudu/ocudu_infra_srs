@@ -211,7 +211,7 @@ tdd_dl_heavy_rt:
   criteria:
     <<: *common_criteria
     du.nof_ko_dl_le: 100
-    all.warnings_le: 30 # Expected contention resolution warnings (1 ContentionResolutionTimer + 1 RRC Setup Procedure timed out)
+    all.warnings_le: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.dl_bitrate_gt: 300.0e+6
     du.ul_bitrate_gt: 60.0e+6
