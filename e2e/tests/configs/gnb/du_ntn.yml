@@ -13,6 +13,7 @@
 {%- set feeder_link = feeder_link | default(false) %}
 {%- set cell_ref_latitude = cell_ref_latitude | default(none) %}
 {%- set cell_ref_longitude = cell_ref_longitude | default(none) %}
+{%- set propagator_type = propagator_type | default('rk4') %}
 
 cell_cfg:
   prach:
@@ -66,6 +67,7 @@ cell_cfg:
     ta_target: 0
   ntn:
     cell_specific_koffset: {{cell_specific_koffset}}
+    propagator_type: {{propagator_type}}
     ephemeris_orbital:
       eccentricity: {{eccentricity}}
       inclination: {{inclination}}

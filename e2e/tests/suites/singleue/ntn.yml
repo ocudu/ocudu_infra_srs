@@ -118,6 +118,7 @@ leo_band_256_bw_5_fl_false_ping:
       ul_harq_disabled: false
       cell_specific_koffset: 8
       ta_meas_slot_prohibit_period: 18
+      propagator_type: keplerian
       eccentricity: 0.00119596362232265
       inclination: 0.9295784053909042
       longitude: 4.50199405531991
@@ -150,6 +151,7 @@ leo_band_256_bw_5_fl_true_ping:
       ul_harq_disabled: false
       cell_specific_koffset: 16
       ta_meas_slot_prohibit_period: 26
+      propagator_type: keplerian
       gw_altitude: 1.0
       gw_latitude: 7.853127063969279
       gw_longitude: -41.916586438365854
@@ -290,6 +292,7 @@ leo_band_256_bw_10_scs_30_fl_false_iperf:
       ul_harq_disabled: false
       cell_specific_koffset: 8
       ta_meas_slot_prohibit_period: 18
+      propagator_type: keplerian
       cell_ref_latitude: 7.853110757
       cell_ref_longitude: -96.817254023
       eccentricity: 0.00119596362232265
@@ -346,6 +349,7 @@ leo_band_256_bw_10_scs_30_fl_true_iperf:
       ul_harq_disabled: false
       cell_specific_koffset: 16
       ta_meas_slot_prohibit_period: 26
+      propagator_type: keplerian
       gw_altitude: 1.0
       gw_latitude: 7.853127063969279
       gw_longitude: -41.916586438365854
