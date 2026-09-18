@@ -177,7 +177,6 @@ ru_dummy_10cell_50ue:
     <<: *ru_criteria
     du.dl_bitrate_gt: 180.0e+6
     du.ul_bitrate_gt: 180.0e+6
-    all.warnings_le: .inf
 
 # Full cell population in real time
 many_ues:
@@ -195,9 +194,6 @@ many_ues:
       nof_test_ues: 800
       test_ue_ri: 4
       pusch_dec_max_iterations: 2
-  criteria:
-    <<: *ru_criteria
-    all.warnings_le: .inf
 
 # UE creation rate: the UEs cycle through attach, traffic and detach for the whole test
 many_ues_attach_detach:
@@ -212,4 +208,3 @@ many_ues_attach_detach:
     <<: *ru_criteria
     du.dl_bitrate_gt: 700.0e+6
     du.ul_bitrate_gt: 90.0e+6
-    all.warnings_le: .inf
