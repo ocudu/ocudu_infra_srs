@@ -76,3 +76,10 @@ position_dl_tdoa:
     cu_cp.nof_nr_dl_tdoa_measurements_ge: 1
     core.nof_lpp_error_eq: 0
     core.nof_lpp_abort_eq: 0
+
+# SRS angle-based NRPPa
+position_angle:
+  <<: *base_config
+  feature_ids: [MVP-FUNC-POS-16-3-c]
+  core:
+    config: [baseline.cfg, nrppa_nr_aoa.cfg, nrppa_trigger_meas.cfg]
