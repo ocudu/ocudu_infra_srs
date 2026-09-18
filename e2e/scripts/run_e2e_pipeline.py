@@ -95,6 +95,15 @@ def _parse_args(gitlab_input_dict: Dict[str, _GitlabInput]) -> argparse.Namespac
     parser.add_argument(
         "--timeout", required=False, type=int, default=300, help="Search for job timeout (default: %(default)s)"
     )
+    parser.add_argument(
+        "--schedule",
+        required=False,
+        type=str,
+        default="",
+        help="Pipeline schedule description (substring match) to disambiguate --replicate by name, "
+        "e.g. `functional`. Recommended when --replicate is a job name instead of a job id, "
+        "since the same job name can exist in multiple nightlies with different parameters.",
+    )
     for input_item_name, input_item in gitlab_input_dict.items():
         arg_name = f"--{input_item_name.replace('_', '-')}"
         arg_kwargs = {
@@ -117,10 +126,34 @@ def _parse_args(gitlab_input_dict: Dict[str, _GitlabInput]) -> argparse.Namespac
     return parser.parse_args()
 
 
-def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -> Dict[str, str]:
+def _find_schedule(project: Project, schedule: str):
+    for sched in project.pipelineschedules.list(iterator=True):
+        if schedule.lower() in sched.description.lower():
+            return sched
+    return None
+
+
+def _schedule_pipelines(project_array: Sequence[Project], schedule: str):
+    found_any = False
+    for project in project_array:
+        sched = _find_schedule(project, schedule)
+        if sched is None:
+            continue
+        found_any = True
+        for sched_pipeline in sched.pipelines.list(iterator=True, sort="desc"):
+            yield project, project.pipelines.get(sched_pipeline.id)
+    if not found_any:
+        print(f'\n⛔ Could not find a pipeline schedule matching "{schedule}". Available schedules:')
+        for project in project_array:
+            descriptions = [sched.description for sched in project.pipelineschedules.list(iterator=True)]
+            print(f"  - {project.web_url}: {', '.join(descriptions)}")
+        sys.exit(1)
+
+
+def _search_job(project_array: Sequence[Project], job_name: str, timeout: int, schedule: str) -> Dict[str, str]:
     variable_dict = {}
 
-    print("⏳ Looking for the job...")
+    print("⏳ Looking for the job...", end="", flush=True)
 
     # Try to parse as integer ID
     try:
@@ -128,32 +161,57 @@ def _search_job(project_array: Sequence[Project], job_name: str, timeout: int) -
         for project in project_array:
             try:
                 job: ProjectJob = project.jobs.get(job_id)
+                print()
                 variable_dict.update(_extract_variables_from_job(project, job.id))
                 return variable_dict
             except gitlab.exceptions.GitlabGetError:
                 continue
         print(
-            f"⛔ Could not found job with id {job_id} in projects "
+            f"\n⛔ Could not found job with id {job_id} in projects "
             f"{' and '.join([project.web_url for project in project_array])} ⛔"
         )
         sys.exit(1)
     except ValueError:
-        # Not an integer, search by name
+        # Not an integer, search by name. The same job name can exist in multiple
+        # schedules with different parameters, so without a
+        # --schedule filter we may pick the wrong pipeline's job.
+        if schedule:
+            pipelines = _schedule_pipelines(project_array, schedule)
+        else:
+            print(
+                "\n⚠️  No --schedule given. The same job name can exist in multiple nightly schedules "
+                "with different parameters, so the wrong job could be picked. "
+                "Consider passing --schedule (e.g. --schedule functional) ⚠️"
+            )
+            print("⏳ Looking for the job...", end="", flush=True)
+            pipelines = (
+                (project, pipeline)
+                for project in project_array
+                for pipeline in project.pipelines.list(iterator=True, source="schedule", order_by="id", sort="desc")
+            )
+
         time_to_reach = time.time() + timeout
-        for project in project_array:
-            for pipeline in project.pipelines.list(iterator=True, source="schedule"):
-                for job in pipeline.jobs.list(iterator=True):
-                    if job.name == job_name:
-                        variable_dict.update(_extract_variables_from_job(project, job.id))
-                        if not variable_dict:
-                            continue  # If the variable dict is empty, keep searching
-                        return variable_dict
-                    if time.time() >= time_to_reach:
-                        print(
-                            "⛔ Timeout reached looking for the job. "
-                            "Please review job's name or increase this timeout by setting --timeout ⛔"
-                        )
-                        sys.exit(1)
+        for project, pipeline in pipelines:
+            if time.time() >= time_to_reach:
+                print(
+                    "\n⛔ Timeout reached looking for the job. "
+                    "Please review job's name or increase this timeout by setting --timeout ⛔"
+                )
+                sys.exit(1)
+            print(".", end="", flush=True)
+            for job in pipeline.jobs.list(iterator=True):
+                if job.name == job_name:
+                    print()
+                    variable_dict.update(_extract_variables_from_job(project, job.id))
+                    if not variable_dict:
+                        continue  # If the variable dict is empty, keep searching
+                    return variable_dict
+                if time.time() >= time_to_reach:
+                    print(
+                        "\n⛔ Timeout reached looking for the job. "
+                        "Please review job's name or increase this timeout by setting --timeout ⛔"
+                    )
+                    sys.exit(1)
 
     return variable_dict
 
@@ -254,7 +312,7 @@ def _main():
         token=args.token, project=getattr(args, "ocudu_path", gitlab_input_dict["ocudu_path"].default)
     )
     if args.replicate:
-        variables_dict = _search_job((infra_project, ocudu_project), args.replicate, args.timeout)
+        variables_dict = _search_job((infra_project, ocudu_project), args.replicate, args.timeout, args.schedule)
         # Fill with replicated values
         for input_item_name, input_item in gitlab_input_dict.items():
             if input_item_name.upper() in variables_dict:
@@ -282,4 +340,8 @@ def _main():
 
 
 if __name__ == "__main__":
-    _main()
+    try:
+        _main()
+    except KeyboardInterrupt:
+        print("\n⛔ Interrupted ⛔", file=sys.stderr)
+        sys.exit(130)
