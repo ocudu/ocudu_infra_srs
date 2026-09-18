@@ -24,7 +24,7 @@ baseline: &base_config
     config: [baseline.cfg]
     parameters:
       log_level: warning
-  feature_ids: [MVP-PERF-THR-2a]
+  feature_ids: [MVP-PERF-THR-2a, MVP-PERF-THR-2c]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 180.0e+6

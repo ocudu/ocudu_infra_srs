@@ -162,7 +162,7 @@ tdd_dl_heavy_rt:
     config: [baseline.cfg]
     parameters:
       log_level: warning
-  feature_ids: [MVP-PERF-ACC-2, MVP-PERF-LAT-3, MVP-PERF-LAT-4]
+  feature_ids: [MVP-PERF-ACC-2, MVP-PERF-ACC-3, MVP-PERF-ACC-4, MVP-PERF-LAT-3, MVP-PERF-LAT-4]
   criteria:
     <<: *common_criteria
     core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches

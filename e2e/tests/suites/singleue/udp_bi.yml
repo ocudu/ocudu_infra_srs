@@ -24,7 +24,7 @@ baseline: &base_config
     config: [baseline.cfg]
     parameters:
       log_level: warning
-  feature_ids: [MVP-PERF-THR-3a] # MVP-FUNC-MIMO-16-5 once we upgrade it to 4x4
+  feature_ids: [MVP-PERF-THR-3a, MVP-PERF-THR-3c] # MVP-FUNC-MIMO-16-5 once we upgrade it to 4x4
   criteria:
     du.dl_bitrate_gt: 1200.0e+6
     du.ul_bitrate_gt: 180.0e+6
