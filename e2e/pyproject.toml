@@ -135,6 +135,7 @@ markers = [
   "MVP-FUNC-PHY-16-14",
   "MVP-FUNC-PHY-16-15",
   "MVP-FUNC-POS-16-1",
+  "MVP-FUNC-POS-16-2",
   "MVP-FUNC-POS-16-3-a",
   "MVP-FUNC-POS-16-3-b",
   "MVP-FUNC-RACH-16-1",

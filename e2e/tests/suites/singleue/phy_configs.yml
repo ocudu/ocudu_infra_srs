@@ -268,6 +268,33 @@ aperiodic_csi:
     all.errors_le: 0
     all.warnings_le: 0
 
+# DL-PRS configuration test
+# Checks that the gNB schedules PDSCH/PUSCH normally around a configured DL-PRS resource.
+# There is no LMF yet to request positioning measurements, so this only exercises the static resource configuration.
+prs:
+  <<: *base_config
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      traffic_duration: 10
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, prs.yml, mac_pcap.yml]
+  feature_ids: [MVP-FUNC-POS-16-2]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
+    du.nof_reestablishments_request_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+
 # PUCCH Format 0/2 test
 pucch_02:
   <<: *base_config

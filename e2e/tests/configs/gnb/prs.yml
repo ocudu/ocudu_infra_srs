@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  prs:
+    resource_sets:
+      - comb_size: 2
+        nof_symbols: 12
+        periodicity_slots: 160
+        slot_offset: 2
+        resources:
+          - sequence_id: 0
+            re_offset: 0
+            slot_offset: 0
+            symbol_offset: 0
+          - sequence_id: 1
+            re_offset: 1
+            slot_offset: 5
+            symbol_offset: 0
