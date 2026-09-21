@@ -52,7 +52,7 @@ Each pod in the array supports the following fields:
 |-------|----------|------|-------------|
 | `name` | ✓ | string | Unique identifier for the pod in the cluster |
 | `image` | ✓ | string | Container image URI (e.g., from `registry.gitlab.com` or `hub.docker.com`) |
-| `type` | ✓ | enum | Pod type: `ue`, `gnb`, `cu`, `du`, `5gc`, `ric`, `channel-emulator`, `generic` |
+| `type` | ✓ | enum | Pod type: `ue`, `gnb`, `cu`, `du`, `5gc`, `ric`, `channel-emulator` |
 | `labels` | | array | Custom Kubernetes labels (see [Custom Labels](#custom-labels)) |
 | `requirements` | ✓ | object | Resource requirements (see [Requirements](#requirements)) |
 | `resources` | | array | Hardware resources to book (see [Resources](#resources)) |
