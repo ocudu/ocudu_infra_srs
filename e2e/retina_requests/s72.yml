@@ -51,6 +51,26 @@
     - local_path: ${OCUDU_PATH}/build_retina/apps/gnb_split_7_2/gnb
       remote_path: /usr/local/bin/gnb
       is_executable: true
+  sidecars:
+    - name: telegraf
+      image: ${OCUDU_REGISTRY_URI}/telegraf:${OCUDU_TELEGRAF_VERSION}
+      requirements:
+        cpu:
+          requests: 500m
+          limits: 500m
+        memory:
+          requests: 256Mi
+          limits: 256Mi
+      environment:
+        - WS_URL: "localhost:8001"
+        - GNB_ID: ocudu-gnb
+        - INFLUXDB3_EXTERNAL_URL: ${INFLUXDB3_EXTERNAL_URL}
+        - INFLUXDB3_AUTH_TOKEN: ${INFLUXDB3_AUTH_TOKEN}
+        - INFLUXDB3_BUCKET: ocudu
+        - INFLUXDB3_TESTBED: s72
+        - INFLUXDB3_RATE_LIMIT: "0"
+        - INFLUXDB3_RATE_LIMIT_PERIOD: 0s
+        - TELEGRAF_BUFFER_LIMIT: "5000"
 
 - name: amarisoft-mme
   type: 5gc

@@ -21,6 +21,9 @@ import yaml
 
 RETINA_REGISTRY_URI = os.getenv("RETINA_REGISTRY_URI", "registry.gitlab.com/ocudu/ocudu_infra_srs/retina")
 OCUDU_REGISTRY_URI = os.getenv("OCUDU_REGISTRY_URI", "registry.gitlab.com/ocudu/ocudu")
+INFLUXDB3_EXTERNAL_URL = os.getenv("INFLUXDB3_EXTERNAL_URL", "")
+INFLUXDB3_AUTH_TOKEN = os.getenv("INFLUXDB3_AUTH_TOKEN", "")
+INFLUXDB3_BUCKET = os.getenv("INFLUXDB3_BUCKET", "")
 CONTAINER_PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 DEFAULT_DPDK_VERSION = "24.11.2"
 
@@ -92,9 +95,13 @@ def main():
             "Skipped Builder version support: OCUDU path not provided (do it by adding --ocudu-path argument)"
         )
         docker_builder_version = "latest"
+        ocudu_telegraf_version = "latest"
     else:
         builder_data = load_yaml(ocudu_path / ".gitlab/ci/builders/version.yml")
         docker_builder_version = builder_data["variables"]["DOCKER_BUILDER_VERSION"]
+
+        telegraf_data = load_yaml(ocudu_path / "docker/telegraf/version.yml")
+        ocudu_telegraf_version = telegraf_data["OCUDU_TELEGRAF_VERSION"]
 
     # Parallel jobs for the builders, equivalent to `nproc` (honours cpu affinity when available)
     build_jobs = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 2) - 1
@@ -104,6 +111,7 @@ def main():
 
     env_vars = {
         "RETINA_REGISTRY_URI": RETINA_REGISTRY_URI,
+        "OCUDU_REGISTRY_URI": OCUDU_REGISTRY_URI,
         "RETINA_VERSION": retina_version,
         "AGENT_OS_VERSION": os_version,
         "AMARISOFT_VERSION": amarisoft_version,
@@ -115,10 +123,14 @@ def main():
         "AMARISOFT_PATH": "" if amari_path is None else str(amari_path),
         "DOCKER_BUILDER_VERSION": docker_builder_version,
         "BUILDER_IMAGE": builder_image,
+        "OCUDU_TELEGRAF_VERSION": ocudu_telegraf_version,
         "DPDK_VERSION": dpdk_version,
         "BUILD_JOBS": str(build_jobs),
         "UID": str(os.getuid()),
         "GID": str(os.getgid()),
+        "INFLUXDB3_EXTERNAL_URL": INFLUXDB3_EXTERNAL_URL,
+        "INFLUXDB3_AUTH_TOKEN": INFLUXDB3_AUTH_TOKEN,
+        "INFLUXDB3_BUCKET": INFLUXDB3_BUCKET,
     }
     for key, value in env_vars.items():
         env_vars[key] = Template(value).substitute(env_vars)  # Resolve references
