@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+# pylint: disable=too-many-lines
 """
 Kubernetes manager
 """
@@ -19,7 +20,7 @@ from kubernetes import watch
 from kubernetes.client import V1ConfigMap, V1Deployment, V1Pod, V1PodSpec, V1PodStatus, V1Service
 
 from retina.orchestrator import const
-from retina.orchestrator.configs import ConfigmapConfig, PodConfig
+from retina.orchestrator.configs import ConfigmapConfig, PodConfig, SidecarConfig
 from retina.orchestrator.const import (
     CLUSTER_CONFIGURATION_CONFIGMAP_NAME,
     LABEL,
@@ -370,6 +371,9 @@ class Kubernetes(KubernetesManager):
     @staticmethod
     def _validate_containers_from_pod(_pod: V1Pod, config: PodConfig):
         for cont in _pod.status.container_statuses if _pod.status.container_statuses else tuple():
+            if cont.state.waiting is None:
+                # Container is running or has already terminated, not stuck starting
+                continue
             if cont.state.waiting.reason in (
                 PodStatus.ERRORIMAGEPULL.value,
                 PodStatus.CRASHLOOPBACKOFF.value,
@@ -526,7 +530,7 @@ class Kubernetes(KubernetesManager):
             "dnsPolicy": config.dns_policy,
             "containers": [
                 {
-                    "name": "retina-app",
+                    "name": const.MAIN_CONTAINER_NAME,
                     "image": config.image,
                     "securityContext": {
                         "capabilities": {"add": ["SYS_NICE", "NET_ADMIN", "IPC_LOCK", "SYS_ADMIN"]},
@@ -542,6 +546,9 @@ class Kubernetes(KubernetesManager):
             "priorityClassName": "retina-e2e-priority",
             "imagePullSecrets": [{"name": "registry-credentials"}],
         }
+
+        # Sidecar containers (same pod, sharing its network namespace)
+        manifest["containers"].extend(self._build_sidecar_containers(config.sidecars))
 
         # Loop container if needed
         if config.not_finite_execution:
@@ -575,6 +582,40 @@ class Kubernetes(KubernetesManager):
             manifest["nodeName"] = config.node_name
 
         return manifest
+
+    def _build_sidecar_containers(self, sidecars: List[SidecarConfig]) -> List[Dict[str, Any]]:
+        """
+        Build sidecar container specs, sharing the pod's network namespace with the main container
+        """
+        containers = []
+        for sidecar in sidecars:
+            container: Dict[str, Any] = {"name": sidecar.name, "image": sidecar.image}
+
+            env_list = []
+            for req in sidecar.environment:
+                for k, v in req.items():
+                    env_list.append({"name": k, "value": v})
+            if env_list:
+                container["env"] = env_list
+
+            requests = {}
+            limits = {}
+            for requirement_inst in sidecar.request_list:
+                if requirement_inst.requests:
+                    requests.update({requirement_inst.name: requirement_inst.requests})
+                if requirement_inst.limits:
+                    limits.update({requirement_inst.name: requirement_inst.limits})
+
+            resources = {}
+            if requests:
+                resources.update({"requests": requests})
+            if limits:
+                resources.update({"limits": limits})
+            if resources:
+                container["resources"] = resources
+
+            containers.append(container)
+        return containers
 
     def _set_command(self, manifest: Dict, command: Union[None, List[str]]):
         """

@@ -18,6 +18,9 @@ RESOURCE_DATA_FILE = "resource.yml"
 # Name of the service opening the ports
 PORT_SERVICE_NAME = "retina-service"
 
+# Name of the main container in a pod, as opposed to any sidecar containers
+MAIN_CONTAINER_NAME = "retina-app"
+
 NUMBER_PORT_INIT = 32000
 NUMBER_OF_PORTS = 700
 

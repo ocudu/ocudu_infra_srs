@@ -2,6 +2,88 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema#",
     "$id": "retina_request",
     "title": "Retina Request",
+    "$defs": {
+        "environment": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "requirements": {
+            "type": "object",
+            "properties": {
+                "cpu": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": [
+                                "string",
+                                "number"
+                            ]
+                        },
+                        "limits": {
+                            "type": [
+                                "string",
+                                "number"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "requests"
+                    ]
+                },
+                "memory": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "string"
+                        },
+                        "limits": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "requests"
+                    ]
+                },
+                "hugepages-1Gi": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "string"
+                        },
+                        "limits": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "ephemeral-storage": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "string"
+                        },
+                        "limits": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "requests"
+                    ]
+                }
+            },
+            "required": [
+            ],
+            "additionalProperties": false,
+            "uniqueItems": false
+        }
+    },
     "type": "array",
     "items": {
         "type": "object",
@@ -47,16 +129,7 @@
                 }
             },
             "environment": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    }
-                }
+                "$ref": "#/$defs/environment"
             },
             "shared_files": {
                 "type": "array",
@@ -117,72 +190,34 @@
                 "uniqueItems": false
             },
             "requirements": {
-                "type": "object",
-                "properties": {
-                    "cpu": {
-                        "type": "object",
-                        "properties": {
-                            "requests": {
-                                "type": [
-                                    "string",
-                                    "number"
-                                ]
-                            },
-                            "limits": {
-                                "type": [
-                                    "string",
-                                    "number"
-                                ]
-                            }
+                "$ref": "#/$defs/requirements"
+            },
+            "sidecars": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"
                         },
-                        "required": [
-                            "requests"
-                        ]
-                    },
-                    "memory": {
-                        "type": "object",
-                        "properties": {
-                            "requests": {
-                                "type": "string"
-                            },
-                            "limits": {
-                                "type": "string"
-                            }
+                        "image": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*(\\/[a-z0-9]+([._-][a-z0-9]+)*)*(\\:[a-zA-Z0-9._-]{1,128})?$"
                         },
-                        "required": [
-                            "requests"
-                        ]
-                    },
-                    "hugepages-1Gi": {
-                        "type": "object",
-                        "properties": {
-                            "requests": {
-                                "type": "string"
-                            },
-                            "limits": {
-                                "type": "string"
-                            }
+                        "requirements": {
+                            "$ref": "#/$defs/requirements"
+                        },
+                        "environment": {
+                            "$ref": "#/$defs/environment"
                         }
                     },
-                    "ephemeral-storage": {
-                        "type": "object",
-                        "properties": {
-                            "requests": {
-                                "type": "string"
-                            },
-                            "limits": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "requests"
-                        ]
-                    }
-                },
-                "required": [
-                ],
-                "additionalProperties": false,
-                "uniqueItems": false
+                    "required": [
+                        "name",
+                        "image"
+                    ],
+                    "additionalProperties": false
+                }
             },
             "grace_period": {
                 "type": "integer",

@@ -120,6 +120,18 @@ def get_pool_request_reservation_from_config(
     for config_inst in config:
         requirement_manager = RequirementManager(config_inst.get("requirements", {}), config_inst.get("labels", []))
 
+        # Get sidecars
+        sidecars: List[rs.SidecarReservation] = []
+        for sidecar_inst in config_inst.get("sidecars", []):
+            sidecars.append(
+                rs.SidecarReservation(
+                    name=sidecar_inst["name"],
+                    image=sidecar_inst["image"],
+                    environment=sidecar_inst.get("environment", []),
+                    requirement_manager=RequirementManager(sidecar_inst.get("requirements", {}), []),
+                )
+            )
+
         # Get resources
         resource_list: List[rs.ResourceType] = []
         for resource in config_inst.get("resources", []):
@@ -154,6 +166,7 @@ def get_pool_request_reservation_from_config(
             grace_period=config_inst.get("grace_period", TERMINATION_GRACE_PERIOD_SECONDS),
             ip_uu_source=config_inst.get("ip_uu_source", ""),
             ip_back_source=config_inst.get("ip_back_source", ""),
+            sidecars=sidecars,
         )
         request_reservation_list.append(req)
 

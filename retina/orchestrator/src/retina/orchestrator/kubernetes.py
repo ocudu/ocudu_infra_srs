@@ -280,12 +280,13 @@ class KubernetesManager(metaclass=ABCMeta):  # pylint: disable=too-few-public-me
         """
         result = None
         extra_args = f"--kubeconfig={self._kubeconfig_path}" if self._kubeconfig_path else ""
+        container_args = f"-c {cnt.MAIN_CONTAINER_NAME}"
         remote_tmp_folder = f"{remote_folder}.tmp"
         # Creates destination's parent folder and clears any stale temporary copy
         for _ in range(3):  # Retry up to 3 times
             with contextlib.suppress(subprocess.CalledProcessError):
                 run_command(
-                    f"kubectl {extra_args} exec {pod_name} -n {namespace} -- "
+                    f"kubectl {extra_args} exec {pod_name} -n {namespace} {container_args} -- "
                     f"sh -c 'mkdir -p {Path(remote_folder).parent} && rm -rf {remote_tmp_folder}'"
                 )
                 break
@@ -293,7 +294,8 @@ class KubernetesManager(metaclass=ABCMeta):  # pylint: disable=too-few-public-me
         for _ in range(3):  # Retry up to 3 times
             with contextlib.suppress(subprocess.CalledProcessError):
                 result = run_command(
-                    f"kubectl {extra_args} cp --retries=-1 {local_folder} {namespace}/{pod_name}:{remote_tmp_folder}"
+                    f"kubectl {extra_args} cp --retries=-1 {container_args} "
+                    f"{local_folder} {namespace}/{pod_name}:{remote_tmp_folder}"
                 )
                 break
         if result is None:
@@ -302,7 +304,7 @@ class KubernetesManager(metaclass=ABCMeta):  # pylint: disable=too-few-public-me
         for _ in range(3):  # Retry up to 3 times
             with contextlib.suppress(subprocess.CalledProcessError):
                 run_command(
-                    f"kubectl {extra_args} exec {pod_name} -n {namespace} -- "
+                    f"kubectl {extra_args} exec {pod_name} -n {namespace} {container_args} -- "
                     f"sh -c 'rm -rf {remote_folder} && mv {remote_tmp_folder} {remote_folder}'"
                 )
                 break

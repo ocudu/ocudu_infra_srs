@@ -25,6 +25,19 @@ class RetinaBaseConfig:
 
 
 @dataclass()
+class SidecarConfig:
+    """
+    Data class for a sidecar container config, running alongside the main
+    container in the same pod (sharing its network namespace)
+    """
+
+    name: str
+    image: str
+    environment: List[Dict]
+    request_list: List[RequirementDefinition]
+
+
+@dataclass()
 # pylint: disable=too-many-instance-attributes
 class PodConfig(RetinaBaseConfig):
     """
@@ -48,6 +61,7 @@ class PodConfig(RetinaBaseConfig):
     command: Optional[List[str]]
     not_finite_execution: Optional[bool]
     grace_period: float
+    sidecars: List[SidecarConfig]
 
 
 @dataclass()

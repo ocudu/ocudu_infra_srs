@@ -872,13 +872,52 @@ class ResourceList:
 ################################################################################
 # Reservation
 ################################################################################
+@dataclass
+class SidecarReservation:
+    """
+    Sidecar reservation: an extra container running alongside a
+    RequestReservation's main container, in the same pod
+    """
+
+    name: str
+    image: str
+    environment: List[Dict]
+    requirement_manager: RequirementManager
+
+
+def _resolve_node_requirements_in_place(
+    req_list: List[RequirementDefinition], k_server: Kubernetes, node_name: str
+) -> None:
+    """
+    Resolve percentage-based requirements (e.g. "100%") against a node's capacity, mutating
+    each entry of req_list in place.
+
+    Args:
+        req_list: Requirement definitions to resolve, some of which may have a percentage value.
+        k_server: The active Kubernetes server instance.
+        node_name: The name of the target node.
+    """
+    node_requirements: Dict[str, Union[str, int]] = {}
+
+    for req in req_list:
+        for attr_name, value in {"requests": req.requests, "limits": req.limits}.items():
+            if str(value).endswith("%"):
+                if not node_requirements:
+                    node_requirements = get_compute_resources_for_node_from_cluster_info(k_server, node_name)
+                    if not node_requirements:
+                        raise RuntimeError("Cannot convert percentage requirements to values if the node is not known")
+
+                percentage = float(str(value).strip("%"))
+                setattr(req, attr_name, scale_quantity(str(node_requirements.get(req.name, 0)), percentage))
+
+
 # pylint: disable=too-many-instance-attributes
 class RequestReservation:
     """
     Request reservation
     """
 
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments, too-many-locals
     def __init__(
         self,
         name: str,
@@ -895,6 +934,7 @@ class RequestReservation:
         grace_period: float = TERMINATION_GRACE_PERIOD_SECONDS,
         ip_uu_source: str = "",
         ip_back_source: str = "",
+        sidecars: Optional[List[SidecarReservation]] = None,
     ):
         """
         Constructor
@@ -914,6 +954,7 @@ class RequestReservation:
         self.grace_period = grace_period
         self.ip_uu_source = ip_uu_source
         self.ip_back_source = ip_back_source
+        self.sidecars = sidecars or []
         self._node: Optional[Node] = None
 
     def get_binaries(self) -> List[BinaryDefinition]:
@@ -1068,25 +1109,21 @@ class RequestReservation:
 
     def get_requirements(self, k_server: Kubernetes) -> List[RequirementDefinition]:
         """
-        Get labels
+        Get requirements, resolving any percentage values against the matched node's capacity
         """
         node_name = self.get_node_name(k_server=k_server)
-        node_requirements: Dict[str, Union[str, int]] = {}
-
-        for req in self.requirement_manager.req_list:
-            for attr_name, value in {"requests": req.requests, "limits": req.limits}.items():
-                if str(value).endswith("%"):
-                    if not node_requirements:
-                        node_requirements = get_compute_resources_for_node_from_cluster_info(k_server, node_name)
-                        if not node_requirements:
-                            raise RuntimeError(
-                                "Cannot convert percentage requirements to values if the node is not known"
-                            )
-
-                    percentage = float(str(value).strip("%"))
-                    setattr(req, attr_name, scale_quantity(str(node_requirements.get(req.name, 0)), percentage))
-
+        _resolve_node_requirements_in_place(self.requirement_manager.req_list, k_server, node_name)
         return self.requirement_manager.req_list
+
+    def get_sidecar_requirements(self, k_server: Kubernetes) -> List[SidecarReservation]:
+        """
+        Get sidecars, resolving each one's percentage requirements against the same node
+        as the main container (sidecars run in the same pod)
+        """
+        node_name = self.get_node_name(k_server=k_server)
+        for sidecar in self.sidecars:
+            _resolve_node_requirements_in_place(sidecar.requirement_manager.req_list, k_server, node_name)
+        return self.sidecars
 
     def get_nof_ports(self):
         """

@@ -58,6 +58,7 @@ Each pod in the array supports the following fields:
 | `resources` | | array | Hardware resources to book (see [Resources](#resources)) |
 | `environment` | | array | Environment variables for the container |
 | `shared_files` | | array | Files to copy into the container (see [Shared Files](#shared-files)) |
+| `sidecars` | | array | Extra containers to run alongside the pod (see [Sidecars](#sidecars)) |
 
 ### Requirements
 
@@ -181,6 +182,27 @@ shared_files:
 ```
 
 **Note**: Files are **copied** into the container, not mounted.
+
+### Sidecars
+
+Extra containers deployed in the same pod as the main container, sharing its network namespace (e.g. a metrics exporter):
+
+```yml
+sidecars:
+  - name: telegraf                                        # Required: Container name
+    image: ${OCUDU_REGISTRY_URI}/telegraf:${OCUDU_TELEGRAF_VERSION}  # Required: Container image URI
+    environment:                                           # Optional: Environment variables
+      - WS_URL: "localhost:8001"
+    requirements:                                          # Optional: Resource requirements (see Requirements)
+      cpu:
+        requests: 500m
+        limits: 500m
+      memory:
+        requests: 256Mi
+        limits: 256Mi
+```
+
+**Note**: A sidecar's resource requirements are resolved against the same node as the main container, since they share a pod. Percentage-based requirements (e.g. `"50%"`) are resolved independently per container — nothing currently prevents the main container and its sidecars from requesting more than the node's total capacity.
 
 ## Custom Labels
 

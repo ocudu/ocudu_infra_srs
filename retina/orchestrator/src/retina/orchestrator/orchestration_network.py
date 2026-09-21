@@ -437,6 +437,15 @@ class OrchestratorManager:
             command=request_reservation.command,
             not_finite_execution=not_finite_execution,
             grace_period=request_reservation.grace_period,
+            sidecars=[
+                configs.SidecarConfig(
+                    name=sidecar.name,
+                    image=sidecar.image,
+                    environment=sidecar.environment,
+                    request_list=sidecar.requirement_manager.req_list,
+                )
+                for sidecar in request_reservation.get_sidecar_requirements(k_server=self.k_server)
+            ],
         )
 
         logging.debug(
