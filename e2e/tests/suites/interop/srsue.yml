@@ -77,3 +77,13 @@ tcp_bidirectional:
     protocol: tcp
     direction: bidirectional
     ul_bitrate: 15.0e+6
+
+udp_bidirectional_security:
+  <<: *base_config
+  parameters:
+    protocol: udp
+    direction: bidirectional
+    ul_bitrate: 15.0e+6
+  gnb:
+    config: [cu_cp.yml, security.yml, du.yml, common_search_space.yml, prach_config.yml]
+    parameters: *gnb_parameters
