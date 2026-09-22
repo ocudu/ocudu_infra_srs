@@ -11,6 +11,7 @@ locals {
     host_aliases = try(local._yaml_cluster_config.host_aliases, null)
     ssl_verify   = try(local._yaml_cluster_config.ssl_verify, true)
     environment  = tolist(try(local._yaml_cluster_config.environment, []))
+    sysctls      = tomap(try(local._yaml_cluster_config.sysctls, {}))
     volumes = [
       for v in try(local._yaml_cluster_config.volumes, []) : {
         type       = v.type
