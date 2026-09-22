@@ -18,7 +18,7 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Europe/Madrid \
   && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ARG REPO_URL=https://github.com/srsran/srsRAN_4G.git
-ARG REPO_BRANCH=release_23_11
+ARG REPO_BRANCH=release_25_10
 RUN git clone --depth 1 --branch $REPO_BRANCH $REPO_URL srsran
 
 # srsRAN_4G requests Boost COMPONENTS system, which Ubuntu 26.04 no longer

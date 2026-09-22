@@ -194,7 +194,7 @@ retina publish wheel:
     AGENT_OS_VERSION: "resolute-20260901"
     FLEXRIC_VERSION: "br-flexric" # NOTE: there is only version 1.0.0 but very old
     OPEN5GS_VERSION: "2.8.0"
-    SRSUE_VERSION: "23.11"
+    SRSUE_VERSION: "latest"
   needs:
     - get retina version
 
@@ -300,7 +300,7 @@ retina containers [srsue]:
     NAME: srsue
     VERSION: ${SRSUE_VERSION}_${RETINA_VERSION}
     SRSRAN_REPO_URL: https://github.com/srsran/srsRAN_4G.git
-    SRSRAN_BRANCH: release_23_11
+    SRSRAN_BRANCH: master
     BUILD_ARGS: RETINA_REGISTRY_URI=${RETINA_REGISTRY_URI};RETINA_VERSION=${RETINA_VERSION};AGENT_OS_VERSION=${AGENT_OS_VERSION};REPO_URL=${SRSRAN_REPO_URL};REPO_BRANCH=${SRSRAN_BRANCH}
 
 retina containers:
