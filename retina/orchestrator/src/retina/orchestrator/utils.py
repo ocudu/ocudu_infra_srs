@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import random
+import re
 import shutil
 import socket
 import string
@@ -147,7 +148,22 @@ def parse_request(request_path: str, max_name_size=MAX_NAME_SIZE) -> List[Dict]:
     for file_path in Path(request_path).parent.glob("*.env"):
         env_variables.update(dotenv_values(file_path))
 
-    # Substitute variables
+    # Substitute variables that are the whole value of a YAML field first, quoting them so an
+    # empty value stays an empty string ("") instead of collapsing into a null scalar.
+    def _quote_whole_line_var(match: "re.Match[str]") -> str:
+        value = env_variables.get(match.group("var"))
+        if value is None:
+            return match.group(0)
+        return f"{match.group('prefix')}{json.dumps(value)}"
+
+    target_content = re.sub(
+        r"(?P<prefix>^\s*(?:-\s*)?[\w.-]+:[ \t]*)\$\{(?P<var>\w+)\}[ \t]*$",
+        _quote_whole_line_var,
+        target_content,
+        flags=re.MULTILINE,
+    )
+
+    # Substitute any remaining (inline) variable references
     for key, value in env_variables.items():
         if value is not None:
             target_content = target_content.replace(f"${{{key}}}", value)
