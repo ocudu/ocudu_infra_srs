@@ -14,26 +14,26 @@ baseline:
       traffic_duration: 30
       nof_tcp_connections: 20 # Maximum, 10 were congestion window limited at ~32 kB each
       nof_antennas_dl: 4
-      nof_antennas_ul: 1
+      nof_antennas_ul: 2
       pdcch_decode_threshold: 0.0
       log_level: warning
-      direction: "rx"
+      direction: "both"
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, du_perf.yml, drb_triggered_ul_grant_qos.yml, schedtrace.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, du_perf.yml, drb_triggered_ul_grant_qos.yml, schedtrace.yml]
     parameters:
       nof_antennas_dl: 4
-      nof_antennas_ul: 1
+      nof_antennas_ul: 2
       log_level: warning
   core:
     config: [baseline.cfg]
     parameters:
       log_level: warning
-  feature_ids: [MVP-PERF-THR-1b]
+  feature_ids: [MVP-PERF-THR-3b]
   criteria:
-    du.dl_bitrate_gt: 800.0e+6
-    du.ul_bitrate_gt: 10.0e+6
+    du.dl_bitrate_gt: 200.0e+6
+    du.ul_bitrate_gt: 90.0e+6
     du.dl_avg_ri_ge: 3.5
-    du.ul_avg_ri_ge: 1
+    du.ul_avg_ri_ge: 1.5
     du.nof_ko_dl_le: 0
     du.nof_ko_ul_le: 0
     du.nof_reestablishments_request_eq: 0

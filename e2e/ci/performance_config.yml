@@ -85,6 +85,18 @@ ue_state_transition:
     TESTBED: dynamic
     MARKERS: "s72 or test_mode_ru"
 
+tcp_bi:
+  stage: singleue
+  extends: .performance_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.tcp_bi."
+    TESTBED: dynamic
+    MARKERS: "s72 or test_mode_ru"
+
 tcp_dl:
   stage: singleue
   extends: .performance_e2e
@@ -94,6 +106,18 @@ tcp_dl:
       allow_failure: true
   variables:
     KEYWORDS: "singleue.tcp_dl."
+    TESTBED: dynamic
+    MARKERS: "s72 or test_mode_ru"
+
+tcp_ul:
+  stage: singleue
+  extends: .performance_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.tcp_ul."
     TESTBED: dynamic
     MARKERS: "s72 or test_mode_ru"
 
