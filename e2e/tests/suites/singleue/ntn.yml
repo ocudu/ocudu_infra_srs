@@ -48,6 +48,7 @@ geo_band_256_bw_5_fl_false_ping: &base_config
       semi_major_axis: 42265116.30346734
   core:
     config: [baseline.cfg]
+  feature_ids: [DU-NTN-DEP-1-a, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-4, DU-NTN-HARQ-1]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -95,6 +96,7 @@ geo_band_256_bw_5_fl_true_ping:
       mean_anomaly: 5.108818072792149
       periapsis: 4.629841842546964
       semi_major_axis: 42265116.31380637
+  feature_ids: [DU-NTN-DEP-1-a, DU-NTN-DEP-2, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-4, DU-NTN-HARQ-1]
 
 leo_band_256_bw_5_fl_false_ping:
   <<: *base_config
@@ -125,6 +127,7 @@ leo_band_256_bw_5_fl_false_ping:
       mean_anomaly: 5.4284631240150425
       periapsis: 0.8582607015966518
       semi_major_axis: 6877288.14614692
+  feature_ids: [DU-NTN-DEP-1-b, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-4, DU-NTN-HARQ-1]
 
 leo_band_256_bw_5_fl_true_ping:
   <<: *base_config
@@ -161,6 +164,7 @@ leo_band_256_bw_5_fl_true_ping:
       mean_anomaly: 5.428463205785937
       periapsis: 0.8582609750544351
       semi_major_axis: 6877288.146136846
+  feature_ids: [DU-NTN-DEP-1-b, DU-NTN-DEP-2, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-4, DU-NTN-HARQ-1]
 
 geo_fl_false_harq_enabled_iperf:
   <<: *base_config
@@ -202,6 +206,7 @@ geo_fl_false_harq_enabled_iperf:
       semi_major_axis: 42265116.30346734
   core:
     config: [baseline.cfg]
+  feature_ids: [DU-NTN-DEP-1-a, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-3, DU-NTN-TIM-4, DU-NTN-HARQ-1, DU-NTN-MOB-1, CU-NTN-MOB-1]
   criteria:
     du.dl_bitrate_gt: 1.0e+6
     du.ul_bitrate_gt: 1.0e+6
@@ -249,6 +254,7 @@ geo_fl_false_harq_disabled_iperf:
       semi_major_axis: 42265116.30346734
   core:
     config: [baseline.cfg]
+  feature_ids: [DU-NTN-DEP-1-a, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-3, DU-NTN-TIM-4, DU-NTN-HARQ-2, DU-NTN-MOB-1, CU-NTN-MOB-1]
   criteria:
     du.dl_bitrate_gt: 17.0e+6
     du.ul_bitrate_gt: 18.0e+6
@@ -303,6 +309,7 @@ leo_band_256_bw_10_scs_30_fl_false_iperf:
       semi_major_axis: 6877288.14614692
   core:
     config: [baseline.cfg]
+  feature_ids: [DU-NTN-DEP-1-b, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-3, DU-NTN-TIM-4, DU-NTN-HARQ-1, DU-NTN-MOB-1, CU-NTN-MOB-1]
   criteria:
     du.dl_bitrate_gt: 1.0e+6
     du.ul_bitrate_gt: 1.0e+6
@@ -363,6 +370,7 @@ leo_band_256_bw_10_scs_30_fl_true_iperf:
       semi_major_axis: 6877288.146136846
   core:
     config: [baseline.cfg]
+  feature_ids: [DU-NTN-DEP-1-b, DU-NTN-DEP-2, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-3, DU-NTN-TIM-4, DU-NTN-HARQ-1, DU-NTN-MOB-1, CU-NTN-MOB-1]
   criteria:
     du.dl_bitrate_gt: 1.0e+6
     du.ul_bitrate_gt: 1.0e+6
