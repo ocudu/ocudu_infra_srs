@@ -45,11 +45,25 @@ e2e tests tox:
     - apk add build-base
   needs: []
 
-e2e dynamic tests validation:
-  image:
-    name: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
-    entrypoint: ["/bin/sh", "-c"]
+.e2e launcher pip install:
+  extends: .python_base
   stage: static
+  variables:
+    PIP_CACHE_DIR: $CI_PROJECT_DIR/.pip-cache
+  cache:
+    key: e2e-launcher-${PYTHON_VERSION}
+    paths:
+      - .pip-cache/
+      - .apk-cache/
+  before_script:
+    - mkdir -p $CI_PROJECT_DIR/.apk-cache && apk add --cache-dir $CI_PROJECT_DIR/.apk-cache build-base linux-headers libffi-dev
+    - export PIP_EXTRA_INDEX_URL="https://${TWINE_USERNAME}:${TWINE_PASSWORD}@${TWINE_REPO#https://}/simple"
+    - pip install ./retina/protocol ./retina/client ./retina/orchestrator ./retina/viavi ./retina/launcher
+  needs:
+    - get retina version
+
+e2e dynamic tests validation:
+  extends: .e2e launcher pip install
   rules:
     - if: $ON_MR
       changes:
@@ -60,16 +74,9 @@ e2e dynamic tests validation:
   script:
     - cd ${CI_PROJECT_DIR}/e2e
     - retina-launcher -W error --collect-only
-  needs:
-    - get retina version
-    - job: retina containers [launcher]
-      optional: true
 
 e2e request validation:
-  image:
-    name: ${RETINA_REGISTRY_URI}/launcher:${RETINA_VERSION}
-    entrypoint: ["/bin/sh", "-c"]
-  stage: static
+  extends: .e2e launcher pip install
   rules:
     - if: $ON_MR
       changes:
@@ -83,10 +90,6 @@ e2e request validation:
       for f in $file_list; do
           retina-request-checker --input $f
       done
-  needs:
-    - get retina version
-    - job: retina containers [launcher]
-      optional: true
 
 dynamically generated pipeline validation:
   extends: .static
