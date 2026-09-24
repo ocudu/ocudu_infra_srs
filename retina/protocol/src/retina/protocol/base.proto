@@ -282,6 +282,8 @@ message CuCpMetrics {
   uint32 nof_xn_retrieve_ue_context_response = 16;
 
   uint32 nof_nr_dl_tdoa_measurements = 17; // LPP ProvideLocationInformation messages with NR DL-TDOA measurements
+
+  uint32 nof_e_cid_measurement_report_with_aoa = 18; // NRPPa E-CID Measurement Report with an NR UL AoA result
 };
 
 message RicMetrics {

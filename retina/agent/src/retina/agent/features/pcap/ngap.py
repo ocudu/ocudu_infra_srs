@@ -73,6 +73,28 @@ class ECidMeasurementReportAnalyzer(PcapAnalyzer):
         return Metrics(cu_cp=CuCpMetrics(nof_e_cid_measurement_report=self._count))
 
 
+class ECidMeasurementReportWithAoaAnalyzer(PcapAnalyzer):
+    """
+    Counts NRPPa E-CID Measurement Report messages that contain an NR UL AoA result.
+
+    The gNB sends the NR AoA result as the UL-AoA value of id-AngleOfArrivalNR (3GPP TS 38.455).
+    tshark display filter: nrppa.E_CIDMeasurementReport_element && nrppa.UL_AoA_element
+    """
+
+    def __init__(self) -> None:
+        self._count = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "nrppa.E_CIDMeasurementReport_element && nrppa.UL_AoA_element"
+
+    def process(self, _) -> None:
+        self._count += 1
+
+    def report(self) -> Metrics:
+        return Metrics(cu_cp=CuCpMetrics(nof_e_cid_measurement_report_with_aoa=self._count))
+
+
 class TrpInformationRequestAnalyzer(PcapAnalyzer):
     """
     Counts NRPPa TRP Information Request messages.

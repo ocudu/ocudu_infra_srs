@@ -732,6 +732,7 @@ class CuCpMetrics(google.protobuf.message.Message):
     NOF_XN_RETRIEVE_UE_CONTEXT_REQUEST_FIELD_NUMBER: builtins.int
     NOF_XN_RETRIEVE_UE_CONTEXT_RESPONSE_FIELD_NUMBER: builtins.int
     NOF_NR_DL_TDOA_MEASUREMENTS_FIELD_NUMBER: builtins.int
+    NOF_E_CID_MEASUREMENT_REPORT_WITH_AOA_FIELD_NUMBER: builtins.int
     nof_e_cid_measurement_initiation_request: builtins.int
     nof_e_cid_measurement_initiation_response: builtins.int
     nof_e_cid_measurement_report: builtins.int
@@ -752,6 +753,8 @@ class CuCpMetrics(google.protobuf.message.Message):
     nof_xn_retrieve_ue_context_response: builtins.int
     nof_nr_dl_tdoa_measurements: builtins.int
     """LPP ProvideLocationInformation messages with NR DL-TDOA measurements"""
+    nof_e_cid_measurement_report_with_aoa: builtins.int
+    """NRPPa E-CID Measurement Report with an NR UL AoA result"""
     def __init__(
         self,
         *,
@@ -772,8 +775,9 @@ class CuCpMetrics(google.protobuf.message.Message):
         nof_xn_retrieve_ue_context_request: builtins.int = ...,
         nof_xn_retrieve_ue_context_response: builtins.int = ...,
         nof_nr_dl_tdoa_measurements: builtins.int = ...,
+        nof_e_cid_measurement_report_with_aoa: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_5qi_5_drb_configured", b"nof_5qi_5_drb_configured", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_nr_dl_tdoa_measurements", b"nof_nr_dl_tdoa_measurements", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_write_replace_warning_request", b"nof_write_replace_warning_request", "nof_write_replace_warning_response", b"nof_write_replace_warning_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge", "nof_xn_retrieve_ue_context_request", b"nof_xn_retrieve_ue_context_request", "nof_xn_retrieve_ue_context_response", b"nof_xn_retrieve_ue_context_response"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_5qi_5_drb_configured", b"nof_5qi_5_drb_configured", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_e_cid_measurement_report_with_aoa", b"nof_e_cid_measurement_report_with_aoa", "nof_nr_dl_tdoa_measurements", b"nof_nr_dl_tdoa_measurements", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_write_replace_warning_request", b"nof_write_replace_warning_request", "nof_write_replace_warning_response", b"nof_write_replace_warning_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge", "nof_xn_retrieve_ue_context_request", b"nof_xn_retrieve_ue_context_request", "nof_xn_retrieve_ue_context_response", b"nof_xn_retrieve_ue_context_response"]) -> None: ...
 
 Global___CuCpMetrics: typing_extensions.TypeAlias = CuCpMetrics
 
