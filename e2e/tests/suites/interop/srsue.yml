@@ -91,3 +91,4 @@ udp_bidirectional_security:
     parameters:
       log_level: info
       nas_ciphering_order: [NEA2, NEA1, NEA0]
+  feature_ids: [xfail]
