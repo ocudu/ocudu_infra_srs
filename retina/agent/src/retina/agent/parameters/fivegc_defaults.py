@@ -27,5 +27,6 @@ tun_mask: int = 16
 apn: str = "internet"
 ims_mode: str = ""  # enabled, not_registering
 slices: List[int] = []
+nas_ciphering_order: List[str] = ["NEA0", "NEA1", "NEA2"]
 time_multiplier: float = 1
 metrics_filename_json: str = "metrics.json"
