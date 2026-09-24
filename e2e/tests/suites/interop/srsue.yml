@@ -87,3 +87,7 @@ udp_bidirectional_security:
   gnb:
     config: [cu_cp.yml, security.yml, du.yml, common_search_space.yml, prach_config.yml]
     parameters: *gnb_parameters
+  core:
+    parameters:
+      log_level: info
+      nas_ciphering_order: [NEA2, NEA1, NEA0]
