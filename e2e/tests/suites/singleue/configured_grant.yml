@@ -27,7 +27,7 @@ baseline: &base_config
         - RLF detected with cause \"MAC max consecutive CRC KOs reached\"
   core:
     config: [baseline.cfg]
-  feature_ids: []
+  feature_ids: [MVP-FUNC-BW-16-3]
   criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
