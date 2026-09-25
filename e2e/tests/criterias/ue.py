@@ -23,6 +23,15 @@ class nof_ko_dl_le(UeCriteria):
         return sum(s.GetMetrics(Empty()).aggregate.nof_ko_dl for s in self._stub_array)
 
 
+class nof_ko_dl_gt(UeCriteria):
+    """UE DL KOs"""
+
+    operator_method = operator.gt
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).aggregate.nof_ko_dl for s in self._stub_array)
+
+
 class nof_ko_ul_le(UeCriteria):
     """UE UL KOs"""
 

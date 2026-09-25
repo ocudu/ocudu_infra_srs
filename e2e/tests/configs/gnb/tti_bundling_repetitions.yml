@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+cell_cfg:
+  pdsch:
+    max_nof_rep: 8
+    cqi_rep_threshold: 15
+  pusch:
+    max_nof_rep: 4
+    force_rep: true
+    sinr_rep_threshold: 50

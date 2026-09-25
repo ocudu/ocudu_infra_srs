@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+
+baseline:
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      traffic_duration: 10
+      nr_forced_cqi: 3
+      as_release: 17
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, tti_bundling_repetitions.yml]
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-SVCS-16-8-d]
+  criteria:
+    du.dl_bitrate_gt: 7.0e+5
+    du.ul_bitrate_gt: 7.0e+5
+    du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_gt: 1000 # repetitions are reported as retx by UE.
+    du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
+    du.nof_reestablishments_request_eq: 0
+    du.nof_error_indications_le: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    all.errors_le: 0
+    all.warnings_le: 0
