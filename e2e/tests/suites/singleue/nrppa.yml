@@ -81,8 +81,6 @@ position_dl_tdoa:
 position_angle:
   <<: *base_config
   feature_ids: [MVP-FUNC-POS-16-3-c, xfail]
-  core:
-    config: [baseline.cfg, nrppa_nr_aoa.cfg, nrppa_trigger_meas.cfg]
   criteria:
     <<: *base_criteria
     cu_cp.nof_e_cid_measurement_report_with_aoa_geq: 1
