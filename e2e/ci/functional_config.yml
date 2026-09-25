@@ -396,3 +396,15 @@ tdd_siso:
     KEYWORDS: "singleue.tdd_siso."
     TESTBED: dynamic
     MARKERS: "zmq or test_mode_ue"
+
+tti_bundling_repetitions:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.tti_bundling_repetitions."
+    TESTBED: dynamic
+    MARKERS: "zmq or test_mode_ue"
