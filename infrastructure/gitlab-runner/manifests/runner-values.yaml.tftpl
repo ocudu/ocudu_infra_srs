@@ -83,7 +83,7 @@ runners:
         FF_TIMESTAMPS = true
         FF_PRINT_POD_EVENTS = true
         FF_SCRIPT_SECTIONS = true
-%{ if length(cluster_config.sysctls) > 0 ~}
+%{ if length(runner.sysctls) > 0 ~}
         FF_USE_ADVANCED_POD_SPEC_CONFIGURATION = true
 %{ endif ~}
 %{ if cluster_config.cache != null && contains(["s3", "gcs", "azure"], try(cluster_config.cache.type, "")) ~}
@@ -160,14 +160,14 @@ runners:
             service_memory_limit = "${runner.service_memory_limit}"
             helper_cpu_limit = "${runner.helper_cpu_limit}"
             helper_memory_limit = "${runner.helper_memory_limit}"
-%{ if length(cluster_config.sysctls) > 0 ~}
+%{ if length(runner.sysctls) > 0 ~}
       [[runners.kubernetes.pod_spec]]
         name = "sysctls"
         patch_type = "strategic"
         patch = '''
           securityContext:
             sysctls:
-%{ for name, value in cluster_config.sysctls ~}
+%{ for name, value in runner.sysctls ~}
               - name: "${name}"
                 value: "${value}"
 %{ endfor ~}

@@ -11,7 +11,6 @@ locals {
     host_aliases = try(local._yaml_cluster_config.host_aliases, null)
     ssl_verify   = try(local._yaml_cluster_config.ssl_verify, true)
     environment  = tolist(try(local._yaml_cluster_config.environment, []))
-    sysctls      = tomap(try(local._yaml_cluster_config.sysctls, {}))
     volumes = [
       for v in try(local._yaml_cluster_config.volumes, []) : {
         type       = v.type
@@ -48,7 +47,10 @@ locals {
       termination_grace_period_seconds = try(r.termination_grace_period_seconds, 3600)
       run_untagged                     = try(r.run_untagged, false)
       metrics_enabled                  = try(r.metrics_enabled, false)
-
+      
+      # Pod sysctls
+      sysctls = tomap(try(r.sysctls, {}))
+      
       # Session server
       session_server_enabled                     = try(r.session_server_enabled, false)
       session_server_timeout                     = try(r.session_server_timeout, null)
