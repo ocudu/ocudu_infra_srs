@@ -47,10 +47,10 @@ locals {
       termination_grace_period_seconds = try(r.termination_grace_period_seconds, 3600)
       run_untagged                     = try(r.run_untagged, false)
       metrics_enabled                  = try(r.metrics_enabled, false)
-      
+
       # Pod sysctls
       sysctls = tomap(try(r.sysctls, {}))
-      
+
       # Session server
       session_server_enabled                     = try(r.session_server_enabled, false)
       session_server_timeout                     = try(r.session_server_timeout, null)
