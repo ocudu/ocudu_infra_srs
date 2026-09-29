@@ -8,7 +8,7 @@ mocn: &base_config
   ue:
     config: [1cell.cfg, mocn.cfg]
   gnb:
-    config: [mocn.yml, cu_cp.yml, du.yml]
+    config: [2amf.yml, mocn.yml, cu_cp.yml, du.yml]
   core:
     items:
       - parameters:
@@ -43,7 +43,7 @@ moran:
     parameters:
       num_cells: 2
   gnb:
-    config: [mocn.yml, cu_cp.yml, du.yml, 2cell_moran.yml]
+    config: [2amf.yml, cu_cp.yml, du.yml, 2cell_moran.yml]
     parameters:
       num_cells: 2
   feature_ids: [MVP-FUNC-RANS-16-2]
