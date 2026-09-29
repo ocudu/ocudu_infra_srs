@@ -203,6 +203,9 @@ tdd_dl_heavy_rt:
       nof_antennas_dl: 4
       nof_antennas_ul: 1
       log_level: warning
+      warning_allowlist:
+        - ra-ContentionResolutionTimer, for prach/msg3 rx at slot
+        - \"RRC Setup Procedure\" timed out
   core:
     config: [baseline.cfg]
     parameters:
