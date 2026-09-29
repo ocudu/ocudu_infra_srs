@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# In 1000 UE 7d2u performance tests, using the default offset was resulting in KOs, likely UE performance related.
+# These offsets fix it. Exact cause TBD.
+cell_cfg:
+  csi:
+    meas_csi_rs_slot_offset: 22
+    tracking_csi_rs_slot_offset: 23

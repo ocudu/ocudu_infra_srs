@@ -13,9 +13,6 @@ cell_cfg:
     nof_cell_csi_res: 90
   csi:
     csi_rs_period: 80
-    # Using the default offset was resulting in KOs, likely UE performance related. This offset fixes it, exact cause TBD.
-    meas_csi_rs_slot_offset: 22
-    tracking_csi_rs_slot_offset: 23
   ul_common:
     max_ul_grants_per_slot: 128
     max_pucchs_per_slot: 112
