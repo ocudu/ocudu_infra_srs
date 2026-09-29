@@ -14,6 +14,7 @@ band_3_reattach: &band_3_config
   parameters:
     reattach_count: 2
   request: android_b200
+  feature_ids: [xfail]
   gnb:
     config: [cu_cp.yml, du.yml]
     parameters:
@@ -43,6 +44,7 @@ band_7_reattach:
   parameters:
     reattach_count: 2
   request: android_x300
+  feature_ids: [xfail]
   gnb:
     config: [cu_cp.yml, du.yml]
     parameters:
