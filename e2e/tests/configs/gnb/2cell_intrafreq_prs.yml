@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Two intra-frequency cells, each with one DL-PRS resource and one TRP position.
+# The TRP positions are the cell positions of 2cell_intrafreq_chsim.cfg.
+
+cells:
+  -
+    # Cell 1
+    pci: 1
+    sector_id: 0
+    prach:
+      prach_root_sequence_index: 0
+    prs:
+      resource_sets:
+        - comb_size: 2
+          nof_symbols: 12
+          periodicity_slots: 160
+          slot_offset: 2
+          resources:
+            - sequence_id: 1
+              re_offset: 0
+              slot_offset: 0
+              symbol_offset: 0
+    geo_coordinates:
+      high_accuracy:
+        latitude: 0.0
+        longitude: -0.00044916
+        altitude: 0.0
+  -
+    # Cell 2
+    pci: 2
+    sector_id: 1
+    prach:
+      prach_root_sequence_index: 64
+    prs:
+      resource_sets:
+        - comb_size: 2
+          nof_symbols: 12
+          periodicity_slots: 160
+          slot_offset: 2
+          resources:
+            - sequence_id: 2
+              re_offset: 1
+              slot_offset: 0
+              symbol_offset: 0
+    geo_coordinates:
+      high_accuracy:
+        latitude: 0.0
+        longitude: 0.00044916
+        altitude: 0.0

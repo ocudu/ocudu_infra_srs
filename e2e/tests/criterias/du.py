@@ -627,3 +627,21 @@ class nof_rlm_csi_rs_resources_eq(DuCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).du.nof_rlm_csi_rs_resources for s in self._stub_array)
+
+
+class nof_location_meas_indications_ge(DuCriteria):
+    """Location Measurement Indications"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_location_meas_indications for s in self._stub_array)
+
+
+class nof_meas_gap_setups_ge(DuCriteria):
+    """Measurement Gap Setups"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_meas_gap_setups for s in self._stub_array)

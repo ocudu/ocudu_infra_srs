@@ -86,6 +86,33 @@ class nof_ims_nas_registered_ue_eq(FiveGcCriteria):
         return sum(s.GetMetrics(Empty()).core.nof_ims_nas_registered_ue for s in self._stub_array)
 
 
+class nof_lpp_provide_assistance_data_ge(FiveGcCriteria):
+    """LPP Provide Assistance Data"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_lpp_provide_assistance_data for s in self._stub_array)
+
+
+class nof_lpp_error_eq(FiveGcCriteria):
+    """LPP Error"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_lpp_error for s in self._stub_array)
+
+
+class nof_lpp_abort_eq(FiveGcCriteria):
+    """LPP Abort"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_lpp_abort for s in self._stub_array)
+
+
 class errors_le(FiveGcCriteria):
     """Errors"""
 

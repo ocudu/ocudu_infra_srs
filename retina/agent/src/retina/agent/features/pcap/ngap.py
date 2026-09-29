@@ -115,6 +115,29 @@ class TrpInformationResponseAnalyzer(PcapAnalyzer):
         return Metrics(cu_cp=CuCpMetrics(nof_trp_information_response=self._count))
 
 
+class NrDlTdoaMeasurementAnalyzer(PcapAnalyzer):
+    """
+    Counts LPP ProvideLocationInformation messages with NR DL-TDOA measurements.
+
+    The LPP messages are carried in NAS over NGAP. A target device that fails the measurements sends
+    nr-DL-TDOA-Error-r16 instead of the measurements, and that message is not counted.
+    tshark display filter: lpp.nr_DL_TDOA_SignalMeasurementInformation_r16_element
+    """
+
+    def __init__(self) -> None:
+        self._count = 0
+
+    @property
+    def display_filter(self) -> str:
+        return "lpp.nr_DL_TDOA_SignalMeasurementInformation_r16_element"
+
+    def process(self, _) -> None:
+        self._count += 1
+
+    def report(self) -> Metrics:
+        return Metrics(cu_cp=CuCpMetrics(nof_nr_dl_tdoa_measurements=self._count))
+
+
 class WriteReplaceWarningRequestAnalyzer(PcapAnalyzer):
     """
     Counts NGAP Write-Replace Warning Request messages.

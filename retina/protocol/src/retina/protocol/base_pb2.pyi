@@ -565,6 +565,8 @@ class DuMetrics(google.protobuf.message.Message):
     NOF_CG_TYPE2_FIELD_NUMBER: builtins.int
     NOF_CS_RNTI_FIELD_NUMBER: builtins.int
     NOF_UES_AT_STOP_FIELD_NUMBER: builtins.int
+    NOF_LOCATION_MEAS_INDICATIONS_FIELD_NUMBER: builtins.int
+    NOF_MEAS_GAP_SETUPS_FIELD_NUMBER: builtins.int
     nof_error_indications: builtins.int
     max_late_dl_harqs: builtins.int
     max_late_ul_harqs: builtins.int
@@ -605,6 +607,10 @@ class DuMetrics(google.protobuf.message.Message):
     """cs-RNTI setups in PhysicalCellGroupConfig with a valid RNTI value"""
     nof_ues_at_stop: builtins.int
     """UEs in the last report of each cell, flushed on DU stop"""
+    nof_location_meas_indications: builtins.int
+    """LocationMeasurementIndication messages that start PRS measurements"""
+    nof_meas_gap_setups: builtins.int
+    """RRCReconfiguration messages that set up a per-UE measurement gap"""
     @property
     def pdsch_prbs_used_per_tdd_slot_idx(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
     @property
@@ -653,8 +659,10 @@ class DuMetrics(google.protobuf.message.Message):
         nof_cg_type2: builtins.int = ...,
         nof_cs_rnti: builtins.int = ...,
         nof_ues_at_stop: builtins.int = ...,
+        nof_location_meas_indications: builtins.int = ...,
+        nof_meas_gap_setups: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_cg_type1", b"nof_cg_type1", "nof_cg_type2", b"nof_cg_type2", "nof_conres_issues", b"nof_conres_issues", "nof_cs_rnti", b"nof_cs_rnti", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_paging_messages", b"nof_paging_messages", "nof_rlm_csi_rs_resources", b"nof_rlm_csi_rs_resources", "nof_rlm_ssb_resources", b"nof_rlm_ssb_resources", "nof_seq_err", b"nof_seq_err", "nof_sib16_transmissions", b"nof_sib16_transmissions", "nof_sib19_transmissions", b"nof_sib19_transmissions", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib6_transmissions", b"nof_sib6_transmissions", "nof_sib7_transmissions", b"nof_sib7_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_ues_at_stop", b"nof_ues_at_stop", "nof_under", b"nof_under", "pdsch_prbs_mid10_per_tdd_slot_idx", b"pdsch_prbs_mid10_per_tdd_slot_idx", "pdsch_prbs_used_per_tdd_slot_idx", b"pdsch_prbs_used_per_tdd_slot_idx", "prach_configuration_index", b"prach_configuration_index", "pusch_prbs_mid10_per_tdd_slot_idx", b"pusch_prbs_mid10_per_tdd_slot_idx", "pusch_prbs_used_per_tdd_slot_idx", b"pusch_prbs_used_per_tdd_slot_idx", "sib1_has_rach_prioritization_slice", b"sib1_has_rach_prioritization_slice", "t312", b"t312", "total_prach_preambles", b"total_prach_preambles", "transform_precoder", b"transform_precoder", "two_step_prachs_detected", b"two_step_prachs_detected"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_cg_type1", b"nof_cg_type1", "nof_cg_type2", b"nof_cg_type2", "nof_conres_issues", b"nof_conres_issues", "nof_cs_rnti", b"nof_cs_rnti", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_location_meas_indications", b"nof_location_meas_indications", "nof_meas_gap_setups", b"nof_meas_gap_setups", "nof_paging_messages", b"nof_paging_messages", "nof_rlm_csi_rs_resources", b"nof_rlm_csi_rs_resources", "nof_rlm_ssb_resources", b"nof_rlm_ssb_resources", "nof_seq_err", b"nof_seq_err", "nof_sib16_transmissions", b"nof_sib16_transmissions", "nof_sib19_transmissions", b"nof_sib19_transmissions", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib6_transmissions", b"nof_sib6_transmissions", "nof_sib7_transmissions", b"nof_sib7_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_ues_at_stop", b"nof_ues_at_stop", "nof_under", b"nof_under", "pdsch_prbs_mid10_per_tdd_slot_idx", b"pdsch_prbs_mid10_per_tdd_slot_idx", "pdsch_prbs_used_per_tdd_slot_idx", b"pdsch_prbs_used_per_tdd_slot_idx", "prach_configuration_index", b"prach_configuration_index", "pusch_prbs_mid10_per_tdd_slot_idx", b"pusch_prbs_mid10_per_tdd_slot_idx", "pusch_prbs_used_per_tdd_slot_idx", b"pusch_prbs_used_per_tdd_slot_idx", "sib1_has_rach_prioritization_slice", b"sib1_has_rach_prioritization_slice", "t312", b"t312", "total_prach_preambles", b"total_prach_preambles", "transform_precoder", b"transform_precoder", "two_step_prachs_detected", b"two_step_prachs_detected"]) -> None: ...
 
 Global___DuMetrics: typing_extensions.TypeAlias = DuMetrics
 
@@ -669,6 +677,10 @@ class CoreMetrics(google.protobuf.message.Message):
     NOF_PDU_SESSION_MODIFICATION_COMPLETE_FIELD_NUMBER: builtins.int
     NOF_PDU_SESSION_MODIFICATION_COMMAND_REJECT_FIELD_NUMBER: builtins.int
     NOF_IMS_NAS_REGISTERED_UE_FIELD_NUMBER: builtins.int
+    NOF_LPP_PROVIDE_ASSISTANCE_DATA_FIELD_NUMBER: builtins.int
+    NOF_LPP_PROVIDE_LOCATION_INFORMATION_FIELD_NUMBER: builtins.int
+    NOF_LPP_ERROR_FIELD_NUMBER: builtins.int
+    NOF_LPP_ABORT_FIELD_NUMBER: builtins.int
     nof_pdu_session_establishment_accept: builtins.int
     nof_nas_service_accept: builtins.int
     nof_ng_paging: builtins.int
@@ -676,6 +688,10 @@ class CoreMetrics(google.protobuf.message.Message):
     nof_pdu_session_modification_complete: builtins.int
     nof_pdu_session_modification_command_reject: builtins.int
     nof_ims_nas_registered_ue: builtins.int
+    nof_lpp_provide_assistance_data: builtins.int
+    nof_lpp_provide_location_information: builtins.int
+    nof_lpp_error: builtins.int
+    nof_lpp_abort: builtins.int
     def __init__(
         self,
         *,
@@ -686,8 +702,12 @@ class CoreMetrics(google.protobuf.message.Message):
         nof_pdu_session_modification_complete: builtins.int = ...,
         nof_pdu_session_modification_command_reject: builtins.int = ...,
         nof_ims_nas_registered_ue: builtins.int = ...,
+        nof_lpp_provide_assistance_data: builtins.int = ...,
+        nof_lpp_provide_location_information: builtins.int = ...,
+        nof_lpp_error: builtins.int = ...,
+        nof_lpp_abort: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_ims_nas_registered_ue", b"nof_ims_nas_registered_ue", "nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_modification_command_reject", b"nof_pdu_session_modification_command_reject", "nof_pdu_session_modification_complete", b"nof_pdu_session_modification_complete", "nof_tau_request", b"nof_tau_request"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_ims_nas_registered_ue", b"nof_ims_nas_registered_ue", "nof_lpp_abort", b"nof_lpp_abort", "nof_lpp_error", b"nof_lpp_error", "nof_lpp_provide_assistance_data", b"nof_lpp_provide_assistance_data", "nof_lpp_provide_location_information", b"nof_lpp_provide_location_information", "nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_modification_command_reject", b"nof_pdu_session_modification_command_reject", "nof_pdu_session_modification_complete", b"nof_pdu_session_modification_complete", "nof_tau_request", b"nof_tau_request"]) -> None: ...
 
 Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
 
@@ -711,6 +731,7 @@ class CuCpMetrics(google.protobuf.message.Message):
     NOF_WRITE_REPLACE_WARNING_RESPONSE_FIELD_NUMBER: builtins.int
     NOF_XN_RETRIEVE_UE_CONTEXT_REQUEST_FIELD_NUMBER: builtins.int
     NOF_XN_RETRIEVE_UE_CONTEXT_RESPONSE_FIELD_NUMBER: builtins.int
+    NOF_NR_DL_TDOA_MEASUREMENTS_FIELD_NUMBER: builtins.int
     nof_e_cid_measurement_initiation_request: builtins.int
     nof_e_cid_measurement_initiation_response: builtins.int
     nof_e_cid_measurement_report: builtins.int
@@ -729,6 +750,8 @@ class CuCpMetrics(google.protobuf.message.Message):
     nof_xn_retrieve_ue_context_request: builtins.int
     """XNAP UE context retrieval on RRC Resume at a new gNB"""
     nof_xn_retrieve_ue_context_response: builtins.int
+    nof_nr_dl_tdoa_measurements: builtins.int
+    """LPP ProvideLocationInformation messages with NR DL-TDOA measurements"""
     def __init__(
         self,
         *,
@@ -748,8 +771,9 @@ class CuCpMetrics(google.protobuf.message.Message):
         nof_write_replace_warning_response: builtins.int = ...,
         nof_xn_retrieve_ue_context_request: builtins.int = ...,
         nof_xn_retrieve_ue_context_response: builtins.int = ...,
+        nof_nr_dl_tdoa_measurements: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_5qi_5_drb_configured", b"nof_5qi_5_drb_configured", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_write_replace_warning_request", b"nof_write_replace_warning_request", "nof_write_replace_warning_response", b"nof_write_replace_warning_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge", "nof_xn_retrieve_ue_context_request", b"nof_xn_retrieve_ue_context_request", "nof_xn_retrieve_ue_context_response", b"nof_xn_retrieve_ue_context_response"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_5qi_5_drb_configured", b"nof_5qi_5_drb_configured", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_nr_dl_tdoa_measurements", b"nof_nr_dl_tdoa_measurements", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_write_replace_warning_request", b"nof_write_replace_warning_request", "nof_write_replace_warning_response", b"nof_write_replace_warning_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge", "nof_xn_retrieve_ue_context_request", b"nof_xn_retrieve_ue_context_request", "nof_xn_retrieve_ue_context_response", b"nof_xn_retrieve_ue_context_response"]) -> None: ...
 
 Global___CuCpMetrics: typing_extensions.TypeAlias = CuCpMetrics
 

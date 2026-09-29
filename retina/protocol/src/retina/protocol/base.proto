@@ -239,6 +239,9 @@ message DuMetrics {
   uint32 nof_cs_rnti  = 36; // cs-RNTI setups in PhysicalCellGroupConfig with a valid RNTI value
 
   uint32 nof_ues_at_stop = 37; // UEs in the last report of each cell, flushed on DU stop
+
+  uint32 nof_location_meas_indications = 38; // LocationMeasurementIndication messages that start PRS measurements
+  uint32 nof_meas_gap_setups           = 39; // RRCReconfiguration messages that set up a per-UE measurement gap
 };
 
 message CoreMetrics {
@@ -249,6 +252,10 @@ message CoreMetrics {
   uint32 nof_pdu_session_modification_complete       = 5;
   uint32 nof_pdu_session_modification_command_reject = 6;
   uint32 nof_ims_nas_registered_ue                   = 7;
+  uint32 nof_lpp_provide_assistance_data             = 8;
+  uint32 nof_lpp_provide_location_information        = 9;
+  uint32 nof_lpp_error                               = 10;
+  uint32 nof_lpp_abort                               = 11;
 };
 
 message CuCpMetrics {
@@ -273,6 +280,8 @@ message CuCpMetrics {
 
   uint32 nof_xn_retrieve_ue_context_request  = 15; // XNAP UE context retrieval on RRC Resume at a new gNB
   uint32 nof_xn_retrieve_ue_context_response = 16;
+
+  uint32 nof_nr_dl_tdoa_measurements = 17; // LPP ProvideLocationInformation messages with NR DL-TDOA measurements
 };
 
 message RicMetrics {

@@ -77,6 +77,24 @@ class trp_information_response_eq(CuCpCriteria):
         return sum(s.GetMetrics(Empty()).cu_cp.nof_trp_information_response for s in self._stub_array)
 
 
+class trp_information_response_ge(CuCpCriteria):
+    """TRP Information Response"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_trp_information_response for s in self._stub_array)
+
+
+class nof_nr_dl_tdoa_measurements_ge(CuCpCriteria):
+    """LPP NR DL-TDOA Measurements"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_nr_dl_tdoa_measurements for s in self._stub_array)
+
+
 class nof_xn_handover_request_acknowledge_geq(CuCpCriteria):
     """XN Handover Request Acknowledge"""
 

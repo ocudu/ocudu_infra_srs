@@ -35,6 +35,7 @@ from retina.agent.features.pcap.ngap import (
     ECidMeasurementInitiationRequestAnalyzer,
     ECidMeasurementInitiationResponseAnalyzer,
     ECidMeasurementReportAnalyzer,
+    NrDlTdoaMeasurementAnalyzer,
     TrpInformationRequestAnalyzer,
     TrpInformationResponseAnalyzer,
     WriteReplaceWarningRequestAnalyzer,
@@ -56,6 +57,7 @@ _NGAP_PCAP_ANALYZER_ARRAY = (
     ECidMeasurementReportAnalyzer,
     TrpInformationRequestAnalyzer,
     TrpInformationResponseAnalyzer,
+    NrDlTdoaMeasurementAnalyzer,
     WriteReplaceWarningRequestAnalyzer,
     WriteReplaceWarningResponseAnalyzer,
 )

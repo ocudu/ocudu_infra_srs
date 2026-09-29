@@ -36,6 +36,10 @@ import TOCInline from '@theme/TOCInline';
 | `nof_pdu_session_modification_complete` | `uint32` |||
 | `nof_pdu_session_modification_command_reject` | `uint32` |||
 | `nof_ims_nas_registered_ue` | `uint32` |||
+| `nof_lpp_provide_assistance_data` | `uint32` |||
+| `nof_lpp_provide_location_information` | `uint32` |||
+| `nof_lpp_error` | `uint32` |||
+| `nof_lpp_abort` | `uint32` |||
 
 #### CuCpMetrics
 
@@ -57,6 +61,7 @@ import TOCInline from '@theme/TOCInline';
 | `nof_write_replace_warning_response` | `uint32` |||
 | `nof_xn_retrieve_ue_context_request` | `uint32` ||XNAP UE context retrieval on RRC Resume at a new gNB|
 | `nof_xn_retrieve_ue_context_response` | `uint32` |||
+| `nof_nr_dl_tdoa_measurements` | `uint32` ||LPP ProvideLocationInformation messages with NR DL-TDOA measurements|
 
 #### DUDefinition
 
@@ -106,6 +111,8 @@ import TOCInline from '@theme/TOCInline';
 | `nof_cg_type2` | `uint32` ||Configured grant Type 2 setups (rrc-ConfiguredUplinkGrant absent)|
 | `nof_cs_rnti` | `uint32` ||cs-RNTI setups in PhysicalCellGroupConfig with a valid RNTI value|
 | `nof_ues_at_stop` | `uint32` ||UEs in the last report of each cell, flushed on DU stop|
+| `nof_location_meas_indications` | `uint32` ||LocationMeasurementIndication messages that start PRS measurements|
+| `nof_meas_gap_setups` | `uint32` ||RRCReconfiguration messages that set up a per-UE measurement gap|
 
 #### FiveGCDefinition
 

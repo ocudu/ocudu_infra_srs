@@ -41,3 +41,38 @@ position_time:
   feature_ids: [MVP-FUNC-POS-16-3-b]
   core:
     config: [baseline.cfg, nrppa_nr_tdoa.cfg, nrppa_trigger_meas.cfg]
+
+# DL-PRS based NR DL-TDOA over LPP
+# The UE does not decode the DL-PRS. It calculates the RSTDs from the simulated UE and cell positions.
+# This test examines the positioning data that the gNB sends, the measurement gap for the DL-PRS and the RSTDs that the
+# UE reports. It does not examine the transmitted DL-PRS.
+position_dl_tdoa:
+  <<: *base_config
+  feature_ids: [MVP-FUNC-POS-16-2]
+  ue:
+    config: [2cell_intrafreq_chsim.cfg, positioning.cfg]
+    parameters:
+      num_cells: 2
+      ground_latitude: 0.0
+      ground_longitude: 0.0
+  gnb:
+    config: [cu_cp.yml, du.yml, 2cell_intrafreq_prs.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml, nrppa.yml]
+    parameters:
+      num_cells: 2
+  core:
+    config: [baseline.cfg, lpp_nr_tdoa.cfg, lpp_trigger_location.cfg]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_reestablishments_request_eq: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    cu_cp.trp_information_response_ge: 1
+    cu_cp.nof_e_cid_measurement_initiation_request_eq: 0
+    core.nof_lpp_provide_assistance_data_ge: 1
+    du.nof_location_meas_indications_ge: 1
+    # The cells share the SSB frequency, so only the DL-PRS need a measurement gap.
+    du.nof_meas_gap_setups_ge: 1
+    cu_cp.nof_nr_dl_tdoa_measurements_ge: 1
+    core.nof_lpp_error_eq: 0
+    core.nof_lpp_abort_eq: 0

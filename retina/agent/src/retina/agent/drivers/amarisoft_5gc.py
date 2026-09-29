@@ -155,6 +155,10 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
                         ),
                         nof_nas_service_accept=counters.get("5gs_nas_service_accept", 0),
                         nof_ng_paging=counters.get("ng_paging", 0),
+                        nof_lpp_provide_assistance_data=counters.get("lpp_provide_assistance_data", 0),
+                        nof_lpp_provide_location_information=counters.get("lpp_provide_location_information", 0),
+                        nof_lpp_error=counters.get("lpp_error", 0),
+                        nof_lpp_abort=counters.get("lpp_abort", 0),
                     )
                 )
         return super().Stop(request, context)
