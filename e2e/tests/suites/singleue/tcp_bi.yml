@@ -5,12 +5,12 @@
 # The purpose of this test is to measure the DL throughput a single UE reaches with TCP, where the
 # uplink also carries the TCP acknowledgements. It is the TCP counterpart of singleue/udp_dl.
 
-baseline:
+4T2R: &base_config
   template: ue_simulator.test_gnb
   request: s72
   ue:
     config: [1cell.cfg, tcp_singleue.cfg]
-    parameters:
+    parameters: &ue_params
       traffic_duration: 30
       nof_tcp_connections: 20 # Maximum, 10 were congestion window limited at ~32 kB each
       nof_antennas_dl: 4
@@ -20,7 +20,7 @@ baseline:
       direction: "both"
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, du_perf.yml, drb_triggered_ul_grant_qos.yml, schedtrace.yml]
-    parameters:
+    parameters: &gnb_params
       nof_antennas_dl: 4
       nof_antennas_ul: 2
       log_level: warning
@@ -29,7 +29,7 @@ baseline:
     parameters:
       log_level: warning
   feature_ids: [MVP-PERF-THR-3b]
-  criteria:
+  criteria: &base_criteria
     du.dl_bitrate_gt: 200.0e+6
     du.ul_bitrate_gt: 90.0e+6
     du.dl_avg_ri_ge: 3.5
@@ -41,3 +41,21 @@ baseline:
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
+
+4T4R:
+  <<: *base_config
+  markers: [xfail]
+  ue:
+    config: [1cell.cfg, tcp_singleue.cfg]
+    parameters:
+      <<: *ue_params
+      nof_antennas_ul: 4
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, du_perf.yml, drb_triggered_ul_grant_qos.yml, schedtrace.yml]
+    parameters:
+      <<: *gnb_params
+      nof_antennas_ul: 4
+  feature_ids: [MVP-FUNC-MIMO-16-5]
+  criteria:
+    <<: *base_criteria
+    du.ul_avg_ri_ge: 3.5

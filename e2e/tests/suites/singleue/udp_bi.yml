@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
-baseline: &base_config
+4T2R: &base_config
   template: ue_simulator.test_gnb
   request: s72
   ue:
     config: [1cell.cfg, udp_singleue.cfg]
-    parameters:
+    parameters: &ue_params
       traffic_duration: 30
       dl_bitrate: 1400.0e+6
       ul_bitrate: 200.0e+6
@@ -16,7 +16,7 @@ baseline: &base_config
       log_level: warning
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, du_perf_ul.yml, schedtrace.yml]
-    parameters:
+    parameters: &gnb_params
       nof_antennas_dl: 4
       nof_antennas_ul: 2
       log_level: warning
@@ -24,8 +24,8 @@ baseline: &base_config
     config: [baseline.cfg]
     parameters:
       log_level: warning
-  feature_ids: [MVP-PERF-THR-3a, MVP-PERF-THR-3c] # MVP-FUNC-MIMO-16-5 once we upgrade it to 4x4
-  criteria:
+  feature_ids: [MVP-PERF-THR-3a, MVP-PERF-THR-3c]
+  criteria: &base_criteria
     du.dl_bitrate_gt: 1200.0e+6
     du.ul_bitrate_gt: 180.0e+6
     du.nof_ko_dl_le: 0
@@ -37,3 +37,21 @@ baseline: &base_config
     du.nof_error_indications_le: 0
     all.errors_le: 0
     all.warnings_le: 0
+
+4T4R:
+  <<: *base_config
+  markers: [xfail]
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      <<: *ue_params
+      nof_antennas_ul: 4
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, du_perf_ul.yml, schedtrace.yml]
+    parameters:
+      <<: *gnb_params
+      nof_antennas_ul: 4
+  feature_ids: [MVP-FUNC-MIMO-16-5]
+  criteria:
+    <<: *base_criteria
+    du.ul_avg_ri_ge: 3.5
