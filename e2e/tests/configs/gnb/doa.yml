@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+expert_phy:
+  doa_enabled: true
+
+# The cell panel of the UE channel simulator points in the +y direction ("antenna_orientation: 90" in the UE config).
+# The bearing must be equal to this orientation. The gNB uses it to translate the angle of arrival from the antenna
+# coordinate system (LCS) to the global coordinate system (GCS).
+cell_cfg:
+  antenna_orientation:
+    bearing: 90

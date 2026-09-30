@@ -10,6 +10,7 @@ cu_cp:
     cells:
       - nr_cell_id: 0x19B0
         periodic_report_cfg_id: 1
+        {%- if num_cells > 1 %}
         ncells:
           - nr_cell_id: 0x19B1
             report_configs: [2]
@@ -18,6 +19,7 @@ cu_cp:
         ncells:
           - nr_cell_id: 0x19B0
             report_configs: [2]
+        {%- endif %}
     report_configs:
       - report_cfg_id: 1
         report_type: periodical

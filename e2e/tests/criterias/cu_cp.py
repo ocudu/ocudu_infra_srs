@@ -59,13 +59,13 @@ class nof_e_cid_measurement_report_geq(CuCpCriteria):
         return sum(s.GetMetrics(Empty()).cu_cp.nof_e_cid_measurement_report for s in self._stub_array)
 
 
-class nof_e_cid_measurement_report_with_aoa_geq(CuCpCriteria):
-    """E-CID Measurement Report with AoA"""
+class nof_e_cid_measurement_result_with_aoa_geq(CuCpCriteria):
+    """E-CID Measurement Result with AoA"""
 
     operator_method = operator.ge
 
     def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).cu_cp.nof_e_cid_measurement_report_with_aoa for s in self._stub_array)
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_e_cid_measurement_result_with_aoa for s in self._stub_array)
 
 
 class trp_information_request_eq(CuCpCriteria):

@@ -22,7 +22,7 @@ position_power: &base_config
     config: [baseline.cfg, nrppa_nr_ecid.cfg, nrppa_trigger_meas.cfg]
   feature_ids: [MVP-FUNC-POS-16-1, MVP-FUNC-POS-16-3-a]
   # tc1.17	rc1.13
-  criteria: &base_criteria
+  criteria:
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_reestablishments_request_eq: 0
@@ -78,9 +78,49 @@ position_dl_tdoa:
     core.nof_lpp_abort_eq: 0
 
 # SRS angle-based NRPPa
-position_angle:
+position_angle_on_demand:
   <<: *base_config
   feature_ids: [MVP-FUNC-POS-16-3-c, xfail]
+  # E-CID uses only the serving cell. The gNB needs DoA estimation, periodic SRS and more than one UL antenna to
+  # measure the AoA.
+  ue:
+    config: [1cell_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      # Keeps the UE connected long enough for the nr_location_req sim event of
+      # nrppa_trigger_meas.cfg to land inside the connected window.
+      traffic_duration: 25
+      nof_antennas_dl: 2
+      nof_antennas_ul: 2
+      # The UE does not decode the PDCCH with more than one antenna if the PDCCH decode optimization is on.
+      pdcch_decode_threshold: 0
+      # Without an antenna array, all cell antennas receive the same signal and the angle of arrival is not measurable.
+      # The UE moves on the x-axis between -50 m and 50 m. The panel is 50 m away and points at this line, so the
+      # angle of arrival changes between approximately -45 and 45 degrees.
+      antenna_type: parabolic_panel
+      cell_position: [0, -50]
+      antenna_orientation: 90
+      ref_signal_power: -16
+      ul_power_attenuation: 40
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, sib2345.yml, mac_pcap.yml, nrppa.yml, srs_periodic_wband.yml, doa.yml]
+    parameters:
+      nof_antennas_dl: 2
+      nof_antennas_ul: 2
+      mac_type: dlt # 2 DL antennas overflow the UDP pcap wrapper
+  core:
+    config: [baseline.cfg, nrppa_nr_ecid.cfg, nrppa_trigger_meas.cfg]
+    parameters:
+      periodic_meas: false
   criteria:
-    <<: *base_criteria
-    cu_cp.nof_e_cid_measurement_report_with_aoa_geq: 1
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_reestablishments_request_eq: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    cu_cp.nof_e_cid_measurement_initiation_request_eq: 1
+    cu_cp.nof_e_cid_measurement_initiation_response_eq: 1
+    cu_cp.nof_e_cid_measurement_result_with_aoa_geq: 1
+    cu_cp.trp_information_request_eq: 1
+    cu_cp.trp_information_response_eq: 1
