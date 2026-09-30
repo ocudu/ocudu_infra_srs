@@ -11,7 +11,7 @@ coverage:
   variables:
     KEYWORDS: "mobility.coverage."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 paging:
   stage: mobility
@@ -23,7 +23,7 @@ paging:
   variables:
     KEYWORDS: "mobility.paging."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 capacity:
   stage: multiue
@@ -35,7 +35,7 @@ capacity:
   variables:
     KEYWORDS: "multiue.capacity."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 cplane_traffic_load:
   stage: multiue
@@ -47,7 +47,7 @@ cplane_traffic_load:
   variables:
     KEYWORDS: "multiue.cplane_traffic_load."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 simultaneous_udp:
   stage: multiue
@@ -59,7 +59,7 @@ simultaneous_udp:
   variables:
     KEYWORDS: "multiue.simultaneous_udp."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 test_mode:
   stage: multiue
@@ -71,7 +71,7 @@ test_mode:
   variables:
     KEYWORDS: "multiue.test_mode."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 ue_state_transition:
   stage: multiue
@@ -83,7 +83,7 @@ ue_state_transition:
   variables:
     KEYWORDS: "multiue.ue_state_transition."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 tcp_bi:
   stage: singleue
@@ -95,7 +95,7 @@ tcp_bi:
   variables:
     KEYWORDS: "singleue.tcp_bi."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 tcp_dl:
   stage: singleue
@@ -107,7 +107,7 @@ tcp_dl:
   variables:
     KEYWORDS: "singleue.tcp_dl."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 tcp_ul:
   stage: singleue
@@ -119,7 +119,7 @@ tcp_ul:
   variables:
     KEYWORDS: "singleue.tcp_ul."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 udp_bi:
   stage: singleue
@@ -131,7 +131,7 @@ udp_bi:
   variables:
     KEYWORDS: "singleue.udp_bi."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 udp_dl:
   stage: singleue
@@ -143,7 +143,7 @@ udp_dl:
   variables:
     KEYWORDS: "singleue.udp_dl."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 udp_ul:
   stage: singleue
@@ -155,4 +155,4 @@ udp_ul:
   variables:
     KEYWORDS: "singleue.udp_ul."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"

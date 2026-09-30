@@ -21,12 +21,15 @@ import yaml
 # Pipelines to generate and the variables added to every one of their jobs. MARKERS is the
 # pytest marker expression selecting the test cases the pipeline runs, usually the testbed
 # group every test case of a testbed is marked with. A pipeline only gets a job for the test
-# suite files holding at least one test case it selects.
+# suite files holding at least one test case it selects. Test cases with the WEEKLY_MARKER
+# marker only run in the weekly pipelines.
+WEEKLY_MARKER = "weekly"
 PIPELINES: Dict[str, Dict[str, object]] = {
-    "functional": {"MARKERS": "zmq or test_mode_ue"},
-    "interop": {"MARKERS": "interop"},
-    "performance": {"MARKERS": "s72 or test_mode_ru"},
-    "rf": {"MARKERS": "rf or android"},
+    "functional": {"MARKERS": f"(zmq or test_mode_ue) and not {WEEKLY_MARKER}"},
+    "interop": {"MARKERS": f"interop and not {WEEKLY_MARKER}"},
+    "performance": {"MARKERS": f"(s72 or test_mode_ru) and not {WEEKLY_MARKER}"},
+    "rf": {"MARKERS": f"(rf or android) and not {WEEKLY_MARKER}"},
+    "weekly_performance": {"MARKERS": f"(s72 or test_mode_ru) and {WEEKLY_MARKER}"},
 }
 
 # Base file holding the builds and the `.<pipeline>_e2e` job of a pipeline, for the pipelines not
@@ -36,6 +39,7 @@ PIPELINE_BASES: Dict[str, str] = {
     "functional": "zmq",
     "interop": "zmq",
     "performance": "rt",
+    "weekly_performance": "rt",
 }
 
 # Retina request a test case with no explicit one falls back to, and the testbed groups the
@@ -45,8 +49,8 @@ PIPELINE_BASES: Dict[str, str] = {
 DEFAULT_RETINA_REQUEST = "zmq_mme"
 RETINA_REQUEST_GROUPS = ("android", "interop", "rf", "s72", "test_mode", "viavi", "zmq")
 
-# Identifiers of a pytest marker expression, that is everything but its boolean operators.
-MARKER_EXPRESSION_IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_.\-]*")
+# Tokens of a pytest marker expression: parentheses and identifiers, boolean operators included.
+MARKER_EXPRESSION_TOKEN = re.compile(r"\s*(\(|\)|[A-Za-z_][A-Za-z0-9_.\-]*)")
 MARKER_EXPRESSION_OPERATORS = {"and", "not", "or"}
 
 # Extensions the test loader picks test suite files up by.
@@ -135,17 +139,19 @@ class Pipeline:
         self.name = name
         self.base = PIPELINE_BASES.get(name, name)
         self.variables = variables if variables is not None else {}
-        self.markers = get_expression_markers(self.variables.get("MARKERS"))
+        self.markers = self.variables.get("MARKERS", "")
         self.stages = []
         self.jobs = []
 
-    def runs_suite(self, suite_markers):
+    def runs_suite(self, test_case_markers):
         """
-        Tells whether this pipeline selects any test case of a test suite tagged with the
-        given markers. A pipeline selecting no marker in particular runs every test suite.
+        Tells whether this pipeline selects any test case of a test suite, given the markers of
+        each of its test cases. A pipeline selecting no marker in particular runs every test suite.
         """
 
-        return not self.markers or bool(self.markers & suite_markers)
+        return not self.markers or any(
+            evaluate_marker_expression(self.markers, markers) for markers in test_case_markers
+        )
 
     def append_stage(self, stage):
         """
@@ -205,18 +211,27 @@ class Pipeline:
         return formatted
 
 
-def get_expression_markers(expression) -> Set[str]:
+def evaluate_marker_expression(expression: str, markers: Set[str]) -> bool:
     """
-    Gets the marker names used in the given pytest marker expression. Its boolean operators
-    are not interpreted, so for anything but a plain `a or b` expression the result is a
-    superset of the markers the expression selects.
+    Tells whether a test case tagged with the given markers is selected by the given pytest
+    marker expression, as `pytest -m` does.
     """
 
-    return {
-        marker
-        for marker in MARKER_EXPRESSION_IDENTIFIER.findall(expression or "")
-        if marker not in MARKER_EXPRESSION_OPERATORS
-    }
+    tokens = []
+    position = 0
+    while expression[position:].strip():
+        match = MARKER_EXPRESSION_TOKEN.match(expression, position)
+        if not match:
+            raise ValueError(f"Invalid marker expression: {expression}")
+        token = match.group(1)
+        if token in MARKER_EXPRESSION_OPERATORS or token in "()":
+            tokens.append(token)
+        else:
+            tokens.append(str(token in markers))
+        position = match.end()
+
+    # Only booleans, parentheses and boolean operators are left, so it is safe to evaluate.
+    return bool(eval(" ".join(tokens), {"__builtins__": {}}))  # pylint: disable=eval-used
 
 
 def get_request_group(retina_request: str) -> str:
@@ -232,11 +247,10 @@ def get_request_group(retina_request: str) -> str:
     return retina_request
 
 
-def get_suite_markers(path) -> Set[str]:
+def get_suite_markers(path) -> List[Set[str]]:
     """
-    Gets the testbed markers the test cases of the given test suite file are tagged with by the
-    test loader: the retina request of every test case and its group. The feature ids it also
-    marks them with are of no use to tell the pipelines apart.
+    Gets the markers each test case of the given test suite file is tagged with by the test
+    loader: its retina request, the request group, its feature ids and its markers.
     """
 
     try:
@@ -244,16 +258,23 @@ def get_suite_markers(path) -> Set[str]:
             suite = yaml.safe_load(f) or {}
     except (IOError, yaml.YAMLError) as e:
         print(f"⚠️ Error reading {path}: {e}")
-        return set()
+        return []
 
-    markers: Set[str] = set()
+    markers: List[Set[str]] = []
 
     for test_case in suite.values():
         # Entries holding nothing but anchors to be reused are not test cases.
         if not isinstance(test_case, dict) or "template" not in test_case:
             continue
         retina_request = test_case.get("request", DEFAULT_RETINA_REQUEST)
-        markers.update((retina_request, get_request_group(retina_request)))
+        markers.append(
+            {
+                retina_request,
+                get_request_group(retina_request),
+                *test_case.get("feature_ids", []),
+                *test_case.get("markers", []),
+            }
+        )
 
     return markers
 
@@ -418,6 +439,13 @@ def generate_pipelines_dynamically(input_path, pipelines_output_path, stages_out
 
     for pipeline in pipelines:
         pipeline_path = base / f"{pipeline.get_name()}_config.yml"
+
+        # GitLab rejects including an empty file, so a pipeline with no jobs is left out.
+        if not pipeline.jobs:
+            print(f"🟡 Skipping {pipeline.get_name()}: none of its test cases is selected")
+            pipeline_path.unlink(missing_ok=True)
+            continue
+
         create_pipeline_file(pipeline_path, pipeline)
 
         dynamic_stages.extend(pipeline.get_stages())

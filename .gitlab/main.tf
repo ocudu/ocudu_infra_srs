@@ -176,6 +176,12 @@ module "settings" {
       allowed_to_merge             = [{ access_level = "no one" }]
       allowed_to_push              = [{ access_level = "maintainer" }]
     }
+    srs_weekly_performance = {
+      allow_force_push             = false
+      code_owner_approval_required = false
+      allowed_to_merge             = [{ access_level = "no one" }]
+      allowed_to_push              = [{ access_level = "maintainer" }]
+    }
     srs_rf = {
       allow_force_push             = false
       code_owner_approval_required = false
@@ -213,6 +219,14 @@ module "settings" {
       active      = true
       variables   = {}
     }
+    weekly_performance = {
+      description = "weekly_performance"
+      cron        = "00 10 * * 6"
+      timezone    = "Europe/Madrid"
+      ref         = "refs/heads/main"
+      active      = false
+      variables   = {}
+    }
     rf_nightly = {
       description = "rf"
       cron        = "15 22 * * 0-5"
@@ -224,22 +238,6 @@ module "settings" {
     interop = {
       description = "interop"
       cron        = "30 22 * * 0-5"
-      timezone    = "Europe/Madrid"
-      ref         = "refs/heads/main"
-      active      = true
-      variables   = {}
-    }
-    nightly = {
-      description = "viavi nightly"
-      cron        = "00 21 * * 0-5"
-      timezone    = "Europe/Madrid"
-      ref         = "refs/heads/main"
-      active      = true
-      variables   = { RETINA_DEMOLITION_TAG = "zmq" }
-    }
-    weekly = {
-      description = "viavi weekly"
-      cron        = "00 10 * * 6"
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
       active      = true

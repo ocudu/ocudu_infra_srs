@@ -1,6 +1,6 @@
 # E2E CI Pipelines
 
-How the scheduled E2E pipelines (`functional`, `interop`, `performance`, `rf`) are defined, and what to touch to add or change one.
+How the scheduled E2E pipelines (`functional`, `interop`, `performance`, `rf`, `weekly_performance`) are defined, and what to touch to add or change one.
 
 ## Overview
 
@@ -42,17 +42,17 @@ performance = {
 }
 ```
 
-Since the rules match by prefix, a description that starts with another pipeline's name also runs that pipeline's jobs (e.g. `performance weekly` would match `/^performance/`).
+Since the rules match by prefix, a description that starts with another pipeline's name also runs that pipeline's jobs (e.g. `performance testing` would match `/^performance/`).
 
 ## Generated jobs: `generate_pipelines.py`
 
 [generate_pipelines.py](../scripts/generate_pipelines.py) walks `e2e/tests/suites/<stage>/<job>.yml`:
 
 - Each folder is a CI **stage**, each suite file a **job** named after the file.
-- Pipelines are declared in `PIPELINES`, each with a pytest `MARKERS` expression. Test cases are marked by the test loader ([test_loader.py](../tests/steps/test_loader.py)) with their retina `request`, its testbed group (`zmq`, `s72`, ...) and their `feature_ids`.
-- A pipeline gets a job for a suite file only if at least one of its test cases carries one of the pipeline's markers (operators in the expression are ignored for this check).
+- Pipelines are declared in `PIPELINES`, each with a pytest `MARKERS` expression. Test cases are marked by the test loader ([test_loader.py](../tests/steps/test_loader.py)) with their retina `request`, its testbed group (`zmq`, `s72`, ...), their `feature_ids` and their `markers`.
+- A pipeline gets a job for a suite file only if its `MARKERS` expression selects at least one of the suite's test cases. Otherwise pytest would select nothing, which it reports as an error.
 - Every job runs `-k "<stage>.<job>." -m "<MARKERS>"`, extends `.<pipeline>_e2e` and has the rule `/^<pipeline>/` (or manual otherwise).
-- `PIPELINE_BASES` maps a pipeline to the `<base>_base.yml` file holding its builds and `.<pipeline>_e2e` job, when it isn't `<pipeline>_base.yml`. Pipelines sharing a testbed share builds (`functional`/`interop` → `zmq`, `performance` → `rt`).
+- `PIPELINE_BASES` maps a pipeline to the `<base>_base.yml` file holding its builds and `.<pipeline>_e2e` job, when it isn't `<pipeline>_base.yml`. Pipelines sharing a testbed share builds (`functional`/`interop` → `zmq`, `performance`/`weekly_performance` → `rt`).
 
 It generates:
 
@@ -62,19 +62,12 @@ It generates:
   - `<pipeline> promotion`: pushes this repo and the ocudu ref to branch `srs_<pipeline>` at the end of the scheduled pipeline. The branch is protected in `main.tf`.
 - `.gitlab-ci-stages.yml`: the fixed stages plus one per suite folder.
 
-Regenerate after any change to `suites/` or the script, and commit the result. MR CI (`dynamically generated pipeline validation`) fails if the committed files are out of date:
-
-```bash
-cd e2e/scripts
-python3 generate_pipelines.py
-```
-
 ## Hand-written CI
 
 - [e2e/.gitlab-ci.yml](../.gitlab-ci.yml): MR static checks, `.trigger e2e`, `retina demolition`, `.ocudu promotion` and the Viavi jobs (`viavi nightly` / `viavi weekly` schedules). Viavi isn't generated: its jobs select tests by keyword instead of by suite file.
 - `e2e/ci/<base>_base.yml`: the builds, whose rules list every schedule that needs them, and the `.<pipeline>_e2e` job (runner `GROUP`, `needs`, `timeout`).
   - [zmq_base.yml](zmq_base.yml): `zmq driver`, `release zmq`, `.functional_e2e`, `.interop_e2e`.
-  - [rt_base.yml](rt_base.yml): `dpdk rtsan avx512`, `.performance_e2e`.
+  - [rt_base.yml](rt_base.yml): `dpdk rtsan avx512`, `.performance_e2e`, `.weekly_performance_e2e`.
   - [rf_base.yml](rf_base.yml): `release rf`, `.rf_e2e`.
 - [child_template.yml](child_template.yml): the `.build`/`.e2e` base jobs for child pipelines.
 - [templates/e2e.yml](../../templates/e2e.yml): the `.e2e` job itself; default `timeout` is 3 hours, override it in `.<pipeline>_e2e` for longer tests.
@@ -83,6 +76,8 @@ python3 generate_pipelines.py
 
 **Add a test to an existing pipeline**: add the test case to a suite file with a `request` matching the pipeline's markers. For a new suite file, regenerate.
 
+**Move a test case to the weekly pipeline**: add `weekly` to its `markers` and regenerate.
+
 **Change when a pipeline runs**: edit its `cron` in `main.tf`.
 
 **Add a new pipeline**:
@@ -90,4 +85,4 @@ python3 generate_pipelines.py
 1. Add it to `PIPELINES` (and `PIPELINE_BASES` if it reuses another base file).
 2. Add its `.<pipeline>_e2e` job to the base file, and its schedule to the rules of the builds it needs.
 3. Regenerate.
-4. Add the schedule and the `srs_<pipeline>` protected branch in `main.tf`. Pick a name that is not prefixed by, and doesn't prefix, any other pipeline's name.
+4. Add the schedule and the `srs_<pipeline>` protected branch in `main.tf`. Pick a name that doesn't start with any other pipeline's name, and that no other name starts with.

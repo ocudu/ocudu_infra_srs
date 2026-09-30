@@ -11,7 +11,7 @@ flexric:
   variables:
     KEYWORDS: "interop.flexric."
     TESTBED: dynamic
-    MARKERS: "interop"
+    MARKERS: "interop and not weekly"
 
 srsue:
   stage: interop
@@ -23,4 +23,4 @@ srsue:
   variables:
     KEYWORDS: "interop.srsue."
     TESTBED: dynamic
-    MARKERS: "interop"
+    MARKERS: "interop and not weekly"

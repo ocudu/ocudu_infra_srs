@@ -6,6 +6,7 @@ dpdk rtsan avx512:
   retry: 2
   rules:
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^performance/
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^weekly_performance/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^viavi nightly/
     - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^viavi weekly/
   variables:
@@ -46,3 +47,7 @@ dpdk rtsan avx512 cached:
     - job: dpdk rtsan avx512 cached
       artifacts: true
       optional: true
+
+.weekly_performance_e2e:
+  extends: .performance_e2e
+  timeout: 26 hours

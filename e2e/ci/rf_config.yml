@@ -11,7 +11,7 @@ paging:
   variables:
     KEYWORDS: "mobility.paging."
     TESTBED: dynamic
-    MARKERS: "rf or android"
+    MARKERS: "(rf or android) and not weekly"
 
 bands:
   stage: singleue
@@ -23,7 +23,7 @@ bands:
   variables:
     KEYWORDS: "singleue.bands."
     TESTBED: dynamic
-    MARKERS: "rf or android"
+    MARKERS: "(rf or android) and not weekly"
 
 bandwiths:
   stage: singleue
@@ -35,7 +35,7 @@ bandwiths:
   variables:
     KEYWORDS: "singleue.bandwiths."
     TESTBED: dynamic
-    MARKERS: "rf or android"
+    MARKERS: "(rf or android) and not weekly"
 
 gbr_vonr:
   stage: singleue
@@ -47,7 +47,7 @@ gbr_vonr:
   variables:
     KEYWORDS: "singleue.gbr_vonr."
     TESTBED: dynamic
-    MARKERS: "rf or android"
+    MARKERS: "(rf or android) and not weekly"
 
 phy_configs:
   stage: singleue
@@ -59,7 +59,7 @@ phy_configs:
   variables:
     KEYWORDS: "singleue.phy_configs."
     TESTBED: dynamic
-    MARKERS: "rf or android"
+    MARKERS: "(rf or android) and not weekly"
 
 ping:
   stage: singleue
@@ -71,4 +71,4 @@ ping:
   variables:
     KEYWORDS: "singleue.ping."
     TESTBED: dynamic
-    MARKERS: "rf or android"
+    MARKERS: "(rf or android) and not weekly"
