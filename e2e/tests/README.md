@@ -90,6 +90,8 @@ baseline: &base_config # Test Case
   request: zmq_mme
   # Feature IDs covered in this test
   feature_ids: [MVP-FUNC-MOB-1-b, MVP-FUNC-MOB-1-c, MVP-FUNC-MOB-14]
+  # Optional extra pytest markers, not feature IDs (e.g. xfail)
+  markers: [xfail]
   # Template parameters (in case it has them)
   parameters:
     ping_count: 10

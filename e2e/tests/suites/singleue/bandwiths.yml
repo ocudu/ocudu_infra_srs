@@ -71,7 +71,7 @@ cots_bw_50_udp_downlink: &cots_bw_50_config
     direction: downlink
     dl_bitrate: 156.0e+6
   request: android_x300
-  feature_ids: [xfail]
+  markers: [xfail]
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]
     parameters:
@@ -164,7 +164,7 @@ cots_bw_90_udp_downlink: &cots_bw_90_config
     direction: downlink
     dl_bitrate: 247.0e+6
   request: android_x300
-  feature_ids: [xfail]
+  markers: [xfail]
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]
     parameters:

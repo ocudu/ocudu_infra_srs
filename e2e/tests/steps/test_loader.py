@@ -79,6 +79,7 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
     name: str
     retina_request: str
     feature_ids: list[str]
+    markers: list[str]
     criteria: Dict[str, float]
     parameters: Dict[str, Any] = field(default_factory=dict)
     # Configs
@@ -97,6 +98,7 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
             name=name,
             retina_request=data.get("request", "zmq_mme"),
             feature_ids=data.get("feature_ids", []),
+            markers=data.get("markers", []),
             criteria=data.get("criteria", {}),
             parameters=data.get("parameters", {}),
             ue=RetinaNodeTypeDefinition.from_dict(data.get("ue", {})),
@@ -138,7 +140,12 @@ def load_tests(func: Callable):
                 marks=[
                     getattr(pytest.mark, item)
                     for item in dict.fromkeys(
-                        (tdef.retina_request, get_request_group(tdef.retina_request), *tdef.feature_ids)
+                        (
+                            tdef.retina_request,
+                            get_request_group(tdef.retina_request),
+                            *tdef.feature_ids,
+                            *tdef.markers,
+                        )
                     )
                 ],
             )

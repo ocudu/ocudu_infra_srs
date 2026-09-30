@@ -434,7 +434,8 @@ cots_pdsch_vrb:
   core:
     parameters:
       log_level: warning
-  feature_ids: [DU-PHY-8, xfail]
+  feature_ids: [DU-PHY-8]
+  markers: [xfail]
   criteria:
     du.dl_bitrate_gt: 8.0e+6
     du.ul_bitrate_gt: 8.0e+6
