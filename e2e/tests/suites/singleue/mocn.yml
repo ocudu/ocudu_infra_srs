@@ -39,7 +39,7 @@ mocn: &base_config
 moran:
   <<: *base_config
   ue:
-    config: [2cell_intrafreq.cfg, mocn.cfg]
+    config: [2cell_intrafreq.cfg, moran.cfg]
     parameters:
       num_cells: 2
   gnb:
