@@ -9,6 +9,7 @@
 {%- set pusch_max_ue_mcs = pusch_max_ue_mcs | default(27) %}
 {%- set pusch_dec_max_iterations = pusch_dec_max_iterations | default(12) %}
 {%- set mcs_table = mcs_table | default("qam256") %}
+{%- set du_report_period = du_report_period | default(1000) %}
 
 gnb_id_bit_length: {{gnb_id_bit_length}}
 gnb_du_id: {{gnb_du_id}}
@@ -52,3 +53,5 @@ metrics:
     enable_du_proc: true
     enable_executor: true
     enable_du_low: true
+  periodicity:
+    du_report_period: {{du_report_period}}
