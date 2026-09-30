@@ -26,7 +26,7 @@ For detailed configuration options, see the [build and E2E component documentati
 
 ### Scheduled Pipelines
 
-- functional
+`functional`, `interop`, `performance` and `rf`. See [ci/README.md](ci/README.md) for how they are defined and scheduled.
 
 ### Manual Pipeline
 

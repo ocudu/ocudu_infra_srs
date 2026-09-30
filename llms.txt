@@ -30,6 +30,7 @@
 
 - [Templates README](./templates/README.md): Reusable GitLab CI components exposed by this repo
 - [E2E Scripts](./e2e/scripts/README.md): Helper scripts to trigger and verify pipelines
+- [E2E CI Pipelines](./e2e/ci/README.md): How scheduled pipelines are defined: `.gitlab/main.tf` schedules, `generate_pipelines.py` generated jobs, `*_base.yml` builds
 
 ## Infrastructure as Code
 
