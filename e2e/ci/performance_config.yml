@@ -83,7 +83,7 @@ traffic_model:
   variables:
     KEYWORDS: "multiue.traffic_model."
     TESTBED: dynamic
-    MARKERS: "s72 or test_mode_ru"
+    MARKERS: "(s72 or test_mode_ru) and not weekly"
 
 ue_state_transition:
   stage: multiue
