@@ -11,7 +11,7 @@ siso_ri1: &base_config
   template: test_mode.test_gnb
   request: test_mode_ue
   parameters:
-    duration: 300
+    duration: 100
   gnb:
     config: &gnb_config [cu_cp.yml, du.yml, tdd_72.yml, 2ue.yml, test_mode.yml]
     parameters: &gnb_parameters
