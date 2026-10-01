@@ -387,6 +387,13 @@ dmrs_3:
       dmrs_additional_pos: 3
   feature_ids: [DU-PHY-3]
 
+# CORESET#0 and CORESET#1 with 3 OFDM symbols, dmrs-TypeA-Position pos3
+coreset0_3symb:
+  <<: *base_config
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, coreset0_3symb.yml, mac_pcap.yml]
+  feature_ids: []
+
 # UL DFT-based precoding test
 precoding:
   <<: *base_config
