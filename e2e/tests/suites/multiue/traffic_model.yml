@@ -109,7 +109,6 @@ tdd_dl_heavy_rt:
       num_cells: 2
       nof_antennas_dl: 4
       nof_antennas_ul: 1
-      rx_to_tx_latency: 2
       log_level: warning
   gnb:
     config: [cu_cp.yml, du.yml, vonr_qos.yml, 2cell_intrafreq.yml, mobility.yml, tdd_72.yml, prach_config.yml, 1000ue.yml, inactivity_timer.yml, cfra_ho.yml, mac_pcap.yml, du_perf.yml]
@@ -120,7 +119,6 @@ tdd_dl_heavy_rt:
       num_cells: 2
       nof_antennas_dl: 4
       nof_antennas_ul: 1
-      min_k1_k2: 2
       mac_type: dlt # 4 DL antennas overflow the UDP pcap wrapper
       log_level: warning
   core:
