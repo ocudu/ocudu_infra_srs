@@ -390,6 +390,14 @@ dmrs_3:
 # CORESET#0 and CORESET#1 with 3 OFDM symbols, dmrs-TypeA-Position pos3
 coreset0_3symb:
   <<: *base_config
+  ue:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      # No 3-symbol CORESET#0 index keeps the SSB at the default ARFCN 624000.
+      ssb_nr_arfcn: 623712
+      dl_bitrate: 10.0e+6
+      ul_bitrate: 10.0e+6
+      traffic_duration: 2
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, coreset0_3symb.yml, mac_pcap.yml]
   feature_ids: []
