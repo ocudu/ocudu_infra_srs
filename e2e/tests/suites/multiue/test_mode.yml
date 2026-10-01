@@ -123,12 +123,12 @@ mimo_4x4_ri4:
 
 # The dummy RU replaces the radio and the core is not started, so the gNB runs on its own
 
-# Peak rate of a single cell, with the RU slowed down 10 times
+# Peak rate of a single cell
 ru_dummy: &ru_config
   template: test_mode.test_gnb_no_core
   request: test_mode_ru
   parameters:
-    duration: 300
+    duration: 100
   gnb:
     config: [ru_dummy.yml, test_mode.yml, max_mcs.yml, du.yml]
     parameters:
@@ -139,7 +139,6 @@ ru_dummy: &ru_config
       log_level: warning
       nof_antennas_dl: 4
       nof_antennas_ul: 4
-      time_scaling: 10
       nof_test_ues: 16
       test_ue_ri: 4
       pusch_dec_max_iterations: 2
@@ -154,11 +153,11 @@ ru_dummy: &ru_config
     all.warnings_le: 0
     all.errors_le: 0
 
-# Scheduler load of many cells and UEs, with the RU slowed down 10 times
+# Scheduler load of many cells and UEs
 ru_dummy_10cell_50ue:
   <<: *ru_config
   parameters:
-    duration: 600
+    duration: 100
   gnb:
     config: [ru_dummy.yml, test_mode.yml, 10cell.yml, du.yml]
     parameters:
@@ -169,7 +168,6 @@ ru_dummy_10cell_50ue:
       log_level: warning
       nof_antennas_dl: 1
       nof_antennas_ul: 1
-      time_scaling: 10
       nof_test_ues: 50
       test_ue_ri: 1
       pusch_dec_max_iterations: 6
