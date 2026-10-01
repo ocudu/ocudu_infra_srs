@@ -544,6 +544,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         return (
             r"^.*Warning(?!.*unused property)(?!.*CPU hyperthreading is enabled).*$"
             r"|^.*s72 timestamp rollback on.*$"
+            r"|^.*\[S72\].*(?:missing prb for symbol|packet too late for).*$"
+            r"|^.*\[TRX\].*packet\(s\) late.*$"
             r"|^.*scheduled during measurement gap.*$"
         )
 
