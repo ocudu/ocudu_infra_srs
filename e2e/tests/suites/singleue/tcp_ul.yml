@@ -19,7 +19,7 @@
       log_level: warning
       direction: "tx"
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, du_perf.yml, drb_triggered_ul_grant_qos.yml, schedtrace.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, du_perf_ul.yml, drb_triggered_ul_grant_qos.yml, schedtrace.yml]
     parameters: &gnb_params
       nof_antennas_dl: 4
       nof_antennas_ul: 2
@@ -51,7 +51,7 @@
       <<: *ue_params
       nof_antennas_ul: 4
   gnb:
-    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, du_perf.yml, drb_triggered_ul_grant_qos.yml, schedtrace.yml]
+    config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, du_perf_ul.yml, drb_triggered_ul_grant_qos.yml, schedtrace.yml]
     parameters:
       <<: *gnb_params
       nof_antennas_ul: 4
