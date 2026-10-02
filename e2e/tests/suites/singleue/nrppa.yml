@@ -93,6 +93,9 @@ position_angle_on_demand:
       traffic_duration: 25
       nof_antennas_dl: 2
       nof_antennas_ul: 2
+      # The UE uses only 1 MIMO layer. The UE then sends a 1-port SRS, and the gNB measures the AoA without MIMO.
+      nr_max_mimo_layers_dl: 1
+      nr_max_mimo_layers_ul: 1
       # The UE does not decode the PDCCH with more than one antenna if the PDCCH decode optimization is on.
       pdcch_decode_threshold: 0
       # Without an antenna array, all cell antennas receive the same signal and the angle of arrival is not measurable.
