@@ -33,6 +33,7 @@ baseline:
     du.max_late_dl_harqs_le: 0
     du.max_late_ul_harqs_le: 0
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 3
   feature_ids: [MVP-SEC-O-CU-12, MVP-SEC-O-CU-13]

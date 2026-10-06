@@ -71,6 +71,7 @@ tdd_dl_heavy: &base_config
       du.nof_ko_ul_le: .inf
       du.nof_reestablishments_request_le: 5 # accept some HO failures due to PRACH contention
       du.nof_error_indications_le: 0
+      du.nof_ues_at_stop_eq: 0
       all.errors_le: 0
       all.warnings_le: 10 # accept some HO failures due to PRACH contention
     core.nof_pdu_session_establishment_accept_eq: &nof_ue_attaches 1700

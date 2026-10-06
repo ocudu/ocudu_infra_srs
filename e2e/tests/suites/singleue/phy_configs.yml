@@ -29,6 +29,7 @@ prach_config_b4: &base_config
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.prach_configuration_index_eq: 159
@@ -54,6 +55,7 @@ prach_config_0:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.prach_configuration_index_eq: 7
@@ -77,6 +79,7 @@ prach_config_1:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.prach_configuration_index_eq: 33
@@ -100,6 +103,7 @@ prach_config_a3: &a3_base
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.prach_configuration_index_eq: 110
@@ -140,6 +144,7 @@ prach_config_c0:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.prach_configuration_index_eq: 180
@@ -162,6 +167,7 @@ prach_config_c2:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.prach_configuration_index_eq: 189
@@ -183,6 +189,7 @@ srs_aperiodic:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.c_srs_eq: 61
@@ -203,6 +210,7 @@ srs_wideband:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.c_srs_eq: 60
@@ -223,6 +231,7 @@ srs_narrowband:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.c_srs_eq: 0
@@ -247,6 +256,7 @@ periodic_csi:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     du.nof_pucch_f0f1_invalid_harqs_le: 0
     du.nof_pucch_f2f3f4_invalid_harqs_le: 0
     du.nof_pucch_f2f3f4_invalid_csis_le: 0
@@ -277,6 +287,7 @@ aperiodic_csi:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     du.nof_pucch_f0f1_invalid_harqs_le: 0
     du.nof_pucch_f2f3f4_invalid_harqs_le: 0
     du.nof_pucch_f2f3f4_invalid_csis_le: 0
@@ -309,6 +320,7 @@ prs:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
 
@@ -367,6 +379,7 @@ pdsch_vrb:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.prach_configuration_index_eq: 159
@@ -435,6 +448,7 @@ precoding:
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.transform_precoder_eq: 1 # Enabled

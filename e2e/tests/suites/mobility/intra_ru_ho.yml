@@ -23,6 +23,7 @@ key_regen: &base_config
     ue.nof_handovers_eq: 1
     du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     core.nof_pdu_session_establishment_accept_ge: 25
     all.errors_le: 0
     all.warnings_le: 0
@@ -64,5 +65,6 @@ tau_request:
     ue.nof_handovers_eq: 0
     du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0

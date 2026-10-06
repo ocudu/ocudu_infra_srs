@@ -25,6 +25,7 @@ slicing: &base_config
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: 2
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     du.nof_sib16_ge: 1
     du.sib1_has_rach_prioritization_slice_eq: true
     all.errors_le: 0

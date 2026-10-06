@@ -31,6 +31,7 @@ baseline: &base_config
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the duration
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.t312_eq: 3 # ms200
@@ -90,6 +91,7 @@ conditional_ho:
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the duration
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
 
@@ -120,5 +122,6 @@ cfra_ho:
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 20 # calculated based on the duration
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0

@@ -54,6 +54,7 @@ geo_band_256_bw_5_fl_false_ping: &base_config
     du.ul_bitrate_gt: 0
     du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.nof_ko_dl_le: 20
@@ -212,6 +213,7 @@ geo_fl_false_harq_enabled_iperf:
     du.ul_bitrate_gt: 1.0e+6
     du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.nof_ko_dl_le: 20
@@ -260,6 +262,7 @@ geo_fl_false_harq_disabled_iperf:
     du.ul_bitrate_gt: 18.0e+6
     du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.nof_ko_dl_le: 20
@@ -315,6 +318,7 @@ leo_band_256_bw_10_scs_30_fl_false_iperf:
     du.ul_bitrate_gt: 1.0e+6
     du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.nof_ko_dl_le: 20
@@ -376,6 +380,7 @@ leo_band_256_bw_10_scs_30_fl_true_iperf:
     du.ul_bitrate_gt: 1.0e+6
     du.nof_reestablishments_request_eq: 0
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
     du.nof_ko_dl_le: 20

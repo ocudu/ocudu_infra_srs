@@ -59,5 +59,6 @@ rrc_resume:
     cu_cp.nof_xn_retrieve_ue_context_request_ge: 2 # 1 retrieval, each message logged in both pcaps
     cu_cp.nof_xn_retrieve_ue_context_response_ge: 2
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     du.errors_le: 0
     du.warnings_le: 0

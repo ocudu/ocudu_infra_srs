@@ -26,6 +26,7 @@ inter_ru_ho: &base_config
     du.nof_reestablishments_request_eq: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
 
@@ -75,6 +76,7 @@ inter_du_ho:
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_handovers_ge: 200 # calculated based on the duration
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
 
@@ -117,6 +119,7 @@ inter_cu_ho:
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     ue.nof_handovers_ge: 200 # calculated based on the duration
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     du.errors_le: 0
     du.warnings_le: 0
 
@@ -147,5 +150,6 @@ reestablishment:
     du.nof_reestablishments_complete_ge: 45 # nof_ue * nof_reestablishments
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
     all.warnings_le: 0
