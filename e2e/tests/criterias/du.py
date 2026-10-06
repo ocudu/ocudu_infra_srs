@@ -133,6 +133,15 @@ class nof_pusch_invalid_harqs_le(DuCriteria):
         return sum(s.GetMetrics(Empty()).aggregate.nof_pusch_invalid_harqs for s in self._stub_array)
 
 
+class nof_ues_at_stop_eq(DuCriteria):
+    """UEs at Stop"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).du.nof_ues_at_stop for s in self._stub_array)
+
+
 class nof_reestablishments_request_eq(DuCriteria):
     """Reestablishment requests"""
 

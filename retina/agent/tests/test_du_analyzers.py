@@ -511,6 +511,39 @@ class TestDuCellAnalyzerLateHarqs(unittest.TestCase):
         self.assertEqual(self.a.report().du.max_late_ul_harqs, 7)
 
 
+# ── TestDuCellAnalyzer — UEs at stop ─────────────────────────────────────────
+
+
+class TestDuCellAnalyzerUesAtStop(unittest.TestCase):
+    """nof_ues_at_stop sums the UEs of the last report of each cell."""
+
+    def setUp(self):
+        self.a = DuCellAnalyzer()
+
+    def _cell(self, pci, nof_ues):
+        return make_cell(
+            cell_metrics={**make_cell_metrics(), "pci": pci}, ue_list=[make_ue(rnti) for rnti in range(nof_ues)]
+        )
+
+    def test_no_reports(self):
+        self.assertEqual(self.a.report().du.nof_ues_at_stop, 0)
+
+    def test_last_report_wins(self):
+        for ts, nof_ues in ((_T0, 2), (_T1, 3), (_T2, 0)):
+            self.a.process(make_record(ts, [self._cell(1, nof_ues)]))
+        self.assertEqual(self.a.report().du.nof_ues_at_stop, 0)
+
+    def test_zombie_ue(self):
+        for ts, nof_ues in ((_T0, 2), (_T1, 1)):
+            self.a.process(make_record(ts, [self._cell(1, nof_ues)]))
+        self.assertEqual(self.a.report().du.nof_ues_at_stop, 1)
+
+    def test_summed_across_cells(self):
+        self.a.process(make_record(_T0, [self._cell(1, 2), self._cell(2, 3)]))
+        self.a.process(make_record(_T1, [self._cell(1, 1)]))
+        self.assertEqual(self.a.report().du.nof_ues_at_stop, 4)
+
+
 # ── TestDuMetricsAnalyzer — PUCCH invalid counts ─────────────────────────────
 
 

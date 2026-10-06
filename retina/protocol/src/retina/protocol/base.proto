@@ -237,6 +237,8 @@ message DuMetrics {
   uint32 nof_cg_type1 = 34; // Configured grant Type 1 setups (rrc-ConfiguredUplinkGrant present)
   uint32 nof_cg_type2 = 35; // Configured grant Type 2 setups (rrc-ConfiguredUplinkGrant absent)
   uint32 nof_cs_rnti  = 36; // cs-RNTI setups in PhysicalCellGroupConfig with a valid RNTI value
+
+  uint32 nof_ues_at_stop = 37; // UEs in the last report of each cell, flushed on DU stop
 };
 
 message CoreMetrics {
