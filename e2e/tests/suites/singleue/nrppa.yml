@@ -80,7 +80,7 @@ position_dl_tdoa:
 # SRS angle-based NRPPa
 position_angle_on_demand:
   <<: *base_config
-  feature_ids: [MVP-FUNC-POS-16-3-c, xfail]
+  feature_ids: [MVP-FUNC-POS-16-3-c]
   # E-CID uses only the serving cell. The gNB needs DoA estimation, periodic SRS and more than one UL antenna to
   # measure the AoA.
   ue:
