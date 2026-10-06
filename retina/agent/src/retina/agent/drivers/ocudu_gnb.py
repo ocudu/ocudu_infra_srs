@@ -29,7 +29,7 @@ from retina.agent.drivers.ocudu_du import (
 )
 from retina.agent.features.executor import LocalExecutor, SshExecutor
 from retina.agent.features.gnb_report import transform_metrics
-from retina.agent.features.sut_handler import BaseDriverSutHandler
+from retina.agent.features.sut_handler import BaseDriverSutHandler, StopInfo
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
 
@@ -83,6 +83,7 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
         self._cu._cu_up.get_current_report_folder = self.get_current_report_folder  # type: ignore[method-assign]
         self._du = OcuduDu(*args, **kwargs)
         self._du.get_current_report_folder = self.get_current_report_folder  # type: ignore[method-assign]
+        self._metrics_json_path = ""
 
     def _get_sut_version(self) -> str:
         output = tuple(
@@ -198,14 +199,19 @@ class OcuduGnb(GNBDriver, BaseDriverSutHandler):
 
         return Empty()
 
+    def stop_sut(self, stop_timeout: int = 0) -> StopInfo:
+        stop_info = super().stop_sut(stop_timeout)
+        # Stop listening once the gNB has exited, so its final metrics report on shutdown is not lost
+        self._metrics_json_path = self._du.stop_listening_metrics()
+        return stop_info
+
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
-        metrics_json_path = self._du.stop_listening_metrics()
         du_pcap_args = self._du.get_metrics_parsing_arguments()
         cu_pcap_args = self._cu.get_metrics_parsing_arguments()
         response = super().Stop(request, context)
         self._du.extract_metrics(*du_pcap_args)
         self._cu.extract_metrics(*cu_pcap_args)
-        transform_metrics(metrics_json_path)
+        transform_metrics(self._metrics_json_path)
         return response
 
     @property

@@ -51,7 +51,7 @@ from retina.agent.features.pcap.rrc import (
     T312Analyzer,
     TransformPrecoderAnalyzer,
 )
-from retina.agent.features.sut_handler import BaseDriverSutHandler
+from retina.agent.features.sut_handler import BaseDriverSutHandler, StopInfo
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import gnb_defaults, template_defaults, testbed_defaults
 from retina.agent.tools.threading import join_thread
@@ -145,6 +145,8 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         self._metrics_thread = Thread(target=self._metrics_listener)
         self._metrics_thread_stopper = Event()
         self._metrics_parsing_done = True
+        self._metrics_listening = False
+        self._metrics_json_path = ""
 
     def _get_sut_version(self) -> str:
         output = tuple(
@@ -276,6 +278,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         self._metrics_thread = Thread(target=self._metrics_listener)
         self._metrics_thread_stopper = Event()
         self._metrics_thread.start()
+        self._metrics_listening = True
 
     def _metrics_listener(self):
         # Keep it running until the stopper is set (or the WebSocket connection is closed)
@@ -333,7 +336,9 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
         Stop listening to metrics
         """
         metrics_json_path = ""
-        if self._metrics_thread.is_alive():
+        # The thread may have already exited if the SUT closed the WebSocket
+        if self._metrics_listening:
+            self._metrics_listening = False
             self._metrics_thread_stopper.set()
             self._ws_app.close()
             join_thread(self._metrics_thread)
@@ -385,12 +390,17 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
                 )
             self._metrics_parsing_done = True
 
+    def stop_sut(self, stop_timeout: int = 0) -> StopInfo:
+        stop_info = super().stop_sut(stop_timeout)
+        # Stop listening once the DU has exited, so its final metrics report on shutdown is not lost
+        self._metrics_json_path = self.stop_listening_metrics()
+        return stop_info
+
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
-        metrics_json_path = self.stop_listening_metrics()
         pcap_args = self.get_metrics_parsing_arguments()
         response = super().Stop(request, context)
         self.extract_metrics(*pcap_args)
-        transform_metrics(metrics_json_path)
+        transform_metrics(self._metrics_json_path)
         return response
 
     @property
