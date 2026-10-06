@@ -3,6 +3,11 @@
 
 ARG PYTHON_VERSION=3.14
 ARG OS=alpine
+ARG KUBECTL_VERSION=v1.36.1
+
+# BuildKit gets this image, so the build container does not resolve dl.k8s.io
+FROM registry.k8s.io/kubectl:${KUBECTL_VERSION} AS kubectl
+
 FROM python:${PYTHON_VERSION}-${OS} AS builder
 ENV PYTHONBUFFERED=1
 
@@ -10,16 +15,10 @@ ENV PYTHONBUFFERED=1
 RUN apk add build-base linux-headers libffi-dev
 
 # Install kubectl
-WORKDIR /tmp
-ARG KUBECTL_VERSION=v1.36.1
-RUN apk add --no-cache curl tar \
-    && curl -LO "https://dl.k8s.io/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl" \
-    && curl -LO "https://dl.k8s.io/$KUBECTL_VERSION/bin/linux/amd64/kubectl.sha256" \
-    && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
-    && rm -Rf /tmp/*
+COPY --from=kubectl /bin/kubectl /usr/local/bin/kubectl
 
 # Install auxiliar tools
-RUN apk add --no-cache git yq coreutils zip sshpass openssh-client wget
+RUN apk add --no-cache curl tar git yq coreutils zip sshpass openssh-client wget
 RUN apk add py-spy --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
 
 # Install Python packages
