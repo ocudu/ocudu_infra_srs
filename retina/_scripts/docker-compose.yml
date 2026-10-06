@@ -147,11 +147,11 @@ services:
       - ~/.kube:/home/$USER/.kube
       - ../..:/workdir
       # Following lines overwrite the retina code inside the container with your current code
-      - ../protocol/src/retina/protocol:/usr/local/lib/python3.12/site-packages/retina/protocol
-      - ../client/src/retina/client:/usr/local/lib/python3.12/site-packages/retina/client
-      - ../orchestrator/src/retina/orchestrator:/usr/local/lib/python3.12/site-packages/retina/orchestrator
-      - ../viavi/src/retina/viavi:/usr/local/lib/python3.12/site-packages/retina/viavi
-      - ../launcher/src/retina/launcher:/usr/local/lib/python3.12/site-packages/retina/launcher
+      - ../protocol/src/retina/protocol:/usr/local/lib/python3.14/site-packages/retina/protocol
+      - ../client/src/retina/client:/usr/local/lib/python3.14/site-packages/retina/client
+      - ../orchestrator/src/retina/orchestrator:/usr/local/lib/python3.14/site-packages/retina/orchestrator
+      - ../viavi/src/retina/viavi:/usr/local/lib/python3.14/site-packages/retina/viavi
+      - ../launcher/src/retina/launcher:/usr/local/lib/python3.14/site-packages/retina/launcher
     working_dir: /workdir/e2e
     networks:
       retina:
