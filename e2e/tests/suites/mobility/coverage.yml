@@ -20,9 +20,10 @@ downlink: &base_config
       ul_bitrate: 0
       nof_antennas_dl: 4
       nof_antennas_ul: 1
-      quit_time: 30
+      quit_time: 70
       traffic_duration: 4000
-      max_distance: 350
+      speed: 30
+      max_distance: 1000
       ref_signal_power: -16
       ul_power_attenuation: -10
       pdcch_decode_threshold: 0
@@ -36,8 +37,10 @@ downlink: &base_config
   feature_ids: [MVP-PERF-THR-4a, MVP-PERF-THR-4b, MVP-PERF-THR-4c, DU-GEN-6, DU-GEN-7]
   criteria:
     du.dl_bitrate_gt: 250.0e+6
+    du.dl_max_mcs_ge: 27
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_ues_at_stop_eq: 0
+    du.nof_error_indications_le: 0
     all.errors_le: 0
 
 # Uplink coverage throughput
@@ -50,15 +53,16 @@ downlink: &base_config
 # conditions.
 uplink:
   <<: *base_config
-  ue:
+  ue: &uplink_ue
     config: [1cell_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 0
       ul_bitrate: 300.0e+6
       nof_antennas_dl: 4
       nof_antennas_ul: 2
-      quit_time: 30
-      max_distance: 350
+      quit_time: 90
+      speed: 30
+      max_distance: 1000
       ref_signal_power: -16
       ul_power_attenuation: -10
       pdcch_decode_threshold: 0
@@ -68,37 +72,22 @@ uplink:
       nof_antennas_dl: 4
       nof_antennas_ul: 2
   feature_ids: [MVP-PERF-THR-5a, MVP-PERF-THR-5b, MVP-PERF-THR-5c, DU-GEN-6, DU-GEN-8]
-  criteria:
+  criteria: &uplink_criteria
     du.ul_bitrate_gt: 30.0e+6
+    du.ul_max_mcs_ge: 27
     core.nof_pdu_session_establishment_accept_eq: 1
     du.nof_error_indications_le: 0
     du.nof_ues_at_stop_eq: 0
     all.errors_le: 0
 
-# Same as coverage_ul but with power control
+# Same as uplink, with closed-loop power control
 uplink_power_control:
   <<: *base_config
-  ue:
-    config: [1cell_chsim.cfg, handover.cfg]
-    parameters:
-      dl_bitrate: 0
-      ul_bitrate: 300.0e+6
-      nof_antennas_dl: 4
-      nof_antennas_ul: 2
-      quit_time: 30
-      max_distance: 350
-      ref_signal_power: -16
-      ul_power_attenuation: -10
-      pdcch_decode_threshold: 0
+  ue: *uplink_ue
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, closed_loop_pc.yml, du_perf_ul.yml, schedtrace.yml]
     parameters:
       nof_antennas_dl: 4
       nof_antennas_ul: 2
-  feature_ids: [MVP-PERF-THR-5a, MVP-PERF-THR-5b, MVP-PERF-THR-5c]
-  criteria:
-    du.ul_bitrate_gt: 10.0e+6
-    core.nof_pdu_session_establishment_accept_eq: 1
-    du.nof_error_indications_le: 0
-    du.nof_ues_at_stop_eq: 0
-    all.errors_le: 0
+  feature_ids: [MVP-PERF-THR-5a, MVP-PERF-THR-5b, MVP-PERF-THR-5c, MVP-FUNC-BAS-16-3]
+  criteria: *uplink_criteria

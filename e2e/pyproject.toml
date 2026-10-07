@@ -24,6 +24,7 @@ addopts = [
   "--only-rerun=Viavi API call timed out",
   "--only-rerun=time-out in waiting for Cell Frame Boundary detection",
   "--only-rerun=failed to start",
+  "--only-rerun=UE_1 crashed with exit code -11",
 ]
 filterwarnings = [
   "ignore:HTTPResponse.getheaders:DeprecationWarning",
