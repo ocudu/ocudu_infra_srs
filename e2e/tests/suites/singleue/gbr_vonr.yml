@@ -88,7 +88,6 @@ ims_disabled: &ims_config
       log_level: warning
       ims_mode: ""
   feature_ids: [MVP-FUNC-SVCS-16-8]
-  markers: [xfail]
   criteria: &cots_ims_criteria
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
@@ -103,7 +102,6 @@ ims_enabled:
   <<: *ims_config
   template: ping.test_gnb
   feature_ids: [MVP-FUNC-SVCS-16-8]
-  markers: [xfail]
   core:
     parameters:
       log_level: warning

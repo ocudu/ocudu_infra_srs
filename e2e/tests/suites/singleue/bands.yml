@@ -205,7 +205,6 @@ cots_band_3_udp_downlink: &cots_band_3_config
     parameters:
       log_level: warning
   feature_ids: [MVP-FUNC-PHY-16-1]
-  markers: [xfail]
   criteria:
     <<: &cots_criteria
       du.max_late_dl_harqs_le: 0
@@ -299,7 +298,6 @@ cots_band_78_udp_downlink: &cots_band_78_config
     parameters:
       log_level: warning
   feature_ids: [MVP-FUNC-PHY-16-1]
-  markers: [xfail]
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 22.5e+6
@@ -388,7 +386,6 @@ cots_band_7_udp_downlink: &cots_band_7_config
     parameters:
       log_level: warning
   feature_ids: [MVP-FUNC-PHY-16-1]
-  markers: [xfail]
   criteria:
     <<: *cots_criteria
     du.dl_bitrate_gt: 48.5e+6
