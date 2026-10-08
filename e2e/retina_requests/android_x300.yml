@@ -8,7 +8,7 @@
     cpu:
       requests: 500m
     memory:
-      requests: 1G
+      requests: 512Mi
     ephemeral-storage:
       requests: 6G
   resources:
@@ -19,9 +19,10 @@
   image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 4
+      requests: 80%
+      rounding: truncate
     memory:
-      requests: 8G
+      requests: 80%
     ephemeral-storage:
       requests: 6G
   resources:
@@ -41,9 +42,10 @@
   image: ${RETINA_REGISTRY_URI}/open5gs:${OPEN5GS_VERSION}_${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 2
+      requests: 20%
+      rounding: truncate
     memory:
-      requests: 2G
+      requests: 20%
     ephemeral-storage:
       requests: 6G
   resources:

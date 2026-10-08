@@ -8,7 +8,7 @@
     cpu:
       requests: 500m
     memory:
-      requests: 1G
+      requests: 512Mi
     ephemeral-storage:
       requests: 6G
   resources:
