@@ -31,6 +31,7 @@ class AndroidUe(UEDriver):
 
     AIRPLANE_MODE_SLEEP: float = 0.5
     CONNECTION_TIMEOUT: float = 20.0
+    IPERF_FALLBACK_PATH: str = "/data/local/tmp/iperf3"
 
     STATE_DICT: Dict[bool, str] = {False: "disable", True: "enable"}
     STATE_DICT_REV: Dict[str, bool] = {v: k for k, v in STATE_DICT.items()}
@@ -221,6 +222,13 @@ class AndroidUe(UEDriver):
             ipv4=ip_address,
             ipv4_gateway=str(ipaddress.ip_network(f"{self._5gc_ip}/{self._5gc_mask}", False).network_address + 1),
         )
+
+    def _get_iperf_binary(self, context: grpc.ServicerContext) -> Tuple[str, ...]:
+        # Non-rooted devices can't install iperf3 in $PATH
+        for line in self._executor.run_binary("which", "iperf3", raise_if_exit_code=False):
+            if line.strip().startswith("/"):
+                return (line.strip(),)
+        return (self.IPERF_FALLBACK_PATH,)
 
     def _run_iperf(self, arg_dict: dict, timeout: float, context: grpc.ServicerContext):
         """

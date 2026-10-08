@@ -385,10 +385,47 @@ class AdbExecutor(LocalExecutor):
 
     ADB_KEY_FILEPATH = ".android/adbkey"
     ADB_KEY_PERMISSIONS = 0o600
+    ROOT_CHECK_TIMEOUT: float = 3.0
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._adb_ready: bool = False
+        self._rooted: Optional[bool] = None
+
+    @property
+    def rooted(self) -> bool:
+        """
+        Return if commands can be run as root in the device
+        """
+        if self._rooted is None:
+            self._ensure_adb_ready()
+            self._rooted = self._check_root()
+            logging.info("Android device rooted: %s", self._rooted)
+        return self._rooted
+
+    def _ensure_adb_ready(self) -> None:
+        if not self._adb_ready:
+            self._check_and_update_adbkey()
+            self._adb_ready = True
+
+    def _check_root(self) -> bool:
+        try:
+            output = tuple(
+                LocalExecutor().run_binary(
+                    "adb",
+                    "-s",
+                    testbed_defaults.serial_id,
+                    "shell",
+                    "su",
+                    "-c",
+                    "id",
+                    timeout=self.ROOT_CHECK_TIMEOUT,
+                    raise_if_exit_code=False,
+                )
+            )
+        except TimeoutError:
+            return False
+        return any("uid=0" in line for line in output)
 
     def find_in_path(self, binary_name: str) -> str:
         return binary_name  # Skip path validation inside android phone
@@ -433,19 +470,13 @@ class AdbExecutor(LocalExecutor):
     ) -> SutProcessLike:
         logging.info("Executed %s", " ".join(cmd))
 
-        if not self._adb_ready:
-            self._check_and_update_adbkey()
-            self._adb_ready = True
-
+        shell_args = ("exec-out", "su", "-c") if self.rooted else ("shell",)
         env_args = tuple(f"{k}={v}" for k, v in (extra_env or {}).items())
-        # Replace ()"exec-out", "su", "-c",) for ("shell", ) for nonroot devices
         return super().create_process(
             "adb",
             "-s",
             testbed_defaults.serial_id,
-            "exec-out",
-            "su",
-            "-c",
+            *shell_args,
             *env_args,
             *cmd,
             logfile=logfile,
