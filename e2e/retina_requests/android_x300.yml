@@ -6,7 +6,7 @@
   image: ${RETINA_REGISTRY_URI}/android:${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 1
+      requests: 500m
     memory:
       requests: 1G
     ephemeral-storage:
