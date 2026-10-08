@@ -12,6 +12,13 @@ from retina.orchestrator.elements import LabelDefinition
 
 RETINA_PREFIX = "retina"
 
+ROUNDING_FRACTIONAL = "fractional"
+ROUNDING_ROUND = "round"
+ROUNDING_TRUNCATE = "truncate"
+ROUNDING_MODES = (ROUNDING_FRACTIONAL, ROUNDING_ROUND, ROUNDING_TRUNCATE)
+# Whole cores only make sense for cpu
+ROUNDING_RESOURCES = ("cpu",)
+
 
 @dataclass
 class RequirementDefinition:
@@ -22,6 +29,7 @@ class RequirementDefinition:
     name: str
     requests: Union[str, int, None]
     limits: Union[str, int, None]
+    rounding: str = ROUNDING_FRACTIONAL
 
 
 class RequirementManager:
@@ -60,5 +68,10 @@ class RequirementManager:
         """
         Add requests in the POD
         """
-        req = RequirementDefinition(key, value.get("requests", None), value.get("limits", None))
+        rounding = value.get("rounding", ROUNDING_FRACTIONAL)
+        if rounding not in ROUNDING_MODES:
+            raise ValueError(f"Invalid rounding '{rounding}' for '{key}', expected one of {ROUNDING_MODES}")
+        if rounding != ROUNDING_FRACTIONAL and key not in ROUNDING_RESOURCES:
+            raise ValueError(f"Rounding is only supported for {ROUNDING_RESOURCES}, not '{key}'")
+        req = RequirementDefinition(key, value.get("requests", None), value.get("limits", None), rounding)
         self.req_list.append(req)

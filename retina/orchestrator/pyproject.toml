@@ -124,6 +124,7 @@ envlist =
   format
   lint
   type
+  unittest
   build
 
 [testenv]
@@ -155,6 +156,12 @@ deps =
   types-PyYAML <= 6.0.12
 commands =
   mypy src
+
+[testenv:unittest]
+deps =
+  -e ../protocol
+commands =
+  python -m unittest discover -s tests -v
 
 [testenv:build]
 skip_install = true

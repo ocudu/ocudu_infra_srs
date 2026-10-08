@@ -7,6 +7,7 @@ Resources elements
 """
 
 import logging
+import math
 import random
 import re
 from abc import ABC, abstractmethod
@@ -23,7 +24,12 @@ from retina.orchestrator.const import (
 )
 from retina.orchestrator.elements import LabelDefinition, Node, TaintDefinition
 from retina.orchestrator.kubernetes import KUBERNETES_SKIP_TAINT_ARRAY
-from retina.orchestrator.requirement import RequirementDefinition, RequirementManager
+from retina.orchestrator.requirement import (
+    RequirementDefinition,
+    RequirementManager,
+    ROUNDING_FRACTIONAL,
+    ROUNDING_ROUND,
+)
 from retina.orchestrator.reservation.utils import (
     create_resource_data_configmap,
     get_cluster_resource_name,
@@ -908,7 +914,8 @@ def _resolve_node_requirements_in_place(
                         raise RuntimeError("Cannot convert percentage requirements to values if the node is not known")
 
                 percentage = float(str(value).strip("%"))
-                setattr(req, attr_name, scale_quantity(str(node_requirements.get(req.name, 0)), percentage))
+                scaled = scale_quantity(str(node_requirements.get(req.name, 0)), percentage)
+                setattr(req, attr_name, round_cpu_quantity(scaled, req.rounding))
 
 
 # pylint: disable=too-many-instance-attributes
@@ -1352,6 +1359,21 @@ def scale_quantity(quantity: str, percentage: float) -> str:
     suffix = BINARY_SUFFIX.get(match.group(2), match.group(2))
     # Fixed notation and no float artifacts: K8s rejects things like 5.27e+07Ki
     return f"{value:.6f}".rstrip("0").rstrip(".") + suffix
+
+
+def round_cpu_quantity(quantity: str, rounding: str) -> str:
+    """
+    Round a cpu quantity to whole cores (min 1), or return it unchanged for fractional
+    """
+    if rounding == ROUNDING_FRACTIONAL:
+        return quantity
+    match = re.match(r"^([\d.]+)(m?)$", quantity)
+    if not match:
+        raise ValueError(f"Cannot round cpu quantity '{quantity}'")
+    cores = float(match.group(1)) / (1000 if match.group(2) else 1)
+    # Half up, not Python's round-half-to-even
+    whole = math.floor(cores + 0.5) if rounding == ROUNDING_ROUND else math.floor(cores)
+    return str(max(1, whole))
 
 
 def get_nodelist_status(node_list: List[Node]) -> str:
