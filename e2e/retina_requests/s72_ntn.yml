@@ -56,8 +56,8 @@
       image: ${OCUDU_REGISTRY_URI}/telegraf:${OCUDU_TELEGRAF_VERSION}
       requirements:
         cpu:
-          requests: 500m
-          limits: 500m
+          requests: 200m
+          limits: 200m
         memory:
           requests: 256Mi
           limits: 256Mi
