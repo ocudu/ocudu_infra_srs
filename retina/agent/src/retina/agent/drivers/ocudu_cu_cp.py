@@ -209,6 +209,8 @@ class OcuduCuCp(CUCPDriver, BaseDriverSutHandler):
                     run_analyzers(
                         ngap_pcap_filename,
                         tuple(analyzer_cls() for analyzer_cls in _NGAP_PCAP_ANALYZER_ARRAY),
+                        # The NAS messages are ciphered with 5G-EA0. tshark decodes them only with this preference.
+                        "-o nas-5gs.null_decipher:TRUE",
                     )
                 )
             if Path(xnap_pcap_filename).exists():
