@@ -298,7 +298,7 @@ aperiodic_csi:
 
 # DL-PRS configuration test
 # Checks that the gNB schedules PDSCH/PUSCH normally around a configured DL-PRS resource.
-# There is no LMF yet to request positioning measurements, so this only exercises the static resource configuration.
+# This test only exercises the static resource configuration of the DL-PRS.
 prs:
   <<: *base_config
   ue:
