@@ -33,7 +33,7 @@ baseline: &base_config
       nof_ue: &nof_ue 1000
       power_on_stagger_delay: 0.007 # 142 UE/s
       dl_bitrate: 4.0e+5
-      ul_bitrate: 2.0e+5
+      ul_bitrate: 0.9e+5
   gnb:
     config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_default.yml, prach_config.yml, inactivity_timer.yml]
     parameters:
@@ -76,7 +76,7 @@ tdd_dl_heavy:
       nof_ue: *nof_ue
       power_on_stagger_delay: 0.006 # 166 UE/s
       dl_bitrate: 4.0e+5
-      ul_bitrate: 2.0e+5
+      ul_bitrate: 0.9e+5
   gnb:
     config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, inactivity_timer.yml]
     parameters:
@@ -160,7 +160,7 @@ srs:
       nof_ue: *nof_ue
       power_on_stagger_delay: 0.008 # 125 UE/s
       dl_bitrate: 4.0e+5
-      ul_bitrate: 2.0e+5
+      ul_bitrate: 0.9e+5
   gnb:
     config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_default.yml, prach_config.yml, inactivity_timer.yml, srs_narrowband.yml]
     parameters:
@@ -189,7 +189,7 @@ tdd_dl_heavy_rt:
       nof_ue: *nof_ue
       power_on_stagger_delay: 0.01 # 100 UE/s
       dl_bitrate: 4.0e+5
-      ul_bitrate: 2.0e+5
+      ul_bitrate: 0.9e+5
       pdcch_decode_threshold: 0
       traffic_duration: 30
       nof_antennas_dl: 4

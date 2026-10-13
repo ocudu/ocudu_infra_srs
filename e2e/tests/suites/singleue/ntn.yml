@@ -176,9 +176,9 @@ geo_fl_false_harq_enabled_iperf:
       <<: *base_ue_parameters
       <<: &base_ue_traffic_parameters
         log_level: warning
-        dl_bitrate: 50.0e+6
-        ul_bitrate: 50.0e+6
         traffic_duration: 50
+      dl_bitrate: 3.0e+6
+      ul_bitrate: 2.6e+6
       satellite: geo
       feeder_link: false
       gp_latitude: -2.32724563
@@ -230,6 +230,8 @@ geo_fl_false_harq_disabled_iperf:
       <<: *base_radio_parameters
       <<: *base_ue_parameters
       <<: *base_ue_traffic_parameters
+      dl_bitrate: 50.0e+6
+      ul_bitrate: 50.0e+6
       satellite: geo
       feeder_link: false
       gp_latitude: -2.32724563
@@ -285,6 +287,8 @@ s72_leo_band_256_bw_10_scs_30_fl_false_iperf:
       <<: *base_radio_parameters
       <<: *base_ue_parameters
       <<: *base_ue_traffic_parameters
+      dl_bitrate: 50.0e+6
+      ul_bitrate: 50.0e+6
       common_scs: 30
       bandwidth: 10
       sample_rate: 11520000
@@ -341,6 +345,8 @@ s72_leo_band_256_bw_10_scs_30_fl_true_iperf:
       <<: *base_radio_parameters
       <<: *base_ue_parameters
       <<: *base_ue_traffic_parameters
+      dl_bitrate: 50.0e+6
+      ul_bitrate: 50.0e+6
       common_scs: 30
       bandwidth: 10
       sample_rate: 11520000
