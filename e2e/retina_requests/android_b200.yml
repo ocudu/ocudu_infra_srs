@@ -20,9 +20,11 @@
   requirements:
     cpu:
       requests: 80%
+      limits: 80%
       rounding: truncate
     memory:
       requests: 75%
+      limits: 75%
     ephemeral-storage:
       requests: 6G
   resources:
@@ -43,9 +45,11 @@
   requirements:
     cpu:
       requests: 20%
+      limits: 20%
       rounding: truncate
     memory:
       requests: 20%
+      limits: 20%
     ephemeral-storage:
       requests: 6G
   resources:
