@@ -565,8 +565,8 @@ class DuMetrics(google.protobuf.message.Message):
     NOF_CG_TYPE2_FIELD_NUMBER: builtins.int
     NOF_CS_RNTI_FIELD_NUMBER: builtins.int
     NOF_UES_AT_STOP_FIELD_NUMBER: builtins.int
-    NOF_LOCATION_MEAS_INDICATIONS_FIELD_NUMBER: builtins.int
     NOF_MEAS_GAP_SETUPS_FIELD_NUMBER: builtins.int
+    NOF_MEAS_GAP_RELEASES_FIELD_NUMBER: builtins.int
     nof_error_indications: builtins.int
     max_late_dl_harqs: builtins.int
     max_late_ul_harqs: builtins.int
@@ -607,10 +607,10 @@ class DuMetrics(google.protobuf.message.Message):
     """cs-RNTI setups in PhysicalCellGroupConfig with a valid RNTI value"""
     nof_ues_at_stop: builtins.int
     """UEs in the last report of each cell, flushed on DU stop"""
-    nof_location_meas_indications: builtins.int
-    """LocationMeasurementIndication messages that start PRS measurements"""
     nof_meas_gap_setups: builtins.int
     """RRCReconfiguration messages that set up a per-UE measurement gap"""
+    nof_meas_gap_releases: builtins.int
+    """RRCReconfiguration messages that release the per-UE measurement gap"""
     @property
     def pdsch_prbs_used_per_tdd_slot_idx(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
     @property
@@ -659,10 +659,10 @@ class DuMetrics(google.protobuf.message.Message):
         nof_cg_type2: builtins.int = ...,
         nof_cs_rnti: builtins.int = ...,
         nof_ues_at_stop: builtins.int = ...,
-        nof_location_meas_indications: builtins.int = ...,
         nof_meas_gap_setups: builtins.int = ...,
+        nof_meas_gap_releases: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_cg_type1", b"nof_cg_type1", "nof_cg_type2", b"nof_cg_type2", "nof_conres_issues", b"nof_conres_issues", "nof_cs_rnti", b"nof_cs_rnti", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_location_meas_indications", b"nof_location_meas_indications", "nof_meas_gap_setups", b"nof_meas_gap_setups", "nof_paging_messages", b"nof_paging_messages", "nof_rlm_csi_rs_resources", b"nof_rlm_csi_rs_resources", "nof_rlm_ssb_resources", b"nof_rlm_ssb_resources", "nof_seq_err", b"nof_seq_err", "nof_sib16_transmissions", b"nof_sib16_transmissions", "nof_sib19_transmissions", b"nof_sib19_transmissions", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib6_transmissions", b"nof_sib6_transmissions", "nof_sib7_transmissions", b"nof_sib7_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_ues_at_stop", b"nof_ues_at_stop", "nof_under", b"nof_under", "pdsch_prbs_mid10_per_tdd_slot_idx", b"pdsch_prbs_mid10_per_tdd_slot_idx", "pdsch_prbs_used_per_tdd_slot_idx", b"pdsch_prbs_used_per_tdd_slot_idx", "prach_configuration_index", b"prach_configuration_index", "pusch_prbs_mid10_per_tdd_slot_idx", b"pusch_prbs_mid10_per_tdd_slot_idx", "pusch_prbs_used_per_tdd_slot_idx", b"pusch_prbs_used_per_tdd_slot_idx", "sib1_has_rach_prioritization_slice", b"sib1_has_rach_prioritization_slice", "t312", b"t312", "total_prach_preambles", b"total_prach_preambles", "transform_precoder", b"transform_precoder", "two_step_prachs_detected", b"two_step_prachs_detected"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["b_srs", b"b_srs", "c_srs", b"c_srs", "drx_long_cycle_start_offset", b"drx_long_cycle_start_offset", "max_late_dl_harqs", b"max_late_dl_harqs", "max_late_ul_harqs", b"max_late_ul_harqs", "nof_cg_type1", b"nof_cg_type1", "nof_cg_type2", b"nof_cg_type2", "nof_conres_issues", b"nof_conres_issues", "nof_cs_rnti", b"nof_cs_rnti", "nof_error_indications", b"nof_error_indications", "nof_lates", b"nof_lates", "nof_meas_gap_releases", b"nof_meas_gap_releases", "nof_meas_gap_setups", b"nof_meas_gap_setups", "nof_paging_messages", b"nof_paging_messages", "nof_rlm_csi_rs_resources", b"nof_rlm_csi_rs_resources", "nof_rlm_ssb_resources", b"nof_rlm_ssb_resources", "nof_seq_err", b"nof_seq_err", "nof_sib16_transmissions", b"nof_sib16_transmissions", "nof_sib19_transmissions", b"nof_sib19_transmissions", "nof_sib1_transmissions", b"nof_sib1_transmissions", "nof_sib2_transmissions", b"nof_sib2_transmissions", "nof_sib3_transmissions", b"nof_sib3_transmissions", "nof_sib4_transmissions", b"nof_sib4_transmissions", "nof_sib5_transmissions", b"nof_sib5_transmissions", "nof_sib6_transmissions", b"nof_sib6_transmissions", "nof_sib7_transmissions", b"nof_sib7_transmissions", "nof_sib8_transmissions", b"nof_sib8_transmissions", "nof_ues_at_stop", b"nof_ues_at_stop", "nof_under", b"nof_under", "pdsch_prbs_mid10_per_tdd_slot_idx", b"pdsch_prbs_mid10_per_tdd_slot_idx", "pdsch_prbs_used_per_tdd_slot_idx", b"pdsch_prbs_used_per_tdd_slot_idx", "prach_configuration_index", b"prach_configuration_index", "pusch_prbs_mid10_per_tdd_slot_idx", b"pusch_prbs_mid10_per_tdd_slot_idx", "pusch_prbs_used_per_tdd_slot_idx", b"pusch_prbs_used_per_tdd_slot_idx", "sib1_has_rach_prioritization_slice", b"sib1_has_rach_prioritization_slice", "t312", b"t312", "total_prach_preambles", b"total_prach_preambles", "transform_precoder", b"transform_precoder", "two_step_prachs_detected", b"two_step_prachs_detected"]) -> None: ...
 
 Global___DuMetrics: typing_extensions.TypeAlias = DuMetrics
 

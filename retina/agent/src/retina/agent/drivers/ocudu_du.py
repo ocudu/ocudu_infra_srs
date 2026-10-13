@@ -39,8 +39,7 @@ from retina.agent.features.pcap.rrc import (
     CsRntiAnalyzer,
     DrxLongCycleAnalyzer,
     HandoverAnalyzer,
-    LocationMeasurementIndicationAnalyzer,
-    MeasGapSetupAnalyzer,
+    MeasGapAnalyzer,
     PagingAnalyzer,
     PrachConfigIndexAnalyzer,
     RachPrioritizationSliceAnalyzer,
@@ -83,8 +82,7 @@ _RLC_PCAP_ANALYZER_ARRAY = (
 )
 _F1AP_PCAP_ANALYZER_ARRAY = (
     ReestablishmentAnalyzer,
-    LocationMeasurementIndicationAnalyzer,
-    MeasGapSetupAnalyzer,
+    MeasGapAnalyzer,
 )
 
 

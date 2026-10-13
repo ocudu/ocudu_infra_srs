@@ -301,50 +301,35 @@ class PagingAnalyzer(PcapAnalyzer):
         return Metrics(du=DuMetrics(nof_paging_messages=self._count))
 
 
-class LocationMeasurementIndicationAnalyzer(PcapAnalyzer):
+class MeasGapAnalyzer(PcapAnalyzer):
     """
-    Counts UL LocationMeasurementIndication messages that start PRS measurements.
-
-    The UE sends the message with nr-PRS-Measurement-r16 to request a measurement gap for the PRS, and with release
-    when the PRS measurements stop. Only the first kind is counted.
-    tshark display filter: nr-rrc.locationMeasurementIndication_element && nr-rrc.nr_PRS_Measurement_r16
-    """
-
-    def __init__(self) -> None:
-        self._count = 0
-
-    @property
-    def display_filter(self) -> str:
-        return "nr-rrc.locationMeasurementIndication_element && nr-rrc.nr_PRS_Measurement_r16"
-
-    def process(self, _) -> None:
-        self._count += 1
-
-    def report(self) -> Metrics:
-        return Metrics(du=DuMetrics(nof_location_meas_indications=self._count))
-
-
-class MeasGapSetupAnalyzer(PcapAnalyzer):
-    """
-    Counts DL RRCReconfiguration messages that set up a per-UE measurement gap.
+    Counts DL RRCReconfiguration messages that set up or release the per-UE measurement gap.
 
     gapUE is a SetupRelease CHOICE: release(0), setup(1).
     The F1AP UEContextModificationResponse also carries the gap, so the filter keeps only the RRCReconfiguration.
-    tshark display filter: nr-rrc.rrcReconfiguration_element && nr-rrc.gapUE == 1
+    tshark display filter: nr-rrc.rrcReconfiguration_element && nr-rrc.gapUE
     """
 
     def __init__(self) -> None:
-        self._count = 0
+        self._nof_setups = 0
+        self._nof_releases = 0
 
     @property
     def display_filter(self) -> str:
-        return "nr-rrc.rrcReconfiguration_element && nr-rrc.gapUE == 1"
+        return "nr-rrc.rrcReconfiguration_element && nr-rrc.gapUE"
 
-    def process(self, _) -> None:
-        self._count += 1
+    def process(self, packet) -> None:
+        try:
+            gap_ue = int(_rrc_layer(packet).nr_rrc_gapue)
+        except (AttributeError, KeyError, ValueError):
+            return
+        if gap_ue == 1:
+            self._nof_setups += 1
+        elif gap_ue == 0:
+            self._nof_releases += 1
 
     def report(self) -> Metrics:
-        return Metrics(du=DuMetrics(nof_meas_gap_setups=self._count))
+        return Metrics(du=DuMetrics(nof_meas_gap_setups=self._nof_setups, nof_meas_gap_releases=self._nof_releases))
 
 
 class SuspendConfigAnalyzer(PcapAnalyzer):

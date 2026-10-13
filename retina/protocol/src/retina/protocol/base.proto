@@ -240,8 +240,9 @@ message DuMetrics {
 
   uint32 nof_ues_at_stop = 37; // UEs in the last report of each cell, flushed on DU stop
 
-  uint32 nof_location_meas_indications = 38; // LocationMeasurementIndication messages that start PRS measurements
-  uint32 nof_meas_gap_setups           = 39; // RRCReconfiguration messages that set up a per-UE measurement gap
+  reserved 38; // nof_location_meas_indications
+  uint32 nof_meas_gap_setups   = 39; // RRCReconfiguration messages that set up a per-UE measurement gap
+  uint32 nof_meas_gap_releases = 40; // RRCReconfiguration messages that release the per-UE measurement gap
 };
 
 message CoreMetrics {

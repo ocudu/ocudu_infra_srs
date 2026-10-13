@@ -70,9 +70,10 @@ position_dl_tdoa:
     cu_cp.trp_information_response_ge: 1
     cu_cp.nof_e_cid_measurement_initiation_request_eq: 0
     core.nof_lpp_provide_assistance_data_ge: 1
-    du.nof_location_meas_indications_ge: 1
-    # The cells share the SSB frequency, so only the DL-PRS need a measurement gap.
+    # The cells share the SSB frequency, so only the DL-PRS need a measurement gap. The gap is set up when the UE
+    # starts the DL-PRS measurements, and released when it stops them.
     du.nof_meas_gap_setups_ge: 1
+    du.nof_meas_gap_releases_ge: 1
     cu_cp.nof_nr_dl_tdoa_measurements_ge: 1
     core.nof_lpp_error_eq: 0
     core.nof_lpp_abort_eq: 0
