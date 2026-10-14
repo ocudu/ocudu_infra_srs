@@ -1,0 +1,130 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# AMF pool: the CU-CP connects to several AMFs that serve the same PLMN and TAC.
+#
+# One Open5GS core runs two AMFs of the same AMF Region (2) and AMF Set (1), with AMF Pointer 0 and 1. The two AMFs
+# share the other network functions of the core. The CU-CP lists AMF 0 in "amf" and AMF 1 in "extra_amfs".
+#
+# The CU-CP NGAP pcap shows which AMF serves each UE:
+#   * The AMF assigns the 5G-GUTI of the UE from its own GUAMI. The cu_cp.nof_registration_accept_per_amf_* criteria
+#     count the Registration Accept messages by the AMF Pointer of the 5G-GUTI.
+#   * In a Service Request, the UE sends the 5G-S-TMSI of its 5G-GUTI. Only the AMF of this 5G-S-TMSI knows the UE.
+#     Another AMF sends a Service Reject. The cu_cp.nof_service_accept_per_amf_* criteria count the Service Accept
+#     messages by the AMF Pointer of the 5G-S-TMSI.
+#   * A message for a UE that the AMF does not know causes an NGAP Error Indication.
+#
+# The UEs register from scratch, so they have no stored 5G-GUTI. The CU-CP selects the AMF of a new UE at random,
+# weighted by the Relative AMF Capacity of each AMF. Thus, the number of UEs of each AMF is random, and the criteria
+# use ranges.
+
+# Distribution of new UEs by the AMF capacity, and Service Requests to the AMF of each UE.
+# * Both NG Setups succeed. Both AMFs register UEs, about two times more on AMF 0 (capacity 2) than on AMF 1
+#   (capacity 1). With 24 UEs, AMF 0 gets fewer than 9 UEs or AMF 1 gets fewer than 2 UEs in about 0.2% of the runs.
+# * Every UE gets a PDU session and pings the UPF.
+# * The CU-CP gives each UE a RAN UE NGAP ID that is unique across both AMFs.
+# * The CU-CP releases the UEs to RRC_IDLE. The UL data of each UE triggers a Service Request, and the CU-CP sends it
+#   to the AMF of the 5G-S-TMSI of the UE. This includes the UEs of AMF 1, which has the lower capacity.
+capacity: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_open5gs
+  ue:
+    config: [1cell_chsim.cfg, amf_pool.cfg]
+    parameters:
+      nof_ue: &nof_ue 24
+      idle_duration: &idle_duration 8
+  gnb:
+    config: [amf_pool.yml, du.yml, tdd_default.yml, inactivity_timer.yml]
+  core:
+    parameters:
+      nof_subscribers: *nof_ue
+      amf_capacities: [2, 1]
+      # The SMF gets DL data while the Service Request of the UE activates the PDU session
+      warning_allowlist: &core_warning_allowlist
+        - UE is being triggering Service Request
+  criteria:
+    <<: &common_criteria
+      du.dl_bitrate_gt: 0
+      du.ul_bitrate_gt: 0
+      du.nof_ues_at_stop_eq: 0
+      cu_cp.nof_service_reject_eq: 0
+      cu_cp.nof_ng_reset_eq: 0
+      cu_cp.nof_ngap_error_indication_eq: 0
+      cu_cp.nof_duplicate_ran_ue_ngap_id_eq: 0
+      all.errors_le: 0
+      all.warnings_le: 0
+    du.nof_reestablishments_request_eq: 0
+    ue.nof_pdu_session_establishment_accept_eq: *nof_ue
+    cu_cp.nof_registration_accept_eq: *nof_ue
+    cu_cp.nof_registration_accept_per_amf_ge:
+      - amf_pointer: 0
+        value: 9
+      - amf_pointer: 1
+        value: 2
+    cu_cp.nof_service_accept_eq: *nof_ue
+    cu_cp.nof_service_accept_per_amf_ge:
+      - amf_pointer: 0
+        value: 9
+      - amf_pointer: 1
+        value: 2
+
+# Intra-CU handover with two AMFs.
+# The UEs move between the two cells of the DU and hand over between them. After the handover, the NAS messages of the
+# UE and its Service Request go to the AMF of the UE, also for the UEs of AMF 1. Both AMFs have the same capacity, so
+# that both AMFs get UEs. With 12 UEs, one AMF gets no UE in about 0.05% of the runs.
+intra_cu_ho:
+  <<: *base_config
+  ue:
+    config: [2cell_intrafreq_chsim.cfg, amf_pool.cfg]
+    parameters:
+      nof_ue: &nof_ue_mobility 12
+      idle_duration: *idle_duration
+      speed: 80
+      num_cells: 2
+  gnb:
+    config: [amf_pool.yml, du.yml, 2cell_intrafreq.yml, mobility.yml, tdd_default.yml, inactivity_timer.yml]
+    parameters:
+      num_cells: 2
+  core:
+    parameters: &core_params_mobility
+      nof_subscribers: *nof_ue_mobility
+      amf_capacities: [1, 1]
+      warning_allowlist: *core_warning_allowlist
+  criteria:
+    <<: *common_criteria
+    du.nof_reestablishments_request_eq: 0
+    ue.nof_handovers_ge: *nof_ue_mobility
+    ue.nof_pdu_session_establishment_accept_eq: *nof_ue_mobility
+    cu_cp.nof_registration_accept_eq: *nof_ue_mobility
+    cu_cp.nof_registration_accept_per_amf_ge: &both_amfs
+      - amf_pointer: 0
+        value: 1
+      - amf_pointer: 1
+        value: 1
+    cu_cp.nof_service_accept_eq: *nof_ue_mobility
+    cu_cp.nof_service_accept_per_amf_ge: *both_amfs
+
+# RRC reestablishment with two AMFs.
+# Each UE reestablishes once. The CU-CP keeps the PLMN and the AMF of the UE, so the NAS messages of the UE and its
+# Service Request go to the AMF of the UE, also for the UEs of AMF 1.
+reestablishment:
+  <<: *base_config
+  ue:
+    config: [1cell_chsim.cfg, amf_pool.cfg]
+    parameters:
+      nof_ue: *nof_ue_mobility
+      idle_duration: *idle_duration
+      reestablishment: true
+  gnb:
+    config: [amf_pool.yml, du.yml, tdd_default.yml, inactivity_timer.yml]
+  core:
+    parameters: *core_params_mobility
+  criteria:
+    <<: *common_criteria
+    du.nof_reestablishments_request_eq: *nof_ue_mobility
+    du.nof_reestablishments_complete_eq: *nof_ue_mobility
+    ue.nof_pdu_session_establishment_accept_eq: *nof_ue_mobility
+    cu_cp.nof_registration_accept_eq: *nof_ue_mobility
+    cu_cp.nof_registration_accept_per_amf_ge: *both_amfs
+    cu_cp.nof_service_accept_eq: *nof_ue_mobility
+    cu_cp.nof_service_accept_per_amf_ge: *both_amfs

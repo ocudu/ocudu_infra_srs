@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# CU-CP that connects to a pool of two AMFs that serve the same PLMN and TAC. Use it in place of cu_cp.yml.
+#
+# Both AMFs are in the one Open5GS core of the testbed (see the amf_capacities parameter of the core). The NGAP port of
+# each AMF is the NGAP port of the core plus the AMF Pointer. The CU-CP config lists AMF 0 in "amf" and AMF 1 in "extra_amfs".
+
+gnb_id_bit_length: {{gnb_id_bit_length}}
+ran_node_name: ocudu01
+
+cu_cp:
+  e1ap:
+    procedure_timeout: 4000
+  amf:
+    addrs: {{fivegc_definition.0.amf_ip}}
+    port: {{fivegc_definition.0.amf_port}}
+    bind_addrs: {{ip}}
+    supported_tracking_areas: &supported_tracking_areas
+      - tac: 7
+        plmn_list:
+          - plmn: "00101"
+            tai_slice_support_list:
+              - sst: 1
+  extra_amfs:
+    - addrs: {{fivegc_definition.0.amf_ip}}
+      port: {{fivegc_definition.0.amf_port + 1}}
+      bind_addrs: {{ip}}
+      supported_tracking_areas: *supported_tracking_areas
+
+pcap:
+  ngap_enable: true
+  ngap_filename: {{ngap_filename}}
+  e1ap_enable: true
+  e1ap_filename: {{e1ap_filename}}
+  f1ap_enable: true
+  f1ap_filename: {{f1ap_filename}}
+
+metrics:
+  layers:
+    enable_rrc: true
+    enable_ngap: true
+  periodicity:
+    cu_cp_report_period: 1000

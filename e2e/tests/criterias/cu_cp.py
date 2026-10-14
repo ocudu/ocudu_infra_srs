@@ -6,6 +6,7 @@ CU-CP pass/fail criteria definitions
 """
 
 import operator
+from typing import Dict, List, Sequence
 
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
@@ -219,3 +220,101 @@ class nof_write_replace_warning_response_ge(CuCpCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).cu_cp.nof_write_replace_warning_response for s in self._stub_array)
+
+
+def _all_ge(result: List[int], expected: List[int]) -> bool:
+    ">="
+    return all(a >= b for a, b in zip(result, expected))
+
+
+def _count_per_amf_pointer(stub_array: Sequence, field: str) -> Dict[int, int]:
+    """
+    Adds the counters per AMF Pointer of all the CU-CPs.
+    """
+    counts: Dict[int, int] = {}
+    for s in stub_array:
+        for amf_pointer, count in getattr(s.GetMetrics(Empty()).cu_cp, field).items():
+            counts[amf_pointer] = counts.get(amf_pointer, 0) + count
+    return counts
+
+
+class nof_registration_accept_eq(CuCpCriteria):
+    """Registration Accept"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(_count_per_amf_pointer(self._stub_array, "nof_registration_accept_per_amf_pointer").values())
+
+
+class nof_registration_accept_per_amf_ge(CuCpCriteria):
+    """Registration Accept per AMF"""
+
+    operator_method = _all_ge
+
+    @property
+    def expected(self):
+        return [item["value"] for item in self._input]
+
+    def callback(self) -> List[int]:
+        counts = _count_per_amf_pointer(self._stub_array, "nof_registration_accept_per_amf_pointer")
+        return [counts.get(item["amf_pointer"], 0) for item in self._input]
+
+
+class nof_service_accept_eq(CuCpCriteria):
+    """Service Accept"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(_count_per_amf_pointer(self._stub_array, "nof_service_accept_per_amf_pointer").values())
+
+
+class nof_service_accept_per_amf_ge(CuCpCriteria):
+    """Service Accept per AMF"""
+
+    operator_method = _all_ge
+
+    @property
+    def expected(self):
+        return [item["value"] for item in self._input]
+
+    def callback(self) -> List[int]:
+        counts = _count_per_amf_pointer(self._stub_array, "nof_service_accept_per_amf_pointer")
+        return [counts.get(item["amf_pointer"], 0) for item in self._input]
+
+
+class nof_service_reject_eq(CuCpCriteria):
+    """Service Reject"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_service_reject for s in self._stub_array)
+
+
+class nof_ng_reset_eq(CuCpCriteria):
+    """NG Reset"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_ng_reset for s in self._stub_array)
+
+
+class nof_ngap_error_indication_eq(CuCpCriteria):
+    """NGAP Error Indication"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_ngap_error_indication for s in self._stub_array)
+
+
+class nof_duplicate_ran_ue_ngap_id_eq(CuCpCriteria):
+    """Duplicate RAN UE NGAP ID"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_duplicate_ran_ue_ngap_id for s in self._stub_array)

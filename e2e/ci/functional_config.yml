@@ -85,6 +85,18 @@ xn_ue_context_retrieval:
     TESTBED: dynamic
     MARKERS: "(zmq or test_mode_ue) and not weekly"
 
+amf_pool:
+  stage: multiue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "multiue.amf_pool."
+    TESTBED: dynamic
+    MARKERS: "(zmq or test_mode_ue) and not weekly"
+
 cplane_traffic_load:
   stage: multiue
   extends: .functional_e2e

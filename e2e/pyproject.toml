@@ -62,6 +62,7 @@ markers = [
   "zmq_cucp_cuup",
   "zmq_mme",
   "zmq_ntn",
+  "zmq_open5gs",
   "weekly",
   "CU-GEN-1",
   "CU-GEN-3",

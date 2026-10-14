@@ -49,7 +49,7 @@ _DIR_DEFAULTS_FILES = {
 # base.py always injects: report_folder, utc_timestamp
 _RENDER_INJECTED_VARS = {
     "gnb": {"report_folder", "utc_timestamp", "neighbor_cucp_definition", "fivegc_definition", "ric_ip", "ric_port"},
-    "ue": {"report_folder", "utc_timestamp", "cell_ru_cfg", "start_time", "subscriber_array"},
+    "ue": {"report_folder", "utc_timestamp", "cell_ru_cfg", "start_time", "subscriber_array", "subnet_prefix"},
     "core": {"report_folder", "utc_timestamp", "subnet_prefix"},
 }
 
