@@ -751,6 +751,38 @@ Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
 class CuCpMetrics(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
+    @typing.final
+    class NofRegistrationAcceptPerAmfPointerEntry(google.protobuf.message.Message):
+        DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+        KEY_FIELD_NUMBER: builtins.int
+        VALUE_FIELD_NUMBER: builtins.int
+        key: builtins.int
+        value: builtins.int
+        def __init__(
+            self,
+            *,
+            key: builtins.int = ...,
+            value: builtins.int = ...,
+        ) -> None: ...
+        def ClearField(self, field_name: typing.Literal["key", b"key", "value", b"value"]) -> None: ...
+
+    @typing.final
+    class NofServiceAcceptPerAmfPointerEntry(google.protobuf.message.Message):
+        DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+        KEY_FIELD_NUMBER: builtins.int
+        VALUE_FIELD_NUMBER: builtins.int
+        key: builtins.int
+        value: builtins.int
+        def __init__(
+            self,
+            *,
+            key: builtins.int = ...,
+            value: builtins.int = ...,
+        ) -> None: ...
+        def ClearField(self, field_name: typing.Literal["key", b"key", "value", b"value"]) -> None: ...
+
     NOF_E_CID_MEASUREMENT_INITIATION_REQUEST_FIELD_NUMBER: builtins.int
     NOF_E_CID_MEASUREMENT_INITIATION_RESPONSE_FIELD_NUMBER: builtins.int
     NOF_E_CID_MEASUREMENT_REPORT_FIELD_NUMBER: builtins.int
@@ -769,6 +801,12 @@ class CuCpMetrics(google.protobuf.message.Message):
     NOF_XN_RETRIEVE_UE_CONTEXT_RESPONSE_FIELD_NUMBER: builtins.int
     NOF_NR_DL_TDOA_MEASUREMENTS_FIELD_NUMBER: builtins.int
     NOF_E_CID_MEASUREMENT_RESULT_WITH_AOA_FIELD_NUMBER: builtins.int
+    NOF_REGISTRATION_ACCEPT_PER_AMF_POINTER_FIELD_NUMBER: builtins.int
+    NOF_SERVICE_ACCEPT_PER_AMF_POINTER_FIELD_NUMBER: builtins.int
+    NOF_SERVICE_REJECT_FIELD_NUMBER: builtins.int
+    NOF_NG_RESET_FIELD_NUMBER: builtins.int
+    NOF_NGAP_ERROR_INDICATION_FIELD_NUMBER: builtins.int
+    NOF_DUPLICATE_RAN_UE_NGAP_ID_FIELD_NUMBER: builtins.int
     nof_e_cid_measurement_initiation_request: builtins.int
     nof_e_cid_measurement_initiation_response: builtins.int
     nof_e_cid_measurement_report: builtins.int
@@ -791,6 +829,22 @@ class CuCpMetrics(google.protobuf.message.Message):
     """LPP ProvideLocationInformation messages with NR DL-TDOA measurements"""
     nof_e_cid_measurement_result_with_aoa: builtins.int
     """NRPPa E-CID Measurement Initiation Response or Report with an NR UL AoA result"""
+    nof_service_reject: builtins.int
+    """NAS Service Reject messages"""
+    nof_ng_reset: builtins.int
+    """NGAP NG Reset messages, from the CU-CP or the AMF"""
+    nof_ngap_error_indication: builtins.int
+    """NGAP Error Indication messages"""
+    nof_duplicate_ran_ue_ngap_id: builtins.int
+    """InitialUEMessages with the RAN UE NGAP ID of another UE that has an NG connection"""
+    @property
+    def nof_registration_accept_per_amf_pointer(self) -> google.protobuf.internal.containers.ScalarMap[builtins.int, builtins.int]:
+        """NAS Registration Accept messages, by the AMF Pointer of the 5G-GUTI that the AMF assigns"""
+
+    @property
+    def nof_service_accept_per_amf_pointer(self) -> google.protobuf.internal.containers.ScalarMap[builtins.int, builtins.int]:
+        """NAS Service Accept messages, by the AMF Pointer of the 5G-S-TMSI in the Service Request of the UE"""
+
     def __init__(
         self,
         *,
@@ -812,8 +866,14 @@ class CuCpMetrics(google.protobuf.message.Message):
         nof_xn_retrieve_ue_context_response: builtins.int = ...,
         nof_nr_dl_tdoa_measurements: builtins.int = ...,
         nof_e_cid_measurement_result_with_aoa: builtins.int = ...,
+        nof_registration_accept_per_amf_pointer: collections.abc.Mapping[builtins.int, builtins.int] | None = ...,
+        nof_service_accept_per_amf_pointer: collections.abc.Mapping[builtins.int, builtins.int] | None = ...,
+        nof_service_reject: builtins.int = ...,
+        nof_ng_reset: builtins.int = ...,
+        nof_ngap_error_indication: builtins.int = ...,
+        nof_duplicate_ran_ue_ngap_id: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_5qi_5_drb_configured", b"nof_5qi_5_drb_configured", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_e_cid_measurement_result_with_aoa", b"nof_e_cid_measurement_result_with_aoa", "nof_nr_dl_tdoa_measurements", b"nof_nr_dl_tdoa_measurements", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_write_replace_warning_request", b"nof_write_replace_warning_request", "nof_write_replace_warning_response", b"nof_write_replace_warning_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge", "nof_xn_retrieve_ue_context_request", b"nof_xn_retrieve_ue_context_request", "nof_xn_retrieve_ue_context_response", b"nof_xn_retrieve_ue_context_response"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_5qi_5_drb_configured", b"nof_5qi_5_drb_configured", "nof_duplicate_ran_ue_ngap_id", b"nof_duplicate_ran_ue_ngap_id", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_e_cid_measurement_result_with_aoa", b"nof_e_cid_measurement_result_with_aoa", "nof_ng_reset", b"nof_ng_reset", "nof_ngap_error_indication", b"nof_ngap_error_indication", "nof_nr_dl_tdoa_measurements", b"nof_nr_dl_tdoa_measurements", "nof_registration_accept_per_amf_pointer", b"nof_registration_accept_per_amf_pointer", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_service_accept_per_amf_pointer", b"nof_service_accept_per_amf_pointer", "nof_service_reject", b"nof_service_reject", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_write_replace_warning_request", b"nof_write_replace_warning_request", "nof_write_replace_warning_response", b"nof_write_replace_warning_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge", "nof_xn_retrieve_ue_context_request", b"nof_xn_retrieve_ue_context_request", "nof_xn_retrieve_ue_context_response", b"nof_xn_retrieve_ue_context_response"]) -> None: ...
 
 Global___CuCpMetrics: typing_extensions.TypeAlias = CuCpMetrics
 

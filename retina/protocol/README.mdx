@@ -63,6 +63,26 @@ import TOCInline from '@theme/TOCInline';
 | `nof_xn_retrieve_ue_context_response` | `uint32` |||
 | `nof_nr_dl_tdoa_measurements` | `uint32` ||LPP ProvideLocationInformation messages with NR DL-TDOA measurements|
 | `nof_e_cid_measurement_result_with_aoa` | `uint32` ||NRPPa E-CID Measurement Initiation Response or Report with an NR UL AoA result|
+| `nof_registration_accept_per_amf_pointer` | `CuCpMetrics.NofRegistrationAcceptPerAmfPointerEntry` |`repeated`|NAS Registration Accept messages, by the AMF Pointer of the 5G-GUTI that the AMF assigns|
+| `nof_service_accept_per_amf_pointer` | `CuCpMetrics.NofServiceAcceptPerAmfPointerEntry` |`repeated`|NAS Service Accept messages, by the AMF Pointer of the 5G-S-TMSI in the Service Request of the UE|
+| `nof_service_reject` | `uint32` ||NAS Service Reject messages|
+| `nof_ng_reset` | `uint32` ||NGAP NG Reset messages, from the CU-CP or the AMF|
+| `nof_ngap_error_indication` | `uint32` ||NGAP Error Indication messages|
+| `nof_duplicate_ran_ue_ngap_id` | `uint32` ||InitialUEMessages with the RAN UE NGAP ID of another UE that has an NG connection|
+
+#### CuCpMetrics.NofRegistrationAcceptPerAmfPointerEntry
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `key` | `uint32` |||
+| `value` | `uint32` |||
+
+#### CuCpMetrics.NofServiceAcceptPerAmfPointerEntry
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `key` | `uint32` |||
+| `value` | `uint32` |||
 
 #### DUDefinition
 

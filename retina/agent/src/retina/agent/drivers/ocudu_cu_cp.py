@@ -32,11 +32,17 @@ from retina.agent.features.pcap.e1ap import (
     RohcProfile2Analyzer,
 )
 from retina.agent.features.pcap.ngap import (
+    DuplicateRanUeNgapIdAnalyzer,
     ECidMeasurementInitiationRequestAnalyzer,
     ECidMeasurementInitiationResponseAnalyzer,
     ECidMeasurementReportAnalyzer,
     ECidMeasurementResultWithAoaAnalyzer,
+    ErrorIndicationAnalyzer,
+    NgResetAnalyzer,
     NrDlTdoaMeasurementAnalyzer,
+    RegistrationAcceptPerAmfAnalyzer,
+    ServiceAcceptPerAmfAnalyzer,
+    ServiceRejectAnalyzer,
     TrpInformationRequestAnalyzer,
     TrpInformationResponseAnalyzer,
     WriteReplaceWarningRequestAnalyzer,
@@ -62,6 +68,12 @@ _NGAP_PCAP_ANALYZER_ARRAY = (
     NrDlTdoaMeasurementAnalyzer,
     WriteReplaceWarningRequestAnalyzer,
     WriteReplaceWarningResponseAnalyzer,
+    RegistrationAcceptPerAmfAnalyzer,
+    ServiceAcceptPerAmfAnalyzer,
+    ServiceRejectAnalyzer,
+    NgResetAnalyzer,
+    ErrorIndicationAnalyzer,
+    DuplicateRanUeNgapIdAnalyzer,
 )
 _XNAP_PCAP_ANALYZER_ARRAY = (
     HandoverRequestAcknowledgeAnalyzer,

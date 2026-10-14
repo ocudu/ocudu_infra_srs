@@ -300,6 +300,16 @@ message CuCpMetrics {
   uint32 nof_nr_dl_tdoa_measurements = 17; // LPP ProvideLocationInformation messages with NR DL-TDOA measurements
 
   uint32 nof_e_cid_measurement_result_with_aoa = 18; // NRPPa E-CID Measurement Initiation Response or Report with an NR UL AoA result
+
+  // NAS Registration Accept messages, by the AMF Pointer of the 5G-GUTI that the AMF assigns
+  map<uint32, uint32> nof_registration_accept_per_amf_pointer = 19;
+  // NAS Service Accept messages, by the AMF Pointer of the 5G-S-TMSI in the Service Request of the UE
+  map<uint32, uint32> nof_service_accept_per_amf_pointer = 20;
+  uint32              nof_service_reject                 = 21; // NAS Service Reject messages
+  uint32              nof_ng_reset                       = 22; // NGAP NG Reset messages, from the CU-CP or the AMF
+  uint32              nof_ngap_error_indication          = 23; // NGAP Error Indication messages
+  // InitialUEMessages with the RAN UE NGAP ID of another UE that has an NG connection
+  uint32 nof_duplicate_ran_ue_ngap_id = 24;
 };
 
 message RicMetrics {
