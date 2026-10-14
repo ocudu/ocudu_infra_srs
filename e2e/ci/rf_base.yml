@@ -12,7 +12,7 @@ release rf:
     COMPILER: gcc
     BUILD_ARGS: >
       -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-ggdb1 -DENABLE_WERROR=False -DENABLE_ZEROMQ=False
-      -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3
+      -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3 -DEXIT_TIMEOUT=30
     TEST_MODE: none
   cache:
     - key: rf release
