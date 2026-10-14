@@ -144,10 +144,18 @@ smf:
       - identity: pcrf.localdomain
         address: 127.0.0.9
 
+{#
+One "amf" section for each AMF of the pool. The 5gc binary starts one AMF for each section. All AMFs have the same
+AMF Region and AMF Set. Each AMF has its own AMF Pointer (its index), AMF name, NGAP port (38412 plus the AMF Pointer)
+and SBI address (a free loopback address of open5gs_setup.sh).
+#}
+{%- set amf_sbi_addrs = ["127.0.0.5", "127.0.0.16", "127.0.0.17", "127.0.0.18"] %}
+{%- for amf_capacity in amf_capacities %}
+{%- set amf_pointer = loop.index0 %}
 amf:
   sbi:
     server:
-      - address: 127.0.0.5
+      - address: {{amf_sbi_addrs[amf_pointer]}}
         port: 7777
     client:
       scp:
@@ -155,6 +163,7 @@ amf:
   ngap:
     server:
       - address: {{ip}}
+        port: {{38412 + amf_pointer}}
   guami:
     - plmn_id:
         mcc: {{mcc}}
@@ -162,6 +171,7 @@ amf:
       amf_id:
         region: 2
         set: 1
+        pointer: {{amf_pointer}}
   tai:
     - plmn_id:
         mcc: {{mcc}}
@@ -182,10 +192,12 @@ amf:
     ciphering_order : [ {{ nas_ciphering_order | join(", ") }} ]
   network_name:
     full: Open5GS
-  amf_name: open5gs-amf0
+  amf_name: open5gs-amf{{amf_pointer}}
+  relative_capacity: {{amf_capacity}}
   time:
     t3512:
       value: 540     # 9 minutes * 60 = 540 seconds
+{% endfor %}
 
 sgwu:
   pfcp:

@@ -124,8 +124,7 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
             r"(?!.*Failed sending data to the peer)"
             r"(?!.*Cause\[Group:)"
             r"(?!.*NGReset)"
-            r"(?!.*NGAP_ResetType_PR_)"
-            r".*$"
+            r"(?!.*NGAP_ResetType_PR_)" + _warning_allowlist_suffix() + r".*$"
         )
 
     @property
@@ -149,6 +148,13 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
         return True
 
     def AddUESubscriber(self, request: Subscriber, context: grpc.ServicerContext) -> Empty:
+        # A UE simulator runs several UEs with consecutive IMSIs, so add a subscriber for each of them
+        for subscriber_idx in range(fivegc_defaults.nof_subscribers):
+            self._add_subscriber(str(int(request.imsi) + subscriber_idx).zfill(len(request.imsi)), request)
+
+        return Empty()
+
+    def _add_subscriber(self, imsi: str, request: Subscriber) -> None:
         # For each UE, we assign it an IP in another subnet FIX.FIX.z.1
         ue_ip = str(
             (
@@ -158,7 +164,7 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
         )
         self._ue_ip_offset += self._UE_IP_OFFSET_INTERVAL
         sub_data: Dict[str, Any] = {
-            "imsi": request.imsi,
+            "imsi": imsi,
             "subscribed_rau_tau_timer": 12,
             "network_access_mode": 2,
             "subscriber_status": 0,
@@ -208,23 +214,27 @@ class Open5gs5gc(FiveGCDriver, BaseDriverSutHandler):
         if request.sd:
             sub_data["slice"][0]["sd"] = request.sd
 
-        subscriber = Open5gsDB.get_subscriber(request.imsi)
+        subscriber = Open5gsDB.get_subscriber(imsi)
         if subscriber is None:
             sub_data["security"]["sqn"] = self._SUBSCRIBER_SQN
             result = Open5gsDB.add_subscriber(sub_data) is not None
         else:
             # The whole security subdocument is overwritten, so carry over the SQN already reached by the subscriber
             sub_data["security"]["sqn"] = Int64(subscriber.get("security", {}).get("sqn", self._SUBSCRIBER_SQN))
-            result = Open5gsDB.update_subscriber(request.imsi, sub_data) is not None
+            result = Open5gsDB.update_subscriber(imsi, sub_data) is not None
 
         if not result:
             raise ValueError("UE can't be added")
 
-        return Empty()
-
     @property
     def _expected_exit_code_array(self) -> Tuple[int, ...]:
         return (-256,)
+
+
+def _warning_allowlist_suffix() -> str:
+    if fivegc_defaults.warning_allowlist:
+        return r"(?!.*" + r")(?!.*".join(fivegc_defaults.warning_allowlist) + r")"
+    return ""
 
 
 class LocalOpen5gs5gc(Open5gs5gc):

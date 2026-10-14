@@ -27,6 +27,13 @@ tun_mask: int = 16
 apn: str = "internet"
 ims_mode: str = ""  # enabled, not_registering
 slices: List[int] = []
+# Open5gs: number of subscribers that AddUESubscriber adds, with consecutive IMSIs from the IMSI of the request
+nof_subscribers: int = 1
+# Open5gs: Relative AMF Capacity of each AMF of the AMF pool. The length of the list gives the number of AMFs.
+# 255 is the default capacity of Open5gs.
+amf_capacities: List[int] = [255]
+# Open5gs: regular expressions of the warnings that do not count as warnings
+warning_allowlist: List[str] = []
 nas_ciphering_order: List[str] = ["NEA0", "NEA1", "NEA2"]
 time_multiplier: float = 1
 metrics_filename_json: str = "metrics.json"
