@@ -138,7 +138,7 @@ fdd:
       bandwidth: 20
       common_scs: 15
   gnb:
-    config: [cu_cp.yml, du.yml, vonr_qos.yml, prach_config.yml, inactivity_timer.yml]
+    config: [cu_cp.yml, du.yml, vonr_qos.yml, prach_config.yml, inactivity_timer.yml, schedtrace.yml]
     parameters:
       band: 66
       dl_nr_arfcn: 430000
