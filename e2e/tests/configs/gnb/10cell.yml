@@ -9,6 +9,7 @@ cell_cfg:
     f0_intraslot_freq_hop: false
     f1_enable_occ: true
     f1_nof_cyclic_shifts: 12
+    nof_edge_prbs: 1
   ul_common:
     max_pucchs_per_slot: 31
     max_ul_grants_per_slot: 32

@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 cell_cfg:
+  pucch:
+    nof_edge_prbs: 1
   slicing:
     - sst: 2
       sd: 42
