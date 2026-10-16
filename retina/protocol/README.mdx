@@ -71,6 +71,19 @@ import TOCInline from '@theme/TOCInline';
 | `zmq_ip` | `string` ||Empty if not zmq mode|
 | `zmq_port_array` | `uint32` |`repeated`||
 
+#### DrbMetrics
+
+Traffic a single data radio bearer carried, as seen in the RLC capture of the DU. Only reported
+by the components that capture RLC, so it is absent unless a test enables that capture.
+
+| Field | Type | Label | Description |
+|---|---|---|---|
+| `drb_id` | `uint32` |||
+| `dl_bytes` | `uint64` ||Bytes of RLC PDU payload, and the rate they amount to over the span they were captured in|
+| `ul_bytes` | `uint64` |||
+| `dl_bitrate` | `double` |||
+| `ul_bitrate` | `double` |||
+
 #### DuMetrics
 
 | Field | Type | Label | Description |
@@ -148,6 +161,7 @@ import TOCInline from '@theme/TOCInline';
 | `du` | `DuMetrics` |||
 | `core` | `CoreMetrics` |||
 | `ric` | `RicMetrics` |||
+| `drb_array` | `DrbMetrics` |`repeated`||
 
 #### NearRtRicDefinition
 

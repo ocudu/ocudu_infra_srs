@@ -529,6 +529,38 @@ class UeMetrics(google.protobuf.message.Message):
 Global___UeMetrics: typing_extensions.TypeAlias = UeMetrics
 
 @typing.final
+class DrbMetrics(google.protobuf.message.Message):
+    """Traffic a single data radio bearer carried, as seen in the RLC capture of the DU. Only reported
+    by the components that capture RLC, so it is absent unless a test enables that capture.
+    """
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    DRB_ID_FIELD_NUMBER: builtins.int
+    DL_BYTES_FIELD_NUMBER: builtins.int
+    UL_BYTES_FIELD_NUMBER: builtins.int
+    DL_BITRATE_FIELD_NUMBER: builtins.int
+    UL_BITRATE_FIELD_NUMBER: builtins.int
+    drb_id: builtins.int
+    dl_bytes: builtins.int
+    """Bytes of RLC PDU payload, and the rate they amount to over the span they were captured in"""
+    ul_bytes: builtins.int
+    dl_bitrate: builtins.float
+    ul_bitrate: builtins.float
+    def __init__(
+        self,
+        *,
+        drb_id: builtins.int = ...,
+        dl_bytes: builtins.int = ...,
+        ul_bytes: builtins.int = ...,
+        dl_bitrate: builtins.float = ...,
+        ul_bitrate: builtins.float = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["dl_bitrate", b"dl_bitrate", "dl_bytes", b"dl_bytes", "drb_id", b"drb_id", "ul_bitrate", b"ul_bitrate", "ul_bytes", b"ul_bytes"]) -> None: ...
+
+Global___DrbMetrics: typing_extensions.TypeAlias = DrbMetrics
+
+@typing.final
 class DuMetrics(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -828,6 +860,7 @@ class Metrics(google.protobuf.message.Message):
     DU_FIELD_NUMBER: builtins.int
     CORE_FIELD_NUMBER: builtins.int
     RIC_FIELD_NUMBER: builtins.int
+    DRB_ARRAY_FIELD_NUMBER: builtins.int
     @property
     def aggregate(self) -> Global___UeMetrics: ...
     @property
@@ -840,6 +873,8 @@ class Metrics(google.protobuf.message.Message):
     def core(self) -> Global___CoreMetrics: ...
     @property
     def ric(self) -> Global___RicMetrics: ...
+    @property
+    def drb_array(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[Global___DrbMetrics]: ...
     def __init__(
         self,
         *,
@@ -849,8 +884,9 @@ class Metrics(google.protobuf.message.Message):
         du: Global___DuMetrics | None = ...,
         core: Global___CoreMetrics | None = ...,
         ric: Global___RicMetrics | None = ...,
+        drb_array: collections.abc.Iterable[Global___DrbMetrics] | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu_cp", b"cu_cp", "du", b"du", "ric", b"ric"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu_cp", b"cu_cp", "du", b"du", "ric", b"ric", "ue_array", b"ue_array"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["aggregate", b"aggregate", "core", b"core", "cu_cp", b"cu_cp", "drb_array", b"drb_array", "du", b"du", "ric", b"ric", "ue_array", b"ue_array"]) -> None: ...
 
 Global___Metrics: typing_extensions.TypeAlias = Metrics

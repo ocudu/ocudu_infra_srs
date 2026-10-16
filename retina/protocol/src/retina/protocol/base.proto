@@ -194,6 +194,18 @@ message UeMetrics {
   uint64 nof_rx_dl = 34;
 };
 
+// Traffic a single data radio bearer carried, as seen in the RLC capture of the DU. Only reported
+// by the components that capture RLC, so it is absent unless a test enables that capture.
+message DrbMetrics {
+  uint32 drb_id = 1;
+
+  // Bytes of RLC PDU payload, and the rate they amount to over the span they were captured in
+  uint64 dl_bytes   = 2;
+  uint64 ul_bytes   = 3;
+  double dl_bitrate = 4;
+  double ul_bitrate = 5;
+};
+
 message DuMetrics {
   uint32 nof_error_indications = 1;
   uint64 max_late_dl_harqs     = 2;
@@ -301,10 +313,11 @@ message RicMetrics {
 };
 
 message Metrics {
-  UeMetrics          aggregate = 1;
-  repeated UeMetrics ue_array  = 2;
-  CuCpMetrics        cu_cp     = 3;
-  DuMetrics          du        = 4;
-  CoreMetrics        core      = 5;
-  RicMetrics         ric       = 6;
+  UeMetrics           aggregate = 1;
+  repeated UeMetrics  ue_array  = 2;
+  CuCpMetrics         cu_cp     = 3;
+  DuMetrics           du        = 4;
+  CoreMetrics         core      = 5;
+  RicMetrics          ric       = 6;
+  repeated DrbMetrics drb_array = 7;
 };
