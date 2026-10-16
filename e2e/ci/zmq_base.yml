@@ -20,7 +20,7 @@ release zmq:
     COMPILER: gcc
     BUILD_ARGS: >
       -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-ggdb1 -DENABLE_WERROR=False -DENABLE_UHD=False
-      -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3
+      -DASSERT_LEVEL=PARANOID -DMARCH=x86-64-v3 -DENABLE_SCHEDTRACE=True
     TEST_MODE: none
 
 release zmq cached:
