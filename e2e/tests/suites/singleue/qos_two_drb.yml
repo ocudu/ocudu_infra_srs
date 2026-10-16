@@ -1,0 +1,71 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Two DRBs of one PDU session contending for a loaded cell. Both flows come from the traffic
+# generator of the UE at a constant rate, one towards the port the TFT of the 5QI 1 erab matches.
+# That bearer asks only for its guaranteed_bitrate and still gets all of it.
+#
+# Note: the uplink share is the UE dividing one grant across its logical channels by the
+# prioritisedBitRate, so a uplink only failure points at the UE rather than at the scheduler.
+qos:
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue:
+    config: [1cell.cfg, qos_two_drb.cfg]
+    parameters:
+      traffic_duration: 20
+      # Rate of the flow on the default bearer, more than the cell carries.
+      default_bitrate: 30.0e+6
+      band: 3
+      bandwidth: 10
+      dl_nr_arfcn: 368500
+      ssb_nr_arfcn: 367930
+      common_scs: 15
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, vonr_qos.yml]
+    parameters:
+      band: 3
+      bandwidth: 10
+      dl_nr_arfcn: 368500
+      common_scs: 15
+      time_multiplier: 2
+      rlc_rb_type: all
+  core:
+    config: [baseline.cfg]
+    parameters:
+      time_multiplier: 2
+  feature_ids: [MVP-FUNC-SVCS-16-8-c, DU-QOS-1]
+  criteria:
+    # The cell is loaded, without which the guarantee below is met for free.
+    du.dl_bitrate_gt: 10.0e+6
+    du.ul_bitrate_gt: 20.0e+6
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_reestablishments_request_eq: 0
+    du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    core.nof_pdu_session_modification_complete_ge: 1
+    # One dedicated bearer for the whole run. A flow going quiet for on_demand_timeout has the
+    # core release the bearer and build a new one, which this catches.
+    cu_cp.nof_5qi_1_drb_configured_eq: 1
+    # DRB 2 is the dedicated bearer and carries almost all of the 1 Mbps it asks for. The floor on
+    # DRB 1 keeps the guarantee from being met by starving the greedy bearer. The seconds are the
+    # traffic_duration above: the rate comes from the bytes of the capture over the time the radio
+    # ran, not over the clock the capture was taken on, which a throttled PHY stretches.
+    du.drb_dl_bitrate_gt:
+      - id: 1
+        value: 20.0e+6
+        seconds: 20
+      - id: 2
+        value: 9.0e+5
+        seconds: 20
+    du.drb_ul_bitrate_gt:
+      - id: 1
+        value: 20.0e+6
+        seconds: 20
+      - id: 2
+        value: 9.0e+5
+        seconds: 20
+    all.errors_le: 0
+    all.warnings_le: 3

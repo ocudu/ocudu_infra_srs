@@ -337,6 +337,18 @@ pws:
     TESTBED: dynamic
     MARKERS: "(zmq or test_mode_ue) and not weekly"
 
+qos_two_drb:
+  stage: singleue
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "singleue.qos_two_drb."
+    TESTBED: dynamic
+    MARKERS: "(zmq or test_mode_ue) and not weekly"
+
 rach:
   stage: singleue
   extends: .functional_e2e
