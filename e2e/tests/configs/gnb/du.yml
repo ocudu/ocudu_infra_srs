@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+{%- set rlc_rb_type = rlc_rb_type | default("srb") %}
 {%- set gnb_du_id = gnb_du_id | default(0) %}
 {%- set pci = pci | default(1) %}
 {%- set dl_nr_arfcn = dl_nr_arfcn | default(626668) %}
@@ -41,7 +42,7 @@ expert_phy:
 
 pcap:
   rlc_enable: true
-  rlc_rb_type: srb
+  rlc_rb_type: {{rlc_rb_type}}
   rlc_filename: {{rlc_filename}}
   f1ap_enable: true
   f1ap_filename: {{f1ap_filename}}

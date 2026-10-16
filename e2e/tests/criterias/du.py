@@ -532,6 +532,39 @@ class ul_ue_mid10_bitrate(DuCriteria):
         return [ue.ul_av_mid10_samples for ue in du.GetMetrics(Empty()).ue_array]
 
 
+class drb_dl_bitrate_gt(DuCriteria):
+    """DL bitrate per DRB"""
+
+    operator_method = _all_gt
+
+    @property
+    def expected(self):
+        return [item["value"] for item in self._input]
+
+    def callback(self) -> List[float]:
+        du = self._stub_array[0]
+        bytes_by_drb = {drb.drb_id: float(drb.dl_bytes) for drb in du.GetMetrics(Empty()).drb_array}
+        # The seconds are the ones the traffic ran for, which is what makes this a rate of the
+        # radio rather than of the clock the capture was taken on. A DRB the capture never saw
+        # counts as carrying nothing, rather than going unchecked.
+        return [bytes_by_drb.get(item["id"], 0.0) * 8 / item["seconds"] for item in self._input]
+
+
+class drb_ul_bitrate_gt(DuCriteria):
+    """UL bitrate per DRB"""
+
+    operator_method = _all_gt
+
+    @property
+    def expected(self):
+        return [item["value"] for item in self._input]
+
+    def callback(self) -> List[float]:
+        du = self._stub_array[0]
+        bytes_by_drb = {drb.drb_id: float(drb.ul_bytes) for drb in du.GetMetrics(Empty()).drb_array}
+        return [bytes_by_drb.get(item["id"], 0.0) * 8 / item["seconds"] for item in self._input]
+
+
 # pdsch_prbs_used_per_tdd_slot_idx supported in retina but not used in any test criterion
 # pusch_prbs_used_per_tdd_slot_mean supported in retina but not used in any test criterion
 
