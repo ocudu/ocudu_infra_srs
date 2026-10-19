@@ -99,6 +99,49 @@ geo_band_256_bw_5_fl_true_ping:
       semi_major_axis: 42265116.31380637
   feature_ids: [DU-NTN-DEP-1-a, DU-NTN-DEP-2, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-4, DU-NTN-HARQ-1]
 
+# The GEO feeder link case with each UE deriving its own Koffset from the T_TA it reports, signalled with a
+# Differential Koffset MAC CE. The cell-specific Koffset is raised above the 480ms the double hop needs, so the
+# derivation has room to hand the UE a smaller one.
+geo_band_256_bw_5_fl_true_ue_koffset_ping:
+  <<: *base_config
+  ue:
+    config: [1cell_ntn.cfg, ping.cfg]
+    parameters:
+      <<: *base_radio_parameters
+      <<: *base_ue_parameters
+      satellite: geo
+      feeder_link: true
+      gp_latitude: -2.327101395
+      gp_longitude: -106.896958167
+      gp_altitude: 1.0
+      fp_latitude: -2.327101395
+      fp_longitude: -106.896958167
+      fp_altitude: 1.0
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml, mac_pcap.yml]
+    parameters:
+      <<: *base_radio_parameters
+      <<: *base_gnb_parameters
+      feeder_link: true
+      dl_harq_disabled: false
+      ul_harq_disabled: false
+      cell_specific_koffset: 500
+      ta_meas_slot_prohibit_period: 510
+      # T_TA barely moves over a GEO pass, so the report the UE sends on random access is what the derivation runs on.
+      ta_report: true
+      ta_report_offset_threshold: 1.0
+      ue_specific_koffset_enabled: true
+      gw_latitude: -2.3271013947022157
+      gw_longitude: -106.89695816700173
+      gw_altitude: 1.0
+      eccentricity: 0.0002596177199746916
+      inclination: 0.1319550252630127
+      longitude: 0.9650375632437326
+      mean_anomaly: 5.108818072792149
+      periapsis: 4.629841842546964
+      semi_major_axis: 42265116.31380637
+  feature_ids: [DU-NTN-DEP-1-a, DU-NTN-DEP-2, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-2, DU-NTN-TIM-4, DU-NTN-TIM-5, DU-NTN-HARQ-1]
+
 leo_band_256_bw_5_fl_false_ping:
   <<: *base_config
   ue:

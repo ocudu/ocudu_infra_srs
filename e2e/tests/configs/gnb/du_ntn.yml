@@ -14,6 +14,9 @@
 {%- set cell_ref_latitude = cell_ref_latitude | default(none) %}
 {%- set cell_ref_longitude = cell_ref_longitude | default(none) %}
 {%- set propagator_type = propagator_type | default('rk4') %}
+{%- set ta_report = ta_report | default(false) %}
+{%- set ta_report_offset_threshold = ta_report_offset_threshold | default(none) %}
+{%- set ue_specific_koffset_enabled = ue_specific_koffset_enabled | default(false) %}
 
 cell_cfg:
   prach:
@@ -77,6 +80,15 @@ cell_cfg:
       semi_major_axis: {{semi_major_axis}}
     epoch_timestamp: '{{utc_timestamp}}'
     ntn_ul_sync_validity_dur: {{ntn_ul_sync_validity_dur}}
+    ta_report: {{ta_report|lower}}
+    {% if ta_report_offset_threshold is not none %}
+    ta_report_offset_threshold: {{ta_report_offset_threshold}}
+    {% endif %}
+    {% if ue_specific_koffset_enabled %}
+    # Each UE gets a Koffset derived from the T_TA it reports, signalled with a Differential Koffset MAC CE.
+    ue_specific_koffset_enabled: true
+    ue_specific_koffset_margin: 2
+    {% endif %}
     {% if cell_ref_latitude is not none and cell_ref_longitude is not none %}
     # Reference location of the serving cell. Without it the DU cannot estimate the
     # service link round trip, so it has no uplink timing advance for the cell and
