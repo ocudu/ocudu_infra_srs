@@ -147,6 +147,7 @@ by the components that capture RLC, so it is absent unless a test enables that c
 | `nof_ues_at_stop` | `uint32` ||UEs in the last report of each cell, flushed on DU stop|
 | `nof_meas_gap_setups` | `uint32` ||RRCReconfiguration messages that set up a per-UE measurement gap|
 | `nof_meas_gap_releases` | `uint32` ||RRCReconfiguration messages that release the per-UE measurement gap|
+| `differential_koffset_array` | `uint32` |`repeated`|Differential Koffset MAC CE values signalled to a UE, in the order they were sent. A value repeating the one in force is left out, so each entry is a Koffset the cell derived afresh.|
 
 #### FiveGCDefinition
 

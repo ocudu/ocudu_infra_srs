@@ -34,6 +34,7 @@ from retina.agent.features.gnb_report import transform_metrics
 from retina.agent.features.json_metrics.du_cell import DuCellAnalyzer
 from retina.agent.features.json_metrics.du_metrics import DuMetricsAnalyzer
 from retina.agent.features.pcap.analyzer import run_analyzers
+from retina.agent.features.pcap.mac import DifferentialKoffsetAnalyzer
 from retina.agent.features.pcap.rlc import DrbTrafficAnalyzer
 from retina.agent.features.pcap.rrc import (
     ConfiguredGrantAnalyzer,
@@ -73,6 +74,7 @@ _MAC_PCAP_ANALYZER_ARRAY = (
     RlmConfigAnalyzer,
     ConfiguredGrantAnalyzer,
     CsRntiAnalyzer,
+    DifferentialKoffsetAnalyzer,
 )
 _RLC_PCAP_ANALYZER_ARRAY = (
     DrbTrafficAnalyzer,

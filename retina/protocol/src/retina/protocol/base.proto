@@ -258,6 +258,10 @@ message DuMetrics {
   reserved 38; // nof_location_meas_indications
   uint32 nof_meas_gap_setups   = 39; // RRCReconfiguration messages that set up a per-UE measurement gap
   uint32 nof_meas_gap_releases = 40; // RRCReconfiguration messages that release the per-UE measurement gap
+
+  // Differential Koffset MAC CE values signalled to a UE, in the order they were sent. A value repeating the
+  // one in force is left out, so each entry is a Koffset the cell derived afresh.
+  repeated uint32 differential_koffset_array = 41;
 };
 
 message CoreMetrics {
