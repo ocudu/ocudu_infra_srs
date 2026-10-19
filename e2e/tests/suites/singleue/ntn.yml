@@ -141,6 +141,21 @@ geo_band_256_bw_5_fl_true_ue_koffset_ping:
       periapsis: 4.629841842546964
       semi_major_axis: 42265116.31380637
   feature_ids: [DU-NTN-DEP-1-a, DU-NTN-DEP-2, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-2, DU-NTN-TIM-4, DU-NTN-TIM-5, DU-NTN-HARQ-1]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_reestablishments_request_eq: 0
+    du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.nof_ko_dl_le: 20
+    ue.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 20
+    ue.nof_ko_ul_le: 20
+    core.nof_pdu_session_establishment_accept_eq: 1
+    # The geometry needs 480ms, so a UE keeping 2ms over its own T_TA gets at least 18ms back out of the 500.
+    du.max_differential_koffset_ge: 10
 
 leo_band_256_bw_5_fl_false_ping:
   <<: *base_config

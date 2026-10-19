@@ -678,3 +678,16 @@ class nof_meas_gap_releases_ge(DuCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).du.nof_meas_gap_releases for s in self._stub_array)
+
+
+def _differential_koffset_array(stub_array) -> List[int]:
+    return [k for s in stub_array for k in s.GetMetrics(Empty()).du.differential_koffset_array]
+
+
+class max_differential_koffset_ge(DuCriteria):
+    """Differential Koffset"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return max(_differential_koffset_array(self._stub_array), default=0)
