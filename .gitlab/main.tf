@@ -209,7 +209,7 @@ module "settings" {
       timezone    = "Europe/Madrid"
       ref         = "refs/heads/main"
       active      = true
-      variables   = {}
+      variables   = { RETINA_DEMOLITION_TAG = "zmq" }
     }
     performance = {
       description = "performance"
