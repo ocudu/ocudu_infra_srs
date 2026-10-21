@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+{%- set fapi_dummy_clock = fapi_dummy_clock | default("realtime") %}
+
+# The FAPI dummy replaces the PHY and the RU, so the DU-high runs without any physical layer processing
+fapi_dummy:
+  clock: {{fapi_dummy_clock}}

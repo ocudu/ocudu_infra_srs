@@ -206,3 +206,64 @@ many_ues_attach_detach:
     <<: *ru_criteria
     du.dl_bitrate_gt: 700.0e+6
     du.ul_bitrate_gt: 90.0e+6
+
+# The FAPI dummy replaces the PHY and the RU, so the DU-high and the scheduler run without physical layer processing
+
+# Peak rate of a single cell
+fapi_dummy:
+  <<: *ru_config
+  gnb:
+    config: [fapi_dummy.yml, test_mode.yml, max_mcs.yml, du.yml]
+    parameters:
+      band: 39
+      bandwidth: 100
+      common_scs: 30
+      dl_nr_arfcn: 381500
+      log_level: warning
+      nof_antennas_dl: 4
+      nof_antennas_ul: 4
+      nof_test_ues: 16
+      test_ue_ri: 4
+
+# Full cell population in real time
+fapi_dummy_many_ues:
+  <<: *ru_config
+  gnb:
+    config: &fapi_dummy_many_ues_config [fapi_dummy.yml, test_mode.yml, du_perf.yml, 1000ue.yml, tdd_63.yml, du.yml, schedtrace.yml]
+    parameters:
+      <<: *many_ues_parameters
+
+# UE creation rate: the UEs cycle through attach, traffic and detach for the whole test
+fapi_dummy_many_ues_attach_detach:
+  <<: *ru_config
+  gnb:
+    config: *fapi_dummy_many_ues_config
+    parameters:
+      <<: *many_ues_parameters
+      attach_detach_duration_ms: 5000
+      attach_detach_guard_duration_ms: 3000
+  criteria:
+    <<: *ru_criteria
+    du.dl_bitrate_gt: 700.0e+6
+    du.ul_bitrate_gt: 90.0e+6
+
+# Scheduler load of many cells and UEs, with slots advancing as fast as the DU-high processes them
+fapi_dummy_free_running_10cell_50ue:
+  <<: *ru_config
+  gnb:
+    config: [fapi_dummy.yml, test_mode.yml, 10cell.yml, du.yml]
+    parameters:
+      band: 256
+      bandwidth: 5
+      common_scs: 15
+      dl_nr_arfcn: 437000
+      log_level: warning
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+      nof_test_ues: 50
+      test_ue_ri: 1
+      fapi_dummy_clock: free_running
+  criteria:
+    <<: *ru_criteria
+    du.dl_bitrate_gt: 180.0e+6
+    du.ul_bitrate_gt: 180.0e+6
