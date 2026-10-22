@@ -20,7 +20,7 @@ from typing import Dict, Generator, Optional, Set, Tuple
 import grpc
 import websocket
 from google.protobuf.empty_pb2 import Empty
-from google.protobuf.wrappers_pb2 import BoolValue, UInt32Value
+from google.protobuf.wrappers_pb2 import UInt32Value
 from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition
 from retina.protocol.ue_pb2 import Position, UEAttachedInfo, UEStartInfo
 
@@ -396,13 +396,6 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                         )
         return UEAttachedInfo()
 
-    def IsRunning(self, request: Empty, context: grpc.ServicerContext) -> BoolValue:
-        result = super().IsRunning(request, context)
-        if result.value:
-            with notify_grpc_exception(context):
-                self._get_stats()  # Populates metrics
-        return result
-
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         with self._amarisoft_lock:
             response = self._stop_unlock(request, context.peer() if context is not None else "unknown")
@@ -668,7 +661,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
     def _poll_stats(self, stop_event: Event) -> None:
         """
-        Read the stats periodically, independent of the IsRunning calls.
+        Read the stats periodically.
 
         In UE simulator mode, lteue quits on its own and closes the websocket.
         Stop then cannot read the final stats, so the last stats read before the quit gives the metrics.
