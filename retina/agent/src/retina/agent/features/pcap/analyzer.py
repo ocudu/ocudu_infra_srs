@@ -143,7 +143,7 @@ def _main():
     parser = argparse.ArgumentParser(
         description="Run pcap analyzers on a capture file and print results.",
         epilog="Example: python -m retina.agent.features.pcap.analyzer "
-        "rlc.pcap rrc.HandoverAnalyzer rrc.ReestablishmentAnalyzer ",
+        "f1ap.pcap rrc.HandoverAnalyzer rrc.ReestablishmentAnalyzer ",
     )
     parser.add_argument("pcap_file", help="Path to the pcap/pcapng file")
     parser.add_argument(

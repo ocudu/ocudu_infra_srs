@@ -76,13 +76,13 @@ _MAC_PCAP_ANALYZER_ARRAY = (
 )
 _RLC_PCAP_ANALYZER_ARRAY = (
     DrbTrafficAnalyzer,
-    HandoverAnalyzer,
     DrxLongCycleAnalyzer,
     T312Analyzer,
     SrsFreqDomainAnalyzer,
     TransformPrecoderAnalyzer,
 )
 _F1AP_PCAP_ANALYZER_ARRAY = (
+    HandoverAnalyzer,
     ReestablishmentAnalyzer,
     MeasGapAnalyzer,
 )

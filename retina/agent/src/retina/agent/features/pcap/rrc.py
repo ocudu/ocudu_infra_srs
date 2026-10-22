@@ -25,7 +25,12 @@ class HandoverAnalyzer(PcapAnalyzer):
     Counts DL RRCReconfiguration messages carrying reconfigurationWithSync.
 
     Each such message corresponds to a handover command sent to a UE.
-    tshark display filter: nr-rrc.reconfigurationWithSync_element
+
+    Run against an F1AP capture. In the RLC capture, the UE leaves the source cell before it sends the
+    RLC ACK, so the source DU retransmits the handover command and each command appears several times.
+    The F1AP UEContextSetupResponse also carries reconfigurationWithSync in the target CellGroupConfig,
+    so the filter keeps only the RRCReconfiguration.
+    tshark display filter: nr-rrc.rrcReconfiguration_element && nr-rrc.reconfigurationWithSync_element
     """
 
     def __init__(self) -> None:
@@ -33,7 +38,7 @@ class HandoverAnalyzer(PcapAnalyzer):
 
     @property
     def display_filter(self) -> str:
-        return "nr-rrc.reconfigurationWithSync_element"
+        return "nr-rrc.rrcReconfiguration_element && nr-rrc.reconfigurationWithSync_element"
 
     def process(self, _) -> None:
         self._count += 1
