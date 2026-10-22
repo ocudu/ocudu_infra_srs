@@ -13,7 +13,7 @@ import os
 from contextlib import suppress
 from dataclasses import dataclass, field as dataclass_field
 from datetime import datetime
-from threading import Lock
+from threading import Event, Lock, Thread
 from time import sleep
 from typing import Dict, Generator, Optional, Set, Tuple
 
@@ -33,6 +33,7 @@ from retina.agent.features.sut_handler import StopInfo
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import template_defaults, testbed_defaults, ue_defaults
 from retina.agent.templates import template_path
+from retina.agent.tools.threading import join_thread
 from retina.agent.tools.time import TimeoutHandler
 
 
@@ -76,6 +77,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     AMARISOFT_UE_INFO_WAIT: float = 0.6
     AMARISOFT_ATTACH_WAIT: float = 4
     AMARISOFT_WAIT_BETWEEN_TRAFFIC_AND_STOP: int = 20
+    AMARISOFT_STATS_POLL_PERIOD: float = 1
+    AMARISOFT_STATS_POLL_TIMEOUT: float = 5
     AMARISOFT_PWS_MSG_EVENT: str = "pws_msg"
     # 3GPP TS 23.041 table 9.4.1.2.2-1: ETWS message identifiers end at 0x1104
     # (0x1105-0x1111 reserved); CMAS/EU-Alert/KPAS identifiers start at 0x1112.
@@ -95,6 +98,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         # message_id -> count, snapshotted at Stop() (like the "stats" aggregate is)
         self._pws_msg_counts_snapshot: Dict[int, int] = {}
         self._metrics_file_closed: bool = True
+        self._stats_poll_thread: Optional[Thread] = None
+        self._stats_poll_event: Event = Event()
 
     def _get_binary_name(self) -> str:
         return "lteue"
@@ -338,6 +343,9 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     break
                 sleep(self.AMARISOFT_POWER_ON_SLEEP)
 
+            if ue_defaults.ue_simulator_mode:
+                self._start_stats_poll()
+
         if self._websocket is None or not self._websocket.connected:
             raise ChildProcessError("Process has died")
 
@@ -482,6 +490,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             return None
 
         # No pending virtual UEs to stop or sut already stopped
+        # Stop the stats poll first. It must not write to the metrics file after the file is closed.
+        self._stop_stats_poll()
         if self._process is not None and self._websocket is not None:
             self._pws_msg_counts_snapshot = self._pws_msg_counts_by_id(subscriber_id=None)
             # Only the first Stop still reaches the websocket
@@ -633,14 +643,46 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             for cell_info in ue_info.get("cells", []):
                 peer_ids.add((rnti, cell_info["pci"]))
 
-    def _get_stats(self) -> Dict:
+    def _get_stats(self, response_timeout: float = 30) -> Dict:
         if self._websocket is None:
             raise ChildProcessError("Process has died")
-        stats = self._websocket.send_command_and_wait_response(message="stats", samples=False, rf=False)
+        stats = self._websocket.send_command_and_wait_response(
+            response_timeout=response_timeout, message="stats", samples=False, rf=False
+        )
         with self._metrics_lock:
             self._save_metrics_unlock(stats)
             self._ue_analyzer.process(stats)
         return stats
+
+    def _start_stats_poll(self) -> None:
+        self._stop_stats_poll()
+        self._stats_poll_event = Event()
+        self._stats_poll_thread = Thread(target=self._poll_stats, args=(self._stats_poll_event,))
+        self._stats_poll_thread.start()
+
+    def _stop_stats_poll(self) -> None:
+        self._stats_poll_event.set()
+        if self._stats_poll_thread is not None:
+            join_thread(self._stats_poll_thread)
+            self._stats_poll_thread = None
+
+    def _poll_stats(self, stop_event: Event) -> None:
+        """
+        Read the stats periodically, independent of the IsRunning calls.
+
+        In UE simulator mode, lteue quits on its own and closes the websocket.
+        Stop then cannot read the final stats, so the last stats read before the quit gives the metrics.
+        The UE config must keep the UE idle for a few seconds before the quit, so that a read occurs in that time.
+        """
+        while not stop_event.wait(self.AMARISOFT_STATS_POLL_PERIOD):
+            if self._websocket is None or not self._websocket.connected:
+                return
+            try:
+                self._get_stats(response_timeout=self.AMARISOFT_STATS_POLL_TIMEOUT)
+            except TimeoutError:
+                logging.debug("No response to the stats request")
+            except (ChildProcessError, OSError, websocket.WebSocketException):
+                return
 
     def _pws_msg_counts_by_id(self, subscriber_id: Optional[int]) -> Dict[int, int]:
         """
