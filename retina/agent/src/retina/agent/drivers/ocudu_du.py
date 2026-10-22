@@ -185,6 +185,7 @@ class OcuduDu(DUDriver, BaseDriverSutHandler):
             "gnb_du_id": gnb_du_id,
             "mac_filename": self.get_filepath_in_report_folder(gnb_defaults.mac_filename),
             "rlc_filename": self.get_filepath_in_report_folder(gnb_defaults.rlc_filename),
+            "f1ap_filename": self.get_filepath_in_report_folder(gnb_defaults.f1ap_filename),
             "tracing_filename": self.get_filepath_in_report_folder(self.DU_TRACING_FILENAME),
             "zmq_def": (
                 ",".join(
