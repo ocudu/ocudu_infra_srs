@@ -50,6 +50,7 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
                         rnti=rnti,
                         pci=pci,
                         nof_ko_dl=ue_info["dl_err_count"] + ue_info["dl_retx_count"],
+                        nof_rx_dl=ue_info.get("dl_rx_count", 0),
                         dl_bitrate=ue_info["dl_bitrate"],
                         nof_ko_ul=ue_info["ul_retx_count"],
                         ul_bitrate=ue_info["ul_bitrate"],
@@ -62,6 +63,7 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
                     time_first, time_last = self._ue_time[ue_id]
 
                     ue_m.nof_ko_dl += ue_info["dl_err_count"] + ue_info["dl_retx_count"]
+                    ue_m.nof_rx_dl += ue_info.get("dl_rx_count", 0)
                     ue_m.nof_ko_ul += ue_info["ul_retx_count"]
                     ue_m.dl_max_mcs = max(ue_m.dl_max_mcs, int(ue_info.get("dl_mcs", 0)))
                     ue_m.ul_max_mcs = max(ue_m.ul_max_mcs, int(ue_info.get("ul_mcs", 0)))
@@ -87,6 +89,7 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
 
         # Reset-on-query counters: accumulate across the periodic "stats" calls.
         self._stats_ue_metrics.nof_ko_dl += sum(cell["dl_err_count"] + cell["dl_retx_count"] for cell in cells)
+        self._stats_ue_metrics.nof_rx_dl += sum(cell.get("dl_rx_count", 0) for cell in cells)
         self._stats_ue_metrics.nof_ko_ul += sum(cell["ul_retx_count"] for cell in cells)
 
         # Message counters (counters.messages) are cumulative, not reset by "stats": latest wins.
@@ -126,6 +129,7 @@ class AmarisoftUeMetricsAnalyzer(JsonMetricsAnalyzer):
             metrics.aggregate.dl_bitrate += ue_m.dl_bitrate
             metrics.aggregate.ul_bitrate += ue_m.ul_bitrate
             metrics.aggregate.nof_ko_dl += ue_m.nof_ko_dl
+            metrics.aggregate.nof_rx_dl += ue_m.nof_rx_dl
             metrics.aggregate.nof_ko_ul += ue_m.nof_ko_ul
             metrics.aggregate.nof_handovers += ue_m.nof_handovers
 

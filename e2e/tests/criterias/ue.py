@@ -23,13 +23,18 @@ class nof_ko_dl_le(UeCriteria):
         return sum(s.GetMetrics(Empty()).aggregate.nof_ko_dl for s in self._stub_array)
 
 
-class nof_ko_dl_gt(UeCriteria):
-    """UE DL KOs"""
+class dl_retx_ratio_gt(UeCriteria):
+    """UE DL KOs / DL TBs"""
 
     operator_method = operator.gt
 
-    def callback(self) -> int:
-        return sum(s.GetMetrics(Empty()).aggregate.nof_ko_dl for s in self._stub_array)
+    def callback(self) -> float:
+        aggregates = [s.GetMetrics(Empty()).aggregate for s in self._stub_array]
+        nof_rx_dl = sum(a.nof_rx_dl for a in aggregates)
+        # No DL TB received fails the criteria
+        if not nof_rx_dl:
+            return 0.0
+        return float(sum(a.nof_ko_dl for a in aggregates) / nof_rx_dl)
 
 
 class nof_ko_ul_le(UeCriteria):

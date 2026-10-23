@@ -22,7 +22,9 @@ baseline:
     du.dl_bitrate_gt: 7.0e+5
     du.ul_bitrate_gt: 7.0e+5
     du.nof_ko_dl_le: 0
-    ue.nof_ko_dl_gt: 1000 # repetitions are reported as retx by UE.
+    # Repetitions are reported as retx by the UE. The ratio, unlike the TB count, does not depend on the speed of
+    # the ZMQ simulation nor on the last UE stats window.
+    ue.dl_retx_ratio_gt: 0.9
     du.nof_ko_ul_le: 0
     ue.nof_ko_ul_le: 0
     du.nof_reestablishments_request_eq: 0

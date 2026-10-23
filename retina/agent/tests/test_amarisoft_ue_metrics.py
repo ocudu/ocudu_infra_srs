@@ -41,6 +41,7 @@ def make_ue_info(
     ul_retx_count=0,
     dl_mcs=None,
     ul_mcs=None,
+    dl_rx_count=None,
 ):
     ue = {
         "rnti": rnti,
@@ -55,6 +56,8 @@ def make_ue_info(
         ue["dl_mcs"] = dl_mcs
     if ul_mcs is not None:
         ue["ul_mcs"] = ul_mcs
+    if dl_rx_count is not None:
+        ue["dl_rx_count"] = dl_rx_count
     return ue
 
 
@@ -62,14 +65,17 @@ def make_cell(pci):
     return {"pci": pci}
 
 
-def make_stats_cell(dl_bitrate=0.0, ul_bitrate=0.0, dl_err_count=0, dl_retx_count=0, ul_retx_count=0):
-    return {
+def make_stats_cell(dl_bitrate=0.0, ul_bitrate=0.0, dl_err_count=0, dl_retx_count=0, ul_retx_count=0, dl_rx_count=None):
+    cell = {
         "dl_bitrate": dl_bitrate,
         "ul_bitrate": ul_bitrate,
         "dl_err_count": dl_err_count,
         "dl_retx_count": dl_retx_count,
         "ul_retx_count": ul_retx_count,
     }
+    if dl_rx_count is not None:
+        cell["dl_rx_count"] = dl_rx_count
+    return cell
 
 
 # ── TestAmarisoftUeMetricsAnalyzerMaxMcs ─────────────────────────────────────
@@ -174,6 +180,70 @@ class TestAmarisoftUeMetricsAnalyzerMaxMcs(unittest.TestCase):
         m = self.a.report()
         self.assertEqual(m.aggregate.dl_max_mcs, 27)
         self.assertEqual(m.aggregate.ul_max_mcs, 27)
+
+
+# ── TestAmarisoftUeMetricsAnalyzerRxDl ───────────────────────────────────────
+
+
+class TestAmarisoftUeMetricsAnalyzerRxDl(unittest.TestCase):
+    """
+    nof_rx_dl accumulates dl_rx_count, the DL transport blocks received by the UE,
+    the same way nof_ko_dl accumulates dl_retx_count + dl_err_count: summed across
+    the reset-on-query "stats" calls for the aggregate, and across ue_get records
+    for the per-UE entries. A missing dl_rx_count field counts as 0.
+    """
+
+    def setUp(self):
+        self.a = AmarisoftUeMetricsAnalyzer()
+
+    def test_stats_accumulated_across_calls(self):
+        for rx, retx in ((10, 9), (20, 18)):
+            self.a.process(make_stats_record(cells={"0": make_stats_cell(dl_rx_count=rx, dl_retx_count=retx)}))
+        m = self.a.report()
+        self.assertEqual(m.aggregate.nof_rx_dl, 30)
+        self.assertEqual(m.aggregate.nof_ko_dl, 27)
+
+    def test_stats_summed_across_cells(self):
+        self.a.process(
+            make_stats_record(
+                cells={"0": make_stats_cell(dl_rx_count=7), "1": make_stats_cell(dl_rx_count=5)},
+            )
+        )
+        self.assertEqual(self.a.report().aggregate.nof_rx_dl, 12)
+
+    def test_stats_missing_field_defaults_to_zero(self):
+        self.a.process(make_stats_record(cells={"0": make_stats_cell(dl_retx_count=3)}))
+        m = self.a.report()
+        self.assertEqual(m.aggregate.nof_rx_dl, 0)
+        self.assertEqual(m.aggregate.nof_ko_dl, 3)
+
+    def test_ue_get_accumulated_per_ue(self):
+        for utc, rx in ((_T0, 4), (_T1, 6)):
+            self.a.process(make_ue_list_record(utc, [make_ue_info(1, [make_cell(1)], dl_rx_count=rx)]))
+        ue = next(u for u in self.a.report().ue_array if u.rnti == 1)
+        self.assertEqual(ue.nof_rx_dl, 10)
+
+    def test_ue_get_missing_field_defaults_to_zero(self):
+        for utc in (_T0, _T1):
+            self.a.process(make_ue_list_record(utc, [make_ue_info(1, [make_cell(1)])]))
+        ue = next(u for u in self.a.report().ue_array if u.rnti == 1)
+        self.assertEqual(ue.nof_rx_dl, 0)
+
+    def test_selected_ues_aggregate_summed_from_ue_get(self):
+        # With a UE selection the aggregate comes from the selected UEs, not from stats.
+        self.a.process(
+            make_ue_list_record(
+                _T0,
+                [
+                    make_ue_info(1, [make_cell(1)], dl_rx_count=4),
+                    make_ue_info(2, [make_cell(1)], dl_rx_count=6),
+                ],
+            )
+        )
+        self.a.process(make_stats_record(cells={"0": make_stats_cell(dl_rx_count=100)}))
+        self.assertEqual(self.a.report({(1, 1)}).aggregate.nof_rx_dl, 4)
+        self.assertEqual(self.a.report({(1, 1), (2, 1)}).aggregate.nof_rx_dl, 10)
+        self.assertEqual(self.a.report().aggregate.nof_rx_dl, 100)
 
 
 if __name__ == "__main__":

@@ -189,6 +189,9 @@ message UeMetrics {
 
   // PRACH preambles transmitted by the UE
   uint32 nof_prach_sent = 33;
+
+  // DL transport blocks received by the UE (Amarisoft UE dl_rx_count), 0 if the UE does not report them
+  uint64 nof_rx_dl = 34;
 };
 
 message DuMetrics {

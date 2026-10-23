@@ -42,7 +42,9 @@ def _number_to_str(value: Any) -> str:
     for threshold, suffix in ((1_000_000_000, "G"), (1_000_000, "M"), (1_000, "K")):
         if value >= threshold:
             return f"{value / threshold:.1f}{suffix}"
-    return f"{value:.1f}"
+    # Ratios: one decimal would round 0.98 to 1.0
+    decimals = 3 if isinstance(value, float) and 0 < abs(value) < 1 else 1
+    return f"{value:.{decimals}f}"
 
 
 class Criteria(ABC):  # pylint: disable=too-few-public-methods
