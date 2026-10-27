@@ -4,7 +4,8 @@
 expert_execution:
   threads:
     upper_phy:
-      max_pusch_and_srs_concurrency: 4
+      max_pusch_and_srs_concurrency: 5
+      max_pucch_concurrency: 2
     main_pool:
       nof_threads: 7
 
