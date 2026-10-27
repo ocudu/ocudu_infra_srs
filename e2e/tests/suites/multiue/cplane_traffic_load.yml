@@ -150,6 +150,7 @@ fdd:
   criteria:
     <<: *common_criteria
     core.nof_pdu_session_establishment_accept_eq: 576
+    du.nof_ko_dl_le: 100
     du.dl_bitrate_gt: 20.0e+6
     du.ul_bitrate_gt: 20.0e+6
 
