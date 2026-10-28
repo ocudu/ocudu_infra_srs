@@ -225,6 +225,70 @@ leo_band_256_bw_5_fl_true_ping:
       semi_major_axis: 6877288.146136846
   feature_ids: [DU-NTN-DEP-1-b, DU-NTN-DEP-2, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-4, DU-NTN-HARQ-1]
 
+# The LEO case with each UE deriving its own Koffset from the T_TA it reports. Unlike the GEO pass, the service link
+# round trip of a LEO pass moves several ms as the satellite closes on the ground point and recedes again, so the
+# derivation hands the UE a new Koffset every time the round trip crosses a millisecond. The cell-specific Koffset is
+# raised well above the 8ms the geometry needs, so the derived value stays off the floor it clamps at over the pass.
+leo_band_256_bw_5_fl_false_ue_koffset_ping:
+  <<: *base_config
+  ue:
+    config: [1cell_ntn.cfg, ping.cfg]
+    parameters:
+      <<: *base_radio_parameters
+      <<: *base_ue_parameters
+      satellite: leo
+      feeder_link: false
+      gp_latitude: 7.853110757
+      gp_longitude: -96.817254023
+      gp_altitude: 1
+  gnb:
+    config: [cu_cp.yml, du.yml, cu_cp_ntn.yml, du_ntn.yml, mac_pcap.yml]
+    parameters:
+      <<: *base_radio_parameters
+      <<: *base_gnb_parameters
+      feeder_link: false
+      dl_harq_disabled: false
+      ul_harq_disabled: false
+      cell_specific_koffset: 20
+      ta_meas_slot_prohibit_period: 30
+      propagator_type: keplerian
+      # The satellite moves on the wall clock, while an unthrottled ZMQ run burns through the traffic at about
+      # nine times real time, which would leave the pass barely 12s to travel and the round trip half a
+      # millisecond. Pacing the downlink at real time keeps the two in step.
+      time_multiplier: 0.99
+      # The round trip moves by about 40us a second over this pass, so the smallest threshold keeps the reports
+      # ahead of the millisecond crossings the derivation keys on.
+      ta_report: true
+      ta_report_offset_threshold: 0.5
+      ue_specific_koffset_enabled: true
+      eccentricity: 0.00119596362232265
+      inclination: 0.9295784053909042
+      longitude: 4.50199405531991
+      mean_anomaly: 5.4284631240150425
+      periapsis: 0.8582607015966518
+      semi_major_axis: 6877288.14614692
+  feature_ids: [DU-NTN-DEP-1-b, DU-NTN-DEP-3, DU-NTN-SI-1, DU-NTN-SI-2, DU-NTN-SI-4, DU-NTN-TIM-1, DU-NTN-TIM-2, DU-NTN-TIM-4, DU-NTN-TIM-5, DU-NTN-HARQ-1]
+  criteria:
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_reestablishments_request_eq: 0
+    du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+    du.nof_ko_dl_le: 20
+    ue.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 20
+    ue.nof_ko_ul_le: 20
+    core.nof_pdu_session_establishment_accept_eq: 1
+    # The round trip runs from under 4ms to near 8ms, so a UE keeping 2ms over its own T_TA gets at least 10ms
+    # back out of the 20, and more the closer the satellite comes.
+    du.max_differential_koffset_ge: 10
+    # The UE pings through about 100s of the pass, over which the round trip falls by close to 4ms. The T_TA it
+    # reports steps down a millisecond at a time, each step a Koffset the cell derives afresh and signals, so
+    # four or five are expected. Asserting three leaves room for the pass starting late.
+    du.nof_differential_koffset_updates_ge: 3
+
 geo_fl_false_harq_enabled_iperf:
   <<: *base_config
   ue:

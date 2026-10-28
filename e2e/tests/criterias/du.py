@@ -691,3 +691,12 @@ class max_differential_koffset_ge(DuCriteria):
 
     def callback(self) -> int:
         return max(_differential_koffset_array(self._stub_array), default=0)
+
+
+class nof_differential_koffset_updates_ge(DuCriteria):
+    """Differential Koffset updates"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return len(_differential_koffset_array(self._stub_array))
