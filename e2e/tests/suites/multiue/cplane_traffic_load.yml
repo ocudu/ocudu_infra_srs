@@ -39,7 +39,7 @@ baseline: &base_config
       nof_ue_static: &nof_ue_static 800
       nof_ue_cycling: &nof_ue_cycling 200
   gnb:
-    config: [cu_cp.yml, du.yml, vonr_qos.yml, 1000ue.yml, tdd_default.yml, prach_config.yml, inactivity_timer.yml]
+    config: [cu_cp.yml, du.yml, vonr_qos.yml, 1000ue.yml, tdd_default.yml, prach_config.yml, inactivity_timer.yml, schedtrace.yml]
     parameters:
       <<: &common_gnb_params
         log_level: warning
@@ -82,7 +82,7 @@ tdd_dl_heavy:
       nof_ue_static: *nof_ue_static
       nof_ue_cycling: *nof_ue_cycling
   gnb:
-    config: [cu_cp.yml, vonr_qos.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, inactivity_timer.yml]
+    config: [cu_cp.yml, vonr_qos.yml, du.yml, 1000ue.yml, tdd_72.yml, prach_config.yml, inactivity_timer.yml, schedtrace.yml]
     parameters:
       <<: *common_gnb_params
       <<: *tdd_gnb_params
@@ -107,7 +107,7 @@ tdd_ul_heavy:
       nof_ue_static: *nof_ue_static
       nof_ue_cycling: *nof_ue_cycling
   gnb:
-    config: [cu_cp.yml, du.yml, vonr_qos.yml, 1000ue.yml, tdd_27.yml, prach_config.yml, inactivity_timer.yml]
+    config: [cu_cp.yml, du.yml, vonr_qos.yml, 1000ue.yml, tdd_27.yml, prach_config.yml, inactivity_timer.yml, schedtrace.yml]
     parameters:
       <<: *common_gnb_params
       <<: *tdd_gnb_params
