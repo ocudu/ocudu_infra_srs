@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+{%- set pdsch_resource_allocation = pdsch_resource_allocation | default("type1") %}
+
+cell_cfg:
+  pdsch:
+    resource_allocation: {{pdsch_resource_allocation}}

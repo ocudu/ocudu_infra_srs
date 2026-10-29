@@ -384,6 +384,24 @@ pdsch_vrb:
     all.warnings_le: 0
     du.prach_configuration_index_eq: 159
 
+# PDSCH resource allocation type 0
+pdsch_ra_type0:
+  <<: *base_config
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, pdsch_resource_allocation.yml, mac_pcap.yml]
+    parameters:
+      pdsch_resource_allocation: type0
+  feature_ids: [DU-PHY-8]
+
+# PDSCH dynamic switch between resource allocation types 0 and 1
+pdsch_ra_dynamic_switch:
+  <<: *base_config
+  gnb:
+    config: [cu_cp.yml, du.yml, tdd_default.yml, pdsch_resource_allocation.yml, mac_pcap.yml]
+    parameters:
+      pdsch_resource_allocation: dynamic_switch
+  feature_ids: [DU-PHY-8]
+
 # DMRS Additional pos 1 test
 dmrs_1:
   <<: *base_config
