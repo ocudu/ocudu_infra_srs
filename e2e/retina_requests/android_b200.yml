@@ -45,7 +45,6 @@
   requirements:
     cpu:
       requests: 2
-      limits: 2
     memory:
       requests: 20%
       limits: 20%
