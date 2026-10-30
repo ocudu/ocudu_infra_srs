@@ -1,0 +1,142 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Handover of a RedCap UE, on FR1 cells of at most 20 MHz so that both the source and the target
+# admit RedCap. The UE bounces between the two cells for the whole traffic run, which exercises the
+# capability import on the target: the RedCap bearer limits and the PDCP SN lengths have to survive
+# every handover, and the UE keeps its PDU session throughout.
+# The KO budgets are wider than the non-RedCap mobility suites use. The handover rate is the same,
+# but these carriers are 10 to 20 MHz rather than 100 MHz, so the same transitions cost a larger
+# share of the grants available to retransmit.
+
+# inter-DU HO, one CU and two DUs, both cells on n41 at 10 MHz
+inter_du: &base_config
+  template: ue_simulator.test_cu_2du
+  request: zmq_1cu2du
+  core:
+    config: [baseline.cfg]
+  ue_sim:
+    config: [2cell_chsim.cfg, handover.cfg]
+    parameters: &base_ue_parameters
+      band: 41
+      bandwidth: 10
+      dl_nr_arfcn: 520002
+      ssb_nr_arfcn: 519870
+      as_release: 17
+      redcap: redcap
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      traffic_duration: 100
+      nof_ue: &nof_ue 1
+      num_cells: 2
+  cu:
+    config: [cu_cp.yml, mobility.yml]
+  du:
+    items:
+      - config: [du.yml, tdd_default.yml, sib2345.yml, redcap.yml]
+        parameters: &du_1_parameters
+          gnb_du_id: 0
+          pci: 1
+          sector_id: 0
+          band: 41
+          bandwidth: 10
+          dl_nr_arfcn: 520002
+      - config: [du.yml, tdd_default.yml, sib2345.yml, redcap.yml]
+        parameters:
+          gnb_du_id: 1
+          pci: 2
+          sector_id: 1
+          band: 41
+          bandwidth: 10
+          dl_nr_arfcn: 520002
+  feature_ids: [MVP-FUNC-SVCS-17-2, MVP-FUNC-MOB-1-c]
+  criteria: &base_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 550 # allow some KOs during HO transitions
+    ue.nof_ko_dl_le: 550 # allow some KOs during HO transitions
+    du.nof_ko_ul_le: 550 # allow some KOs during HO transitions
+    ue.nof_ko_ul_le: 550 # allow some KOs during HO transitions
+    du.nof_reestablishments_request_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: *nof_ue
+    ue.nof_handovers_ge: 20 # calculated based on the duration
+    du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
+    all.errors_le: 0
+    all.warnings_le: 0
+
+# inter-DU HO across the two ends of the RedCap range, 10 MHz and 20 MHz on the same n78 carrier,
+# so the only difference between source and target is the bandwidth.
+inter_du_10_20:
+  <<: *base_config
+  ue_sim:
+    config: [2cell_interfreq_chsim.cfg, handover.cfg]
+    parameters:
+      <<: *base_ue_parameters
+      band: 78
+      bandwidth: 10
+      dl_nr_arfcn: 626668
+      ssb_nr_arfcn: 626688
+      # Cell 2 is the same carrier at 20 MHz, matching DU-2 below
+      band_2: 78
+      bandwidth_2: 20
+      dl_nr_arfcn_2: 626668
+      ssb_nr_arfcn_2: 626304
+      common_scs_2: 30
+  du:
+    items:
+      - config: [du.yml, tdd_default.yml, sib2345.yml, redcap.yml]
+        parameters:
+          gnb_du_id: 0
+          pci: 1
+          sector_id: 0
+          band: 78
+          bandwidth: 10
+          dl_nr_arfcn: 626668
+      - config: [du.yml, tdd_default.yml, sib2345.yml, redcap.yml]
+        parameters:
+          gnb_du_id: 1
+          pci: 2
+          sector_id: 1
+          band: 78
+          bandwidth: 20
+          dl_nr_arfcn: 626668
+  criteria:
+    <<: *base_criteria
+    du.nof_ko_dl_le: 800
+    ue.nof_ko_dl_le: 800
+    du.nof_ko_ul_le: 800
+    ue.nof_ko_ul_le: 800
+
+# inter-CU HO, two gNBs, so the capabilities reach the target over NGAP rather than inside the CU
+inter_cu:
+  template: ue_simulator.test_2gnb
+  request: zmq_2gnb
+  core:
+    config: [baseline.cfg]
+  ue_sim:
+    config: [2cell_chsim.cfg, handover.cfg]
+    parameters: *base_ue_parameters
+  gnb:
+    items:
+      - config: [cu_cp.yml, inter_cu_mobility_1.yml, du.yml, tdd_default.yml, sib2345.yml, redcap.yml]
+        parameters: &inter_cu_neighbor
+          gnb_id: 411
+          ran_node_name: ocudu01
+          pci: 1
+          cell_offset: 0
+          band: 41
+          bandwidth: 10
+          dl_nr_arfcn: 520002
+          neighbor_band: 41
+          neighbor_ssb_arfcn: 519870
+          neighbor_ssb_scs: 30
+      - config: [cu_cp.yml, inter_cu_mobility_2.yml, du.yml, tdd_default.yml, sib2345.yml, redcap.yml]
+        parameters:
+          <<: *inter_cu_neighbor
+          gnb_id: 412
+          ran_node_name: ocudu02
+          pci: 2
+          cell_offset: 1
+  feature_ids: [MVP-FUNC-SVCS-17-2, MVP-FUNC-MOB-1-e]
+  criteria: *base_criteria

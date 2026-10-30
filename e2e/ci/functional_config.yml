@@ -193,6 +193,30 @@ ue_state_transition:
     TESTBED: dynamic
     MARKERS: "(zmq or test_mode_ue) and not weekly"
 
+attach:
+  stage: redcap
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "redcap.attach."
+    TESTBED: dynamic
+    MARKERS: "(zmq or test_mode_ue) and not weekly"
+
+handover:
+  stage: redcap
+  extends: .functional_e2e
+  rules:
+    - if: $CI_PIPELINE_SCHEDULE_DESCRIPTION =~ /^functional/
+    - when: manual
+      allow_failure: true
+  variables:
+    KEYWORDS: "redcap.handover."
+    TESTBED: dynamic
+    MARKERS: "(zmq or test_mode_ue) and not weekly"
+
 bands:
   stage: singleue
   extends: .functional_e2e

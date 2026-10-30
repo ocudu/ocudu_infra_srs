@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+{#- The DU only admits RedCap UEs on FR1 cells of at most 20 MHz, so a suite pulling this overlay in
+    has to pick a band and a bandwidth that qualify. With the cell barred SIB1 still carries the
+    RedCap fields, but a RedCap UE then leaves the cell alone instead of sending a preamble. #}
+{%- set redcap_cell_barred = redcap_cell_barred | default(false) %}
+
+cell_cfg:
+  redcap:
+    enabled: true
+    intra_freq_reselection: true
+    cell_barred: {{redcap_cell_barred|lower}}

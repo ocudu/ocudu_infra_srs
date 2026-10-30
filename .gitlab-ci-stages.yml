@@ -9,5 +9,6 @@ stages:
   - viavi
   - mobility
   - multiue
+  - redcap
   - singleue
   - interop

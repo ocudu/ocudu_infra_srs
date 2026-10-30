@@ -1,0 +1,111 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# RedCap access on the cell profile the DU admits RedCap on: FR1, at most 20 MHz. Anything wider
+# would need the UE to work on a dedicated BWP, which is not supported yet.
+# The Amarisoft UE identifies itself as RedCap twice over, early through the RedCap CCCH LCID in
+# Msg3 and then through supportOfRedCap-r17 in its capabilities.
+
+# A RedCap UE attaches and passes traffic on an n41 cell at 10 MHz
+bw_10: &base_config
+  template: ue_simulator.test_gnb
+  request: zmq_mme
+  ue_sim:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters: &base_ue_parameters
+      band: 41
+      bandwidth: 10
+      dl_nr_arfcn: 520002
+      ssb_nr_arfcn: 519870
+      as_release: 17
+      redcap: redcap
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      traffic_duration: 10
+      pdcch_decode_threshold: 0
+  gnb:
+    config: [cu_cp.yml, du.yml, mac_pcap.yml, redcap.yml]
+    parameters: &base_gnb_parameters
+      band: 41
+      bandwidth: 10
+      dl_nr_arfcn: 520002
+  core:
+    config: [baseline.cfg]
+  feature_ids: [MVP-FUNC-SVCS-17-2]
+  criteria: &base_criteria
+    du.dl_bitrate_gt: 0
+    du.ul_bitrate_gt: 0
+    du.nof_ko_dl_le: 0
+    ue.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    ue.nof_ko_ul_le: 0
+    du.nof_sib1_ge: 1
+    du.nof_reestablishments_request_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 1
+    du.nof_error_indications_le: 0
+    du.nof_ues_at_stop_eq: 0
+    du.errors_le: 0
+    du.warnings_le: 0
+
+# The same, on an n78 cell at 20 MHz, which is the widest carrier RedCap is admitted on
+bw_20:
+  <<: *base_config
+  ue_sim:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      <<: *base_ue_parameters
+      band: 78
+      bandwidth: 20
+      dl_nr_arfcn: 626668
+      ssb_nr_arfcn: 626304
+  gnb:
+    config: [cu_cp.yml, du.yml, mac_pcap.yml, redcap.yml, tdd_default.yml]
+    parameters:
+      band: 78
+      bandwidth: 20
+      dl_nr_arfcn: 626668
+
+# The same, on an FDD n66 cell at 20 MHz
+bw_20_fdd:
+  <<: *base_config
+  ue_sim:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      <<: *base_ue_parameters
+      band: 66
+      bandwidth: 20
+      common_scs: 15
+      dl_nr_arfcn: 430000
+      ssb_nr_arfcn: 428650
+  gnb:
+    config: [cu_cp.yml, du.yml, mac_pcap.yml, redcap.yml]
+    parameters:
+      band: 66
+      bandwidth: 20
+      common_scs: 15
+      dl_nr_arfcn: 430000
+
+# The cell broadcasts the RedCap fields but bars RedCap UEs
+cell_barred:
+  <<: *base_config
+  gnb:
+    config: [cu_cp.yml, du.yml, mac_pcap.yml, redcap.yml]
+    parameters:
+      <<: *base_gnb_parameters
+      redcap_cell_barred: true
+  criteria:
+    # The sharp check: a RedCap UE that reads cellBarredRedCap1Rx/2Rx stays off the RACH
+    ue.nof_prach_sent_eq: 0
+    core.nof_pdu_session_establishment_accept_eq: 0
+    du.nof_ues_at_stop_eq: 0
+    du.nof_error_indications_le: 0
+    du.errors_le: 0
+
+# A non-RedCap UE is unaffected by the RedCap broadcast and attaches on the same cell
+non_redcap_ue:
+  <<: *base_config
+  ue_sim:
+    config: [1cell.cfg, udp_singleue.cfg]
+    parameters:
+      <<: *base_ue_parameters
+      redcap: ""
