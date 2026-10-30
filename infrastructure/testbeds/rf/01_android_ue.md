@@ -74,7 +74,7 @@ Compare "serial_id" to the `adb devices` output. The serial ID "abcde" already e
 
 After noting it down, issue "adb kill-server" to turn off the adb server. This is `important`, because the retina agent will start the adb server during the test.
 
-## 7. Add the UE details in the cluster definition
+## 6. Add the UE details in the cluster definition
 
 Take the IMSI, the K (or "Ki"), the OPC and the UE's serial number (you noted down all of these numbers in previous steps), and push them in the repo in the aforementioned cluster definition file.
 
@@ -93,7 +93,7 @@ For example, the new (fake) entry would look like this:
         adb_key: KEY...
 ```
 
-## 8. Install iperf3.9 on the Android UE
+## 7. Install iperf3.9 on the Android UE
 
 > Note: "fghij" is the fake example UE device ID. Replace it with the real one.
 
@@ -147,10 +147,10 @@ iperf3 -v
 dropbearmulti -h
 ```
 
-## 9. Run a test RF pipeline
+## 8. Run a test RF pipeline
 
 As a way to ensure the setup is working, run an RF pipeline.
 
-## 10. Troubleshooting
+## 9. Troubleshooting
 
 When the UE is slow to attach or doesn't camp properly do this: open the hidden service menu by dialing `*#*#4636#*#*` on the phone, and there, under "Preferred network type", force it to NR so it camps on the cell faster instead of trying other RATs first.
