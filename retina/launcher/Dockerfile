@@ -3,7 +3,7 @@
 
 ARG PYTHON_VERSION=3.14
 ARG OS=alpine
-ARG KUBECTL_VERSION=v1.36.1
+ARG KUBECTL_VERSION=v1.36.6
 
 # BuildKit gets this image, so the build container does not resolve dl.k8s.io
 FROM registry.k8s.io/kubectl:${KUBECTL_VERSION} AS kubectl
