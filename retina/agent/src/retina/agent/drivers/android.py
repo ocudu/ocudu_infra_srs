@@ -142,7 +142,8 @@ class AndroidUe(UEDriver):
         return (False, "", "")
 
     def _has_route(self, dst_ip_address: str) -> bool:
-        for line in self._executor.run_binary("ip", "route", "get", dst_ip_address):
+        # Android installs the route shortly after the IP, until then "ip route get" fails
+        for line in self._executor.run_binary("ip", "route", "get", dst_ip_address, raise_if_exit_code=False):
             if "dev" in line and "src" in line:
                 return True
         return False
