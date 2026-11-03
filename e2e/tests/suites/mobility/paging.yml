@@ -35,6 +35,7 @@ baseline: &baseline
       ue.nof_ko_ul_le: 0
       du.nof_reestablishments_request_eq: 0
       core.nof_pdu_session_establishment_accept_eq: 1
+      core.nof_nas_deregistration_accept_eq: 1 # a lost Deregistration Request ends in a switch-off deregistration, which the AMF does not accept
       du.nof_error_indications_le: 0
       du.nof_ues_at_stop_eq: 0
     core.nof_ng_paging_eq: 1
@@ -115,9 +116,9 @@ rrc_inactive_mt: &rrc_inactive_mt
   criteria:
     <<: *base_criteria
     core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up
-    du.nof_rrc_suspend_eq: 1
+    du.nof_rrc_suspend_eq: 2 # 1 per paging + 1 before the UE deregisters from RRC_INACTIVE
     du.nof_paging_eq: 2 # 1 suspend/resume x 2 PCCH Paging messages
-    du.nof_rrc_resume_complete_eq: 1
+    du.nof_rrc_resume_complete_eq: 2 # 1 per paging + 1 to deregister
 
 # RRC Inactive - MT multiple suspend/resume cycles
 rrc_inactive_mt_multi: &rrc_inactive_mt_multi
@@ -131,9 +132,9 @@ rrc_inactive_mt_multi: &rrc_inactive_mt_multi
   criteria:
     <<: *base_criteria
     core.nof_ng_paging_eq: 0 # RRC_INACTIVE keeps N2 up
-    du.nof_rrc_suspend_eq: 3
+    du.nof_rrc_suspend_eq: 4 # 1 per paging + 1 before the UE deregisters from RRC_INACTIVE
     du.nof_paging_eq: 6 # 3 suspend/resume cycles x 2 PCCH Paging messages
-    du.nof_rrc_resume_complete_eq: 3
+    du.nof_rrc_resume_complete_eq: 4 # 1 per paging + 1 to deregister
 
 # RRC Inactive - MO-data-triggered resume (no paging)
 rrc_inactive_mo: &rrc_inactive_mo

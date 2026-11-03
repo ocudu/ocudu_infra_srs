@@ -41,6 +41,15 @@ class nof_nas_service_accept_eq(FiveGcCriteria):
         return sum(s.GetMetrics(Empty()).core.nof_nas_service_accept for s in self._stub_array)
 
 
+class nof_nas_deregistration_accept_eq(FiveGcCriteria):
+    """NAS Deregistration Accept"""
+
+    operator_method = operator.eq
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).core.nof_nas_deregistration_accept for s in self._stub_array)
+
+
 class nof_ng_paging_eq(FiveGcCriteria):
     """NG Paging"""
 

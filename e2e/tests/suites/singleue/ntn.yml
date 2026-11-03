@@ -346,6 +346,7 @@ geo_fl_false_harq_enabled_iperf:
 
 geo_fl_false_harq_disabled_iperf:
   <<: *base_config
+  markers: [xfail] # Amarisoft UE 2026-10-26 does not support HARQ mode B well
   ue:
     config: [1cell_ntn.cfg, udp_multiue.cfg]
     parameters:

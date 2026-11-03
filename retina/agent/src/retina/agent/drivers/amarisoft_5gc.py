@@ -154,6 +154,7 @@ class _AmarisoftMme(FiveGCDriver, AmarisoftBaseDriver):
                             "5gs_nas_pdu_session_modification_command_reject", 0
                         ),
                         nof_nas_service_accept=counters.get("5gs_nas_service_accept", 0),
+                        nof_nas_deregistration_accept=counters.get("5gs_nas_deregistration_accept_dl", 0),
                         nof_ng_paging=counters.get("ng_paging", 0),
                         nof_lpp_provide_assistance_data=counters.get("lpp_provide_assistance_data", 0),
                         nof_lpp_provide_location_information=counters.get("lpp_provide_location_information", 0),

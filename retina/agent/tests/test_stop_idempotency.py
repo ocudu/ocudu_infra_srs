@@ -24,6 +24,7 @@ _STATS = {
         "messages": {
             "5gs_nas_pdu_session_establishment_accept": 1,
             "5gs_nas_service_accept": 1,
+            "5gs_nas_deregistration_accept_dl": 1,
             "ng_paging": 1,
         }
     }
@@ -78,6 +79,7 @@ class StopIdempotencyTest(unittest.TestCase):
         first = mme.GetMetrics(None, None)
         self.assertEqual(first.core.nof_ng_paging, 1)
         self.assertEqual(first.core.nof_nas_service_accept, 1)
+        self.assertEqual(first.core.nof_nas_deregistration_accept, 1)
         self.assertEqual(first.core.nof_pdu_session_establishment_accept, 1)
 
         for _ in range(3):

@@ -725,6 +725,7 @@ class CoreMetrics(google.protobuf.message.Message):
     NOF_LPP_PROVIDE_LOCATION_INFORMATION_FIELD_NUMBER: builtins.int
     NOF_LPP_ERROR_FIELD_NUMBER: builtins.int
     NOF_LPP_ABORT_FIELD_NUMBER: builtins.int
+    NOF_NAS_DEREGISTRATION_ACCEPT_FIELD_NUMBER: builtins.int
     nof_pdu_session_establishment_accept: builtins.int
     nof_nas_service_accept: builtins.int
     nof_ng_paging: builtins.int
@@ -736,6 +737,8 @@ class CoreMetrics(google.protobuf.message.Message):
     nof_lpp_provide_location_information: builtins.int
     nof_lpp_error: builtins.int
     nof_lpp_abort: builtins.int
+    nof_nas_deregistration_accept: builtins.int
+    """NAS Deregistration Accept messages sent by the AMF"""
     def __init__(
         self,
         *,
@@ -750,8 +753,9 @@ class CoreMetrics(google.protobuf.message.Message):
         nof_lpp_provide_location_information: builtins.int = ...,
         nof_lpp_error: builtins.int = ...,
         nof_lpp_abort: builtins.int = ...,
+        nof_nas_deregistration_accept: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_ims_nas_registered_ue", b"nof_ims_nas_registered_ue", "nof_lpp_abort", b"nof_lpp_abort", "nof_lpp_error", b"nof_lpp_error", "nof_lpp_provide_assistance_data", b"nof_lpp_provide_assistance_data", "nof_lpp_provide_location_information", b"nof_lpp_provide_location_information", "nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_modification_command_reject", b"nof_pdu_session_modification_command_reject", "nof_pdu_session_modification_complete", b"nof_pdu_session_modification_complete", "nof_tau_request", b"nof_tau_request"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_ims_nas_registered_ue", b"nof_ims_nas_registered_ue", "nof_lpp_abort", b"nof_lpp_abort", "nof_lpp_error", b"nof_lpp_error", "nof_lpp_provide_assistance_data", b"nof_lpp_provide_assistance_data", "nof_lpp_provide_location_information", b"nof_lpp_provide_location_information", "nof_nas_deregistration_accept", b"nof_nas_deregistration_accept", "nof_nas_service_accept", b"nof_nas_service_accept", "nof_ng_paging", b"nof_ng_paging", "nof_pdu_session_establishment_accept", b"nof_pdu_session_establishment_accept", "nof_pdu_session_modification_command_reject", b"nof_pdu_session_modification_command_reject", "nof_pdu_session_modification_complete", b"nof_pdu_session_modification_complete", "nof_tau_request", b"nof_tau_request"]) -> None: ...
 
 Global___CoreMetrics: typing_extensions.TypeAlias = CoreMetrics
 
