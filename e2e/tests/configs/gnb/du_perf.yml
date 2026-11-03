@@ -11,7 +11,7 @@ expert_execution:
       max_pusch_and_srs_concurrency: 5
       max_pucch_concurrency: 2
     main_pool:
-      nof_threads: 7
+      nof_threads: 8
 
 expert_phy:
   max_proc_delay: 6
