@@ -819,6 +819,7 @@ class CuCpMetrics(google.protobuf.message.Message):
     NOF_NG_RESET_FIELD_NUMBER: builtins.int
     NOF_NGAP_ERROR_INDICATION_FIELD_NUMBER: builtins.int
     NOF_DUPLICATE_RAN_UE_NGAP_ID_FIELD_NUMBER: builtins.int
+    NOF_MT_ACCESS_RRC_CONNECTION_ESTABLISHMENTS_FIELD_NUMBER: builtins.int
     nof_e_cid_measurement_initiation_request: builtins.int
     nof_e_cid_measurement_initiation_response: builtins.int
     nof_e_cid_measurement_report: builtins.int
@@ -849,6 +850,8 @@ class CuCpMetrics(google.protobuf.message.Message):
     """NGAP Error Indication messages"""
     nof_duplicate_ran_ue_ngap_id: builtins.int
     """InitialUEMessages with the RAN UE NGAP ID of another UE that has an NG connection"""
+    nof_mt_access_rrc_connection_establishments: builtins.int
+    """Successful RRC connection establishments with cause mt-Access, i.e. paged UEs that connected"""
     @property
     def nof_registration_accept_per_amf_pointer(self) -> google.protobuf.internal.containers.ScalarMap[builtins.int, builtins.int]:
         """NAS Registration Accept messages, by the AMF Pointer of the 5G-GUTI that the AMF assigns"""
@@ -884,8 +887,9 @@ class CuCpMetrics(google.protobuf.message.Message):
         nof_ng_reset: builtins.int = ...,
         nof_ngap_error_indication: builtins.int = ...,
         nof_duplicate_ran_ue_ngap_id: builtins.int = ...,
+        nof_mt_access_rrc_connection_establishments: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_5qi_5_drb_configured", b"nof_5qi_5_drb_configured", "nof_duplicate_ran_ue_ngap_id", b"nof_duplicate_ran_ue_ngap_id", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_e_cid_measurement_result_with_aoa", b"nof_e_cid_measurement_result_with_aoa", "nof_ng_reset", b"nof_ng_reset", "nof_ngap_error_indication", b"nof_ngap_error_indication", "nof_nr_dl_tdoa_measurements", b"nof_nr_dl_tdoa_measurements", "nof_registration_accept_per_amf_pointer", b"nof_registration_accept_per_amf_pointer", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_service_accept_per_amf_pointer", b"nof_service_accept_per_amf_pointer", "nof_service_reject", b"nof_service_reject", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_write_replace_warning_request", b"nof_write_replace_warning_request", "nof_write_replace_warning_response", b"nof_write_replace_warning_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge", "nof_xn_retrieve_ue_context_request", b"nof_xn_retrieve_ue_context_request", "nof_xn_retrieve_ue_context_response", b"nof_xn_retrieve_ue_context_response"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["nof_5qi_1_drb_configured", b"nof_5qi_1_drb_configured", "nof_5qi_2_drb_configured", b"nof_5qi_2_drb_configured", "nof_5qi_5_drb_configured", b"nof_5qi_5_drb_configured", "nof_duplicate_ran_ue_ngap_id", b"nof_duplicate_ran_ue_ngap_id", "nof_e_cid_measurement_initiation_request", b"nof_e_cid_measurement_initiation_request", "nof_e_cid_measurement_initiation_response", b"nof_e_cid_measurement_initiation_response", "nof_e_cid_measurement_report", b"nof_e_cid_measurement_report", "nof_e_cid_measurement_result_with_aoa", b"nof_e_cid_measurement_result_with_aoa", "nof_mt_access_rrc_connection_establishments", b"nof_mt_access_rrc_connection_establishments", "nof_ng_reset", b"nof_ng_reset", "nof_ngap_error_indication", b"nof_ngap_error_indication", "nof_nr_dl_tdoa_measurements", b"nof_nr_dl_tdoa_measurements", "nof_registration_accept_per_amf_pointer", b"nof_registration_accept_per_amf_pointer", "nof_rohc_profile_1_configured", b"nof_rohc_profile_1_configured", "nof_rohc_profile_2_configured", b"nof_rohc_profile_2_configured", "nof_service_accept_per_amf_pointer", b"nof_service_accept_per_amf_pointer", "nof_service_reject", b"nof_service_reject", "nof_sn_status_transfer", b"nof_sn_status_transfer", "nof_trp_information_request", b"nof_trp_information_request", "nof_trp_information_response", b"nof_trp_information_response", "nof_write_replace_warning_request", b"nof_write_replace_warning_request", "nof_write_replace_warning_response", b"nof_write_replace_warning_response", "nof_xn_handover_request_acknowledge", b"nof_xn_handover_request_acknowledge", "nof_xn_retrieve_ue_context_request", b"nof_xn_retrieve_ue_context_request", "nof_xn_retrieve_ue_context_response", b"nof_xn_retrieve_ue_context_response"]) -> None: ...
 
 Global___CuCpMetrics: typing_extensions.TypeAlias = CuCpMetrics
 

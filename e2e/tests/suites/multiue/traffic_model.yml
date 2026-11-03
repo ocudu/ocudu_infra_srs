@@ -112,7 +112,7 @@ tdd_dl_heavy_rt:
       nof_antennas_ul: 1
       log_level: warning
   gnb:
-    config: [cu_cp.yml, du.yml, vonr_qos.yml, 2cell_intrafreq.yml, mobility.yml, tdd_72.yml, prach_config.yml, 1000ue.yml, inactivity_timer.yml, cfra_ho.yml, mac_pcap.yml, du_perf.yml]
+    config: [cu_cp.yml, du.yml, vonr_qos.yml, 2cell_intrafreq.yml, mobility.yml, tdd_72.yml, prach_config.yml, 1000ue.yml, inactivity_timer.yml, cfra_ho.yml, du_perf.yml]
     parameters:
       <<: *common_gnb_params
       prach_config_index: 7
@@ -120,7 +120,6 @@ tdd_dl_heavy_rt:
       num_cells: 2
       nof_antennas_dl: 4
       nof_antennas_ul: 1
-      mac_type: dlt # 4 DL antennas overflow the UDP pcap wrapper
       log_level: warning
   core:
     config: [baseline.cfg]
@@ -132,6 +131,6 @@ tdd_dl_heavy_rt:
     core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
     ue.nof_handovers_ge: *nof_handovers
     core.nof_ng_paging_ge: *nof_ng_paging
-    du.nof_paging_ge: *nof_du_paging
+    cu_cp.nof_mt_access_rrc_connection_establishments_ge: *nof_ng_paging # the MAC pcap is disabled
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0

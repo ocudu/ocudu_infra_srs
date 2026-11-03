@@ -318,3 +318,12 @@ class nof_duplicate_ran_ue_ngap_id_eq(CuCpCriteria):
 
     def callback(self) -> int:
         return sum(s.GetMetrics(Empty()).cu_cp.nof_duplicate_ran_ue_ngap_id for s in self._stub_array)
+
+
+class nof_mt_access_rrc_connection_establishments_ge(CuCpCriteria):
+    """MT-Access RRC Setups"""
+
+    operator_method = operator.ge
+
+    def callback(self) -> int:
+        return sum(s.GetMetrics(Empty()).cu_cp.nof_mt_access_rrc_connection_establishments for s in self._stub_array)

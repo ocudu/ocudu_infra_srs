@@ -315,6 +315,7 @@ message CuCpMetrics {
   uint32              nof_ngap_error_indication          = 23; // NGAP Error Indication messages
   // InitialUEMessages with the RAN UE NGAP ID of another UE that has an NG connection
   uint32 nof_duplicate_ran_ue_ngap_id = 24;
+  uint32 nof_mt_access_rrc_connection_establishments = 25; // Successful RRC connection establishments with cause mt-Access, i.e. paged UEs that connected
 };
 
 message RicMetrics {
