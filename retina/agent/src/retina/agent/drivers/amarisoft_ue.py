@@ -351,8 +351,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
         if self._process is not None and self._process.stdin is not None:
             with suppress(BrokenPipeError):
-                # Enter (stop previous command) + t
-                self._process.stdin.write("\nt\n")
+                # Enter (stop previous command) + optionally t
+                self._process.stdin.write("\nt\n" if ue_defaults.console_trace else "\n")
                 self._process.stdin.flush()
 
         if len(self._subscriber_client_dict) > 0:

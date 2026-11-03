@@ -30,6 +30,9 @@ mac_nr_filename: str = "mac_nr.pcap"
 nas_filename: str = "ue_nas.pcap"
 metrics_filename_csv: str = "metrics.csv"
 metrics_filename_json: str = "metrics.json"
+# Periodic per-UE console trace ("t") on stdout. With many UEs, printing the table
+# stalls the lteue PHY for >1 ms every period, causing lost HARQ-ACKs/PUSCH and S72 timing errors.
+console_trace: bool = False
 
 # RF driver
 tx_gain: float = -1  # Default value in testbed
