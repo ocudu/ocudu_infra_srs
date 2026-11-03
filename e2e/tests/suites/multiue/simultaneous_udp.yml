@@ -28,8 +28,7 @@ baseline: &base_config
       <<: &common_ue_params
         traffic_duration: 10
         log_level: warning
-        pdcch_decode_threshold: 0.5
-        rx_to_tx_latency: 2
+        pdcch_decode_threshold: 0.24
       nof_ue: &nof_ue 1000
       power_on_stagger_delay: 0.007 # 142 UE/s
       dl_bitrate: 4.0e+5
@@ -186,11 +185,11 @@ tdd_dl_heavy_rt:
   ue:
     config: [1cell_chsim.cfg, udp_multiue.cfg]
     parameters:
+      <<: *common_ue_params
       nof_ue: *nof_ue
       power_on_stagger_delay: 0.01 # 100 UE/s
       dl_bitrate: 4.0e+5
       ul_bitrate: 0.9e+5
-      pdcch_decode_threshold: 0
       traffic_duration: 30
       nof_antennas_dl: 4
       nof_antennas_ul: 1
