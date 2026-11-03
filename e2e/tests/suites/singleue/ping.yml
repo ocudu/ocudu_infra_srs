@@ -67,7 +67,7 @@ drx: &drx_config
   parameters:
     ping_interval: 0.1
   gnb:
-    config: [cu_cp.yml, du.yml, drx.yml]
+    config: [cu_cp.yml, du.yml, drx.yml, schedtrace.yml]
     parameters:
       gnb_id_bit_length: 22
       cu_cp_report_period: 5000
