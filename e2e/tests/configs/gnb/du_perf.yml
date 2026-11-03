@@ -1,6 +1,10 @@
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
+cell_cfg:
+  scheduler:
+    nof_preselected_newtx_ues: 64
+
 expert_execution:
   threads:
     upper_phy:
