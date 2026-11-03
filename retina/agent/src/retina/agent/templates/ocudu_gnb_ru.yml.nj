@@ -89,11 +89,11 @@ expert_phy:
 {# Special configuration for Amarisoft UE running in split 7.2 mode #}
 {###################################################}
 ru_ofh:
-  t1a_max_cp_dl: 430
-  t1a_min_cp_dl: 370
+  t1a_max_cp_dl: 480
+  t1a_min_cp_dl: 428
   t1a_max_cp_ul: 430
   t1a_min_cp_ul: 370
-  t1a_max_up: 340
+  t1a_max_up: 470
   t1a_min_up: 250
   ta4_max: 1960
   ta4_min: 0
