@@ -30,7 +30,7 @@ baseline: &base_config
           pci: 2
           sector_id: 1
   feature_ids: [MVP-FUNC-MOB-1-c]
-  criteria:
+  criteria: &base_criteria
     du.dl_bitrate_gt: 0
     du.ul_bitrate_gt: 0
     du.nof_ko_dl_le: 300 # allow some KOs during HO transitions
@@ -121,3 +121,50 @@ fr1_fr2:
           prach_config_index: 121
           sector_id: 1
   feature_ids: [MVP-FUNC-MOB-2-a, MVP-FUNC-MOB-2-b, MVP-FUNC-MOB-2-c, DU-GEN-9]
+
+# inter-DU HO intra-frequency, 10 MHz and 20 MHz cells on the same n78 carrier.
+# The bandwidth is the only difference between the source and the target cell.
+bandwidth_10_20:
+  <<: *base_config
+  ue:
+    config: [2cell_interfreq_chsim.cfg, handover.cfg]
+    parameters:
+      dl_bitrate: 1.0e+6
+      ul_bitrate: 1.0e+6
+      traffic_duration: 100
+      nof_ue: *nof_ue
+      num_cells: 2
+      band: 78
+      bandwidth: 10
+      dl_nr_arfcn: 626668
+      ssb_nr_arfcn: 626688
+      # Cell 2 parameters (must match DU-2 below)
+      band_2: 78
+      bandwidth_2: 20
+      dl_nr_arfcn_2: 626668
+      ssb_nr_arfcn_2: 626304
+  du:
+    items:
+      - config: [du.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_du_id: 0
+          pci: 1
+          sector_id: 0
+          band: 78
+          bandwidth: 10
+          dl_nr_arfcn: 626668
+      - config: [du.yml, tdd_default.yml, sib2345.yml]
+        parameters:
+          gnb_du_id: 1
+          pci: 2
+          sector_id: 1
+          band: 78
+          bandwidth: 20
+          dl_nr_arfcn: 626668
+  criteria:
+    <<: *base_criteria
+    # The cells are narrower than the default 100 MHz, so each HO transition costs more KOs.
+    du.nof_ko_dl_le: 800
+    ue.nof_ko_dl_le: 800
+    du.nof_ko_ul_le: 800
+    ue.nof_ko_ul_le: 800
