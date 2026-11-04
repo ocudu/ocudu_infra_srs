@@ -51,6 +51,21 @@ class PodStatus(Enum):
     SUCCEEDED = "succeeded"
 
 
+# Admission failures reported by the kubelet when a node has no capacity left for the pod.
+# Retrying against the same node will never succeed, so these must abort immediately
+# instead of letting the ReplicaSet keep spawning replacement pods forever.
+UNSCHEDULABLE_POD_REASONS = (
+    "OutOfcpu",
+    "OutOfmemory",
+    "OutOfephemeral-storage",
+    "OutOfpods",
+)
+
+# Safety net in case the kubelet reports a failure reason we don't recognize yet:
+# abort after this many distinct failed pods instead of spinning until the full timeout.
+MAX_FAILED_PODS_BEFORE_ABORT = 3
+
+
 class ConnectionPath(Enum):
     """
     Connection path
@@ -826,6 +841,7 @@ class Kubernetes(KubernetesManager):
         Create a deployment until its pod is scheduled
         """
         last_pod = None
+        seen_failed_pods: set = set()
         try:
             self._create_retina_deployment(config, namespace)
             while timeout_handler.not_reached():
@@ -835,7 +851,36 @@ class Kubernetes(KubernetesManager):
                         if _pod.status.phase.lower() == PodStatus.RUNNING.value:
                             return _pod
                         if _pod.status.phase.lower() == PodStatus.FAILED.value:
-                            continue  # Pod not scheduled yet
+                            last_pod = _pod
+                            if _pod.metadata.name not in seen_failed_pods:
+                                seen_failed_pods.add(_pod.metadata.name)
+                                logging.error(
+                                    "[%s] Pod %s failed to start: %s",
+                                    config.name,
+                                    _pod.metadata.name,
+                                    self.get_pod_event(_pod),
+                                )
+                                # Don't let failed replicas pile up while the ReplicaSet
+                                # keeps spawning new ones.
+                                self._delete_pod(_pod.metadata.name, namespace, 0)
+                            if _pod.status.reason in UNSCHEDULABLE_POD_REASONS:
+                                self._abort_deployment(
+                                    config,
+                                    namespace,
+                                    f"[{config.name}] No resources available on the target node "
+                                    f"({self.get_pod_event(_pod)})."
+                                    f"{self._get_failed_pod_msg(_pod, config, namespace)}",
+                                )
+                            if len(seen_failed_pods) >= MAX_FAILED_PODS_BEFORE_ABORT:
+                                self._abort_deployment(
+                                    config,
+                                    namespace,
+                                    f"[{config.name}] Aborting after {len(seen_failed_pods)} failed pod "
+                                    f"attempts. Last failure: {self.get_pod_event(_pod)}."
+                                    f"{self._get_failed_pod_msg(_pod, config, namespace)}",
+                                )
+                            time.sleep(0.1)
+                            continue
                         # Pod scheduled but container failed
                         self._validate_containers_from_pod(_pod, config)
                         # Pod pending
@@ -846,9 +891,21 @@ class Kubernetes(KubernetesManager):
             msg = f"[{config.name}] Timeout reached while creating the deployment"
             if last_pod is not None:
                 msg += self._get_failed_pod_msg(last_pod, config, namespace)
-            logging.error(msg)
+            self._abort_deployment(config, namespace, msg)
 
         raise RuntimeError(f"Error creating the deployment for {config.name}")
+
+    def _abort_deployment(self, config: PodConfig, namespace: str, message: str) -> None:
+        """
+        Log a clear error, delete the (now useless) deployment so it stops spawning
+        replacement pods, and abort. Deletion happens here instead of relying solely on
+        the caller's cleanup so an unschedulable deployment never lingers in the cluster.
+        """
+        logging.error(message)
+        deployment = self._get_deployment_dict(namespace).get(config.name)
+        if deployment is not None:
+            self._delete_deployment_and_wait(deployment, dryrun=False)
+        raise RuntimeError(message)
 
     def _create_retina_deployment(self, config: PodConfig, namespace: str) -> ErrorCode:
         """
