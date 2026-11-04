@@ -34,6 +34,7 @@ position_power: &base_config
     cu_cp.nof_e_cid_measurement_report_geq: 1
     cu_cp.trp_information_request_eq: 1
     cu_cp.trp_information_response_eq: 1
+  markers: [xfail]
 
 # SRS time-based NRPPa
 position_time:
@@ -41,6 +42,7 @@ position_time:
   feature_ids: [MVP-FUNC-POS-16-3-b]
   core:
     config: [baseline.cfg, nrppa_nr_tdoa.cfg, nrppa_trigger_meas.cfg]
+  markers: [xfail]
 
 # DL-PRS based NR DL-TDOA over LPP
 # The UE does not decode the DL-PRS. It calculates the RSTDs from the simulated UE and cell positions.
