@@ -33,7 +33,7 @@ gitlab_runner:
     s3:
       server_address: 10.12.1.227:9000
       access_key: minio-admin
-      secret_key: s0ftwareradi0
+      secret_key: (password)
       bucket_name: my-bucket
       insecure: true
   host_aliases:              # optional — injects entries into /etc/hosts of runner pods
