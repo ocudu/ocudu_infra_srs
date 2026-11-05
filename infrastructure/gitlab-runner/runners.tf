@@ -40,6 +40,9 @@ locals {
   # This allows the template to use plain ${runner.field} without try() or conditionals.
   processed_runners = {
     for name, r in local.runners_map : name => {
+      # Per-runner image values override the cluster defaults.
+      image = merge(local.cluster_config.image, try(r.image, {}))
+
       concurrent                       = r.concurrent
       tags                             = tostring(r.tags)
       check_interval                   = try(r.check_interval, 1)

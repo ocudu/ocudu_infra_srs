@@ -4,9 +4,9 @@
 # Reference: https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml
 
 image:
-  registry: ${cluster_config.image.registry}
-  image: ${cluster_config.image.image}
-  tag: ${cluster_config.image.tag}
+  registry: ${runner.image.registry}
+  image: ${runner.image.image}
+  tag: ${runner.image.tag}
 
 imagePullPolicy: IfNotPresent
 
