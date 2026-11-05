@@ -188,6 +188,7 @@ tdd_dl_heavy_rt:
     parameters:
       <<: *common_ue_params
       nof_ue: *nof_ue
+      rx_to_tx_latency: 4
       power_on_stagger_delay: 0.01 # 100 UE/s
       dl_bitrate: 4.0e+5
       ul_bitrate: 0.9e+5
