@@ -29,6 +29,7 @@ baseline: &base_config
         traffic_duration: 10
         log_level: warning
         pdcch_decode_threshold: 0.24
+        rx_to_tx_latency: 2
       nof_ue: &nof_ue 1000
       power_on_stagger_delay: 0.007 # 142 UE/s
       dl_bitrate: 4.0e+5
