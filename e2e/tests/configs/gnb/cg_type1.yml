@@ -3,9 +3,9 @@
 
 cell_cfg:
   cg:
-    periodicity_slots: 20
-    mcs: 20
-    grant_size: 544
+    periodicity_slots: 40
+    mcs: 5
+    grant_size: 100
     max_nof_cg_rbs: 30
 
 log:

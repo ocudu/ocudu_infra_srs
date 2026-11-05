@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+# SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+# Type 2 CG is activated by a DCI format 0_1 scrambled with the CS-RNTI, which requires SearchSpace#2 to be
+# UE-specific and monitored with DCI format 0_1 (gNB defaults).
+cell_cfg:
+  cg:
+    type2: true
+    periodicity_slots: 40
+    mcs: 5
+    grant_size: 100
+    max_nof_cg_rbs: 30
+
+log:
+  mac_level: debug
+  phy_level: debug
