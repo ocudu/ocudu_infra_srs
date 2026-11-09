@@ -80,7 +80,9 @@ def ping_wait_until_finish(ping_task_array: List[grpc.Future]) -> None:
     """
     ping_success = True
     for ping_task in ping_task_array:
-        ping_success &= ping_task.result().status
+        result: PingResponse = ping_task.result()
+        # Agents report -1 RTT statistics when the ping did not run, which older agents flag as a success.
+        ping_success &= result.status and min(result.min, result.avg, result.max) >= 0
 
     if not ping_success:
         pytest.fail("Ping. Some packages got lost.")
