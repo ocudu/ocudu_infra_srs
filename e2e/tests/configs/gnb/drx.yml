@@ -4,3 +4,5 @@
 cell_cfg:
   drx:
     long_cycle: 80
+    # Keeps the UE in Active Time until the PUSCH of a new UL grant (k2=4), as some COTS UEs drop a PUSCH outside it.
+    inactivity_timer: 5
