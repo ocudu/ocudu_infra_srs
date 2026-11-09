@@ -117,6 +117,38 @@ mimo_4x4_ri4:
     du.dl_bitrate_gt: 200.0e+6
     du.dl_avg_ri_ge: 3.5
 
+# Scheduler load of many cells, with slots advancing as fast as the DU-high processes them. A free running clock runs
+# the DU-high in blocking mode, which is not real-time safe, so it runs in the functional pipeline without RTSan.
+fapi_dummy_free_running_10cell_2ue:
+  template: test_mode.test_gnb_no_core
+  request: test_mode_ue
+  parameters:
+    duration: 100
+  gnb:
+    config: [fapi_dummy.yml, test_mode.yml, 10cell.yml, du.yml]
+    parameters:
+      band: 256
+      bandwidth: 5
+      common_scs: 15
+      dl_nr_arfcn: 437000
+      log_level: warning
+      nof_antennas_dl: 1
+      nof_antennas_ul: 1
+      nof_test_ues: 2
+      test_ue_ri: 1
+      fapi_dummy_clock: free_running
+  # The bitrate depends on the CPU of the testbed, so it is only checked that traffic flows.
+  criteria:
+    du.dl_bitrate_gt: 1.0e+6
+    du.ul_bitrate_gt: 1.0e+6
+    du.nof_ko_dl_le: 0
+    du.nof_ko_ul_le: 0
+    du.nof_conres_issues_eq: 0
+    du.max_late_dl_harqs_le: 0
+    du.max_late_ul_harqs_le: 0
+    all.warnings_le: 0
+    all.errors_le: 0
+
 ###########################
 #### Performance Tests ####
 ###########################
@@ -247,23 +279,3 @@ fapi_dummy_many_ues_attach_detach:
     du.dl_bitrate_gt: 700.0e+6
     du.ul_bitrate_gt: 90.0e+6
 
-# Scheduler load of many cells, with slots advancing as fast as the DU-high processes them
-fapi_dummy_free_running_10cell_2ue:
-  <<: *ru_config
-  gnb:
-    config: [fapi_dummy.yml, test_mode.yml, 10cell.yml, du.yml]
-    parameters:
-      band: 256
-      bandwidth: 5
-      common_scs: 15
-      dl_nr_arfcn: 437000
-      log_level: warning
-      nof_antennas_dl: 1
-      nof_antennas_ul: 1
-      nof_test_ues: 2
-      test_ue_ri: 1
-      fapi_dummy_clock: free_running
-  criteria:
-    <<: *ru_criteria
-    du.dl_bitrate_gt: 180.0e+6
-    du.ul_bitrate_gt: 180.0e+6
