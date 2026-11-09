@@ -278,4 +278,3 @@ fapi_dummy_many_ues_attach_detach:
     <<: *ru_criteria
     du.dl_bitrate_gt: 700.0e+6
     du.ul_bitrate_gt: 90.0e+6
-
