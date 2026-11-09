@@ -362,7 +362,8 @@ class BaseDriver(BaseServicer, metaclass=ABCMeta):
 
         rrt_re = re.search(self.PING_RTT_REGEX, output)
         return PingResponse(
-            status=num_sent == num_received,
+            # A ping that exits without statistics, e.g. on an invalid argument, must not count as a success.
+            status=bool(num_sent) and num_sent == num_received and rrt_re is not None,
             sent=num_sent or 0,
             received=num_received or 0,
             min=float(rrt_re.group(1)) if rrt_re is not None else -1,
