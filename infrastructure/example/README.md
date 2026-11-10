@@ -47,6 +47,8 @@ graph LR
 
 ## s72 Testbed
 
+An S72 testbed runs the OCUDU split 7.2 gNB against an Amarisoft UE Simulator (UESIM). In the standard deployment, both machines are Kubernetes nodes: Retina schedules the gNB on the gNB node and the UE simulator and core on the UESIM node. The S72 fronthaul is a dedicated Layer-2 network; N2/N3 traffic uses the normal backhaul network.
+
 ```mermaid
 ---
 config:
@@ -54,15 +56,20 @@ config:
 ---
 graph LR
     subgraph cluster
-        subgraph gnb_server
-            retina_gnb_pod <--> retina_core_pod
+        subgraph gnb_server[gnb node]
+            retina_gnb_pod[retina gNB pod]
+        end
+        subgraph uesim_server[UESIM node]
+            retina_ue_pod[retina UE pod]
+            retina_core_pod[retina core pod]
         end
     end
-    retina_gnb_pod <-->|s72| uesim_box    
+    retina_gnb_pod <-->|N2/N3 backhaul| retina_core_pod
+    retina_gnb_pod <-->|S72 fronthaul<br/>two VLANs| fh_switch[PTP fronthaul switch<br/>GPS grandmaster]
+    fh_switch <-->|S72 fronthaul<br/>two VLANs| retina_ue_pod
 ```
 
-- 1 Server to run OCUDU
-- 1 UE SimBox (outside of the cluster)
+For the full host, network, timing and Retina setup, see the [S72 testbed guide](testbeds/s72.md).
 
 ## RF Testbed
 
