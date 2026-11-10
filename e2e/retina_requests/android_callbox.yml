@@ -19,11 +19,12 @@
   image: ${RETINA_REGISTRY_URI}/ocudu:${RETINA_VERSION}
   requirements:
     cpu:
-      requests: 100%
-      limits: 100%
+      requests: 80%
+      limits: 80%
+      rounding: round
     memory:
-      requests: 100%
-      limits: 100%
+      requests: 80%
+      limits: 80%
     ephemeral-storage:
       requests: 6G
   ip_back_source: backhaul
