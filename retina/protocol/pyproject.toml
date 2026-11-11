@@ -65,6 +65,8 @@ module = [
   "retina.protocol.base_pb2_grpc",
   "retina.protocol.ue_pb2",
   "retina.protocol.ue_pb2_grpc",
+  "retina.protocol.ue_simulator_pb2",
+  "retina.protocol.ue_simulator_pb2_grpc",
   "retina.protocol.gnb_pb2",
   "retina.protocol.gnb_pb2_grpc",
   "retina.protocol.fivegc_pb2",
@@ -122,6 +124,7 @@ commands =
     --plugin=protoc-gen-doc=./.protoc-gen-doc/protoc-gen-doc \
     src/retina/protocol/base.proto \
     src/retina/protocol/ue.proto \
+    src/retina/protocol/ue_simulator.proto \
     src/retina/protocol/gnb.proto \
     src/retina/protocol/fivegc.proto \
     src/retina/protocol/ric.proto

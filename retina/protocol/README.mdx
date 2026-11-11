@@ -430,6 +430,21 @@ UE service manages user equipment operations including attachment, movement, and
 
 ---
 
+## retina/protocol/ue_simulator.proto
+
+### Services
+
+#### UESimulator
+
+UESimulator service manages a UE simulator, where the simulator itself (and not Retina) drives the simulated UEs
+
+| Method | Request | Response | Streaming | Description |
+|---|---|---|---|---|
+| `GetDefinition` | `.google.protobuf.Empty` | `.UEDefinition` |No|Get Basic information about the simulator, like the subscriber to provision in the core or the ZMQ IP|
+| `Start` | `.UEStartInfo` | `.google.protobuf.Empty` |No|Start the simulation. Raise an error if can't be started.|
+
+---
+
 ## retina/protocol/gnb.proto
 
 ### Messages

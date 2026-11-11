@@ -65,6 +65,8 @@ module = [
   "retina.protocol.base_pb2_grpc",
   "retina.protocol.ue_pb2",
   "retina.protocol.ue_pb2_grpc",
+  "retina.protocol.ue_simulator_pb2",
+  "retina.protocol.ue_simulator_pb2_grpc",
   "retina.protocol.gnb_pb2",
   "retina.protocol.gnb_pb2_grpc",
   "retina.protocol.fivegc_pb2",

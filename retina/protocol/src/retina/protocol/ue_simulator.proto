@@ -1,0 +1,17 @@
+// SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+// SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+import "retina/protocol/base.proto";
+import "retina/protocol/ue.proto";
+
+// UESimulator service manages a UE simulator, where the simulator itself (and not Retina) drives the simulated UEs
+service UESimulator {
+  // Get Basic information about the simulator, like the subscriber to provision in the core or the ZMQ IP
+  rpc GetDefinition(google.protobuf.Empty) returns (UEDefinition) {};
+  // Start the simulation. Raise an error if can't be started.
+  rpc Start(UEStartInfo) returns (google.protobuf.Empty) {};
+};

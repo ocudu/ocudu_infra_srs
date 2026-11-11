@@ -22,6 +22,7 @@ from retina.protocol.gnb_pb2_grpc import (
 )
 from retina.protocol.ric_pb2_grpc import NearRtRicStub
 from retina.protocol.ue_pb2_grpc import UEStub
+from retina.protocol.ue_simulator_pb2_grpc import UESimulatorStub
 
 
 class UEClient(UEStub, HealthStub, BaseStub):
@@ -31,6 +32,15 @@ class UEClient(UEStub, HealthStub, BaseStub):
         BaseStub.__init__(self, channel)
         HealthStub.__init__(self, channel)
         UEStub.__init__(self, channel)
+
+
+class UESimulatorClient(UESimulatorStub, HealthStub, BaseStub):
+    """UE simulator agent stub — UESimulator service methods + Base service methods."""
+
+    def __init__(self, channel) -> None:
+        BaseStub.__init__(self, channel)
+        HealthStub.__init__(self, channel)
+        UESimulatorStub.__init__(self, channel)
 
 
 class GNBClient(GNBStub, HealthStub, BaseStub):
@@ -98,6 +108,7 @@ class NearRtRicClient(NearRtRicStub, HealthStub, BaseStub):
 
 RanClient = Union[
     UEClient,
+    UESimulatorClient,
     CUCPClient,
     CUUPClient,
     CUClient,
