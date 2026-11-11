@@ -28,6 +28,13 @@ VALID_UE_3 = {
     "port": 50072,
 }
 
+VALID_UE_SIMULATOR = {
+    "name": "amarisoft-ue-simulator",
+    "type": "ue_simulator",
+    "address": "localhost",
+    "port": 50064,
+}
+
 VALID_GNB = {
     "name": "ocudu-gnb",
     "type": "gnb",
@@ -102,7 +109,7 @@ class Validation(Testbed):
         )
 
     def test_given_valid_items_then_should_not_fail(self):
-        items = (VALID_UE, VALID_GNB, VALID_5GC)
+        items = (VALID_UE, VALID_UE_SIMULATOR, VALID_GNB, VALID_5GC)
         for r in range(len(items)):
             for subtest_items in itertools.combinations(items, r + 1):
                 with self.subTest(items=subtest_items):
@@ -282,6 +289,31 @@ class Get(Testbed):
         self.backend.create_client.assert_called_once_with(
             VALID_5GC["type"], VALID_5GC["address"], VALID_5GC["port"]
         )
+
+    def test_given_one_ue_simulator_when_get_client_for_all_types_then_only_ue_simulator_should_not_fail(
+        self,
+    ):
+        self.testbed_use_case.validate_testbed({"id": "id", "node_list": [VALID_UE_SIMULATOR]})
+        self.assertRaises(KeyError, self.testbed_use_case.get_ue)
+        self.testbed_use_case.get_ue_simulator()
+        self.backend.create_client.assert_called_once_with(
+            VALID_UE_SIMULATOR["type"], VALID_UE_SIMULATOR["address"], VALID_UE_SIMULATOR["port"]
+        )
+        self.assertRaises(KeyError, self.testbed_use_case.get_gnb)
+        self.assertRaises(KeyError, self.testbed_use_case.get_5gc)
+
+    def test_given_ue_and_ue_simulator_when_get_each_then_each_type_returns_its_own_client(
+        self,
+    ):
+        self.testbed_use_case.validate_testbed({"id": "id", "node_list": [VALID_UE, VALID_UE_SIMULATOR]})
+        ue = self.testbed_use_case.get_ue()
+        ue_simulator = self.testbed_use_case.get_ue_simulator()
+        self.assertEqual(ue["type"], "ue")
+        self.assertEqual(ue_simulator["type"], "ue_simulator")
+        self.assertEqual(ue_simulator["com_args"], (VALID_UE_SIMULATOR["address"], VALID_UE_SIMULATOR["port"]))
+        # Only one node of each type
+        self.assertRaises(IndexError, self.testbed_use_case.get_ue, 1)
+        self.assertRaises(IndexError, self.testbed_use_case.get_ue_simulator, 1)
 
     def test_given_an_item_when_get_it_multiple_times_then_it_is_created_only_once(
         self,

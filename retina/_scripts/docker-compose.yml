@@ -11,8 +11,8 @@
 # Available profiles:
 # - builders: Build gnb binary
 # - builders-amari: Build amari-zmq driver (requires AMARISOFT_PATH)
-# - zmq_amariue_mme: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Amarisoft 5GC
-# - zmq_amariue_open5gs: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs
+# - zmq_amariue_mme: Amarisoft UE + Amarisoft UE simulator + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Amarisoft 5GC
+# - zmq_amariue_open5gs: Amarisoft UE + Amarisoft UE simulator + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs
 # - zmq_srsue: srsUE + OCUDU gNB + Open5gs + Flexric
 
 services:
@@ -185,7 +185,7 @@ services:
     network_mode: "none"
     entrypoint: ["true"]
 
-  amarisoft-ue:
+  amarisoft-ue: &amariue_service
     ulimits:
       nofile:
         soft: 65536
@@ -234,6 +234,20 @@ services:
       - /dev/net/tun:/dev/net/tun
     x-testbed:
       type: ue
+
+  # Same image as amarisoft-ue, running the UE simulator driver: lteue drives all the simulated UEs on its own
+  amarisoft-ue-simulator:
+    <<: *amariue_service
+    container_name: amarisoft-ue-simulator
+    environment:
+      RETINA_AGENT: amarisoft-ue-simulator
+      RETINA_IP: &amariue_simulator_ip 172.20.0.12
+      RETINA_SECRETS: ${AMARISOFT_LICENSE_IP} ${AMARISOFT_UE_LICENSE_TAG}
+    networks:
+      retina:
+        ipv4_address: *amariue_simulator_ip
+    x-testbed:
+      type: ue_simulator
 
   srs-ue:
     restart: unless-stopped

@@ -27,6 +27,7 @@ from retina.protocol import (
     NearRtRicClient,
     RanClient,
     UEClient,
+    UESimulatorClient,
 )
 
 
@@ -105,6 +106,9 @@ class TestbedService(TestbedPort):
 
     def get_ue(self, index: int = 0) -> UEClient:
         return cast(UEClient, self._get_item(NodeTypeEnum.UE, index))
+
+    def get_ue_simulator(self, index: int = 0) -> UESimulatorClient:
+        return cast(UESimulatorClient, self._get_item(NodeTypeEnum.UE_SIMULATOR, index))
 
     def get_gnb(self, index: int = 0) -> GNBClient:
         return cast(GNBClient, self._get_item(NodeTypeEnum.GNB, index))

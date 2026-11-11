@@ -42,6 +42,7 @@ from retina.protocol import (
     NearRtRicClient,
     RanClient,
     UEClient,
+    UESimulatorClient,
 )
 from retina.protocol.base_pb2 import StopResponse
 from retina.protocol.exit_codes import exit_code_to_message
@@ -158,6 +159,23 @@ def ue_multiple(
 def ue(ue_multiple: Callable[[int], Tuple[UEClient, ...]]) -> UEClient:
     """Return an UE"""
     return ue_multiple(1)[0]
+
+
+@pytest.fixture
+def ue_simulator(
+    retina_manager: RetinaTestManager, retina_data: RetinaTestData, criteria: CriteriaTable
+) -> Generator[UESimulatorClient, None, None]:
+    """
+    Return the UE simulator. A single simulator drives all the simulated UEs of the test,
+    and it is evaluated with the UE criteria.
+    """
+    stub = retina_manager.get_ue_simulator(0)
+    for cls in UeCriteria.subclasses:
+        cls(criteria, (stub,))
+
+    yield stub
+
+    _stop_stub(stub, "UE_SIMULATOR", retina_data)
 
 
 @pytest.fixture

@@ -111,9 +111,12 @@ Remember to re-build your binary/libs every time you made a change or checkout n
 
 Currently there are five available testbeds:
 
-- zmq_amariue_mme: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Amarisoft 5GC
-- zmq_amariue_open5gs: Amarisoft UE + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs
+- zmq_amariue_mme: Amarisoft UE + Amarisoft UE simulator + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Amarisoft 5GC
+- zmq_amariue_open5gs: Amarisoft UE + Amarisoft UE simulator + 2 OCUDU gNB + 1 OCUDU CU + 2 OCUDU DUs + Open5gs
 - zmq_srsue: srsUE + OCUDU gNB + Open5gs + Flexric
+
+The Amarisoft profiles start two containers from the same image: `amarisoft-ue` (node type `ue`, Retina manages
+each UE) and `amarisoft-ue-simulator` (node type `ue_simulator`, lteue drives all the simulated UEs on its own).
 
 ### Testbed file
 

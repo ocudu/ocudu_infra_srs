@@ -27,6 +27,7 @@ from retina.protocol import (
     NearRtRicClient,
     RanClient,
     UEClient,
+    UESimulatorClient,
 )
 
 _T = TypeVar("_T", bound=RanClient)
@@ -170,6 +171,14 @@ class RetinaEntrypoint:
         If `push_config` is set, it will send the configured parameters to the client
         """
         return self._get_item(self._testbed_service.get_ue, *args, **kwargs)
+
+    def get_ue_simulator(self, *args, **kwargs) -> UESimulatorClient:
+        """
+        Return a UE simulator stub in the specified index.
+        If not exists, raises an Exception.
+        If `push_config` is set, it will send the configured parameters to the client
+        """
+        return self._get_item(self._testbed_service.get_ue_simulator, *args, **kwargs)
 
     def get_gnb(self, *args, **kwargs) -> GNBClient:
         """

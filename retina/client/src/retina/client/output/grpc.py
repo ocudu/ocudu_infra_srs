@@ -30,6 +30,7 @@ from retina.protocol import (
     NearRtRicClient,
     RanClient,
     UEClient,
+    UESimulatorClient,
 )
 from retina.protocol.artifact import download_archived_artifact
 from retina.protocol.base_pb2 import Parameter
@@ -42,6 +43,7 @@ class GrpcAdaptor(CommunicationPort):
 
     _KIND_CODENAME_DICT: Dict[str, Callable[..., RanClient]] = {
         "ue": UEClient,
+        "ue_simulator": UESimulatorClient,
         "gnb": GNBClient,
         "cu": CUClient,
         "cu_cp": CUCPClient,

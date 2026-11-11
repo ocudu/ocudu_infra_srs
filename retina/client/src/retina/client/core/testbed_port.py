@@ -20,6 +20,7 @@ from retina.protocol import (
     NearRtRicClient,
     RanClient,
     UEClient,
+    UESimulatorClient,
 )
 
 
@@ -53,6 +54,13 @@ class TestbedPort:
     def get_ue(self, index: int = 0) -> UEClient:
         """
         Return a UE stub in the specified index.
+        If not exists, raises an Exception.
+        """
+
+    @abstractmethod
+    def get_ue_simulator(self, index: int = 0) -> UESimulatorClient:
+        """
+        Return a UE simulator stub in the specified index.
         If not exists, raises an Exception.
         """
 

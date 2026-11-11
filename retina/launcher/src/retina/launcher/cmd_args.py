@@ -184,7 +184,7 @@ def _parse_parameters(
                 raise ValueError(
                     f"Invalid parameter syntax '{item}'. "
                     "Please use: type.name.key=value "
-                    "where type can be 'ue', 'gnb' or '5gc' and name can be 'all'"
+                    "where type can be 'ue', 'ue_simulator', 'gnb' or '5gc' and name can be 'all'"
                 ) from None
     return tuple(client_parameters)
 

@@ -38,6 +38,7 @@
                     "type": "string",
                     "enum": [
                         "ue",
+                        "ue_simulator",
                         "gnb",
                         "cu",
                         "cu_cp",

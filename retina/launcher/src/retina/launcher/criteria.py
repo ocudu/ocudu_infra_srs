@@ -9,13 +9,13 @@ import logging
 import operator
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Callable, ClassVar, Dict, final, List, Sequence
+from typing import Any, Callable, ClassVar, Dict, final, List, Sequence, Union
 
 import pytest
 from rich.console import Console
 from rich.table import Table
 
-from retina.protocol import CUCPClient, CUUPClient, DUClient, FiveGCClient, NearRtRicClient, UEClient
+from retina.protocol import CUCPClient, CUUPClient, DUClient, FiveGCClient, NearRtRicClient, UEClient, UESimulatorClient
 from retina.viavi.client import Viavi
 
 _UNSET = object()
@@ -162,10 +162,10 @@ class CriteriaTable:
 
 
 class UeCriteria(Criteria):  # pylint: disable=too-few-public-methods
-    """Base class for UE pass/fail criteria definitions."""
+    """Base class for UE pass/fail criteria definitions. Used by both the UE and the UE simulator nodes."""
 
     subclasses: ClassVar[List[type]] = []
-    _stub_array: Sequence[UEClient]
+    _stub_array: Sequence[Union[UEClient, UESimulatorClient]]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)

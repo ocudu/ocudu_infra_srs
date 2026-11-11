@@ -7,6 +7,9 @@
         "ue": {
             "$ref": "#/$defs/node_type"
         },
+        "ue_simulator": {
+            "$ref": "#/$defs/node_type"
+        },
         "gnb": {
             "$ref": "#/$defs/node_type"
         },

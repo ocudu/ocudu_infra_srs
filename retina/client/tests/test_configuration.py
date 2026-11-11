@@ -12,7 +12,7 @@ from retina.client.core.communication_port import CommunicationPort
 from retina.client.core.configuration_service import ConfigurationService
 from retina.client.core.testbed_service import TestbedService
 
-from .test_testbed import VALID_5GC, VALID_GNB, VALID_UE, VALID_UE_2, VALID_UE_3
+from .test_testbed import VALID_5GC, VALID_GNB, VALID_UE, VALID_UE_2, VALID_UE_3, VALID_UE_SIMULATOR
 
 
 PARAMETERS_DICT = {"ip": "172.18.0.2", "port": 6000}
@@ -277,6 +277,31 @@ class ValidationItemErrors(ConfigurationTestCase):
                 },
             },
         )
+
+
+class PushParameterUeSimulator(ConfigurationTestCase):
+    """A testbed can have both a UE and a UE simulator. Each one only receives its own parameters"""
+
+    def setUp(self):
+        super().setUp()
+        self.testbed_use_case.validate_testbed({"id": "id", "node_list": [{**VALID_UE}, {**VALID_UE_SIMULATOR}]})
+
+    def test_given_ue_simulator_parameters_then_only_the_ue_simulator_receives_them(self):
+        self.configuration_use_case.validate_configuration({"ue_simulator": {"parameters": PARAMETERS_DICT}})
+        self.testbed_use_case.get_ue()
+        client_ue_simulator = self.testbed_use_case.get_ue_simulator()
+
+        self.configuration_use_case.push_all_config()
+        # Pushed under the `ue_simulator` namespace
+        self.assertPushedParametersExactCalls(self.get_push_parameter_calls(client_ue_simulator, PARAMETERS_DICT))
+
+    def test_given_ue_parameters_then_the_ue_simulator_does_not_receive_them(self):
+        self.configuration_use_case.validate_configuration({"ue": {"parameters": PARAMETERS_DICT}})
+        client_ue = self.testbed_use_case.get_ue()
+        self.testbed_use_case.get_ue_simulator()
+
+        self.configuration_use_case.push_all_config()
+        self.assertPushedParametersExactCalls(self.get_push_parameter_calls(client_ue, PARAMETERS_DICT))
 
 
 class PushParameterConfigAndCli(ConfigurationTestCase):
