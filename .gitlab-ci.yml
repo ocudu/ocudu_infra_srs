@@ -194,6 +194,9 @@ include:
       ocudu_ref: $[[ inputs.ocudu_ref ]]
   - local: docs/.gitlab-ci.yml
   - local: .gitlab-ci-stages.yml
+  - local: .gitlab/ci/ai.yml
+    rules:
+      - if: $OCUDU_TOOLS_PROJECT  # CI/CD variable; unset: no AI jobs
 
 variables:
   RETINA_REGISTRY_URI: ${CI_REGISTRY_IMAGE}/retina
