@@ -31,6 +31,7 @@ class ParameterNamespace(Enum):
     TESTBED = "testbed"
     TEMPLATE = "template"
     UE = "ue"
+    UE_SIMULATOR = "ue_simulator"
     GNB = "gnb"
     CU = "cu"
     CU_CP = "cu_cp"

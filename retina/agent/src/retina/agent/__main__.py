@@ -38,10 +38,11 @@ from retina.protocol.gnb_pb2_grpc import (
 )
 from retina.protocol.ric_pb2_grpc import add_NearRtRicServicer_to_server, NearRtRic, NearRtRicServicer
 from retina.protocol.ue_pb2_grpc import add_UEServicer_to_server, UE, UEServicer
+from retina.protocol.ue_simulator_pb2_grpc import add_UESimulatorServicer_to_server, UESimulator, UESimulatorServicer
 
 from retina.agent.app.logger import retina_log_setup
 from retina.agent.drivers.amarisoft_5gc import LocalAmarisoft5gc, RemoteAmarisoft5gc
-from retina.agent.drivers.amarisoft_ue import LocalAmarisoftUe, RemoteAmarisoftUe
+from retina.agent.drivers.amarisoft_ue import LocalAmarisoftUe, LocalAmarisoftUeSimulator, RemoteAmarisoftUe
 from retina.agent.drivers.android import AdbAndroidUE
 from retina.agent.drivers.base import BaseDriver
 from retina.agent.drivers.flexric import LocalFlexricRic
@@ -58,6 +59,7 @@ from retina.agent.tools.time import now_timestamp_file
 _DRIVER_CODENAME_DICT: Dict[str, Callable[..., BaseDriver]] = {
     "amarisoft-ue": LocalAmarisoftUe,
     "amarisoft-ue-remote": RemoteAmarisoftUe,
+    "amarisoft-ue-simulator": LocalAmarisoftUeSimulator,
     "android": AdbAndroidUE,
     "ocudu-gnb": LocalOcuduGnb,
     "ocudu-gnb-remote": RemoteOcuduGnb,
@@ -150,7 +152,10 @@ def _agent_factory(
     retina_servicer = _DRIVER_CODENAME_DICT[codename](report_folder=report_folder, resource_folder=resource_folder)
     health_servicer.set(Base.__name__, HealthCheckResponse.SERVING)
     add_BaseServicer_to_server(retina_servicer, server)
-    if isinstance(retina_servicer, UEServicer):
+    if isinstance(retina_servicer, UESimulatorServicer):
+        health_servicer.set(UESimulator.__name__, HealthCheckResponse.SERVING)
+        add_UESimulatorServicer_to_server(retina_servicer, server)
+    elif isinstance(retina_servicer, UEServicer):
         health_servicer.set(UE.__name__, HealthCheckResponse.SERVING)
         add_UEServicer_to_server(retina_servicer, server)
     if isinstance(retina_servicer, GNBServicer):

@@ -23,6 +23,7 @@ from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
 from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition
 from retina.protocol.ue_pb2 import Position, UEAttachedInfo, UEStartInfo
+from retina.protocol.ue_simulator_pb2_grpc import UESimulatorServicer
 
 from retina.agent.drivers.amarisoft_ws import AmarisoftBaseDriver, AmarisoftWebSocket
 from retina.agent.drivers.base import notify_grpc_exception
@@ -104,10 +105,14 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     def _get_binary_name(self) -> str:
         return "lteue"
 
+    @property
+    def _simulator_mode(self) -> bool:
+        return ue_defaults.ue_simulator_mode
+
     def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> UEDefinition:
         ue_definition: UEDefinition = super().GetDefinition(request, context)
 
-        if ue_defaults.ue_simulator_mode:
+        if self._simulator_mode:
             return ue_definition
 
         if context.peer() not in self._subscriber_client_dict:
@@ -343,7 +348,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     break
                 sleep(self.AMARISOFT_POWER_ON_SLEEP)
 
-            if ue_defaults.ue_simulator_mode:
+            if self._simulator_mode:
                 self._start_stats_poll()
 
         if self._websocket is None or not self._websocket.connected:
@@ -719,6 +724,16 @@ class LocalAmarisoftUe(AmarisoftUe):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs, executor=LocalExecutor())
         testbed_defaults.api_address = testbed_defaults.ip
+
+
+class LocalAmarisoftUeSimulator(LocalAmarisoftUe, UESimulatorServicer):  # pylint: disable=too-many-ancestors
+    """
+    Amarisoft UE simulator Agent for local execution.
+    """
+
+    @property
+    def _simulator_mode(self) -> bool:
+        return True
 
 
 class RemoteAmarisoftUe(AmarisoftUe):

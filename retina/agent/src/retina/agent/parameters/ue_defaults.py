@@ -13,6 +13,7 @@ from retina.agent.app.parameter_manager import convert_to_parameter_source, Para
 from retina.agent.templates import template_path
 
 convert_to_parameter_source(__name__, ParameterNamespace.UE)
+convert_to_parameter_source(__name__, ParameterNamespace.UE_SIMULATOR)
 
 ##########
 # Params #

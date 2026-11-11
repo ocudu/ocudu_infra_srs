@@ -46,5 +46,5 @@ else
     echo "trx_ocudu.so not found, skipping (expected for non-zmq testbeds)"
 fi
 
-# Retina Agent
-exec /usr/local/bin/agent.sh amarisoft-ue --maximum-workers 96 "$@"
+# Retina Agent. RETINA_AGENT selects the driver: amarisoft-ue (default) or amarisoft-ue-simulator
+exec /usr/local/bin/agent.sh "${RETINA_AGENT:-amarisoft-ue}" --maximum-workers 96 "$@"
