@@ -606,7 +606,7 @@ leo_fl_true_kmac_iperf:
       feeder_link: true
       dl_harq_disabled: false
       ul_harq_disabled: false
-      cell_specific_koffset: 14
+      cell_specific_koffset: 15
       k_mac: 3
       ta_meas_slot_prohibit_period: 26
       gw_altitude: 1.0
