@@ -85,6 +85,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     # (0x1105-0x1111 reserved); CMAS/EU-Alert/KPAS identifiers start at 0x1112.
     AMARISOFT_CMAS_MESSAGE_ID_THRESHOLD: int = 0x1112
     _METRICS_ENCODING: str = "utf-8"
+    # lteue drives the simulated UEs on its own (no per client subscriber, no power_on)
+    _SIMULATOR_MODE: bool = False
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -105,14 +107,10 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     def _get_binary_name(self) -> str:
         return "lteue"
 
-    @property
-    def _simulator_mode(self) -> bool:
-        return ue_defaults.ue_simulator_mode
-
     def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> UEDefinition:
         ue_definition: UEDefinition = super().GetDefinition(request, context)
 
-        if self._simulator_mode:
+        if self._SIMULATOR_MODE:
             return ue_definition
 
         if context.peer() not in self._subscriber_client_dict:
@@ -348,7 +346,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
                     break
                 sleep(self.AMARISOFT_POWER_ON_SLEEP)
 
-            if self._simulator_mode:
+            if self._SIMULATOR_MODE:
                 self._start_stats_poll()
 
         if self._websocket is None or not self._websocket.connected:
@@ -367,7 +365,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             self._subscriber_client_dict[context.peer()].started = True
             logging.info("Power on user with id %s", subscriber_id)
         else:
-            logging.info("Test Simulation Mode")
+            logging.info("UE simulator: lteue drives the simulated UEs")
 
         if not self._check_alive_thread.is_alive():
             raise ChildProcessError("Process has died")
@@ -731,9 +729,7 @@ class LocalAmarisoftUeSimulator(LocalAmarisoftUe, UESimulatorServicer):  # pylin
     Amarisoft UE simulator Agent for local execution.
     """
 
-    @property
-    def _simulator_mode(self) -> bool:
-        return True
+    _SIMULATOR_MODE: bool = True
 
 
 class RemoteAmarisoftUe(AmarisoftUe):

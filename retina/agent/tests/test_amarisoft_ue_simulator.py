@@ -60,8 +60,12 @@ class SimulatorDriverTest(unittest.TestCase):
 
     def test_simulator_mode(self):
         # pylint: disable=protected-access
-        self.assertTrue(_make_driver(LocalAmarisoftUeSimulator)._simulator_mode)
-        self.assertFalse(_make_driver(LocalAmarisoftUe)._simulator_mode)
+        self.assertIs(LocalAmarisoftUeSimulator._SIMULATOR_MODE, True)
+        self.assertIs(LocalAmarisoftUe._SIMULATOR_MODE, False)
+
+    def test_ue_simulator_mode_parameter_is_gone(self):
+        # The mode comes from the driver class, not from a parameter
+        self.assertFalse(hasattr(ue_defaults, "ue_simulator_mode"))
 
 
 @patch.object(UEDriver, "GetDefinition", side_effect=_base_definition)
