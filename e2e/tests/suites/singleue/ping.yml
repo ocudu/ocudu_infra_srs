@@ -65,7 +65,7 @@ drx: &drx_config
   <<: *band_3_config
   template: ping.test_gnb
   parameters:
-    ping_interval: 0.1
+    ping_interval: 0.2
   gnb:
     config: [cu_cp.yml, du.yml, drx.yml, schedtrace.yml]
     parameters:
