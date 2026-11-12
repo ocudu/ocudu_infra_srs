@@ -55,7 +55,8 @@ baseline: &base_config
       du.nof_error_indications_le: 0
       du.nof_ues_at_stop_eq: 0
       all.errors_le: 0
-      all.warnings_le: 1
+      # A Msg3 received with a RedCap CCCH LCID under heavy contention is rejected with two warnings (DU and RRC).
+      all.warnings_le: 2
     core.nof_pdu_session_establishment_accept_eq: &nof_ue_attaches 5000 # nof_ue x nof_attach_dettach_cycles
 
 # DL-heavy 7D1S2U, k1=k2=2, Long PRACH, 100 MHz SISO
