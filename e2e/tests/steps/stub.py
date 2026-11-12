@@ -9,7 +9,7 @@ import logging
 from contextlib import contextmanager, suppress
 from functools import partial
 from time import sleep
-from typing import Dict, Generator, Optional, Sequence, Tuple
+from typing import Dict, Generator, Optional, Sequence, Tuple, Union
 
 import grpc
 import pytest
@@ -29,6 +29,7 @@ from retina.protocol import (
     NearRtRicClient,
     RanClient,
     UEClient,
+    UESimulatorClient,
 )
 from retina.protocol.base_pb2 import (
     CUCPDefinition,
@@ -51,6 +52,11 @@ from retina.protocol.ric_pb2 import KpmMonXappRequest, NearRtRicStartInfo, RcXap
 from retina.protocol.ric_pb2_grpc import NearRtRicStub
 from retina.protocol.ue_pb2 import UEAttachedInfo, UEStartInfo
 from retina.protocol.ue_pb2_grpc import UEStub
+from retina.protocol.ue_simulator_pb2_grpc import UESimulatorStub
+
+# The UE simulator shares the start / stop steps with the UEs (same GetDefinition, Start and Base methods)
+UEOrSimulatorStub = Union[UEStub, UESimulatorStub]
+UEOrSimulatorClient = Union[UEClient, UESimulatorClient]
 
 RF_MAX_TIMEOUT: int = 5 * 60  # Time enough in RF when loading a new image in the sdr
 UE_STARTUP_TIMEOUT: int = RF_MAX_TIMEOUT
@@ -116,7 +122,7 @@ def _get_hplmn(imsi: str) -> PLMN:
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-branches,too-many-statements
 def start_network(
     *,  # This enforces keyword-only arguments
-    ue_array: Sequence[UEStub],
+    ue_array: Sequence[UEOrSimulatorStub],
     fivegc_array: Sequence[FiveGCStub],
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
@@ -347,7 +353,7 @@ def ue_start_and_attach(
 
 
 def ue_start(
-    ue_array: Sequence[UEStub],
+    ue_array: Sequence[UEOrSimulatorStub],
     du_definition: Sequence[DUDefinition],
     fivegc_array: Sequence[FiveGCStub],
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
@@ -474,7 +480,7 @@ def validate_ue_registered_via_ims(
 # pylint: disable=too-many-branches
 def stop(
     *,  # This enforces keyword-only arguments
-    ue_array: Sequence[UEClient],
+    ue_array: Sequence[UEOrSimulatorClient],
     retina_data: RetinaTestData,
     gnb_array: Optional[Sequence[GNBClient]] = None,
     cu: Optional[CUClient] = None,

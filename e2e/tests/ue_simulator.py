@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 """
-Test ping
+Test UE simulator: the UE simulator drives all the simulated UEs on its own, and the test waits until it finishes
 """
 
 from contextlib import suppress
@@ -23,7 +23,7 @@ from retina.protocol import (
     DUClient,
     FiveGCClient,
     GNBClient,
-    UEClient,
+    UESimulatorClient,
 )
 
 from .steps.configuration import set_config_files
@@ -38,7 +38,7 @@ def test_gnb(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEClient,
+    ue_simulator: UESimulatorClient,
     gnb: GNBClient,
     fivegc: FiveGCClient,
 ):
@@ -48,7 +48,7 @@ def test_gnb(
         retina_data=retina_data,
         criteria=criteria,
         test_definition=test_definition,
-        ue=ue,
+        ue_simulator=ue_simulator,
         gnb_array=[gnb],
         fivegc_array=[fivegc],
     )
@@ -61,7 +61,7 @@ def test_2gnb(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEClient,
+    ue_simulator: UESimulatorClient,
     gnb_multiple,
     fivegc: FiveGCClient,
 ):
@@ -71,7 +71,7 @@ def test_2gnb(
         retina_data=retina_data,
         criteria=criteria,
         test_definition=test_definition,
-        ue=ue,
+        ue_simulator=ue_simulator,
         gnb_array=gnb_multiple(2),
         fivegc_array=[fivegc],
     )
@@ -84,7 +84,7 @@ def test_cu_2du(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEClient,
+    ue_simulator: UESimulatorClient,
     cu: CUClient,
     du_multiple,
     fivegc: FiveGCClient,
@@ -95,7 +95,7 @@ def test_cu_2du(
         retina_data=retina_data,
         criteria=criteria,
         test_definition=test_definition,
-        ue=ue,
+        ue_simulator=ue_simulator,
         cu=cu,
         du_array=du_multiple(2),
         fivegc_array=[fivegc],
@@ -109,7 +109,7 @@ def test_cucp_cuup(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEClient,
+    ue_simulator: UESimulatorClient,
     cu_cp: CUCPClient,
     cu_up: CUUPClient,
     du: DUClient,
@@ -121,7 +121,7 @@ def test_cucp_cuup(
         retina_data=retina_data,
         criteria=criteria,
         test_definition=test_definition,
-        ue=ue,
+        ue_simulator=ue_simulator,
         cu_cp_array=[cu_cp],
         cu_up_array=[cu_up],
         du_array=[du],
@@ -136,7 +136,7 @@ def test_2cucp_1cuup_2du(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEClient,
+    ue_simulator: UESimulatorClient,
     cu_cp_multiple,
     cu_up: CUUPClient,
     du_multiple,
@@ -148,7 +148,7 @@ def test_2cucp_1cuup_2du(
         retina_data=retina_data,
         criteria=criteria,
         test_definition=test_definition,
-        ue=ue,
+        ue_simulator=ue_simulator,
         cu_cp_array=cu_cp_multiple(2),
         cu_up_array=[cu_up],
         du_array=du_multiple(2),
@@ -161,7 +161,7 @@ def _ue_simulator(
     retina_data: RetinaTestData,
     criteria: CriteriaTable,
     test_definition: RetinaTestDefinition,
-    ue: UEClient,
+    ue_simulator: UESimulatorClient,
     fivegc_array: Sequence[FiveGCClient],
     cu: Optional[CUClient] = None,
     cu_cp_array: Optional[Sequence[CUCPClient]] = None,
@@ -175,7 +175,7 @@ def _ue_simulator(
         always_download_artifacts=True,
     )
 
-    test_definition.ue.parameters["ue_simulator_mode"] = True
+    # The suite `ue:` key configures the UE simulator node
     set_config_files(retina_manager=retina_manager, retina_data=retina_data, test_definition=test_definition)
 
     for criteria_id, criteria_expected_value in test_definition.criteria.items():
@@ -183,7 +183,7 @@ def _ue_simulator(
 
     try:
         start_network(
-            ue_array=(ue,),
+            ue_array=(ue_simulator,),
             cu=cu,
             cu_cp_array=cu_cp_array,
             cu_up_array=cu_up_array,
@@ -202,19 +202,19 @@ def _ue_simulator(
             raise ValueError("GNB or DU is required")
 
         ue_start(
-            ue_array=(ue,),
+            ue_array=(ue_simulator,),
             du_definition=du_definition,
             fivegc_array=fivegc_array,
         )
 
-        # Wait until UE stops
+        # Wait until the UE simulator stops
         with suppress(grpc.RpcError):
-            while ue.IsRunning(Empty()).value:
+            while ue_simulator.IsRunning(Empty()).value:
                 sleep(5)
     finally:
         try:
             stop(
-                ue_array=(ue,),
+                ue_array=(ue_simulator,),
                 cu=cu,
                 cu_cp_array=cu_cp_array,
                 cu_up_array=cu_up_array,
