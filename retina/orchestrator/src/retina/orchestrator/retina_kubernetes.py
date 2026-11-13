@@ -59,6 +59,7 @@ UNSCHEDULABLE_POD_REASONS = (
     "OutOfmemory",
     "OutOfephemeral-storage",
     "OutOfpods",
+    "NodeAffinity",
 )
 
 # Safety net in case the kubelet reports a failure reason we don't recognize yet:
@@ -867,7 +868,7 @@ class Kubernetes(KubernetesManager):
                                 self._abort_deployment(
                                     config,
                                     namespace,
-                                    f"[{config.name}] No resources available on the target node "
+                                    f"[{config.name}] Pod cannot run on the target node "
                                     f"({self.get_pod_event(_pod)})."
                                     f"{self._get_failed_pod_msg(_pod, config, namespace)}",
                                 )
