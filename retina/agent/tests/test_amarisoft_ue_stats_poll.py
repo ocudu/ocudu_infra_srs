@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 """
-In UE simulator mode, lteue quits on its own and closes the websocket before Stop is called.
+In the UE simulator, lteue quits on its own and closes the websocket before Stop is called.
 The stats poll thread must keep the last stats read before the quit.
 """
 
@@ -14,7 +14,7 @@ from threading import Event, Lock
 from time import sleep
 from typing import Dict
 
-from retina.agent.drivers.amarisoft_ue import AmarisoftUe
+from retina.agent.drivers.amarisoft_ue import AmarisoftUeSimulator
 from retina.agent.features.json_metrics.amarisoft_ue_metrics import AmarisoftUeMetricsAnalyzer
 from retina.agent.parameters import ue_defaults
 
@@ -49,8 +49,8 @@ class _FakeWebSocket:
         return _make_stats(nof_handovers)
 
 
-def _make_driver(report_folder: str, websocket: _FakeWebSocket) -> AmarisoftUe:
-    driver = object.__new__(AmarisoftUe)
+def _make_driver(report_folder: str, websocket: _FakeWebSocket) -> AmarisoftUeSimulator:
+    driver = object.__new__(AmarisoftUeSimulator)
     # pylint: disable=protected-access
     driver._websocket = websocket
     driver._metrics_lock = Lock()
@@ -69,7 +69,7 @@ class StatsPollTest(unittest.TestCase):
         self._report_folder = tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
         self.addCleanup(self._report_folder.cleanup)
 
-    def _wait_poll_end(self, driver: AmarisoftUe) -> None:
+    def _wait_poll_end(self, driver: AmarisoftUeSimulator) -> None:
         # pylint: disable=protected-access
         thread = driver._stats_poll_thread
         assert thread is not None

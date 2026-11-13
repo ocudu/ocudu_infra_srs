@@ -155,7 +155,7 @@ def _agent_factory(
     if isinstance(retina_servicer, UESimulatorServicer):
         health_servicer.set(UESimulator.__name__, HealthCheckResponse.SERVING)
         add_UESimulatorServicer_to_server(retina_servicer, server)
-    elif isinstance(retina_servicer, UEServicer):
+    if isinstance(retina_servicer, UEServicer):
         health_servicer.set(UE.__name__, HealthCheckResponse.SERVING)
         add_UEServicer_to_server(retina_servicer, server)
     if isinstance(retina_servicer, GNBServicer):

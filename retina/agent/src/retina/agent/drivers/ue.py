@@ -34,6 +34,35 @@ class SubscriberWithStatus:
     started: bool = False
 
 
+def build_ue_subscriber() -> Subscriber:
+    """
+    Subscriber defined by the testbed parameters
+    """
+    return Subscriber(
+        imsi=testbed_defaults.imsi,
+        k=testbed_defaults.k,
+        algo_str=testbed_defaults.sim_algo,
+        opc=testbed_defaults.opc,
+        amf=testbed_defaults.amf,
+        tel=testbed_defaults.tel,
+        sd=testbed_defaults.sd,
+    )
+
+
+def build_ue_definition() -> UEDefinition:
+    """
+    UE definition (subscriber + ZMQ endpoints) defined by the testbed and UE parameters
+    """
+    return UEDefinition(
+        subscriber=build_ue_subscriber(),
+        zmq_ip=testbed_defaults.ip_zmq,
+        zmq_port_array=[
+            testbed_defaults.port_array[i]
+            for i in range(ue_defaults.num_cells * max(ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul))
+        ],
+    )
+
+
 class UEDriver(UEServicer, BaseDriver, metaclass=ABCMeta):
     """
     UE Base Driver
@@ -49,25 +78,7 @@ class UEDriver(UEServicer, BaseDriver, metaclass=ABCMeta):
         self._last_traffic_timestamp = datetime.fromtimestamp(0)
 
     def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> UEDefinition:
-        return UEDefinition(
-            subscriber=self._get_subscriber(),
-            zmq_ip=testbed_defaults.ip_zmq,
-            zmq_port_array=[
-                testbed_defaults.port_array[i]
-                for i in range(ue_defaults.num_cells * max(ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul))
-            ],
-        )
-
-    def _get_subscriber(self) -> Subscriber:
-        return Subscriber(
-            imsi=testbed_defaults.imsi,
-            k=testbed_defaults.k,
-            algo_str=testbed_defaults.sim_algo,
-            opc=testbed_defaults.opc,
-            amf=testbed_defaults.amf,
-            tel=testbed_defaults.tel,
-            sd=testbed_defaults.sd,
-        )
+        return build_ue_definition()
 
     def _get_iperf_arg_dict(self, request: IPerfRequest) -> dict:
         args: dict = {

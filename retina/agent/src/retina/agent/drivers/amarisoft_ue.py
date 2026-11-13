@@ -10,6 +10,7 @@ import json
 import logging
 import math
 import os
+from abc import ABCMeta
 from contextlib import suppress
 from dataclasses import dataclass, field as dataclass_field
 from datetime import datetime
@@ -21,13 +22,13 @@ import grpc
 import websocket
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.wrappers_pb2 import UInt32Value
-from retina.protocol.base_pb2 import Metrics, StopResponse, UEDefinition
+from retina.protocol.base_pb2 import Metrics, StopResponse, Subscriber, UEDefinition
 from retina.protocol.ue_pb2 import Position, UEAttachedInfo, UEStartInfo
-from retina.protocol.ue_simulator_pb2_grpc import UESimulatorServicer
 
 from retina.agent.drivers.amarisoft_ws import AmarisoftBaseDriver, AmarisoftWebSocket
 from retina.agent.drivers.base import notify_grpc_exception
 from retina.agent.drivers.ue import SubscriberWithStatus, UEDriver
+from retina.agent.drivers.ue_simulator import UESimulatorDriver
 from retina.agent.features.executor import LocalExecutor, SshExecutor
 from retina.agent.features.json_metrics.amarisoft_ue_metrics import AmarisoftUeMetricsAnalyzer
 from retina.agent.features.sut_handler import StopInfo
@@ -59,12 +60,12 @@ class _RFSplit72Info:
 
 
 # pylint: disable=too-many-instance-attributes
-class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
+class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
     """
-    Amarisoft UE Agent
+    Amarisoft lteue process common logic: configuration, launch, websocket, metrics and teardown.
+    It doesn't define any gRPC role: AmarisoftUe (UE) and AmarisoftUeSimulator (UE simulator) add it.
     """
 
-    AMARISOFT_LICENSE_RETRY: float = 3
     AMARISOFT_STDOUT_NAME: str = "stdout"
     AMARISOFT_LOG_FILENAME: str = "ue.log"
     AMARISOFT_CONF_FILE_BASE_NAME: str = "amarisoft_ue_base.cfg"
@@ -72,21 +73,343 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
     AMARISOFT_CONF_FILE_FINAL_NAME: str = "amarisoft_ue.cfg"
     AMARISOFT_START_UP_TIMEOUT: int = 5
     AMARISOFT_POWER_ON_SLEEP: float = 0.3
-    AMARISOFT_STOP_TIMEOUT: int = 64
     AMARISOFT_WAIT_BEFORE_STOP: int = 3
     AMARISOFT_VERSION_REGEX: str = r"UE version (.*), Copyright"
-    AMARISOFT_UE_INFO_WAIT: float = 0.6
-    AMARISOFT_ATTACH_WAIT: float = 4
-    AMARISOFT_WAIT_BETWEEN_TRAFFIC_AND_STOP: int = 20
-    AMARISOFT_STATS_POLL_PERIOD: float = 1
-    AMARISOFT_STATS_POLL_TIMEOUT: float = 5
     AMARISOFT_PWS_MSG_EVENT: str = "pws_msg"
     # 3GPP TS 23.041 table 9.4.1.2.2-1: ETWS message identifiers end at 0x1104
     # (0x1105-0x1111 reserved); CMAS/EU-Alert/KPAS identifiers start at 0x1112.
     AMARISOFT_CMAS_MESSAGE_ID_THRESHOLD: int = 0x1112
     _METRICS_ENCODING: str = "utf-8"
-    # lteue drives the simulated UEs on its own (no per client subscriber, no power_on)
-    _SIMULATOR_MODE: bool = False
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._amarisoft_lock: Lock = Lock()
+        self._metrics_lock: Lock = Lock()
+        self._ue_analyzer: AmarisoftUeMetricsAnalyzer = AmarisoftUeMetricsAnalyzer()
+        # message_id -> count, snapshotted at Stop() (like the "stats" aggregate is)
+        self._pws_msg_counts_snapshot: Dict[int, int] = {}
+        self._metrics_file_closed: bool = True
+
+    def _get_binary_name(self) -> str:
+        return "lteue"
+
+    def _get_subscriber_array(self) -> Tuple[Subscriber, ...]:
+        """
+        Subscribers (UEs) to write in the lteue configuration. None by default: lteue config defines them.
+        """
+        return ()
+
+    @staticmethod
+    def _validate_start_request(request: UEStartInfo) -> None:
+        if len(request.du_definition) > 1 and ue_defaults.num_cells * max(
+            ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul
+        ) > len(request.du_definition):
+            logging.warning(
+                "Number of cells (%d) and antennas (%d) exceeds the number of DU definitions (%d)",
+                ue_defaults.num_cells,
+                max(ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul),
+                len(request.du_definition),
+            )
+            raise ValueError(
+                f"Number of cells ({ue_defaults.num_cells}) and antennas "
+                f"({max(ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul)}) "
+                f"exceeds the number of DU definitions ({len(request.du_definition)})"
+            )
+
+    def _render_config(self, request: UEStartInfo) -> str:
+        if testbed_defaults.type == "ru":
+            if len(testbed_defaults.ru_network_interface) != len(testbed_defaults.ru_du_mac_addr):
+                logging.warning("Incorrect split 7.2 request: RU properties in the testbed should have the same size")
+                raise ValueError("The UE agent can't be started in split 7.2 mode due to incorrect testbed parameters")
+
+            if ue_defaults.num_cells > len(testbed_defaults.ru_network_interface):
+                logging.warning(
+                    "Incorrect split 7.2 config: %s cells are requested while "
+                    "%s network interfaces are supported by the testbed",
+                    ue_defaults.num_cells,
+                    len(testbed_defaults.ru_network_interface),
+                )
+                raise ValueError("The UE agent can't be started in split 7.2 mode due to incorrect config")
+
+        subscriber_array = self._get_subscriber_array()
+        prach_ports = str(list(range(4, 4 + ue_defaults.nof_antennas_ul)))
+        sample_rate = testbed_defaults.sample_rate if ue_defaults.sample_rate < 0 else ue_defaults.sample_rate
+        return self._render(
+            filename=self.AMARISOFT_CONF_FILE_FINAL_NAME,
+            templates={
+                self.AMARISOFT_CONF_FILE_BASE_NAME: template_defaults.main,
+                self.AMARISOFT_CONF_FILE_DATA_NAME: template_defaults.ue,
+            },
+            prefix="{",
+            suffix="\n}",
+            values={
+                **get_module_variables(testbed_defaults),
+                **get_module_variables(ue_defaults),
+                # Logging
+                **self._get_log_variables(ue_defaults.log_level, self.AMARISOFT_LOG_FILENAME),
+                # RF drivers
+                "zmq_def": (
+                    (
+                        f"tcp://*:{testbed_defaults.port_array[i]}",
+                        f"tcp://{request.du_definition[i if len(request.du_definition) > 1 else 0].zmq_ip}:"
+                        + str(
+                            request.du_definition[i if len(request.du_definition) > 1 else 0].zmq_port_array[
+                                i if len(request.du_definition) == 1 else 0
+                            ]
+                        ),
+                    )
+                    for i in range(
+                        ue_defaults.num_cells * max(ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul)
+                    )
+                ),
+                "s72_def": tuple(
+                    _RFSplit72Info(
+                        interface=testbed_defaults.ru_network_interface[i],
+                        du_mac_addr=testbed_defaults.ru_du_mac_addr[i],
+                    )
+                    for i in range(ue_defaults.num_cells if testbed_defaults.type == "ru" else 0)
+                ),
+                "prach_ports": prach_ports,
+                "sdr_driver_args": f"type={testbed_defaults.model}," f"{testbed_defaults.args}",
+                "tx_gain": testbed_defaults.tx_gain if ue_defaults.tx_gain < 0 else ue_defaults.tx_gain,
+                "rx_gain": testbed_defaults.rx_gain if ue_defaults.rx_gain < 0 else ue_defaults.rx_gain,
+                # Cell
+                "sample_rate": sample_rate,
+                "cell_array": tuple(
+                    _CellInfo(
+                        rf_port=i,
+                        band=ue_defaults.cells[i]["band"] if ue_defaults.cells else -1,
+                        bandwidth=ue_defaults.cells[i]["bandwidth"] if ue_defaults.cells else -1,
+                        dl_nr_arfcn=ue_defaults.cells[i]["dl_nr_arfcn"] if ue_defaults.cells else -1,
+                        ssb_nr_arfcn=ue_defaults.cells[i]["ssb_nr_arfcn"] if ue_defaults.cells else -1,
+                        subcarrier_spacing=(ue_defaults.cells[i]["subcarrier_spacing"] if ue_defaults.cells else -1),
+                        ssb_subcarrier_spacing=(
+                            ue_defaults.cells[i]["ssb_subcarrier_spacing"] if ue_defaults.cells else -1
+                        ),
+                        position=Position(
+                            x=i * ue_defaults.cell_position_offset[0],
+                            y=i * ue_defaults.cell_position_offset[1],
+                            z=i * ue_defaults.cell_position_offset[2],
+                        ),
+                        pdcch_log_filename=(
+                            self.get_filepath_in_report_folder(f"ue_pdcch_{i}.log") if ue_defaults.pdcch_log else ""
+                        ),
+                    )
+                    for i in range(ue_defaults.num_cells)
+                ),
+                # UE List
+                "ue_count": len(subscriber_array),
+                "subscriber_array": subscriber_array,
+                "subnet_prefix": str(
+                    ipaddress.ip_network(f"{request.fivegc_definition[0].tun_ip}/16", False).network_address
+                ).replace(".0", ""),
+                # HW related cell info
+                "cell_ru_cfg": (
+                    f"s72: {{rtc_id: 0x0000, ud_comp_hdr: 0x91, port_mapping_prach: {prach_ports}, gen_prb0: true}}"
+                    if testbed_defaults.type == "ru"
+                    else f"sample_rate: {sample_rate / 1000000}"
+                ),
+            },
+        )
+
+    def _launch_lteue(self, request: UEStartInfo) -> None:
+        """
+        Render the config, start lteue (retrying while the license is in use) and wait until the cells are up.
+        Caller holds _amarisoft_lock.
+        """
+        config_file = self._render_config(request)
+
+        logfile = self.get_filepath_in_report_folder(self.AMARISOFT_STDOUT_NAME + ".log")
+        self._last_log_array = (
+            logfile,
+            self.get_filepath_in_report_folder(self.AMARISOFT_LOG_FILENAME),
+        )
+
+        timeout_handler = TimeoutHandler(
+            request.start_info.timeout if request.start_info.timeout else self.AMARISOFT_START_UP_TIMEOUT,
+            msg="Amarisoft lteue start timeout reached",
+        )
+
+        # Add -t flag for ZMQ mode to use radio-derived clock
+        zmq_args = ["-t"] if testbed_defaults.type == "zmq" else []
+
+        # Launch (and launch again while the license is in use)
+        while True:
+            self.start_sut(
+                *(item for pre_command in request.start_info.pre_commands for item in pre_command.split(" ")),
+                self._get_binary_name(),
+                *zmq_args,
+                config_file,
+                *(item for post_command in request.start_info.post_commands for item in post_command.split(" ")),
+                logfile=logfile,
+                dryrun=request.start_info.dryrun,
+            )
+            if request.start_info.dryrun or self._is_license_available(timeout_handler):
+                break
+
+        try:
+            self._websocket = AmarisoftWebSocket()
+            if ue_defaults.pws_events:
+                # pws_msg events aren't self-identifying: "message" holds
+                # the decoded warning-text array (not the string
+                # "pws_msg"), and "message_id"/"serial_number" are the
+                # 3GPP PWS Message Identifier/Serial Number, not
+                # request-correlation IDs. Match on that distinctive
+                # shape instead.
+                self._websocket.register_event(
+                    self.AMARISOFT_PWS_MSG_EVENT,
+                    matcher=lambda msg: "serial_number" in msg and isinstance(msg.get("message"), list),
+                    key_fn=lambda msg: (msg.get("ue_id"), msg.get("message_id")),
+                )
+        except (ConnectionRefusedError, ConnectionResetError) as err:
+            raise ChildProcessError("Process has died") from err
+
+        self._ue_analyzer = AmarisoftUeMetricsAnalyzer()
+        self._metrics_file_closed = False
+
+        if testbed_defaults.type == "ru":
+            if self._process is not None and self._process.stdin is not None:
+                with suppress(BrokenPipeError):
+                    # Enter (stop previous command) + t
+                    self._process.stdin.write("\nt s72\n")
+                    self._process.stdin.flush()
+
+        while timeout_handler.not_reached():
+            cells: Dict = self._websocket.send_command_and_wait_response(message="config_get").get("cells", {})
+            if all("pci" in cell_info for cell_info in cells.values()):
+                break
+            sleep(self.AMARISOFT_POWER_ON_SLEEP)
+
+    def _after_launch(self) -> None:
+        """
+        Check lteue is still reachable and set the console trace
+        """
+        if self._websocket is None or not self._websocket.connected:
+            raise ChildProcessError("Process has died")
+
+        if self._process is not None and self._process.stdin is not None:
+            with suppress(BrokenPipeError):
+                # Enter (stop previous command) + optionally t
+                self._process.stdin.write("\nt\n" if ue_defaults.console_trace else "\n")
+                self._process.stdin.flush()
+
+    def _check_lteue_alive(self) -> None:
+        if not self._check_alive_thread.is_alive():
+            raise ChildProcessError("Process has died")
+
+    def _teardown_lteue_unlock(self) -> None:
+        """
+        Read the final stats, quit lteue and close the metrics file. Caller holds _amarisoft_lock.
+        """
+        if self._process is not None and self._websocket is not None:
+            self._pws_msg_counts_snapshot = self._pws_msg_counts_by_id(subscriber_id=None)
+            # Only the first Stop still reaches the websocket
+            if self._websocket.connected:
+                sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
+                self._get_stats()
+                self._websocket.quit()
+            # Close metrics file
+            if not self._metrics_file_closed:
+                self._metrics_file_closed = True
+                with open(
+                    self.get_filepath_in_report_folder(ue_defaults.metrics_filename_json),
+                    "a+",
+                    encoding=self._METRICS_ENCODING,
+                ) as fd:
+                    if fd.tell() > 0:
+                        fd.write("]")
+
+    def _stop_binary(self, stop_timeout: int = 0) -> StopInfo:
+        process_running = self._process is not None and self._process.is_running()
+        if process_running:
+            sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
+        stop_info = super()._stop_binary(stop_timeout)
+        # Clean binary generated files from report folder
+        if process_running:
+            for path_object in self.get_current_report_folder().rglob("*"):
+                if path_object.is_file() and path_object.suffix == ".bin":
+                    path_object.unlink()
+        return stop_info
+
+    @property
+    def _warning_regex(self) -> str:
+        return (
+            r"^.*Warning(?!.*unused property)(?!.*CPU hyperthreading is enabled).*$"
+            r"|^.*s72 timestamp rollback on.*$"
+            r"|^.*\[S72\].*(?:missing prb for symbol|packet too late for).*$"
+            r"|^.*\[TRX\].*packet\(s\) late.*$"
+            r"|^.*scheduled during measurement gap.*$"
+        )
+
+    @property
+    def _error_regex(self) -> str:
+        return r"^.*(?:Error|Unknown message).*$"
+
+    def _save_metrics_unlock(self, metric_info: Dict) -> None:
+        """
+        Append a ue_get or stats response to the metrics file. Caller holds _metrics_lock.
+        """
+        if not metric_info:
+            return
+        with open(
+            self.get_filepath_in_report_folder(ue_defaults.metrics_filename_json),
+            "a+",
+            encoding=self._METRICS_ENCODING,
+        ) as fd:
+            if fd.tell() == 0:
+                # First line
+                fd.write("[")
+                fd.flush()
+            else:
+                fd.write("," + os.linesep)
+            fd.write(json.dumps(metric_info))
+
+    def _get_stats(self, response_timeout: float = 30) -> Dict:
+        if self._websocket is None:
+            raise ChildProcessError("Process has died")
+        stats = self._websocket.send_command_and_wait_response(
+            response_timeout=response_timeout, message="stats", samples=False, rf=False
+        )
+        with self._metrics_lock:
+            self._save_metrics_unlock(stats)
+            self._ue_analyzer.process(stats)
+        return stats
+
+    def _pws_msg_counts_by_id(self, subscriber_id: Optional[int]) -> Dict[int, int]:
+        """
+        Per-message-id pws_msg counts from the live websocket, summed across
+        UEs matching `subscriber_id` (or all UEs if None).
+        """
+        counts: Dict[int, int] = {}
+        if self._websocket is None:
+            return counts
+        for (ue_id, message_id), count in self._websocket.event_counts(self.AMARISOFT_PWS_MSG_EVENT).items():
+            if subscriber_id is not None and ue_id != subscriber_id:
+                continue
+            counts[message_id] = counts.get(message_id, 0) + count
+        return counts
+
+    def _add_ue_metrics(self, metrics: Metrics, ue_ids: Optional[Set[Tuple[int, int]]], pws_counts: Dict[int, int]):
+        """
+        Add the lteue metrics (all UEs if `ue_ids` is None) and the pws_msg counts to `metrics`
+        """
+        metrics.MergeFrom(self._ue_analyzer.report(ue_ids))
+        for message_id, count in pws_counts.items():
+            if message_id < self.AMARISOFT_CMAS_MESSAGE_ID_THRESHOLD:
+                metrics.aggregate.nof_etws_msg_received += count
+            else:
+                metrics.aggregate.nof_cmas_msg_received += count
+
+
+class AmarisoftUe(UEDriver, AmarisoftUeBase):
+    """
+    Amarisoft UE Agent: Retina drives each virtual UE (one subscriber per client)
+    """
+
+    AMARISOFT_STOP_TIMEOUT: int = 64
+    AMARISOFT_UE_INFO_WAIT: float = 0.6
+    AMARISOFT_ATTACH_WAIT: float = 4
+    AMARISOFT_WAIT_BETWEEN_TRAFFIC_AND_STOP: int = 20
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -94,24 +417,10 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         # Dict of subscriber for each client
         self._subscriber_client_dict: Dict[str, SubscriberWithStatus] = {}
         self._subscriber_count: int = 0
-        self._amarisoft_lock: Lock = Lock()
-        self._metrics_lock: Lock = Lock()
-        self._ue_analyzer: AmarisoftUeMetricsAnalyzer = AmarisoftUeMetricsAnalyzer()
         self._peer_ue_ids: Dict[str, Set[Tuple[int, int]]] = {}  # peer -> set of (rnti, pci)
-        # message_id -> count, snapshotted at Stop() (like the "stats" aggregate is)
-        self._pws_msg_counts_snapshot: Dict[int, int] = {}
-        self._metrics_file_closed: bool = True
-        self._stats_poll_thread: Optional[Thread] = None
-        self._stats_poll_event: Event = Event()
-
-    def _get_binary_name(self) -> str:
-        return "lteue"
 
     def GetDefinition(self, request: Empty, context: grpc.ServicerContext) -> UEDefinition:
         ue_definition: UEDefinition = super().GetDefinition(request, context)
-
-        if self._SIMULATOR_MODE:
-            return ue_definition
 
         if context.peer() not in self._subscriber_client_dict:
             # New subscriber
@@ -139,6 +448,17 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
         return ue_definition
 
+    def _get_subscriber_array(self) -> Tuple[Subscriber, ...]:
+        return tuple(
+            map(
+                lambda item: item.subscriber,
+                sorted(
+                    self._subscriber_client_dict.values(),
+                    key=lambda item: item.subscriber_id,
+                ),
+            )
+        )
+
     @property
     def _any_virtual_ue_already_started(self) -> bool:
         return any(
@@ -150,226 +470,30 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
     def Start(self, request: UEStartInfo, context: grpc.ServicerContext) -> Empty:
         with notify_grpc_exception(context):
-            if len(request.du_definition) > 1 and ue_defaults.num_cells * max(
-                ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul
-            ) > len(request.du_definition):
-                logging.warning(
-                    "Number of cells (%d) and antennas (%d) exceeds the number of DU definitions (%d)",
-                    ue_defaults.num_cells,
-                    max(ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul),
-                    len(request.du_definition),
-                )
-                raise ValueError(
-                    f"Number of cells ({ue_defaults.num_cells}) and antennas "
-                    f"({max(ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul)}) "
-                    f"exceeds the number of DU definitions ({len(request.du_definition)})"
-                )
-
+            self._validate_start_request(request)
             with self._amarisoft_lock:
                 return self._start_unlock(request, context)
 
-    # pylint: disable=too-many-branches,too-many-statements
     def _start_unlock(self, request: UEStartInfo, context: grpc.ServicerContext) -> Empty:
         if not self._any_virtual_ue_already_started:
             self._stop_unlock(UInt32Value(value=request.start_info.timeout), context.peer())
-
             self._5gc_mask = request.fivegc_definition[0].tun_mask
-
-            if testbed_defaults.type == "ru":
-                if len(testbed_defaults.ru_network_interface) != len(testbed_defaults.ru_du_mac_addr):
-                    logging.warning(
-                        "Incorrect split 7.2 request: RU properties in the testbed should have the same size"
-                    )
-                    raise ValueError(
-                        "The UE agent can't be started in split 7.2 mode due to incorrect testbed parameters"
-                    )
-
-                if ue_defaults.num_cells > len(testbed_defaults.ru_network_interface):
-                    logging.warning(
-                        "Incorrect split 7.2 config: %s cells are requested while "
-                        "%s network interfaces are supported by the testbed",
-                        ue_defaults.num_cells,
-                        len(testbed_defaults.ru_network_interface),
-                    )
-                    raise ValueError("The UE agent can't be started in split 7.2 mode due to incorrect config")
-
-            prach_ports = str(list(range(4, 4 + ue_defaults.nof_antennas_ul)))
-            sample_rate = testbed_defaults.sample_rate if ue_defaults.sample_rate < 0 else ue_defaults.sample_rate
-            config_file = self._render(
-                filename=self.AMARISOFT_CONF_FILE_FINAL_NAME,
-                templates={
-                    self.AMARISOFT_CONF_FILE_BASE_NAME: template_defaults.main,
-                    self.AMARISOFT_CONF_FILE_DATA_NAME: template_defaults.ue,
-                },
-                prefix="{",
-                suffix="\n}",
-                values={
-                    **get_module_variables(testbed_defaults),
-                    **get_module_variables(ue_defaults),
-                    # Logging
-                    **self._get_log_variables(ue_defaults.log_level, self.AMARISOFT_LOG_FILENAME),
-                    # RF drivers
-                    "zmq_def": (
-                        (
-                            f"tcp://*:{testbed_defaults.port_array[i]}",
-                            f"tcp://{request.du_definition[i if len(request.du_definition) > 1 else 0].zmq_ip}:"
-                            + str(
-                                request.du_definition[i if len(request.du_definition) > 1 else 0].zmq_port_array[
-                                    i if len(request.du_definition) == 1 else 0
-                                ]
-                            ),
-                        )
-                        for i in range(
-                            ue_defaults.num_cells * max(ue_defaults.nof_antennas_dl, ue_defaults.nof_antennas_ul)
-                        )
-                    ),
-                    "s72_def": tuple(
-                        _RFSplit72Info(
-                            interface=testbed_defaults.ru_network_interface[i],
-                            du_mac_addr=testbed_defaults.ru_du_mac_addr[i],
-                        )
-                        for i in range(ue_defaults.num_cells if testbed_defaults.type == "ru" else 0)
-                    ),
-                    "prach_ports": prach_ports,
-                    "sdr_driver_args": f"type={testbed_defaults.model}," f"{testbed_defaults.args}",
-                    "tx_gain": testbed_defaults.tx_gain if ue_defaults.tx_gain < 0 else ue_defaults.tx_gain,
-                    "rx_gain": testbed_defaults.rx_gain if ue_defaults.rx_gain < 0 else ue_defaults.rx_gain,
-                    # Cell
-                    "sample_rate": sample_rate,
-                    "cell_array": tuple(
-                        _CellInfo(
-                            rf_port=i,
-                            band=ue_defaults.cells[i]["band"] if ue_defaults.cells else -1,
-                            bandwidth=ue_defaults.cells[i]["bandwidth"] if ue_defaults.cells else -1,
-                            dl_nr_arfcn=ue_defaults.cells[i]["dl_nr_arfcn"] if ue_defaults.cells else -1,
-                            ssb_nr_arfcn=ue_defaults.cells[i]["ssb_nr_arfcn"] if ue_defaults.cells else -1,
-                            subcarrier_spacing=(
-                                ue_defaults.cells[i]["subcarrier_spacing"] if ue_defaults.cells else -1
-                            ),
-                            ssb_subcarrier_spacing=(
-                                ue_defaults.cells[i]["ssb_subcarrier_spacing"] if ue_defaults.cells else -1
-                            ),
-                            position=Position(
-                                x=i * ue_defaults.cell_position_offset[0],
-                                y=i * ue_defaults.cell_position_offset[1],
-                                z=i * ue_defaults.cell_position_offset[2],
-                            ),
-                            pdcch_log_filename=(
-                                self.get_filepath_in_report_folder(f"ue_pdcch_{i}.log") if ue_defaults.pdcch_log else ""
-                            ),
-                        )
-                        for i in range(ue_defaults.num_cells)
-                    ),
-                    # UE List
-                    "ue_count": len(self._subscriber_client_dict),
-                    "subscriber_array": tuple(
-                        map(
-                            lambda item: item.subscriber,
-                            sorted(
-                                self._subscriber_client_dict.values(),
-                                key=lambda item: item.subscriber_id,
-                            ),
-                        )
-                    ),
-                    "subnet_prefix": str(
-                        ipaddress.ip_network(f"{request.fivegc_definition[0].tun_ip}/16", False).network_address
-                    ).replace(".0", ""),
-                    # HW related cell info
-                    "cell_ru_cfg": (
-                        f"s72: {{rtc_id: 0x0000, ud_comp_hdr: 0x91, port_mapping_prach: {prach_ports}, gen_prb0: true}}"
-                        if testbed_defaults.type == "ru"
-                        else f"sample_rate: {sample_rate / 1000000}"
-                    ),
-                },
-            )
-
-            logfile = self.get_filepath_in_report_folder(self.AMARISOFT_STDOUT_NAME + ".log")
-            self._last_log_array = (
-                logfile,
-                self.get_filepath_in_report_folder(self.AMARISOFT_LOG_FILENAME),
-            )
-
-            timeout_handler = TimeoutHandler(
-                request.start_info.timeout if request.start_info.timeout else self.AMARISOFT_START_UP_TIMEOUT,
-                msg="Amarisoft lteue start timeout reached",
-            )
-
-            # Add -t flag for ZMQ mode to use radio-derived clock
-            zmq_args = ["-t"] if testbed_defaults.type == "zmq" else []
-
-            # Launch
-            self.start_sut(
-                *(item for pre_command in request.start_info.pre_commands for item in pre_command.split(" ")),
-                self._get_binary_name(),
-                *zmq_args,
-                config_file,
-                *(item for post_command in request.start_info.post_commands for item in post_command.split(" ")),
-                logfile=logfile,
-                dryrun=request.start_info.dryrun,
-            )
-
-            if not request.start_info.dryrun:
-                if not self._is_license_available(timeout_handler):
-                    request.start_info.timeout = int(timeout_handler.get_remaining_timeout())
-                    return self._start_unlock(request, context)
-            try:
-                self._websocket = AmarisoftWebSocket()
-                if ue_defaults.pws_events:
-                    # pws_msg events aren't self-identifying: "message" holds
-                    # the decoded warning-text array (not the string
-                    # "pws_msg"), and "message_id"/"serial_number" are the
-                    # 3GPP PWS Message Identifier/Serial Number, not
-                    # request-correlation IDs. Match on that distinctive
-                    # shape instead.
-                    self._websocket.register_event(
-                        self.AMARISOFT_PWS_MSG_EVENT,
-                        matcher=lambda msg: "serial_number" in msg and isinstance(msg.get("message"), list),
-                        key_fn=lambda msg: (msg.get("ue_id"), msg.get("message_id")),
-                    )
-            except (ConnectionRefusedError, ConnectionResetError) as err:
-                raise ChildProcessError("Process has died") from err
-
-            self._ue_analyzer = AmarisoftUeMetricsAnalyzer()
+            self._launch_lteue(request)
             self._peer_ue_ids.clear()
-            self._metrics_file_closed = False
 
-            if testbed_defaults.type == "ru":
-                if self._process is not None and self._process.stdin is not None:
-                    with suppress(BrokenPipeError):
-                        # Enter (stop previous command) + t
-                        self._process.stdin.write("\nt s72\n")
-                        self._process.stdin.flush()
-
-            while timeout_handler.not_reached():
-                cells: Dict = self._websocket.send_command_and_wait_response(message="config_get").get("cells", {})
-                if all("pci" in cell_info for cell_info in cells.values()):
-                    break
-                sleep(self.AMARISOFT_POWER_ON_SLEEP)
-
-            if self._SIMULATOR_MODE:
-                self._start_stats_poll()
-
-        if self._websocket is None or not self._websocket.connected:
-            raise ChildProcessError("Process has died")
-
-        if self._process is not None and self._process.stdin is not None:
-            with suppress(BrokenPipeError):
-                # Enter (stop previous command) + optionally t
-                self._process.stdin.write("\nt\n" if ue_defaults.console_trace else "\n")
-                self._process.stdin.flush()
+        self._after_launch()
 
         if len(self._subscriber_client_dict) > 0:
             subscriber_id = self._subscriber_client_dict[context.peer()].subscriber_id
+            assert self._websocket is not None  # checked by _after_launch
             self._websocket.send_command_and_wait_response(message="power_on", ue_id=subscriber_id)
             sleep(self.AMARISOFT_POWER_ON_SLEEP)
             self._subscriber_client_dict[context.peer()].started = True
             logging.info("Power on user with id %s", subscriber_id)
         else:
-            logging.info("UE simulator: lteue drives the simulated UEs")
+            logging.warning("No subscriber defined (GetDefinition not called): no UE powered on")
 
-        if not self._check_alive_thread.is_alive():
-            raise ChildProcessError("Process has died")
-
+        self._check_lteue_alive()
         return Empty()
 
     def WaitUntilAttached(self, request: UInt32Value, context: grpc.ServicerContext) -> UEAttachedInfo:
@@ -486,25 +610,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             return None
 
         # No pending virtual UEs to stop or sut already stopped
-        # Stop the stats poll first. It must not write to the metrics file after the file is closed.
-        self._stop_stats_poll()
-        if self._process is not None and self._websocket is not None:
-            self._pws_msg_counts_snapshot = self._pws_msg_counts_by_id(subscriber_id=None)
-            # Only the first Stop still reaches the websocket
-            if self._websocket.connected:
-                sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
-                self._get_stats()
-                self._websocket.quit()
-            # Close metrics file
-            if not self._metrics_file_closed:
-                self._metrics_file_closed = True
-                with open(
-                    self.get_filepath_in_report_folder(ue_defaults.metrics_filename_json),
-                    "a+",
-                    encoding=self._METRICS_ENCODING,
-                ) as fd:
-                    if fd.tell() > 0:
-                        fd.write("]")
+        self._teardown_lteue_unlock()
         return None
 
     def _validate_state(
@@ -532,32 +638,6 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         ):
             if ue_info.get(field, "") in state_list:
                 return
-
-    def _stop_binary(self, stop_timeout: int = 0) -> StopInfo:
-        process_running = self._process is not None and self._process.is_running()
-        if process_running:
-            sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
-        stop_info = super()._stop_binary(stop_timeout)
-        # Clean binary generated files from report folder
-        if process_running:
-            for path_object in self.get_current_report_folder().rglob("*"):
-                if path_object.is_file() and path_object.suffix == ".bin":
-                    path_object.unlink()
-        return stop_info
-
-    @property
-    def _warning_regex(self) -> str:
-        return (
-            r"^.*Warning(?!.*unused property)(?!.*CPU hyperthreading is enabled).*$"
-            r"|^.*s72 timestamp rollback on.*$"
-            r"|^.*\[S72\].*(?:missing prb for symbol|packet too late for).*$"
-            r"|^.*\[TRX\].*packet\(s\) late.*$"
-            r"|^.*scheduled during measurement gap.*$"
-        )
-
-    @property
-    def _error_regex(self) -> str:
-        return r"^.*(?:Error|Unknown message).*$"
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def _ue_get(
@@ -610,25 +690,6 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
 
             timeout_handler.not_reached()
 
-    def _save_metrics_unlock(self, metric_info: Dict) -> None:
-        """
-        Append a ue_get or stats response to the metrics file. Caller holds _metrics_lock.
-        """
-        if not metric_info:
-            return
-        with open(
-            self.get_filepath_in_report_folder(ue_defaults.metrics_filename_json),
-            "a+",
-            encoding=self._METRICS_ENCODING,
-        ) as fd:
-            if fd.tell() == 0:
-                # First line
-                fd.write("[")
-                fd.flush()
-            else:
-                fd.write("," + os.linesep)
-            fd.write(json.dumps(metric_info))
-
     def _parse_metrics(self, context_peer: str, metric_info: Dict):
         subscriber_id = self._subscriber_client_dict[context_peer].subscriber_id
         self._ue_analyzer.process(metric_info)
@@ -639,16 +700,62 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             for cell_info in ue_info.get("cells", []):
                 peer_ids.add((rnti, cell_info["pci"]))
 
-    def _get_stats(self, response_timeout: float = 30) -> Dict:
-        if self._websocket is None:
-            raise ChildProcessError("Process has died")
-        stats = self._websocket.send_command_and_wait_response(
-            response_timeout=response_timeout, message="stats", samples=False, rf=False
-        )
-        with self._metrics_lock:
-            self._save_metrics_unlock(stats)
-            self._ue_analyzer.process(stats)
-        return stats
+    def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
+        metrics = super().GetMetrics(request, context)
+        peer = context.peer()
+        if peer in self._subscriber_client_dict:
+            self._add_ue_metrics(
+                metrics,
+                ue_ids=self._peer_ue_ids.get(peer),
+                pws_counts=self._pws_msg_counts_by_id(self._subscriber_client_dict[peer].subscriber_id),
+            )
+        else:
+            # Stop() already cleared _subscriber_client_dict, so per-UE
+            # attribution is gone; fall back to the snapshot taken at Stop()
+            # time, same as the "stats"-derived aggregate above does.
+            self._add_ue_metrics(metrics, ue_ids=None, pws_counts=self._pws_msg_counts_snapshot)
+        return metrics
+
+
+class AmarisoftUeSimulator(UESimulatorDriver, AmarisoftUeBase):
+    """
+    Amarisoft UE simulator Agent: lteue drives the simulated UEs on its own (no per client subscriber, no power_on)
+    """
+
+    AMARISOFT_STATS_POLL_PERIOD: float = 1
+    AMARISOFT_STATS_POLL_TIMEOUT: float = 5
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._stats_poll_thread: Optional[Thread] = None
+        self._stats_poll_event: Event = Event()
+
+    def Start(self, request: UEStartInfo, context: grpc.ServicerContext) -> Empty:
+        with notify_grpc_exception(context):
+            self._validate_start_request(request)
+            with self._amarisoft_lock:
+                self._stop_lteue_unlock()
+                self._launch_lteue(request)
+                self._start_stats_poll()
+                self._after_launch()
+                logging.info("UE simulator: lteue drives the simulated UEs")
+                self._check_lteue_alive()
+                return Empty()
+
+    def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
+        with self._amarisoft_lock:
+            self._stop_lteue_unlock()
+            return super().Stop(request, context)
+
+    def _stop_lteue_unlock(self) -> None:
+        # Stop the stats poll first. It must not write to the metrics file after the file is closed.
+        self._stop_stats_poll()
+        self._teardown_lteue_unlock()
+
+    def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
+        metrics = super().GetMetrics(request, context)
+        self._add_ue_metrics(metrics, ue_ids=None, pws_counts=self._pws_msg_counts_snapshot)
+        return metrics
 
     def _start_stats_poll(self) -> None:
         self._stop_stats_poll()
@@ -666,7 +773,7 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
         """
         Read the stats periodically.
 
-        In UE simulator mode, lteue quits on its own and closes the websocket.
+        lteue quits on its own and closes the websocket.
         Stop then cannot read the final stats, so the last stats read before the quit gives the metrics.
         The UE config must keep the UE idle for a few seconds before the quit, so that a read occurs in that time.
         """
@@ -680,41 +787,8 @@ class AmarisoftUe(UEDriver, AmarisoftBaseDriver):
             except (ChildProcessError, OSError, websocket.WebSocketException):
                 return
 
-    def _pws_msg_counts_by_id(self, subscriber_id: Optional[int]) -> Dict[int, int]:
-        """
-        Per-message-id pws_msg counts from the live websocket, summed across
-        UEs matching `subscriber_id` (or all UEs if None).
-        """
-        counts: Dict[int, int] = {}
-        if self._websocket is None:
-            return counts
-        for (ue_id, message_id), count in self._websocket.event_counts(self.AMARISOFT_PWS_MSG_EVENT).items():
-            if subscriber_id is not None and ue_id != subscriber_id:
-                continue
-            counts[message_id] = counts.get(message_id, 0) + count
-        return counts
 
-    def GetMetrics(self, request: Empty, context: grpc.ServicerContext) -> Metrics:
-        metrics = super().GetMetrics(request, context)
-        peer = context.peer()
-        ue_ids = self._peer_ue_ids.get(peer) if peer in self._subscriber_client_dict else None
-        metrics.MergeFrom(self._ue_analyzer.report(ue_ids))
-        if peer in self._subscriber_client_dict:
-            pws_counts = self._pws_msg_counts_by_id(self._subscriber_client_dict[peer].subscriber_id)
-        else:
-            # Stop() already cleared _subscriber_client_dict, so per-UE
-            # attribution is gone; fall back to the snapshot taken at Stop()
-            # time, same as the "stats"-derived aggregate above does.
-            pws_counts = self._pws_msg_counts_snapshot
-        for message_id, count in pws_counts.items():
-            if message_id < self.AMARISOFT_CMAS_MESSAGE_ID_THRESHOLD:
-                metrics.aggregate.nof_etws_msg_received += count
-            else:
-                metrics.aggregate.nof_cmas_msg_received += count
-        return metrics
-
-
-class LocalAmarisoftUe(AmarisoftUe):
+class LocalAmarisoftUe(AmarisoftUe):  # pylint: disable=too-many-ancestors
     """
     Amarisoft UE Agent for local execution
     """
@@ -724,15 +798,17 @@ class LocalAmarisoftUe(AmarisoftUe):
         testbed_defaults.api_address = testbed_defaults.ip
 
 
-class LocalAmarisoftUeSimulator(LocalAmarisoftUe, UESimulatorServicer):  # pylint: disable=too-many-ancestors
+class LocalAmarisoftUeSimulator(AmarisoftUeSimulator):  # pylint: disable=too-many-ancestors
     """
     Amarisoft UE simulator Agent for local execution.
     """
 
-    _SIMULATOR_MODE: bool = True
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs, executor=LocalExecutor())
+        testbed_defaults.api_address = testbed_defaults.ip
 
 
-class RemoteAmarisoftUe(AmarisoftUe):
+class RemoteAmarisoftUe(AmarisoftUe):  # pylint: disable=too-many-ancestors
     """
     Amarisoft UE Agent for remote execution
     """
