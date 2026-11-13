@@ -415,6 +415,7 @@ s72_leo_band_256_bw_10_scs_30_fl_false_iperf:
       bandwidth: 10
       sample_rate: 11520000
       satellite: leo
+      ntn_osculating_elements: false
       feeder_link: false
       gp_latitude: 7.853110757
       gp_longitude: -96.817254023
@@ -473,6 +474,7 @@ s72_leo_band_256_bw_10_scs_30_fl_true_iperf:
       bandwidth: 10
       sample_rate: 11520000
       satellite: leo
+      ntn_osculating_elements: false
       feeder_link: true
       gp_latitude: 7.853127064
       gp_longitude: -41.916586438
