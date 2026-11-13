@@ -172,7 +172,11 @@ def reserve(
         # node
         elif resource_is_in_cluster(resource_inst, [], [], retina_node_dict):
             logging.info("⏰ It may take up to %s minutes, please be patient...", DEFAULT_TIMEOUT // 60)
-            result = reserve_node(k_server, resource_inst, username, verbose, image, loglevel)
+            try:
+                result = reserve_node(k_server, resource_inst, username, verbose, image, loglevel)
+            except RuntimeError:
+                # Cause already logged by the orchestrator
+                result = False
 
         if result:
             logging.info("✅ Resource %s successfully reserved.", resource_inst)
