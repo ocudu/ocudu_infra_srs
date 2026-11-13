@@ -1078,9 +1078,11 @@ class RequestReservation:
 
         reserved_node_resources = [r for r in self.reserved_resources.get_resources() if isinstance(r, NodeResource)]
         if len(reserved_node_resources) == 0:
-            # No resources in the request search for general nodes
-            for node in node_dict.values():
-                node_match_list.append(node)
+            # No resources in the request: any node from the cluster definition
+            cluster_node_names = {n["name"] for n in k_server.get_cluster_configuration().get("nodes", [])}
+            for node_name, node in node_dict.items():
+                if node_name in cluster_node_names:
+                    node_match_list.append(node)
         else:
             for reserved_resource in reserved_node_resources:
                 if isinstance(reserved_resource, NodeResource):

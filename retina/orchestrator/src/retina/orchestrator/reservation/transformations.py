@@ -77,24 +77,23 @@ def get_match_resources(
         matching_resource_dict[index] = []  # List of resources matching this resource_input
         for resource_complete in complete_resource_list.get_resources():
             if resource_input == resource_complete and resource_complete.get_id() is None:
-                is_cluster_resource = isinstance(resource_input, rs.ClusterResource)
-                if is_cluster_resource or resource_input.node is None:
-                    matching_resource_dict[index].append(resource_complete)
-                else:
-                    node_in = resource_input.node
-                    configured_taints = tuple(sorted(node_in.get_taint_list_as_string())) if node_in else ()
+                node_in = resource_input.node
+                if not isinstance(resource_input, rs.ClusterResource) and node_in is not None:
+                    configured_taints = tuple(sorted(node_in.get_taint_list_as_string()))
                     node_out = resource_complete.node
                     if node_out is None:
                         continue
                     reserved_taints = tuple(sorted(node_out.get_taint_list_as_string()))
-                    if (
+                    if not (
                         not configured_taints
                         or (configured_taints == reserved_taints or configured_taints in reserved_taints)
-                    ) and node_out.check_label_list(node_in.label_list if node_in else []):
-                        if resource_input.capacity == 0:
-                            resource_complete = copy.deepcopy(resource_complete)
-                            resource_complete.capacity = -index
-                        matching_resource_dict[index].append(resource_complete)
+                    ) or not node_out.check_label_list(node_in.label_list):
+                        continue
+                # Dummy: unique copy so it can share the resource with a non-dummy entry
+                if resource_input.capacity == 0:
+                    resource_complete = copy.deepcopy(resource_complete)
+                    resource_complete.capacity = -index
+                matching_resource_dict[index].append(resource_complete)
 
     # Create all combinations of matching resources, filtering the ones with duplicated items
     combinations = list(

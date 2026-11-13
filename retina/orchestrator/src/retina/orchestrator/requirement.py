@@ -44,7 +44,6 @@ class RequirementManager:
         self.label_list: List[LabelDefinition] = []
         self.req_list: List[RequirementDefinition] = []
 
-        self.add_label("retina.srs.io/member=true")
         for label in additional_labels:
             self.add_label(label)
         for key, value in config.items():
