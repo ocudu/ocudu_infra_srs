@@ -415,10 +415,8 @@ class KubernetesManager(metaclass=ABCMeta):  # pylint: disable=too-few-public-me
         node_list: V1NodeList = self._api_instance.list_node(_request_timeout=cnt.KUBERNETES_REQUEST_TIMEOUT)
         for node in node_list.items:
             # Filter not available nodes
-            if skip_not_available:
-                for taint in node.spec.taints if node.spec.taints else []:
-                    if taint.key in KUBERNETES_SKIP_TAINT_ARRAY:
-                        continue  # Skip this node
+            if skip_not_available and any(taint.key in KUBERNETES_SKIP_TAINT_ARRAY for taint in node.spec.taints or []):
+                continue
 
             node_dict[node.metadata.name] = node
         return node_dict
