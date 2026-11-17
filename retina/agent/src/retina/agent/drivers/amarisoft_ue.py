@@ -604,7 +604,7 @@ class AmarisoftUe(UEDriver, AmarisoftUeBase):
             for (
                 active_context_peer,
                 sub_with_status,
-            ) in self._subscriber_client_dict.items():
+            ) in list(self._subscriber_client_dict.items()):
                 if sub_with_status.started:
                     self._stop_unlock(request, active_context_peer)
             return None
