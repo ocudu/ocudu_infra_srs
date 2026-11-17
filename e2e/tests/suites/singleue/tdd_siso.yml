@@ -5,7 +5,7 @@
 baseline_gnb: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -40,7 +40,7 @@ baseline_gnb: &base_config
 baseline_cu_du:
   template: ue_simulator.test_cucp_cuup
   request: zmq_cucp_cuup
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6

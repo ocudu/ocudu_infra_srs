@@ -9,7 +9,7 @@
 baseline: &baseline
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, paging.cfg]
     parameters:
       dl_bitrate: 10.0e+3
@@ -74,7 +74,7 @@ edrx: &edrx
 # RRC IDLE - MT multi
 rrc_idle_mt_multi: &rrc_idle_mt_multi
   <<: *baseline
-  ue: &multi_paging_ue_config
+  ue_sim: &multi_paging_ue_config
     config: [1cell.cfg, paging.cfg]
     parameters:
       dl_bitrate: 10.0e+3
@@ -89,7 +89,7 @@ rrc_idle_mt_multi: &rrc_idle_mt_multi
 # RRC IDLE - MO reconnection
 rrc_idle_mo: &rrc_idle_mo
   <<: *baseline
-  ue: &mo_initiate_ue_config
+  ue_sim: &mo_initiate_ue_config
     config: [1cell.cfg, mo_initiate.cfg]
     parameters:
       ul_bitrate: 10.0e+3
@@ -103,7 +103,7 @@ rrc_idle_mo: &rrc_idle_mo
 # RRC Inactive - MT
 rrc_inactive_mt: &rrc_inactive_mt
   <<: *baseline
-  ue:
+  ue_sim:
     config: [1cell.cfg, paging.cfg]
     parameters:
       dl_bitrate: 10.0e+3
@@ -123,7 +123,7 @@ rrc_inactive_mt: &rrc_inactive_mt
 # RRC Inactive - MT multiple suspend/resume cycles
 rrc_inactive_mt_multi: &rrc_inactive_mt_multi
   <<: *baseline
-  ue: *multi_paging_ue_config
+  ue_sim: *multi_paging_ue_config
   gnb:
     config: *rrc_inactive_gnb_config
     parameters:
@@ -139,7 +139,7 @@ rrc_inactive_mt_multi: &rrc_inactive_mt_multi
 # RRC Inactive - MO-data-triggered resume (no paging)
 rrc_inactive_mo: &rrc_inactive_mo
   <<: *baseline
-  ue: *mo_initiate_ue_config
+  ue_sim: *mo_initiate_ue_config
   gnb:
     config: *rrc_inactive_gnb_config
     parameters:

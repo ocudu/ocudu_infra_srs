@@ -28,7 +28,7 @@
 capacity: &base_config
   template: ue_simulator.test_gnb
   request: zmq_open5gs
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, amf_pool.cfg]
     parameters:
       nof_ue: &nof_ue 24
@@ -74,7 +74,7 @@ capacity: &base_config
 # that both AMFs get UEs. With 12 UEs, one AMF gets no UE in about 0.05% of the runs.
 intra_cu_ho:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, amf_pool.cfg]
     parameters:
       nof_ue: &nof_ue_mobility 12
@@ -109,7 +109,7 @@ intra_cu_ho:
 # Service Request go to the AMF of the UE, also for the UEs of AMF 1.
 reestablishment:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, amf_pool.cfg]
     parameters:
       nof_ue: *nof_ue_mobility

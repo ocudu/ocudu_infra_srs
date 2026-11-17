@@ -4,7 +4,7 @@
 geo_band_256_bw_5_fl_false_ping: &base_config
   template: ue_simulator.test_gnb
   request: zmq_ntn
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, ping.cfg]
     parameters:
       <<: &base_radio_parameters
@@ -64,7 +64,7 @@ geo_band_256_bw_5_fl_false_ping: &base_config
 
 geo_band_256_bw_5_fl_true_ping:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, ping.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -103,7 +103,7 @@ geo_band_256_bw_5_fl_true_ping:
 # derivation has room to hand the UE a smaller one.
 geo_band_256_bw_5_fl_true_ue_koffset_ping:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, ping.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -158,7 +158,7 @@ geo_band_256_bw_5_fl_true_ue_koffset_ping:
 
 leo_band_256_bw_5_fl_false_ping:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, ping.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -189,7 +189,7 @@ leo_band_256_bw_5_fl_false_ping:
 
 leo_band_256_bw_5_fl_true_ping:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, ping.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -230,7 +230,7 @@ leo_band_256_bw_5_fl_true_ping:
 # raised well above the 8ms the geometry needs, so the derived value stays off the floor it clamps at over the pass.
 leo_band_256_bw_5_fl_false_ue_koffset_ping:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, ping.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -290,7 +290,7 @@ leo_band_256_bw_5_fl_false_ue_koffset_ping:
 
 geo_fl_false_harq_enabled_iperf:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, udp_multiue.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -346,7 +346,7 @@ geo_fl_false_harq_enabled_iperf:
 geo_fl_false_harq_disabled_iperf:
   <<: *base_config
   markers: [xfail] # Amarisoft UE 2026-10-26 does not support HARQ mode B well
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, udp_multiue.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -403,7 +403,7 @@ geo_fl_false_harq_disabled_iperf:
 s72_leo_band_256_bw_10_scs_30_fl_false_iperf:
   <<: *base_config
   request: s72_ntn
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, udp_multiue.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -462,7 +462,7 @@ s72_leo_band_256_bw_10_scs_30_fl_false_iperf:
 s72_leo_band_256_bw_10_scs_30_fl_true_iperf:
   <<: *base_config
   request: s72_ntn
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, udp_multiue.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -526,7 +526,7 @@ s72_leo_band_256_bw_10_scs_30_fl_true_iperf:
 
 geo_fl_true_kmac_iperf:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, udp_multiue.cfg]
     parameters:
       <<: *base_radio_parameters
@@ -583,7 +583,7 @@ geo_fl_true_kmac_iperf:
 
 leo_fl_true_kmac_iperf:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_ntn.cfg, udp_multiue.cfg]
     parameters:
       <<: *base_radio_parameters

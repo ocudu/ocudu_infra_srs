@@ -7,7 +7,7 @@ dedicated_prb: &base_config
   feature_ids: [MVP-FUNC-SVCS-17-3-c, MVP-FUNC-SVCS-17-3-e]
   # tc2.7	rc1
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, 2ues_slicing.cfg]
     parameters:
       dl_bitrate: 60.0e+6

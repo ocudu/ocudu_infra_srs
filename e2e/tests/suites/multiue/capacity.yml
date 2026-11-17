@@ -10,7 +10,7 @@
 udp_dl: &base_config
   template: ue_simulator.test_gnb
   request: s72
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, capacity_udp.cfg]
     parameters:
       dl_bitrate: 300.0e+6
@@ -41,7 +41,7 @@ udp_dl: &base_config
 
 udp_ul:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, capacity_udp.cfg]
     parameters:
       dl_bitrate: 1

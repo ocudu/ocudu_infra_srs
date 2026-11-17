@@ -96,8 +96,9 @@ baseline: &base_config # Test Case
   parameters:
     ping_count: 10
   # Configs and parameters for each item
-  # `ue` configures the `ue` or the `ue_simulator` node, whichever type the retina request declares
-  ue:
+  # `ue_sim` configures the Amarisoft UE simulator node (type `ue_simulator`, ue_simulator templates).
+  # A Retina managed UE (type `ue`, e.g. mocn or srsUE) uses the `ue` key instead. Both read configs/ue/
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, handover.cfg]  # Jinja2 .cfg files, merged in order
     parameters:
       nof_ue: 1

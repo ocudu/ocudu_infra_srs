@@ -5,7 +5,7 @@
 prach_config_b4: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -239,7 +239,7 @@ srs_narrowband:
 # Periodic CSI configuration test
 periodic_csi:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -268,7 +268,7 @@ periodic_csi:
 # Aperiodic CSI configuration test
 aperiodic_csi:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -301,7 +301,7 @@ aperiodic_csi:
 # This test only exercises the static resource configuration of the DL-PRS.
 prs:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -438,7 +438,7 @@ dmrs_3:
 # CORESET#0 and CORESET#1 with 3 OFDM symbols, dmrs-TypeA-Position pos3
 coreset0_3symb:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       # No 3-symbol CORESET#0 index keeps the SSB at the default ARFCN 624000.

@@ -17,7 +17,7 @@
 baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_1000
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, ue_state_transition.cfg]
     parameters:
       <<: &common_ue_params
@@ -63,7 +63,7 @@ baseline: &base_config
 # 1000 UEs at 166 UE/s attach rate
 tdd_dl_heavy:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, ue_state_transition.cfg]
     parameters:
       <<: *common_ue_params
@@ -84,7 +84,7 @@ tdd_dl_heavy:
 # 1000 UEs at 100 UE/s attach rate
 tdd_ul_heavy:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, ue_state_transition.cfg]
     parameters:
       <<: *common_ue_params
@@ -105,7 +105,7 @@ tdd_ul_heavy:
 # 128 UEs at 100 UE/s attach rate
 fdd:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, ue_state_transition.cfg]
     parameters:
       <<: *common_ue_params
@@ -138,7 +138,7 @@ fdd:
 tdd_dl_heavy_rt:
   <<: *base_config
   request: s72_1000
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, ue_state_transition.cfg]
     parameters:
       nof_ue: *nof_ue

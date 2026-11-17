@@ -5,7 +5,7 @@
 type1: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       band: 41

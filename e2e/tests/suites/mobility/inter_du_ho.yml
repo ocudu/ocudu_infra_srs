@@ -7,7 +7,7 @@ baseline: &base_config
   request: zmq_1cu2du
   core:
     config: [baseline.cfg]
-  ue:
+  ue_sim:
     config: [2cell_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
@@ -48,7 +48,7 @@ baseline: &base_config
 # inter-RU, inter-DU intra-band HO in FR2
 fr2:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
@@ -87,7 +87,7 @@ fr2:
 # inter-RU, inter-DU HO FR1 to FR2 inter-frequency with measurement gap
 fr1_fr2:
   <<: *base_config
-  ue:
+  ue_sim:
     # Inter-frequency UE config:
     # Cell 2 is FR2 (n261, 120 kHz SCS), matching DU-2 below.
     config: [2cell_interfreq_chsim.cfg, handover.cfg]

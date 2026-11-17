@@ -5,7 +5,7 @@
 key_regen: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, key_regen.cfg]
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml]
@@ -31,7 +31,7 @@ key_regen: &base_config
 # Intra-cell HO for key regeneration in FR2
 fr2_key_regen:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, key_regen.cfg]
     parameters:
       band: 261
@@ -52,7 +52,7 @@ fr2_key_regen:
 # TODO: verify that the TAU request has been actually sent
 tau_request:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, tau_request.cfg]
   feature_ids: [CU-GEN-7]
   criteria:

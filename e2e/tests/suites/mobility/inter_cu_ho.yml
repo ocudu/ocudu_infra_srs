@@ -9,7 +9,7 @@ baseline: &base_config
     config: [baseline.cfg]
     parameters:
       log_level: debug
-  ue:
+  ue_sim:
     config: [2cell_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
@@ -50,7 +50,7 @@ baseline: &base_config
 # inter-CU HO, changing the CU-UP in FR2
 fr2:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
@@ -102,7 +102,7 @@ same_cu_up_fr1: &base_same_cu_up
     config: [baseline.cfg]
     parameters:
       log_level: debug
-  ue:
+  ue_sim:
     config: [2cell_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
@@ -156,7 +156,7 @@ same_cu_up_fr1: &base_same_cu_up
 # inter-CU HO, same CU-UP in FR2
 same_cu_up_fr2:
   <<: *base_same_cu_up
-  ue:
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
@@ -212,7 +212,7 @@ same_cu_up_fr2:
 # inter-CU HO, changing the CU-UP between FR1 and FR2
 fr1_fr2:
   <<: *base_config
-  ue:
+  ue_sim:
     # Inter-frequency UE config:
     # Cell 2 is FR2 (n261, 120 kHz SCS), matching gNB-2 below.
     config: [2cell_interfreq_chsim.cfg, handover.cfg]
@@ -255,7 +255,7 @@ fr1_fr2:
 # inter-CU HO, same CU-UP  between FR1 and FR2
 same_cu_up_fr1_fr2:
   <<: *base_same_cu_up
-  ue:
+  ue_sim:
     # Inter-frequency UE config:
     # Cell 2 is FR2 (n261, 120 kHz SCS), matching DU-2 below.
     config: [2cell_interfreq_chsim.cfg, handover.cfg]

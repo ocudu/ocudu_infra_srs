@@ -13,7 +13,7 @@
 downlink: &base_config
   template: ue_simulator.test_gnb
   request: s72
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1500.0e+6
@@ -53,7 +53,7 @@ downlink: &base_config
 # conditions.
 uplink:
   <<: *base_config
-  ue: &uplink_ue
+  ue_sim: &uplink_ue
     config: [1cell_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 0
@@ -83,7 +83,7 @@ uplink:
 # Same as uplink, with closed-loop power control
 uplink_power_control:
   <<: *base_config
-  ue: *uplink_ue
+  ue_sim: *uplink_ue
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, srs_periodic_wband.yml, olla.yml, closed_loop_pc.yml, du_perf.yml, schedtrace.yml]
     parameters:

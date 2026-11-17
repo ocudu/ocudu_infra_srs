@@ -5,7 +5,7 @@
 closed_loop_pc: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -45,7 +45,7 @@ closed_loop_pc_f1f3:
 # Closed loop PC under FDD (band 3, 50 MHz)
 closed_loop_pc_fdd:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6

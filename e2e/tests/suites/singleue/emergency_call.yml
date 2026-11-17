@@ -12,7 +12,7 @@
 baseline:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, emergency_call.cfg]
   gnb:
     config: [cu_cp.yml, du.yml, tdd_default.yml, vonr_qos.yml]

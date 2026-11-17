@@ -5,7 +5,7 @@
 mimo_2x2: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -54,7 +54,7 @@ mimo_2x2_aperiodic_csi:
 # TDD MIMO 4x4 configuration test
 mimo_4x4:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -87,7 +87,7 @@ mimo_4x4:
 # TDD MIMO 8x8 configuration test (max 4 layers, single codeword)
 mimo_8x8_4_layers_1_cw:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6

@@ -5,7 +5,7 @@
 inter_ru_ho: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 10.0e+3
@@ -45,7 +45,7 @@ inter_du_ho:
   request: zmq_1cu2du
   core:
     config: [baseline.cfg]
-  ue:
+  ue_sim:
     config: [2cell_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
@@ -88,7 +88,7 @@ inter_cu_ho:
     config: [baseline.cfg]
     parameters:
       log_level: debug
-  ue:
+  ue_sim:
     config: [2cell_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
@@ -126,7 +126,7 @@ inter_cu_ho:
 # Multiple UEs doing Reestablishments
 reestablishment:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, reestablishment.cfg]
     parameters:
       dl_bitrate: 10.0e+3

@@ -11,7 +11,7 @@ rrc_resume:
     config: [baseline.cfg]
     parameters:
       log_level: "debug"
-  ue:
+  ue_sim:
     config: [2cell_chsim.cfg, rrc_inactive_mobility.cfg]
     parameters:
       num_cells: 2

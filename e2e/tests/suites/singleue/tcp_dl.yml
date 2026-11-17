@@ -8,7 +8,7 @@
 baseline:
   template: ue_simulator.test_gnb
   request: s72
-  ue:
+  ue_sim:
     config: [1cell.cfg, tcp_singleue.cfg]
     parameters:
       traffic_duration: 30

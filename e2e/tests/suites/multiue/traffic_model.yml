@@ -26,7 +26,7 @@
 tdd_dl_heavy: &base_config
   template: ue_simulator.test_gnb
   request: zmq_1000
-  ue:
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, traffic_model.cfg]
     parameters:
       <<: &common_ue_params
@@ -89,7 +89,7 @@ tdd_dl_heavy: &base_config
 tdd_dl_heavy_rt:
   <<: *base_config
   request: s72_1000
-  ue:
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, traffic_model.cfg]
     parameters:
       nof_ue_static: *nof_ue_static

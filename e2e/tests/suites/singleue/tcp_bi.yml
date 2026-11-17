@@ -8,7 +8,7 @@
 4T2R: &base_config
   template: ue_simulator.test_gnb
   request: s72
-  ue:
+  ue_sim:
     config: [1cell.cfg, tcp_singleue.cfg]
     parameters: &ue_params
       traffic_duration: 30
@@ -46,7 +46,7 @@
 4T4R:
   <<: *base_config
   markers: [xfail]
-  ue:
+  ue_sim:
     config: [1cell.cfg, tcp_singleue.cfg]
     parameters:
       <<: *ue_params

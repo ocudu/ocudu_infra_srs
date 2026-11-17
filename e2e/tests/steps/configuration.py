@@ -26,7 +26,7 @@ class _NodeConfig(NamedTuple):
 
 _NODE_CONFIGS: Dict[storage.NodeTypeEnum, _NodeConfig] = {
     storage.NodeTypeEnum.UE: _NodeConfig("ue", "ue", ["ue"]),
-    storage.NodeTypeEnum.UE_SIMULATOR: _NodeConfig("ue", "ue", ["ue"]),
+    storage.NodeTypeEnum.UE_SIMULATOR: _NodeConfig("ue_sim", "ue", ["ue"]),
     storage.NodeTypeEnum.CU: _NodeConfig("cu", "gnb", ["cu", "qos"]),
     storage.NodeTypeEnum.CU_CP: _NodeConfig("cu_cp", "gnb", ["cu", "qos"]),
     storage.NodeTypeEnum.CU_UP: _NodeConfig("cu_up", "gnb", ["cu", "qos"]),
@@ -53,9 +53,6 @@ def set_config_files(
         for node_type, node_cfg in _NODE_CONFIGS.items():
             item: RetinaNodeTypeDefinition = getattr(test_definition, node_cfg.attr)
             if not item.config and not item.parameters and not item.items:
-                continue
-            if node_cfg.attr == "ue" and not _has_open_client(node_type):
-                # `ue` and `ue_simulator` share the suite key: skip the one the test didn't request
                 continue
 
             blank_templates = (node_cfg.ru_template,) if overwrite_radio and node_cfg.ru_template else ()
@@ -87,10 +84,6 @@ def set_config_files(
 
         retina_manager.parse_configuration(retina_data.test_config)
         retina_manager.push_all_config()
-
-
-def _has_open_client(node_type: storage.NodeTypeEnum) -> bool:
-    return any(not client.closed for client in storage.clients.get(node_type, ()))
 
 
 def _build_templates(

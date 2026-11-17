@@ -175,7 +175,7 @@ def _ue_simulator(
         always_download_artifacts=True,
     )
 
-    # The suite `ue:` key configures the UE simulator node
+    # The suite `ue_sim:` key configures the UE simulator node
     set_config_files(retina_manager=retina_manager, retina_data=retina_data, test_definition=test_definition)
 
     for criteria_id, criteria_expected_value in test_definition.criteria.items():

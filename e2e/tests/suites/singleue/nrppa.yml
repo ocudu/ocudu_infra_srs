@@ -5,7 +5,7 @@
 position_power: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, handover.cfg]
     parameters:
       num_cells: 2
@@ -51,7 +51,7 @@ position_time:
 position_dl_tdoa:
   <<: *base_config
   feature_ids: [MVP-FUNC-POS-16-2]
-  ue:
+  ue_sim:
     config: [2cell_intrafreq_chsim.cfg, positioning.cfg]
     parameters:
       num_cells: 2
@@ -86,7 +86,7 @@ position_angle_on_demand:
   feature_ids: [MVP-FUNC-POS-16-3-c]
   # E-CID uses only the serving cell. The gNB needs DoA estimation, periodic SRS and more than one UL antenna to
   # measure the AoA.
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6

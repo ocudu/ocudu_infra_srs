@@ -11,7 +11,7 @@
 etws:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -45,7 +45,7 @@ etws:
 etws_cmas:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -85,7 +85,7 @@ etws_cmas:
 etws_mme_triggered:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -126,7 +126,7 @@ etws_mme_triggered:
 etws_mme_triggered_long:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -169,7 +169,7 @@ etws_mme_triggered_long:
 cmas_mme_triggered:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -212,7 +212,7 @@ cmas_mme_triggered:
 etws_mme_triggered_rrc_idle:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 0
@@ -249,7 +249,7 @@ etws_mme_triggered_rrc_idle:
 cmas_mme_triggered_rrc_idle:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       dl_bitrate: 0

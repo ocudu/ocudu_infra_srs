@@ -23,7 +23,7 @@
 baseline: &base_config
   template: ue_simulator.test_gnb
   request: zmq_1000
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
     parameters:
       <<: &common_ue_params
@@ -75,7 +75,7 @@ baseline: &base_config
 # TDD 7D1S2U, k1=k2=2, Long PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
 tdd_dl_heavy:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
     parameters:
       <<: *common_ue_params
@@ -98,7 +98,7 @@ tdd_dl_heavy:
 # 2D1S7U UL-heavy TDD, k1=k2=2, Long PRACH, 100 MHz SISO (4T4R tested in performance pipeline)
 tdd_ul_heavy:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
     parameters:
       <<: *common_ue_params
@@ -124,7 +124,7 @@ tdd_ul_heavy:
 # 128 UEs total (64 static + 64 cycling), 100 UE/s attach rate per group
 fdd:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
     parameters:
       <<: *common_ue_params
@@ -163,7 +163,7 @@ fdd:
 tdd_dl_heavy_rt:
   <<: *base_config
   request: s72_1000
-  ue:
+  ue_sim:
     config: [1cell_chsim.cfg, cplane_traffic_load.cfg]
     parameters:
       nof_ue_static: *nof_ue_static

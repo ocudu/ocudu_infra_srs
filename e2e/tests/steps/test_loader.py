@@ -84,6 +84,7 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
     parameters: Dict[str, Any] = field(default_factory=dict)
     # Configs
     ue: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
+    ue_sim: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
     cu: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
     cu_cp: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
     cu_up: RetinaNodeTypeDefinition = field(default_factory=RetinaNodeTypeDefinition)
@@ -94,6 +95,7 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
     @classmethod
     def from_dict(cls, name: str, data: Dict) -> "RetinaTestDefinition":
         """Create object from dictionary with type"""
+        _check_ue_key(name, data)
         return cls(
             name=name,
             retina_request=data.get("request", "zmq_mme"),
@@ -102,6 +104,7 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
             criteria=data.get("criteria", {}),
             parameters=data.get("parameters", {}),
             ue=RetinaNodeTypeDefinition.from_dict(data.get("ue", {})),
+            ue_sim=RetinaNodeTypeDefinition.from_dict(data.get("ue_sim", {})),
             cu=RetinaNodeTypeDefinition.from_dict(data.get("cu", {})),
             cu_cp=RetinaNodeTypeDefinition.from_dict(data.get("cu_cp", {})),
             cu_up=RetinaNodeTypeDefinition.from_dict(data.get("cu_up", {})),
@@ -109,6 +112,17 @@ class RetinaTestDefinition:  # pylint: disable=too-many-instance-attributes
             gnb=RetinaNodeTypeDefinition.from_dict(data.get("gnb", {})),
             core=RetinaNodeTypeDefinition.from_dict(data.get("core", {})),
         )
+
+
+def _check_ue_key(name: str, data: Dict) -> None:
+    """
+    `ue_sim` configures the Amarisoft UE simulator (ue_simulator templates) and `ue` a Retina managed UE.
+    Fail on the wrong one instead of silently dropping the UE config.
+    """
+    is_simulator = data.get("template", "").startswith("ue_simulator.")
+    wrong_key, expected_key = ("ue", "ue_sim") if is_simulator else ("ue_sim", "ue")
+    if wrong_key in data:
+        raise ValueError(f"Test '{name}' uses the '{wrong_key}' key, its template expects '{expected_key}'")
 
 
 def _parse_test_definitions(template_name: str) -> Generator[RetinaTestDefinition, None, None]:

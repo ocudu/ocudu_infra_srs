@@ -5,7 +5,7 @@
 baseline:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, gbr_vonr.cfg]
     parameters:
       dl_bitrate: 10.0e+6
@@ -37,7 +37,7 @@ baseline:
 ims:
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, ims.cfg]
     parameters:
       dl_bitrate: 10.0e+6

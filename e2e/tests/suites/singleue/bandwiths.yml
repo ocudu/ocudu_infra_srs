@@ -5,7 +5,7 @@
 bw_tdd_10: &base_config
   template: ue_simulator.test_gnb
   request: zmq_mme
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       band: 41
@@ -42,7 +42,7 @@ bw_tdd_10: &base_config
 # Baseline band n41 at 50 MHz
 bw_tdd_50:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [1cell.cfg, udp_singleue.cfg]
     parameters:
       band: 41
