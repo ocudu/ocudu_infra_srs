@@ -207,10 +207,23 @@ def _ue_simulator(
             fivegc_array=fivegc_array,
         )
 
-        # Wait until the UE simulator stops
+        # Wait until any node stops; stop() reports crashes via exit codes
+        nodes = [
+            node
+            for node in (
+                ue_simulator,
+                cu,
+                *(cu_cp_array or ()),
+                *(cu_up_array or ()),
+                *(gnb_array or ()),
+                *(du_array or ()),
+                *fivegc_array,
+            )
+            if node is not None
+        ]
         with suppress(grpc.RpcError):
-            while ue_simulator.IsRunning(Empty()).value:
-                sleep(5)
+            while all(node.IsRunning(Empty()).value for node in nodes):
+                sleep(3)
     finally:
         try:
             stop(
