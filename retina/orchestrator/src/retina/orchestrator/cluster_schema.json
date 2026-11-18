@@ -256,6 +256,9 @@
           "items": {
             "$ref": "#/definitions/node_resource"
           }
+        },
+        "enable-persistence": {
+          "type": "boolean"
         }
       },
       "required": [

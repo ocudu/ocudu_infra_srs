@@ -116,6 +116,7 @@ Each node entry describes compute resources and attached hardware:
 nodes:
   - name: sdr-node-01                    # Required: Kubernetes node name
     type: linux-x86                      # Node type/architecture
+    enable-persistence: True             # Optional: Create persistent volume bindings when needed (default = True)
     compute-resources:                   # Required: Available compute capacity
       cpu: 12                            # CPU cores available for Retina
       memory: 22Gi                       # RAM available for Retina (K8s binary units)

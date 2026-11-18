@@ -358,6 +358,19 @@ class Kubernetes(KubernetesManager):
 
         return orch_id_list
 
+    def get_config_for_node(self, node_name: str, namespace: str = DEFAULT_NAMESPACE) -> Dict[str, Any]:
+        """
+        Get configuration for a specific node by name.
+        """
+        cluster_config = self.get_cluster_configuration(namespace)
+        nodes = cluster_config.get("nodes") or []
+
+        for node in nodes:
+            if node.get("name") == node_name:
+                return cast(Dict[str, Any], node)
+
+        raise RuntimeError(f"Node '{node_name}' not found in cluster configuration.")
+
     ############################################################################
     # Pods
     ############################################################################
@@ -554,22 +567,23 @@ class Kubernetes(KubernetesManager):
             )
 
         # Share UHD images folder with host
-        volumes.append(
-            {
-                "name": "uhd-volume",
-                "hostPath": {"path": "/usr/share/uhd/images"},
-            }
-        )
-        volume_mounts.append({"name": "uhd-volume", "mountPath": "/usr/share/uhd/images"})
+        if self.get_config_for_node(str(config.node_name)).get("enable-persistence", True):
+            volumes.append(
+                {
+                    "name": "uhd-volume",
+                    "hostPath": {"path": "/usr/share/uhd/images"},
+                }
+            )
+            volume_mounts.append({"name": "uhd-volume", "mountPath": "/usr/share/uhd/images"})
 
-        # Enable coredump logging
-        volumes.append(
-            {
-                "name": "coredump-volume",
-                "hostPath": {"path": "/mnt/coredump"},
-            }
-        )
-        volume_mounts.append({"name": "coredump-volume", "mountPath": "/tmp/coredump"})
+            # Enable coredump logging
+            volumes.append(
+                {
+                    "name": "coredump-volume",
+                    "hostPath": {"path": "/mnt/coredump"},
+                }
+            )
+            volume_mounts.append({"name": "coredump-volume", "mountPath": "/tmp/coredump"})
 
         # Device with USB connection
         if config.enable_usb_connection:
