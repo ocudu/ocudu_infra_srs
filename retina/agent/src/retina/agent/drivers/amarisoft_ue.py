@@ -306,8 +306,13 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
             # Only the first Stop still reaches the websocket
             if self._websocket.connected:
                 sleep(self.AMARISOFT_WAIT_BEFORE_STOP)
-                self._get_stats()
-                self._websocket.quit()
+                try:
+                    self._get_stats()
+                    self._websocket.quit()
+                except TimeoutError:
+                    # Stuck lteue (e.g. ZMQ peer died): close the websocket, Stop kills the process
+                    logging.warning("lteue is not responding, it will be killed")
+                    self._websocket.close()
             # Close metrics file
             if not self._metrics_file_closed:
                 self._metrics_file_closed = True
