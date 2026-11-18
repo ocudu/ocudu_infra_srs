@@ -432,8 +432,8 @@ s72_leo_band_256_bw_10_scs_30_fl_false_iperf:
       feeder_link: false
       dl_harq_disabled: false
       ul_harq_disabled: false
-      cell_specific_koffset: 8
-      ta_meas_slot_prohibit_period: 18
+      cell_specific_koffset: 12
+      ta_meas_slot_prohibit_period: 22
       propagator_type: keplerian
       cell_ref_latitude: 7.853110757
       cell_ref_longitude: -96.817254023
