@@ -17,7 +17,7 @@ from retina.launcher.utils import configure_artifacts
 from retina.protocol import FiveGCClient, GNBClient, UEClient
 
 from .steps.configuration import set_config_files
-from .steps.stub import start_network, stop, ue_start_and_attach
+from .steps.stub import get_ue_definitions, start_network, stop, ue_start_and_attach
 from .steps.test_loader import load_tests, RetinaTestDefinition
 from .steps.traffic import ping, ping_from_5gc
 
@@ -50,7 +50,7 @@ def test_gnb(
 
     try:
         logging.info("Paging Test")
-        start_network(ue_array=ue_array, gnb_array=[gnb], fivegc_array=[fivegc])
+        start_network(ue_definitions=get_ue_definitions(ue_array), gnb_array=[gnb], fivegc_array=[fivegc])
         ue_attach_info_dict = ue_start_and_attach(
             ue_array=ue_array,
             du_definition=[gnb.GetDefinition(UInt32Value(value=0)).du_definition],

@@ -5,11 +5,8 @@
 Test UE simulator: the UE simulator drives all the simulated UEs on its own, and the test waits until it finishes
 """
 
-from contextlib import suppress
-from time import sleep
 from typing import Optional, Sequence
 
-import grpc
 from google.protobuf.empty_pb2 import Empty
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
@@ -27,7 +24,7 @@ from retina.protocol import (
 )
 
 from .steps.configuration import set_config_files
-from .steps.stub import start_network, stop, ue_start
+from .steps.stub import start_network, stop, ue_simulator_start, ue_simulator_wait_until_finished
 from .steps.test_loader import load_tests, RetinaTestDefinition
 
 
@@ -183,7 +180,7 @@ def _ue_simulator(
 
     try:
         start_network(
-            ue_array=(ue_simulator,),
+            ue_definitions=(ue_simulator.GetDefinition(Empty()),),
             cu=cu,
             cu_cp_array=cu_cp_array,
             cu_up_array=cu_up_array,
@@ -201,29 +198,24 @@ def _ue_simulator(
         else:
             raise ValueError("GNB or DU is required")
 
-        ue_start(
-            ue_array=(ue_simulator,),
+        ue_simulator_start(
+            ue_simulator,
             du_definition=du_definition,
             fivegc_array=fivegc_array,
         )
-
         # Wait until any node stops; stop() reports crashes via exit codes
-        nodes = [
-            node
-            for node in (
-                ue_simulator,
+        ue_simulator_wait_until_finished(
+            ue_simulator,
+            other_nodes=(
                 cu,
                 *(cu_cp_array or ()),
                 *(cu_up_array or ()),
                 *(gnb_array or ()),
                 *(du_array or ()),
                 *fivegc_array,
-            )
-            if node is not None
-        ]
-        with suppress(grpc.RpcError):
-            while all(node.IsRunning(Empty()).value for node in nodes):
-                sleep(3)
+            ),
+        )
+
     finally:
         try:
             stop(

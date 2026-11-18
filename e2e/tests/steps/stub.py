@@ -9,7 +9,7 @@ import logging
 from contextlib import contextmanager, suppress
 from functools import partial
 from time import sleep
-from typing import Dict, Generator, Optional, Sequence, Tuple, Union
+from typing import Dict, Generator, List, Optional, Sequence, Tuple
 
 import grpc
 import pytest
@@ -54,10 +54,6 @@ from retina.protocol.ue_pb2 import UEAttachedInfo, UEStartInfo
 from retina.protocol.ue_pb2_grpc import UEStub
 from retina.protocol.ue_simulator_pb2_grpc import UESimulatorStub
 
-# The UE simulator shares the start / stop steps with the UEs (same GetDefinition, Start and Base methods)
-UEOrSimulatorStub = Union[UEStub, UESimulatorStub]
-UEOrSimulatorClient = Union[UEClient, UESimulatorClient]
-
 RF_MAX_TIMEOUT: int = 5 * 60  # Time enough in RF when loading a new image in the sdr
 UE_STARTUP_TIMEOUT: int = RF_MAX_TIMEOUT
 GNB_STARTUP_TIMEOUT: int = (
@@ -88,7 +84,7 @@ def start_and_attach(
     Start stubs & wait until attach
     """
     start_network(
-        ue_array=ue_array,
+        ue_definitions=get_ue_definitions(ue_array),
         gnb_array=[gnb],
         fivegc_array=[fivegc],
         gnb_startup_timeout=gnb_startup_timeout,
@@ -109,6 +105,13 @@ def start_and_attach(
     )
 
 
+def get_ue_definitions(ue_array: Sequence[UEStub]) -> List[UEDefinition]:
+    """
+    Get the definition (subscriber, ...) of each Retina managed UE, in order
+    """
+    return [ue_stub.GetDefinition(Empty()) for ue_stub in ue_array]
+
+
 def _get_hplmn(imsi: str) -> PLMN:
     """
     Obtain home PLMN (HPLMN) from IMSI prefix as specified in TS 23.003 Sec. 2.2
@@ -122,7 +125,7 @@ def _get_hplmn(imsi: str) -> PLMN:
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-branches,too-many-statements
 def start_network(
     *,  # This enforces keyword-only arguments
-    ue_array: Sequence[UEOrSimulatorStub],
+    ue_definitions: Sequence[UEDefinition],
     fivegc_array: Sequence[FiveGCStub],
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
@@ -138,6 +141,7 @@ def start_network(
 ):
     """
     Start Network (5GC + gNB/CU+DU/CUCP+CUUP+DU + RIC(optional))
+    The UE definitions provide the subscribers registered in the 5GC and the PLMN
     """
 
     if gnb_array and (cu or cu_cp_array or du_array):
@@ -150,8 +154,7 @@ def start_network(
         pytest.fail("CUCP and CUUP array must be provided together")
 
     ue_def_for_gnb = UEDefinition()
-    for ue_stub in ue_array:
-        ue_def: UEDefinition = ue_stub.GetDefinition(Empty())
+    for ue_def in ue_definitions:
         ue_hplmn = _get_hplmn(ue_def.subscriber.imsi)
         if plmn:
             # Warn if UEs have different HPLMNs
@@ -352,28 +355,61 @@ def ue_start_and_attach(
     return ue_attach_info_dict
 
 
+def build_ue_start_info(
+    du_definition: Sequence[DUDefinition],
+    fivegc_array: Sequence[FiveGCStub],
+    ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
+) -> UEStartInfo:
+    """
+    Build the start message shared by the UEs and the UE simulator
+    """
+    return UEStartInfo(
+        du_definition=du_definition,
+        fivegc_definition=[f.GetDefinition(Empty()) for f in fivegc_array],
+        start_info=StartInfo(timeout=ue_startup_timeout),
+    )
+
+
 def ue_start(
-    ue_array: Sequence[UEOrSimulatorStub],
+    ue_array: Sequence[UEStub],
     du_definition: Sequence[DUDefinition],
     fivegc_array: Sequence[FiveGCStub],
     ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
     inter_ue_start_period: int = INTER_UE_START_PERIOD,
 ):
     """
-    Start an array of UEs
+    Start an array of Retina managed UEs
     """
 
-    fivegc_definition = [f.GetDefinition(Empty()) for f in fivegc_array]
+    ue_start_info = build_ue_start_info(du_definition, fivegc_array, ue_startup_timeout)
     for ue_stub in ue_array:
         with handle_start_error(name=f"UE [{id(ue_stub)}]"):
-            ue_stub.Start(
-                UEStartInfo(
-                    du_definition=du_definition,
-                    fivegc_definition=fivegc_definition,
-                    start_info=StartInfo(timeout=ue_startup_timeout),
-                )
-            )
+            ue_stub.Start(ue_start_info)
             sleep(inter_ue_start_period)
+
+
+def ue_simulator_start(
+    ue_simulator: UESimulatorStub,
+    du_definition: Sequence[DUDefinition],
+    fivegc_array: Sequence[FiveGCStub],
+    ue_startup_timeout: int = UE_STARTUP_TIMEOUT,
+):
+    """
+    Start the UE simulator (lteue drives the simulated UEs on its own)
+    """
+
+    with handle_start_error(name="UE simulator"):
+        ue_simulator.Start(build_ue_start_info(du_definition, fivegc_array, ue_startup_timeout))
+
+
+def ue_simulator_wait_until_finished(ue_simulator: UESimulatorClient, other_nodes: Sequence = (), poll_period: int = 3):
+    """
+    Wait until the UE simulator finishes its scripted run, or any other node stops
+    """
+    nodes = [node for node in (ue_simulator, *other_nodes) if node is not None]
+    with suppress(grpc.RpcError):
+        while all(node.IsRunning(Empty()).value for node in nodes):
+            sleep(poll_period)
 
 
 def start_kpm_mon_xapp(
@@ -480,7 +516,7 @@ def validate_ue_registered_via_ims(
 # pylint: disable=too-many-branches
 def stop(
     *,  # This enforces keyword-only arguments
-    ue_array: Sequence[UEOrSimulatorClient],
+    ue_array: Sequence[RanClient],  # UEs or UE simulator: only Base methods are used
     retina_data: RetinaTestData,
     gnb_array: Optional[Sequence[GNBClient]] = None,
     cu: Optional[CUClient] = None,
