@@ -80,6 +80,22 @@ _COMPONENT_CONFIG_KEY = {
     "core": "core",
 }
 
+# Config keys in a test definition and the retina request node type they configure
+# (see _NODE_CONFIGS in tests/steps/configuration.py).
+_COMPONENT_NODE_TYPE = {
+    "gnb": "gnb",
+    "du": "du",
+    "cu": "cu",
+    "cu_cp": "cu_cp",
+    "cu_up": "cu_up",
+    "ue": "ue",
+    "ue_sim": "ue_simulator",
+    "core": "5gc",
+}
+
+# Request used by a test that doesn't declare one (see RetinaTestDefinition.from_dict).
+_DEFAULT_REQUEST = "zmq_mme"
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -619,6 +635,32 @@ def check_request_validity() -> List[str]:
     return errors
 
 
+def check_config_keys_match_request() -> List[str]:
+    """Each component key of a test ('ue', 'ue_sim', 'gnb', ...) must configure a node type its request declares.
+
+    Retina only pushes config to the node types deployed by the request, so e.g. 'ue' in a test whose
+    request declares 'ue_simulator', or 'gnb' with a CU/DU request, would be silently ignored.
+    """
+    cache: dict = {}  # request name -> set of node types
+    errors = []
+    for suite_path, suite_data in _load_suite_yamls():
+        for test_key, instance in _iter_test_instances(suite_data):
+            request = instance.get("request", _DEFAULT_REQUEST)
+            request_path = _REQUESTS_DIR / f"{request}.yml"
+            if not request_path.exists():
+                continue  # reported by check_request_validity
+            if request not in cache:
+                with request_path.open() as f:
+                    cache[request] = {node.get("type") for node in yaml.safe_load(f) or [] if isinstance(node, dict)}
+            for key, node_type in _COMPONENT_NODE_TYPE.items():
+                if instance.get(key) and node_type not in cache[request]:
+                    errors.append(
+                        f"{suite_path}: test '{test_key}' configures '{key}' but request '{request}'"
+                        f" has no '{node_type}' node"
+                    )
+    return errors
+
+
 # ---------------------------------------------------------------------------
 # Runner
 # ---------------------------------------------------------------------------
@@ -636,6 +678,7 @@ _ALL_CHECKS = [
     check_orphan_criteria,
     check_template_validity,
     check_request_validity,
+    check_config_keys_match_request,
 ]
 
 
