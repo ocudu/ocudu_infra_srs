@@ -291,7 +291,11 @@ You can add `--help` to see pytet's help, with info about how to select test and
 
 ## 6. Retina Development
 
-If retina dependencies and/or containers Dockerfile have been modified, you'll need to recreate the images locally. Do it by adding a `--build` flag to the script.
+`retina_local.sh` tags the local images with `0.0.0.<hash>`, computed by `local_version.sh` from the image build inputs in `retina/` (Dockerfiles, entrypoints, dependencies, CI versions). The Python sources are excluded: they are mounted into the containers, so changing them reuses the images.
+
+- Any other change in `retina/` gives a new tag, and Docker builds the images again.
+- Old `0.0.0.*` images are not removed. Clean them from time to time with `docker image prune` or `docker rmi`.
+- Inputs from outside `retina/` (e.g. the ocudu builder image version) don't change the tag. In that case, force the build by adding a `--build` flag to the script:
 
 ```bash
 $RETINA_PATH/_scripts/retina_local.sh --build

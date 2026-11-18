@@ -16,11 +16,12 @@ python3 $RETINA_PATH/_scripts/generate_env.py --ocudu-path $OCUDU_PATH "${AMARI_
 
 # Generate variables from retina code (call it when you change retina repo and first time)
 cd $RETINA_PATH/_scripts
-# Using a fake retina version for local development
-# - Docker will build the images from scratch only the first time.
-# - Next attempts: reuse the image but using the python code from your host (sharing it with the container)
+# Local retina version: hash of the image build inputs (see local_version.sh)
+# - Docker builds the images only when the hash changes (Dockerfiles, entrypoints, dependencies, build args...)
+# - Python code is shared with the containers, so changing it reuses the images
 # - To build the images from scratch again, remove them (docker rmi / prune) or use --build flag in docker compose
-RETINA_VERSION=0.0.2 python3 generate_env.py --ocudu-path ${OCUDU_PATH} "${AMARI_ARGS[@]}"
+RETINA_VERSION=$("$RETINA_PATH/_scripts/local_version.sh")
+RETINA_VERSION=${RETINA_VERSION} python3 generate_env.py --ocudu-path ${OCUDU_PATH} "${AMARI_ARGS[@]}"
 
 # Create testbed (call it when you change the profile and first time)
 python3 generate_testbed.py --profile ${RETINA_PROFILE}
