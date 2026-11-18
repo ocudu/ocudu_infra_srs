@@ -891,6 +891,8 @@ class SidecarReservation:
     image: str
     environment: List[Dict]
     requirement_manager: RequirementManager
+    command: Union[None, List[str]]
+    args: Union[None, List[str]]
 
 
 def _resolve_node_requirements_in_place(
@@ -955,6 +957,7 @@ class RequestReservation:
         environment: List[Dict],
         enable_host_network_force: str = "",
         command: Union[None, List[str]] = None,
+        args: Union[None, List[str]] = None,
         grace_period: float = TERMINATION_GRACE_PERIOD_SECONDS,
         ip_uu_source: str = "",
         ip_back_source: str = "",
@@ -976,6 +979,7 @@ class RequestReservation:
         self.environment = environment
         self.enable_host_network_force = enable_host_network_force
         self.command = command
+        self.args = args
         self.grace_period = grace_period
         self.ip_uu_source = ip_uu_source
         self.ip_back_source = ip_back_source

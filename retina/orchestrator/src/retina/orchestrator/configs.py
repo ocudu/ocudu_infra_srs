@@ -35,6 +35,8 @@ class SidecarConfig:
     image: str
     environment: List[Dict]
     request_list: List[RequirementDefinition]
+    command: Optional[List[str]]
+    args: Optional[List[str]]
 
 
 @dataclass()
@@ -59,6 +61,7 @@ class PodConfig(RetinaBaseConfig):
     enable_network_connection: bool
     environment: List[Dict]
     command: Optional[List[str]]
+    args: Optional[List[str]]
     not_finite_execution: Optional[bool]
     grace_period: float
     sidecars: List[SidecarConfig]

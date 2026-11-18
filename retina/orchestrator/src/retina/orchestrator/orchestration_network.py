@@ -477,6 +477,7 @@ class OrchestratorManager:
             enable_pci_connection=request_reservation.get_enable_pci_connection(),
             environment=request_reservation.environment,
             command=request_reservation.command,
+            args=request_reservation.args,
             not_finite_execution=not_finite_execution,
             grace_period=request_reservation.grace_period,
             sidecars=[
@@ -485,6 +486,8 @@ class OrchestratorManager:
                     image=sidecar.image,
                     environment=sidecar.environment,
                     request_list=sidecar.requirement_manager.req_list,
+                    command=sidecar.command,
+                    args=sidecar.args,
                 )
                 for sidecar in request_reservation.get_sidecar_requirements(k_server=self.k_server)
             ],

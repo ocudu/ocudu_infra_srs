@@ -130,6 +130,8 @@ def get_pool_request_reservation_from_config(
                     image=sidecar_inst["image"],
                     environment=sidecar_inst.get("environment", []),
                     requirement_manager=RequirementManager(sidecar_inst.get("requirements", {}), []),
+                    command=sidecar_inst.get("command", None),
+                    args=sidecar_inst.get("args", None),
                 )
             )
 
@@ -170,6 +172,7 @@ def get_pool_request_reservation_from_config(
             environment=config_inst.get("environment", []),
             enable_host_network_force=config_inst.get("host_network", ""),
             command=config_inst.get("command", None),
+            args=config_inst.get("args", None),
             grace_period=config_inst.get("grace_period", TERMINATION_GRACE_PERIOD_SECONDS),
             ip_uu_source=config_inst.get("ip_uu_source", ""),
             ip_back_source=config_inst.get("ip_back_source", ""),

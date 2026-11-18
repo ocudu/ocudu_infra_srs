@@ -3,6 +3,18 @@
     "$id": "retina_request",
     "title": "Retina Request",
     "$defs": {
+        "command": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "args": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
         "environment": {
             "type": "array",
             "items": {
@@ -115,10 +127,10 @@
                 "minimum": 1
             },
             "command": {
-                "type": "array",
-                "items": {
-                    "type": "string"
-                }
+                "$ref": "#/$defs/command"
+            },
+            "args": {
+                "$ref": "#/$defs/args"
             },
             "host_network": {
                 "type": "string"
@@ -205,6 +217,12 @@
                         "image": {
                             "type": "string",
                             "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*(\\/[a-z0-9]+([._-][a-z0-9]+)*)*(\\:[a-zA-Z0-9._-]{1,128})?$"
+                        },
+                        "command": {
+                            "$ref": "#/$defs/command"
+                        },
+                        "args": {
+                            "$ref": "#/$defs/args"
                         },
                         "requirements": {
                             "$ref": "#/$defs/requirements"

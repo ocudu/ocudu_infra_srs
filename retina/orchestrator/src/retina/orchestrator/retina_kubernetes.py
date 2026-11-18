@@ -665,6 +665,7 @@ class Kubernetes(KubernetesManager):
         self._set_requirements(manifest, config.request_list, volumes, volume_mounts)
         self._set_tolerations(manifest, config.taint_list)
         self._set_command(manifest, config.command)
+        self._set_args(manifest, config.args)
         self._set_node_affinity(manifest, config.label_list)
         if config.node_name:
             manifest["nodeName"] = config.node_name
@@ -678,6 +679,11 @@ class Kubernetes(KubernetesManager):
         containers = []
         for sidecar in sidecars:
             container: Dict[str, Any] = {"name": sidecar.name, "image": sidecar.image}
+
+            if sidecar.command is not None:
+                container["command"] = sidecar.command
+            if sidecar.args is not None:
+                container["args"] = sidecar.args
 
             env_list = []
             for req in sidecar.environment:
@@ -711,6 +717,13 @@ class Kubernetes(KubernetesManager):
         """
         if command:
             manifest["containers"][0].update({"command": command})
+
+    def _set_args(self, manifest: Dict, args: Union[None, List[str]]):
+        """
+        Set args in manifest
+        """
+        if args is not None:
+            manifest["containers"][0].update({"args": args})
 
     def _set_tolerations(self, manifest: Dict, taint_list: List[TaintDefinition]):
         """
