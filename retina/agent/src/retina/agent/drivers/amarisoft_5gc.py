@@ -12,7 +12,7 @@ from typing import List, Optional, Type
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
-from google.protobuf.wrappers_pb2 import UInt32Value
+from google.protobuf.wrappers_pb2 import BoolValue, UInt32Value
 from retina.protocol.base_pb2 import (
     CoreMetrics,
     FiveGCDefinition,
@@ -373,6 +373,12 @@ class Amarisoft5gc(FiveGCDriver):
         if fivegc_defaults.ims_mode:
             metrics.MergeFrom(self._ims.GetMetrics(request, context))
         return metrics
+
+    def IsRunning(self, request: Empty, context: grpc.ServicerContext) -> BoolValue:
+        is_running = self._mme.IsRunning(request, context).value
+        if fivegc_defaults.ims_mode:
+            is_running = is_running and self._ims.IsRunning(request, context).value
+        return BoolValue(value=is_running)
 
     def Stop(self, request: UInt32Value, context: Optional[grpc.ServicerContext]) -> StopResponse:
         ims_response = self._ims.Stop(request, context)
