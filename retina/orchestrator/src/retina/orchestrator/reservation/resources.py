@@ -6,6 +6,8 @@
 Resources elements
 """
 
+import hashlib
+import ipaddress
 import logging
 import math
 import random
@@ -919,6 +921,21 @@ def _resolve_node_requirements_in_place(
 
 
 # pylint: disable=too-many-instance-attributes
+def get_loopback_address(orch_id: str, index: int) -> str:
+    """
+    Loopback N2/N3 address for the index-th (1-based) loopback request of an orchestration.
+
+    127.<a>.<b>.<index>, with <a>.<b> derived from the orchestration ID so concurrent orchestrations
+    on the same node get different addresses. <a> skips 0 to stay clear of 127.0.x.x defaults.
+    """
+    if not 1 <= index <= 254:
+        raise ValueError(f"Loopback request index {index} out of range [1, 254]")
+    digest = int(hashlib.sha256(orch_id.encode()).hexdigest()[:4], 16)
+    octet_a = 1 + (digest >> 8) % 254
+    octet_b = digest & 0xFF
+    return str(ipaddress.IPv4Address(bytes([127, octet_a, octet_b, index])))
+
+
 class RequestReservation:
     """
     Request reservation
@@ -941,6 +958,7 @@ class RequestReservation:
         grace_period: float = TERMINATION_GRACE_PERIOD_SECONDS,
         ip_uu_source: str = "",
         ip_back_source: str = "",
+        loopback_address: str = "",
         sidecars: Optional[List[SidecarReservation]] = None,
     ):
         """
@@ -961,6 +979,7 @@ class RequestReservation:
         self.grace_period = grace_period
         self.ip_uu_source = ip_uu_source
         self.ip_back_source = ip_back_source
+        self.loopback_address = loopback_address
         self.sidecars = sidecars or []
         self._node: Optional[Node] = None
 
@@ -1044,8 +1063,13 @@ class RequestReservation:
 
     def get_backhaul_ip(self, k_server: Kubernetes) -> str:
         """
-        Return backhaul bind address when ip_back_source is 'backhaul', else empty string.
+        Return the backhaul (N2/N3) bind address for ip_back_source 'backhaul' or 'loopback', else empty string.
+        A non-empty address also makes the pod run on the host network.
         """
+        if self.ip_back_source == "loopback":
+            if not self.loopback_address:
+                raise ValueError(f"No loopback address assigned to request '{self.name}'")
+            return self.loopback_address
         if self.ip_back_source != "backhaul":
             return ""
         node_name = self.get_node_name(k_server=k_server)

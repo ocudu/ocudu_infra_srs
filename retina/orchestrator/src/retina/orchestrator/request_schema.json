@@ -229,8 +229,9 @@
                 "enum": ["pod", "node"]
             },
             "ip_back_source": {
+                "description": "N2/N3 address source: pod IP, node backhaul address, or an orchestrator-assigned loopback address (pods on the same node talk over lo).",
                 "type": "string",
-                "enum": ["pod", "backhaul"]
+                "enum": ["pod", "backhaul", "loopback"]
             }
         },
         "required": [

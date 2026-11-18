@@ -116,6 +116,7 @@ def get_pool_request_reservation_from_config(
     Get pool request reservation from config
     """
     request_reservation_list: List[rs.RequestReservation] = []
+    nof_loopback_requests = 0
 
     for config_inst in config:
         requirement_manager = RequirementManager(config_inst.get("requirements", {}), config_inst.get("labels", []))
@@ -151,6 +152,12 @@ def get_pool_request_reservation_from_config(
                 )
             )
 
+        # Each loopback request gets its own address so pods sharing the host network don't clash
+        loopback_address = ""
+        if config_inst.get("ip_back_source") == "loopback":
+            nof_loopback_requests += 1
+            loopback_address = rs.get_loopback_address(orch_id, nof_loopback_requests)
+
         req = rs.RequestReservation(
             name=config_inst["name"],
             image=config_inst["image"],
@@ -166,6 +173,7 @@ def get_pool_request_reservation_from_config(
             grace_period=config_inst.get("grace_period", TERMINATION_GRACE_PERIOD_SECONDS),
             ip_uu_source=config_inst.get("ip_uu_source", ""),
             ip_back_source=config_inst.get("ip_back_source", ""),
+            loopback_address=loopback_address,
             sidecars=sidecars,
         )
         request_reservation_list.append(req)

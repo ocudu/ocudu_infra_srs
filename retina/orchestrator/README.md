@@ -59,6 +59,7 @@ Each pod in the array supports the following fields:
 | `environment` | | array | Environment variables for the container |
 | `shared_files` | | array | Files to copy into the container (see [Shared Files](#shared-files)) |
 | `sidecars` | | array | Extra containers to run alongside the pod (see [Sidecars](#sidecars)) |
+| `ip_back_source` | | enum | N2/N3 address source: `pod` (pod IP, default), `backhaul` (node's `backhaul.n2n3_bind_address`) or `loopback` (unique `127.x.y.z` assigned per pod, so pods on the same node, e.g. gNB and 5GC, exchange N2/N3 over `lo`). `backhaul` and `loopback` run the pod on the host network |
 
 ### Requirements
 
