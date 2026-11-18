@@ -76,6 +76,7 @@ _COMPONENT_CONFIG_KEY = {
     "cu_cp": "gnb",
     "cu_up": "gnb",
     "ue": "ue",
+    "ue_sim": "ue",
     "core": "core",
 }
 
@@ -231,6 +232,7 @@ _TEST_DEFINITION_SCHEMA: dict = {
         "markers": {"type": "array", "items": {"type": "string"}},
         "criteria": {"type": "object", "additionalProperties": {}},
         "ue": {"$ref": "#/$defs/node_type_definition"},
+        "ue_sim": {"$ref": "#/$defs/node_type_definition"},
         "cu": {"$ref": "#/$defs/node_type_definition"},
         "cu_cp": {"$ref": "#/$defs/node_type_definition"},
         "cu_up": {"$ref": "#/$defs/node_type_definition"},
