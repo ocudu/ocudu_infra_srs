@@ -126,7 +126,7 @@ fr1_fr2:
 # The bandwidth is the only difference between the source and the target cell.
 bandwidth_10_20:
   <<: *base_config
-  ue:
+  ue_sim:
     config: [2cell_interfreq_chsim.cfg, handover.cfg]
     parameters:
       dl_bitrate: 1.0e+6
