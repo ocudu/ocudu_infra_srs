@@ -34,6 +34,8 @@ metrics_filename_json: str = "metrics.json"
 # Periodic per-UE console trace ("t") on stdout. With many UEs, printing the table
 # stalls the lteue PHY for >1 ms every period, causing lost HARQ-ACKs/PUSCH and S72 timing errors.
 console_trace: bool = False
+# Reserve the pod's last core for the S72 driver TX thread; lteue gets the rest via cpu_core_list
+s72_tx_dedicated_core: bool = True
 
 # RF driver
 tx_gain: float = -1  # Default value in testbed

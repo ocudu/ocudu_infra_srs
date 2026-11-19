@@ -15,6 +15,10 @@ SPDX-License-Identifier: BSD-3-Clause-Open-MPI
   /* Enable remote API and Web interface */
   com_addr: "{{api_address}}:{{api_port}}",
 
+  {% if cpu_core_list %}
+  cpu_core_list: [{{ cpu_core_list | join(", ") }}],
+  {% endif %}
+
   {% if license_server %}
   license_server: {
     server_addr: "{{license_server}}",

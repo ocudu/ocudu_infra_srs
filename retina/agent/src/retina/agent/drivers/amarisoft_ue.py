@@ -35,6 +35,7 @@ from retina.agent.features.sut_handler import StopInfo
 from retina.agent.features.utils import get_module_variables
 from retina.agent.parameters import template_defaults, testbed_defaults, ue_defaults
 from retina.agent.templates import template_path
+from retina.agent.tools.thread_affinity import pin_thread
 from retina.agent.tools.threading import join_thread
 from retina.agent.tools.time import TimeoutHandler
 
@@ -73,6 +74,8 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
     AMARISOFT_CONF_FILE_FINAL_NAME: str = "amarisoft_ue.cfg"
     AMARISOFT_START_UP_TIMEOUT: int = 5
     AMARISOFT_POWER_ON_SLEEP: float = 0.3
+    AMARISOFT_S72_TX_THREAD: str = "lteue:s72-tx"
+    AMARISOFT_S72_TX_THREAD_TIMEOUT: float = 30
     AMARISOFT_WAIT_BEFORE_STOP: int = 3
     AMARISOFT_VERSION_REGEX: str = r"UE version (.*), Copyright"
     AMARISOFT_PWS_MSG_EVENT: str = "pws_msg"
@@ -133,6 +136,7 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
 
         subscriber_array = self._get_subscriber_array()
         prach_ports = str(list(range(4, 4 + ue_defaults.nof_antennas_ul)))
+        s72_tx_core = self._s72_tx_core()
         sample_rate = testbed_defaults.sample_rate if ue_defaults.sample_rate < 0 else ue_defaults.sample_rate
         return self._render(
             filename=self.AMARISOFT_CONF_FILE_FINAL_NAME,
@@ -147,6 +151,8 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
                 **get_module_variables(ue_defaults),
                 # Logging
                 **self._get_log_variables(ue_defaults.log_level, self.AMARISOFT_LOG_FILENAME),
+                # Every core but the S72 TX one
+                "cpu_core_list": sorted(os.sched_getaffinity(0) - {s72_tx_core}) if s72_tx_core is not None else [],
                 # RF drivers
                 "zmq_def": (
                     (
@@ -247,6 +253,9 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
             if request.start_info.dryrun or self._is_license_available(timeout_handler):
                 break
 
+        if not request.start_info.dryrun:
+            self._pin_s72_tx_thread()
+
         try:
             self._websocket = AmarisoftWebSocket()
             if ue_defaults.pws_events:
@@ -279,6 +288,45 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
             if all("pci" in cell_info for cell_info in cells.values()):
                 break
             sleep(self.AMARISOFT_POWER_ON_SLEEP)
+
+    def _s72_tx_core(self) -> Optional[int]:
+        """
+        Core reserved for the S72 TX thread, or None when not applicable. Local runs only (same PID namespace).
+        """
+        if (
+            testbed_defaults.type != "ru"
+            or not ue_defaults.s72_tx_dedicated_core
+            or not isinstance(self._executor, LocalExecutor)
+            or isinstance(self._executor, SshExecutor)
+        ):
+            return None
+        cpus = os.sched_getaffinity(0)
+        if len(cpus) < 2:
+            logging.warning("Only %d CPU available, S72 TX thread shares cores with lteue", len(cpus))
+            return None
+        return max(cpus)
+
+    def _pin_s72_tx_thread(self) -> None:
+        """
+        Move the S72 TX thread to its reserved core, off the PHY workers that would otherwise preempt it.
+        Runs in the background from launch: sim_events may start traffic before the cells are reported up.
+        """
+        core = self._s72_tx_core()
+        if core is None:
+            return
+        # Bound to this launch: a later lteue gets its own search
+        process = self._process
+        Thread(
+            target=pin_thread,
+            args=(
+                self.AMARISOFT_S72_TX_THREAD,
+                {core},
+                self.AMARISOFT_S72_TX_THREAD_TIMEOUT,
+                lambda: process is not None and process.is_running(),
+            ),
+            name="s72_tx_affinity",
+            daemon=True,
+        ).start()
 
     def _after_launch(self) -> None:
         """
