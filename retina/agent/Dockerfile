@@ -33,7 +33,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     && apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     net-tools netcat-openbsd iproute2 iputils-ping \
-    htop nano \
+    htop nano sysstat \
     tshark \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 

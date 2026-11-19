@@ -24,7 +24,7 @@ from retina.protocol.base_pb2 import DuMetrics, Metrics, StopResponse
 from retina.protocol.exit_codes import exit_code_to_message
 
 from retina.agent.drivers.base import BaseDriver
-from retina.agent.features.executor import LocalExecutor, SutProcessLike
+from retina.agent.features.executor import AdbExecutor, LocalExecutor, SshExecutor, SutProcessLike
 from retina.agent.tools.cgroups import log_cgroups_warnings_and_errors
 from retina.agent.tools.string import remove_ansi_escapes
 from retina.agent.tools.threading import join_thread
@@ -127,6 +127,34 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
                 self._check_alive_event.wait(self._CHECK_ALIVE_STEP)
             self._logfile_descriptor.flush()
 
+    def _ps_info_lines(self) -> Iterable[str]:
+        assert self._process is not None
+        if isinstance(self._executor, LocalExecutor) and not isinstance(self._executor, (AdbExecutor, SshExecutor)):
+            # Whole pod PID namespace over the last second: per-thread CPU, memory and scheduling, grouped by process
+            return self._executor.run_binary(
+                "env",
+                "LC_ALL=C",
+                "pidstat",
+                "-t",
+                "-u",
+                "-r",
+                "-R",
+                "-h",
+                "-p",
+                "ALL",
+                "1",
+                "1",
+                raise_if_exit_code=False,
+            )
+        return self._executor.run_binary(
+            "ps",
+            "-Lo",
+            "pid,tid,class,rtprio,pcpu,rss,vsz,comm",
+            "--pid",
+            str(self._process.pid),
+            raise_if_exit_code=False,
+        )
+
     def _write_ps_info(self):
         if self._process is not None and platform.system().lower() == "linux":
             with Path(self.get_filepath_in_report_folder(f"ps_info_{self._process.name()}.txt")).open(
@@ -134,14 +162,7 @@ class BaseDriverSutHandler(BaseDriver, metaclass=ABCMeta):
             ) as fd:
                 for line in self._executor.run_binary("date"):
                     fd.write(line + os.linesep)
-                for line in self._executor.run_binary(
-                    "ps",
-                    "-Lo",
-                    "pid,tid,class,rtprio,pcpu,rss,vsz,comm",
-                    "--pid",
-                    str(self._process.pid),
-                    raise_if_exit_code=False,
-                ):
+                for line in self._ps_info_lines():
                     fd.write(line + os.linesep)
                 fd.write(os.linesep)
 
