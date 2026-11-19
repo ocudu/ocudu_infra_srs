@@ -34,7 +34,8 @@ if [ "$type" = "ipv4" ] ; then
         ip addr del "$tun_ip_prefix.$subnet.1/24" dev $ifname 2>/dev/null || true
         ip addr add "$tun_ip_prefix.$subnet.1/24" dev $ifname 2>/dev/null || true
 
-        iptables -t nat -A POSTROUTING -s "$tun_ip_prefix.$subnet.0/24" ! -o $ifname -j MASQUERADE 2>/dev/null || true
+        rule=(POSTROUTING -s "$tun_ip_prefix.$subnet.0/24" ! -o "$ifname" -j MASQUERADE)
+        iptables -w 5 -t nat -C "${rule[@]}" 2>/dev/null || iptables -w 5 -t nat -A "${rule[@]}" 2>/dev/null || true
     done
 
     # Bring up the interface
