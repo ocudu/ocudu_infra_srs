@@ -406,7 +406,7 @@ def ue_simulator_start(
     Start the UE simulator (lteue drives the simulated UEs on its own)
     """
 
-    with handle_start_error(name="UE simulator"):
+    with handle_start_error(name=f"UE simulator [{id(ue_simulator)}]"):
         ue_simulator.Start(build_ue_start_info(du_definition, fivegc_array, ue_startup_timeout))
 
 
