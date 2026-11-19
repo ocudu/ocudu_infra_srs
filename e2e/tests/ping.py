@@ -15,7 +15,6 @@ from retina.protocol import FiveGCClient, GNBClient, UEClient
 
 from .steps.configuration import set_config_files
 from .steps.stub import (
-    get_ue_definitions,
     start_network,
     stop,
     ue_start_and_attach,
@@ -56,7 +55,7 @@ def test_gnb(
         criteria.add_criteria(criteria_id, criteria_expected_value)
 
     try:
-        start_network(ue_definitions=get_ue_definitions(ue_array), gnb_array=[gnb], fivegc_array=[fivegc])
+        start_network(ue_array=ue_array, gnb_array=[gnb], fivegc_array=[fivegc])
 
         try:
             # One ping per attach, stopping the UE in between when the test asks for re-attaches

@@ -84,7 +84,7 @@ def start_and_attach(
     Start stubs & wait until attach
     """
     start_network(
-        ue_definitions=get_ue_definitions(ue_array),
+        ue_array=ue_array,
         gnb_array=[gnb],
         fivegc_array=[fivegc],
         gnb_startup_timeout=gnb_startup_timeout,
@@ -105,7 +105,7 @@ def start_and_attach(
     )
 
 
-def get_ue_definitions(ue_array: Sequence[UEStub]) -> List[UEDefinition]:
+def _get_ue_definitions(ue_array: Sequence[UEStub]) -> List[UEDefinition]:
     """
     Get the definition (subscriber, ...) of each Retina managed UE, in order
     """
@@ -125,8 +125,9 @@ def _get_hplmn(imsi: str) -> PLMN:
 # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-branches,too-many-statements
 def start_network(
     *,  # This enforces keyword-only arguments
-    ue_definitions: Sequence[UEDefinition],
+    ue_array: Sequence[UEStub],
     fivegc_array: Sequence[FiveGCStub],
+    ue_simulator: Optional[UESimulatorStub] = None,
     gnb_array: Optional[Sequence[GNBStub]] = None,
     cu: Optional[CUStub] = None,
     cu_cp_array: Optional[Sequence[CUCPStub]] = None,
@@ -141,8 +142,11 @@ def start_network(
 ):
     """
     Start Network (5GC + gNB/CU+DU/CUCP+CUUP+DU + RIC(optional))
-    The UE definitions provide the subscribers registered in the 5GC and the PLMN
+    The UEs (or the UE simulator) provide the subscribers registered in the 5GC and the PLMN
     """
+
+    if ue_array and ue_simulator:
+        pytest.fail("Either UE array or UE simulator must be provided, not both")
 
     if gnb_array and (cu or cu_cp_array or du_array):
         pytest.fail("Either gNB or CU/CUCP and DU array must be provided, not both")
@@ -152,6 +156,10 @@ def start_network(
 
     if (cu_cp_array and not cu_up_array) or (not cu_cp_array and cu_up_array):
         pytest.fail("CUCP and CUUP array must be provided together")
+
+    ue_definitions = _get_ue_definitions(ue_array)
+    if ue_simulator:
+        ue_definitions.append(ue_simulator.GetDefinition(Empty()))
 
     ue_def_for_gnb = UEDefinition()
     for ue_def in ue_definitions:
@@ -516,8 +524,9 @@ def validate_ue_registered_via_ims(
 # pylint: disable=too-many-branches
 def stop(
     *,  # This enforces keyword-only arguments
-    ue_array: Sequence[RanClient],  # UEs or UE simulator: only Base methods are used
+    ue_array: Sequence[UEClient],
     retina_data: RetinaTestData,
+    ue_simulator: Optional[UESimulatorClient] = None,
     gnb_array: Optional[Sequence[GNBClient]] = None,
     cu: Optional[CUClient] = None,
     cu_cp_array: Optional[Sequence[CUCPClient]] = None,
@@ -534,8 +543,11 @@ def stop(
     stop_gnb_first: bool = False,
 ):
     """
-    Stop ue(s), gnb and 5gc, ric
+    Stop ue(s) or ue simulator, gnb and 5gc, ric
     """
+    if ue_array and ue_simulator:
+        pytest.fail("Either UE array or UE simulator must be provided, not both")
+
     # Stop
     error_msg_array = []
     if (stop_gnb_first is True) and (gnb_array is not None):
@@ -562,6 +574,18 @@ def stop(
         )
         error_msg_array.append(error_message)
         logging.info("UE [%s] stopped", id(ue_stub))
+
+    if ue_simulator is not None:
+        error_message, _ = _stop_stub(
+            stub=ue_simulator,
+            name="UE_SIMULATOR",
+            retina_data=retina_data,
+            timeout=ue_stop_timeout,
+            log_search=log_search,
+            warning_as_errors=False,
+        )
+        error_msg_array.append(error_message)
+        logging.info("UE simulator [%s] stopped", id(ue_simulator))
 
     if (stop_gnb_first is False) and (gnb_array is not None):
         for index, gnb in enumerate(gnb_array):

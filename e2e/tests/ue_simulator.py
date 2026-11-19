@@ -7,7 +7,6 @@ Test UE simulator: the UE simulator drives all the simulated UEs on its own, and
 
 from typing import Optional, Sequence
 
-from google.protobuf.empty_pb2 import Empty
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.criteria import CriteriaTable
@@ -180,7 +179,8 @@ def _ue_simulator(
 
     try:
         start_network(
-            ue_definitions=(ue_simulator.GetDefinition(Empty()),),
+            ue_array=(),
+            ue_simulator=ue_simulator,
             cu=cu,
             cu_cp_array=cu_cp_array,
             cu_up_array=cu_up_array,
@@ -219,7 +219,8 @@ def _ue_simulator(
     finally:
         try:
             stop(
-                ue_array=(ue_simulator,),
+                ue_array=(),
+                ue_simulator=ue_simulator,
                 cu=cu,
                 cu_cp_array=cu_cp_array,
                 cu_up_array=cu_up_array,
