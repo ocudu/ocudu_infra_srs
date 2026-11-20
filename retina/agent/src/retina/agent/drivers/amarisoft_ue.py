@@ -137,6 +137,13 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
         subscriber_array = self._get_subscriber_array()
         prach_ports = str(list(range(4, 4 + ue_defaults.nof_antennas_ul)))
         s72_tx_core = self._s72_tx_core()
+        cpu_core_list = sorted(os.sched_getaffinity(0) - {s72_tx_core}) if s72_tx_core is not None else []
+        # lteue fills every listed core with PHY workers; keep one spare so they don't queue behind its helpers
+        s72_nb_threads = (
+            f", nb_threads: {max(1, (len(cpu_core_list) - 1) // ue_defaults.num_cells)}"
+            if cpu_core_list and ue_defaults.nb_threads <= 0
+            else ""
+        )
         sample_rate = testbed_defaults.sample_rate if ue_defaults.sample_rate < 0 else ue_defaults.sample_rate
         return self._render(
             filename=self.AMARISOFT_CONF_FILE_FINAL_NAME,
@@ -152,7 +159,7 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
                 # Logging
                 **self._get_log_variables(ue_defaults.log_level, self.AMARISOFT_LOG_FILENAME),
                 # Every core but the S72 TX one
-                "cpu_core_list": sorted(os.sched_getaffinity(0) - {s72_tx_core}) if s72_tx_core is not None else [],
+                "cpu_core_list": cpu_core_list,
                 # RF drivers
                 "zmq_def": (
                     (
@@ -212,6 +219,7 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
                 # HW related cell info
                 "cell_ru_cfg": (
                     f"s72: {{rtc_id: 0x0000, ud_comp_hdr: 0x91, port_mapping_prach: {prach_ports}, gen_prb0: true}}"
+                    f"{s72_nb_threads}"
                     if testbed_defaults.type == "ru"
                     else f"sample_rate: {sample_rate / 1000000}"
                 ),
