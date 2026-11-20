@@ -373,7 +373,7 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
         if self._websocket is None:
             raise ChildProcessError("Process has died")
         stats = self._websocket.send_command_and_wait_response(
-            response_timeout=response_timeout, message="stats", samples=False, rf=False
+            response_timeout=response_timeout, message="stats", samples=False, rf=True
         )
         with self._metrics_lock:
             self._save_metrics_unlock(stats)
