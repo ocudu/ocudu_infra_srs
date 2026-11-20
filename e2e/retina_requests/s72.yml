@@ -81,9 +81,9 @@
   ip_back_source: backhaul
   requirements:
     cpu:
-      requests: 10%
-      limits: 10%
-      rounding: round
+      requests: 20%
+      limits: 20%
+      rounding: truncate
     memory:
       requests: 20%
       limits: 20%
