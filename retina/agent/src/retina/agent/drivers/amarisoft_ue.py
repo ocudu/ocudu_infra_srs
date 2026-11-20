@@ -136,14 +136,6 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
 
         subscriber_array = self._get_subscriber_array()
         prach_ports = str(list(range(4, 4 + ue_defaults.nof_antennas_ul)))
-        s72_tx_core = self._s72_tx_core()
-        cpu_core_list = sorted(os.sched_getaffinity(0) - {s72_tx_core}) if s72_tx_core is not None else []
-        # lteue fills every listed core with PHY workers; keep one spare so they don't queue behind its helpers
-        s72_nb_threads = (
-            f", nb_threads: {max(1, (len(cpu_core_list) - 1) // ue_defaults.num_cells)}"
-            if cpu_core_list and ue_defaults.nb_threads <= 0
-            else ""
-        )
         sample_rate = testbed_defaults.sample_rate if ue_defaults.sample_rate < 0 else ue_defaults.sample_rate
         return self._render(
             filename=self.AMARISOFT_CONF_FILE_FINAL_NAME,
@@ -158,8 +150,6 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
                 **get_module_variables(ue_defaults),
                 # Logging
                 **self._get_log_variables(ue_defaults.log_level, self.AMARISOFT_LOG_FILENAME),
-                # Every core but the S72 TX one
-                "cpu_core_list": cpu_core_list,
                 # RF drivers
                 "zmq_def": (
                     (
@@ -219,7 +209,6 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
                 # HW related cell info
                 "cell_ru_cfg": (
                     f"s72: {{rtc_id: 0x0000, ud_comp_hdr: 0x91, port_mapping_prach: {prach_ports}, gen_prb0: true}}"
-                    f"{s72_nb_threads}"
                     if testbed_defaults.type == "ru"
                     else f"sample_rate: {sample_rate / 1000000}"
                 ),
@@ -246,12 +235,21 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
 
         # Add -t flag for ZMQ mode to use radio-derived clock
         zmq_args = ["-t"] if testbed_defaults.type == "zmq" else []
+        # Every core but the S72 TX one, so lteue sizes its PHY pools without it
+        s72_tx_core = self._s72_tx_core()
+        affinity_args = (
+            ["taskset", "-c", ",".join(str(cpu) for cpu in sorted(os.sched_getaffinity(0) - {s72_tx_core}))]
+            if s72_tx_core is not None
+            else []
+        )
+        binary = self._executor.find_in_path(self._get_binary_name()) if affinity_args else self._get_binary_name()
 
         # Launch (and launch again while the license is in use)
         while True:
             self.start_sut(
                 *(item for pre_command in request.start_info.pre_commands for item in pre_command.split(" ")),
-                self._get_binary_name(),
+                *affinity_args,
+                binary,
                 *zmq_args,
                 config_file,
                 *(item for post_command in request.start_info.post_commands for item in post_command.split(" ")),
