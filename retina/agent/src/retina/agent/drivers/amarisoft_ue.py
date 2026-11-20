@@ -137,6 +137,14 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
         subscriber_array = self._get_subscriber_array()
         prach_ports = str(list(range(4, 4 + ue_defaults.nof_antennas_ul)))
         sample_rate = testbed_defaults.sample_rate if ue_defaults.sample_rate < 0 else ue_defaults.sample_rate
+        nb_threads_args = "".join(
+            f", {name}: {value}"
+            for name, value in (
+                ("nb_threads_dl", ue_defaults.nb_threads_dl),
+                ("nb_threads_ul", ue_defaults.nb_threads_ul),
+            )
+            if value > 0
+        )
         return self._render(
             filename=self.AMARISOFT_CONF_FILE_FINAL_NAME,
             templates={
@@ -208,9 +216,12 @@ class AmarisoftUeBase(AmarisoftBaseDriver, metaclass=ABCMeta):
                 ).replace(".0", ""),
                 # HW related cell info
                 "cell_ru_cfg": (
-                    f"s72: {{rtc_id: 0x0000, ud_comp_hdr: 0x91, port_mapping_prach: {prach_ports}, gen_prb0: true}}"
-                    if testbed_defaults.type == "ru"
-                    else f"sample_rate: {sample_rate / 1000000}"
+                    (
+                        f"s72: {{rtc_id: 0x0000, ud_comp_hdr: 0x91, port_mapping_prach: {prach_ports}, gen_prb0: true}}"
+                        if testbed_defaults.type == "ru"
+                        else f"sample_rate: {sample_rate / 1000000}"
+                    )
+                    + nb_threads_args
                 ),
             },
         )

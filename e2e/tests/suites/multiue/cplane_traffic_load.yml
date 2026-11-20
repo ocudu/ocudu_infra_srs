@@ -178,6 +178,8 @@ tdd_dl_heavy_rt:
       nof_antennas_dl: 4
       nof_antennas_ul: 1
       log_level: warning
+      nb_threads_dl: 10
+      nb_threads_ul: 1
   gnb:
     config: [cu_cp.yml, vonr_qos.yml, du.yml, 1000ue.yml, tdd_72.yml, csi_offset_tdd_72.yml, prach_config.yml, inactivity_timer.yml, du_perf.yml, schedtrace.yml, mac_pcap_dlt.yml]
     parameters:
@@ -195,7 +197,8 @@ tdd_dl_heavy_rt:
   criteria:
     <<: *common_criteria
     core.nof_pdu_session_establishment_accept_eq: *nof_ue_attaches
-    du.nof_ko_dl_le: 500
+    du.nof_ko_dl_le: 50
+    du.nof_ko_ul_le: 50
     all.warnings_le: 200
     du.dl_bitrate_gt: 250.0e+6
     du.ul_bitrate_gt: 25.0e+6

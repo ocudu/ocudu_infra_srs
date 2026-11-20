@@ -55,6 +55,9 @@ noise_spd: int = 0
 sample_rate: int = -1  # Default value in testbed
 global_timing_advance: int = -1
 nb_threads: int = -1
+# Per-cell PHY pool sizes, overriding lteue's own DL/UL split; -1 keeps it automatic
+nb_threads_dl: int = -1
+nb_threads_ul: int = -1
 n_rb_dl: int = 0
 cell_position_offset: Tuple[float, float, float] = (1000, 0, 0)
 pdcch_log: bool = False

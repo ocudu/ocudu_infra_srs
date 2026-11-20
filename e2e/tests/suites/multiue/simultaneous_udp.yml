@@ -196,6 +196,8 @@ tdd_dl_heavy_rt:
       nof_antennas_dl: 4
       nof_antennas_ul: 1
       log_level: warning
+      nb_threads_dl: 10
+      nb_threads_ul: 1
   gnb:
     config: [cu_cp.yml, du.yml, 1000ue.yml, tdd_72.yml, csi_offset_tdd_72.yml, prach_config.yml, inactivity_timer.yml, du_perf.yml, schedtrace.yml]
     parameters:
@@ -216,7 +218,8 @@ tdd_dl_heavy_rt:
   feature_ids: [MVP-PERF-CAP-3]
   criteria:
     <<: *common_criteria
-    du.nof_ko_dl_le: 100
+    du.nof_ko_dl_le: 20
+    du.nof_ko_ul_le: 50
     all.warnings_le: 0
     core.nof_pdu_session_establishment_accept_eq: *nof_ue
     du.dl_bitrate_gt: 300.0e+6
