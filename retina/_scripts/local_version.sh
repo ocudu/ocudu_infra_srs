@@ -1,10 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
 # SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
 # SPDX-License-Identifier: BSD-3-Clause-Open-MPI
 
 # Prints the RETINA_VERSION for local images: a hash of the image build inputs in retina/.
 # Python sources mounted into the containers are excluded, so changing them reuses the images.
+#
+# POSIX sh: CI runs it on alpine/git (busybox), so locales and tools must give the same hash.
 #
 # Usage: local_version.sh
 
@@ -19,9 +21,9 @@ HASH8=$(
         ':(exclude)_scripts/**' \
         ':(exclude)_docs/**' \
         ':(exclude,glob)**/*.md' |
-        sort -z |
+        LC_ALL=C sort -z |
         (cd "$RETINA_DIR" && xargs -0 -r sha1sum -- 2>/dev/null || true) |
         sha1sum | cut -c1-8
 )
 # Must be a valid Python package version (PEP 440) and Docker tag. 0.0.0 avoids clashing with CI versions.
-echo "0.0.0.$((16#$HASH8))"
+echo "0.0.0.$(printf '%d' "0x${HASH8}")"

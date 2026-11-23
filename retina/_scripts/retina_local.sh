@@ -42,6 +42,11 @@ if ! docker buildx version >/dev/null 2>&1; then
     exit 1
 fi
 
+# Pull CI-published images for this local version; anything missing is built by `up`
+if [[ " $* " != *" --build "* ]]; then
+    docker compose --profile ${RETINA_PROFILE} pull --policy missing --ignore-pull-failures
+fi
+
 # Run agents
 docker compose --profile ${RETINA_PROFILE} up "$@" --detach
 docker compose --profile ${RETINA_PROFILE} logs --follow --since 0s --timestamps

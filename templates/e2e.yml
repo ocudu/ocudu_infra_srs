@@ -91,6 +91,7 @@ get retina version:
     GIT_DEPTH: 0
   script:
     - echo "RETINA_VERSION=$(sh retina/version.sh)" | tee retina_version.env
+    - echo "RETINA_LOCAL_VERSION=$(sh retina/_scripts/local_version.sh)" | tee -a retina_version.env
   artifacts:
     reports:
       dotenv: retina_version.env
